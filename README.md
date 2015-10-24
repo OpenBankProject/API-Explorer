@@ -1,15 +1,10 @@
-Welcome to the Open Bank Project Social Finance !
+Welcome to the OBP API Explorer
 
 # ABOUT
 
-This application demonstrates some of the principles of the Open Bank Project:
+This application is used to explore the OBP API and interact with the data and services in the context of the logged in user.
 
-1) Sliding scale of privacy and disclosure. e.g. Use aliases to protect real names but still show the flow of money .
-2) Different views on account data (Public / Share holders / Team etc.) e.g. hide balances on public view.
-3) Comment on transactions
-4) Add other meta data e.g. tags / images to transactions / payees.
 
-The project roadmap is available [here.](https://trello.com/b/aBELCLYA/open-bank-project-sofi) 
 
 # LICENSE
 
@@ -66,33 +61,13 @@ the application to work.
 The sample.props.template file must be renamed for Lift to find it (https://www.assembla.com/wiki/show/liftweb/Properties). Renaming it to default.props
 should be the easiest way to get started.
 
-2. Filling in values:
-
-transloadit.authkey
-transloadit.addImageTemplate
-
-The Social Finance app uses transloadit.com to process uploaded images. If these are not filling in, users will not be able to add images to
-individual transactions.
-
-transloadit.authkey can be obtained by registering at transloadit.com
-transloadit.addImageTemplate can be obtained by creating a template at transloadit. A sample template which resizes images to 250px width is :
-
-{
-  "steps": {
-    "resize_to_250": {
-      "robot": "/image/resize",
-      "width": 250,
-      "zoom": false
-    }
-  }
-}
 
 *base_url*
 
 The base_url is used to calculate the callback url to give to the Open Bank Project API server. This should just be the
-base url used to access the social finance application. So if you're running a copy of the social finance application at
-sofi.example.com over https, on the standard port, it would be "https://sofi.example.com".
-An example value for local development could be: http://127.0.0.1:8080 (as 8080 is the default Lift development port)
+base url used to access the API Explorer. So if you're running a copy of the API Explorer at
+api-explorer.example.com over https, on the standard port, it would be "https://api-explorer.example.com".
+An example value for local development could be: http://127.0.0.1:8082 (8080 is the default Lift development port)
 
 *api_hostname*
 
@@ -106,9 +81,7 @@ The keys are obtained by registering as a developer on the Open Bank Project API
 
 All in all, a props file could look something like:
 
-transloadit.authkey=89hs8fho98fsho8hsf48sfo98sh
-transloadit.addImageTemplate=s9fe8sh8h4sof98hf84s8fs48f4
 api_hostname=https://api.openbankproject.com/api
 obp_consumer_key=uodsifnodsfifdsliufdsliufdsfdsfsdfsx
 obp_secret_key=iuesbfiyvglxzgifg7eisgei7fglesfi
-base_url=http://localhost:8080
+base_url=http://localhost:8082
