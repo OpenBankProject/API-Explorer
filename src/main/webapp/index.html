@@ -1,94 +1,84 @@
-<!--
-Open Bank Project - Transparency / Social Finance Web Application
-Copyright (C) 2011, 2012, TESOBE / Music Pictures Ltd
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see www.gnu.org/licenses/
-
-Email: contact@tesobe.com
-TESOBE / Music Pictures Ltd
-Osloerstrasse 16/17
-Berlin 13359, Germany
-
-  This product includes software developed at
-  TESOBE (http://www.tesobe.com/)
-  by
-  Simon Redfern : simon AT tesobe DOT com
-  Stefan Bethge : stefan AT tesobe DOT com
-  Everett Sochowski : everett AT tesobe DOT com
-  Ayoub Benali: ayoub AT tesobe DOT com
--->
 
 
+<div id="main" class="lift:surround?with=default&at=content">
 
+    <h1>Open Bank Project API Explorer</h1>
 
+    <div class="lift:ApiExplorer.showResources">
 
-<div id="main" class="lift:surround?with=default;at=content">
-	<div id="homeContent">
-    	<div id="about_text">
-			<p>
-				Welcome to The Open Bank Project’s Social Finance application.
-			</p>
-			<br />
+        <span id="version">API Version: </span>
 
-            <!--
-			<p>
-				This application allows
-				bank account holders to choose with whom they would like to share their
-				transaction data. For instance, an individual might share their bank
-				account with their accountant; a company with their directors and/or
-				shareholders; an NGO or government department with the public.
-			</p>
-			<br />
-			<p>
-				Account holders can preserve privacy and commercial confidentiality
-				by using aliases to protect the real names.
-			</p>
-			<br />
-			<p>
-				Once connected, account holders can also benefit from other applications
-				that use the Open Bank Project API.
-			</p>
-			<br />
-			<p>
-				See the left panel for examples of organisations raising the bar of
-				financial transparency !
-			</p>
-			<br />
-			<p>
-				We are an <a href="http://github.com/OpenBankProject" title ="Open bank project on Github" >open source project</a> backed by
-				<a href="http://www.tesobe.com" title="TESOBE website">TESOBE</a>. More information is on our <a href="http://www.openbankproject.com/" title="Open Bank Project">home page</a>.
+        <div class="lift:Msgs"></div>
 
-			</p>
-			-->
+        <div id="selectors">
+            <dif id="introduction">
+                Use the API in the context of your login. Use the select boxes below to auto populate url parameters such as BANK_ID, ACCOUNT_ID and VIEW_ID.
+            </dif>
+            <div id="login_status_message">
+                Logged In Status
+            </div>
+            <br />
 
+            <select id="bank_selector">
+                <option value="bank_id1">Bank 1</option>
+                <option value="bank_id2">Bank 2</option>
+            </select>
+            <select id="account_selector">
+                <option value="account_id1">Account 1</option>
+                <option value="account_id2">Account 2</option>
+            </select>
+            <select id="view_selector">
+                <option value="view_id_1">Owner</option>
+                <option value="view_id_2">Accountant</option>
+            </select>
+            <select id="counterparty_selector">
+                <option value="other_account_id_1">Counterparty 1</option>
+                <option value="other_account_id_2">Counterparty 2</option>
+            </select>
+            <select id="transaction_selector">
+                <option value="transaction_id_1">Transaction 1</option>
+                <option value="transaction_id_2">Transaction 2</option>
+            </select>
         </div>
-		<div id="public_accounts">
-			<h2 class="account_header">Public Accounts</h2>
-			<div class="lift:AccountsOverview.publicAccounts">
-				<ul class="accountList">
-					<li class="account"><a class="accLink" href="">Account Name</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-		<div id="authorised_accounts">
-			<h2 class="account_header">Authorised Accounts</h2>
-			<div class="lift:AccountsOverview.authorisedAccounts">
-				<ul class="accountList">
-					<li class="account"><a class="accLink" href="">Account Name</a></li>
-				</ul>
-			</div>
-		</div>
-	</div>
+
+
+
+        <table>
+            <!-- Each URL we document appears in a row, inside a table -->
+            <!-- Multiple instances of this row are generated in ApiExplorer.scala -->
+            <!-- Note: id's are added so we can manipulate individual elements -->
+            <tr class="resource">
+                    <!-- Some documentation -->
+                    <td>
+                        <a class="resource_summary" href="#replace-me">Summary</a>
+                        <div name="resource_description" class="markdown"><span name="description_text">Description</span></div>
+                    </td>
+
+                    <td>
+                        <form class="lift:form.ajax" id="form1">
+                                <!-- Attributes for these fields are replaced -->
+                                <input type="hidden" name="resource_id_input">
+                                <input type="hidden" name="request_verb_input" placeholder="GET, POST, PUT etc.">
+                                <!-- The url_to_call is populated at render (but it can be edited manually) -->
+                                <input type="hidden" name="request_url_input" placeholder="OBP URL to call">
+
+                                <div name="example_request_body" style="display: block;">
+                                    <input name="example_request_body_input" placeholder="JSON body to POST or PUT">
+                                    <!-- TODO get this working: <textarea name="request_body_input" form="form1">Enter text here...</textarea>  -->
+                                </div>
+
+                                <!-- This submit button is also modified by ApiExplorer.scala -->
+                                <input class="call_button" type="submit">
+                        </form>
+
+                        <!-- API call result goes here It is highlighted by javascript called from the submit button -->
+                        <pre>
+                            <code class="result json" id="result" name="response_body">
+                            </code>
+                        </pre>
+                    </td>
+            </tr>
+        </table>
+    </div>
 </div>
+
