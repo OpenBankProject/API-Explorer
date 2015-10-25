@@ -192,31 +192,31 @@ class ApiExplorer extends Loggable {
 
     val banks = allBanks
 
-
+    // TODO dehardcode the redirect path.
 
     def onBankChange (v: Any) = {
       logger.info("bank changed to " + v.toString)
-      S.redirectTo(s"api-explorer?bank_id=${v}")
+      S.redirectTo(s"index?bank_id=${v}")
     }
 
     def onAccountChange (v: Any) = {
       logger.info("account changed to " + v.toString)
-      S.redirectTo(s"api-explorer?bank_id=${presetBankId}&account_id=${v}")
+      S.redirectTo(s"index?bank_id=${presetBankId}&account_id=${v}")
     }
 
     def onViewChange (v: Any) = {
       logger.info("view changed to " + v.toString)
-      S.redirectTo(s"api-explorer?bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${v}")
+      S.redirectTo(s"index?bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${v}")
     }
 
     def onCounterpartyChange (v: Any) = {
       logger.info("counterparty changed to " + v.toString)
-      S.redirectTo(s"api-explorer?bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${v}")
+      S.redirectTo(s"index?bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${v}")
     }
 
     def onTransactionChange (v: Any) = {
       logger.info("transaction changed to " + v.toString)
-      S.redirectTo(s"api-explorer?bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${v}")
+      S.redirectTo(s"index?bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${v}")
     }
 
 
