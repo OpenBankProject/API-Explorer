@@ -5,11 +5,11 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.tesobe</groupId>
-    <artifactId>Social_Finance</artifactId>
+    <artifactId>API_Explorer</artifactId>
     <version>1.0</version>
     <packaging>war</packaging>
-    <name>Social Finance</name>
-    <inceptionYear>2011</inceptionYear>
+    <name>API Explorer</name>
+    <inceptionYear>2015</inceptionYear>
     <properties>
         <scala.version>2.10.5</scala.version>
         <scala.baseversion>2.10</scala.baseversion>
