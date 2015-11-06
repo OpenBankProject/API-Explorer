@@ -247,7 +247,7 @@ class ApiExplorer extends Loggable {
     def getAccountOptions : List[(String,String)] = {
 
       val selectAccount = ("", "Select Account")
-      val noneFound = ("", "No Accounts Found")
+      val noneFound = ("", "") // No Accounts Found
 
       val options: List[(String, String)] = presetBankId match {
         case "" => List(noneFound)
@@ -269,7 +269,7 @@ class ApiExplorer extends Loggable {
         case false => ("", "Login for Views")
       }
 
-      val noneFound = ("", "No Views Found")
+      val noneFound = ("", "") // No Views Found
 
       // TODO Should check for both presetBankId and presetAccountId
       // Logged in user required?
@@ -293,7 +293,7 @@ class ApiExplorer extends Loggable {
         case true => ("", "Select Counterparty")
         case false => ("", "Login for CPs")
       }
-      val noneFound = ("", "No Counterparties")
+      val noneFound = ("", "") // No Counterparties Found
 
       // TODO Should check for both presetBankId and presetAccountId
       val options: List[(String, String)] = presetViewId match {
@@ -315,7 +315,7 @@ class ApiExplorer extends Loggable {
         case true => ("", "Select Transaction")
         case false => ("", "Login for Trans")
       }
-      val noneFound = ("", "No Transactions")
+      val noneFound = ("", "") // No Transactions Found
 
       // TODO Should check for both presetBankId and presetAccountId
       val options: List[(String, String)] = presetViewId match {
@@ -395,11 +395,11 @@ class ApiExplorer extends Loggable {
     // replace the node identified by the class "resource" with the following
     // This creates the list of resources in the DOM
     ".resource" #> resources.map { i =>
-      ".resource_summary *" #> i.summary &
+      ".content-box__headline *" #> i.summary &
       ".resource_summary [href]" #> s"#${i.id}" &
       ".resource_summary [name]" #> s"${i.id}" &
       // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
-      "@description_text" #> i.description &
+      ".content-box__text-box *" #> i.description &
       "@resource_description [id]" #> s"description_${i.id}" &
       ".resource_url_td [id]" #> s"resource_url_td_${i.id}" &   // Probably don't need this now
       ".resource_verb_td [id]" #> s"resource_verb_td_${i.id}" & // Probably don't need this now
