@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>API Explorer</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./media/css/style.css" />
+</head>
+
+<body>
+<div id="page-wrapper">
+    <header class="header">
+        <div class="container">
+            <div class="logo-box">
+                <a href="#" class="logo-box__link"><img src="./media/images/logo-header.png" alt="Logo" class="logo-box__img"></a>
+            </div>
+            <div class="site-title-box">
+                <p class="site-title-box__text">API EXPLORER</p>
+            </div>
+            <div class="settings-box">
+                <div class="sign-box">
+                    <p class="sign-box__text">SIGNED IN AS</p>
+                    <span class="sign-box__text signed">Tom</span>
+                </div>
+                <div class="settings-imgs">
+                    <a href="#" class="settings-imgs__link">
+                        <img src="./media/images/logout-icon.png" alt="Log out icon" class="settings-imgs__icon">
+                    </a>
+                    <a href="#" class="settings-imgs__link">
+                        <img src="./media/images/settings-icon.png" alt="Settings icon" class="settings-imgs__icon">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="breadcrumb-section">
+        <div class="container">
+            <div class="breadcrumbs">
+                <ul class="breadcrumbs__row">
+                    <li class="breadcrumbs__list">
+                        <a href="#" class="breadcrumbs__link">HOME</a>
+                    </li>
+                    <li class="breadcrumbs__list">
+                        <a href="#" class="breadcrumbs__link">API KEYS</a>
+                    </li>
+                    <li class="breadcrumbs__list">
+                        <a href="#" class="breadcrumbs__link">CREATE SANDBOX</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="api-info-section">
+        <div class="container">
+            <div class="info-box">
+                <h2 class="info-box__headline">Use the API in the context of your login</h2>
+                <div class="text-wrapper">
+                    <p class="text-wrapper__text">Make your selections below </p>
+                </div>
+                <div class="text-wrapper">
+                    <a href="#" class="text-wrapper__text">api.openbankproject.com </a>
+                </div>
+                <div class="text-wrapper">
+                    <p class="text-wrapper__text">Some options require login</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="option-section">
+        <div class="container">
+            <div class="option-box">
+                <h4 class="option-box__headline">Bank</h4>
+                <div class="count-box">
+                    <span class="count-box__number">0</span>
+                </div>
+                <select name="Bank" class="option-box__select">
+                    <option value="Choose from..." class="option-box__option">Choose from...</option>
+                    <option value="Choose from..." class="option-box__option">Placeholder</option>
+                    <option value="Choose from..." class="option-box__option">Placeholder</option>
+                </select>
+            </div>
+            <div class="option-box">
+                <h4 class="option-box__headline">Accounts</h4>
+                <div class="count-box">
+                    <span class="count-box__number">0</span>
+                </div>
+                <select name="Accounts" class="option-box__select">
+                    <option value="Choose from..." class="option-box__option">Choose from...</option>
+                    <option value="Choose from..." class="option-box__option">Placeholder</option>
+                    <option value="Choose from..." class="option-box__option">Placeholder</option>
+                </select>
+            </div>
+            <div class="option-box">
+                <h4 class="option-box__headline">Views</h4>
+                <div class="count-box">
+                    <span class="count-box__number">0</span>
+                </div>
+                <select name="Views" class="option-box__select">
+                    <option value="Choose from..." class="option-box__option">Choose from...</option>
+                    <option value="Choose from..." class="option-box__option">Placeholder</option>
+                    <option value="Choose from..." class="option-box__option">Placeholder</option>
+                </select>
+            </div>
+            <div class="option-box">
+                <h4 class="option-box__headline">Counterparties</h4>
+                <div class="count-box">
+                    <span class="count-box__number">0</span>
+                </div>
+                <select name="Counterparties" class="option-box__select">
+                    <option value="Choose from..." class="option-box__option">Choose from...</option>
+                    <option value="Choose from..." class="option-box__option">placeholder</option>
+                    <option value="Choose from..." class="option-box__option">placeholder</option>
+                </select>
+            </div>
+            <div class="option-box">
+                <h4 class="option-box__headline">Transactions</h4>
+                <div class="count-box">
+                    <span class="count-box__number">0</span>
+                </div>
+                <select name="Transactions" class="option-box__select">
+                    <option value="Choose from..." class="option-box__option">Choose from...</option>
+                    <option value="Choose from..." class="option-box__option">Placeholder</option>
+                    <option value="Choose from..." class="option-box__option">Placeholder</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <div class="container">
+            <div class="content-box bg--white">
+                <h2 class="content-box__headline">The root of the API</h2>
+                <div class="content-box__text-box">
+                    <ul class="content-box__row">
+                        <li class="content-box__link">Returns information about:</li>
+                        <li class="content-box__link">API version</li>
+                        <li class="content-box__link">Hosted by information</li>
+                        <li class="content-box__link">Git Commit</li>
+                    </ul>
+                </div>
+                <div class="content-box__input-box">
+                    <input type="text" class="default-input" value="OBP URL to call">
+                    <button class="default-button">POST</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="accounts">
+        <div class="container">
+            <div class="content-box bg--white padding-bottom-zero content-box--modify">
+                <h2 class="content-box__headline">Get all accounts a user has access to at all banks (private + public)</h2>
+                <div class="content-box__text-box">
+                    <p class="content-box__text">Returns the list of accounts at that the user has access to at all banks. For each account the API returns the account ID and the available views. If the user is not authenticated via OAuth, the list will contain only the accounts
+                        providing public views. If the user is authenticated, the list will contain non-public accounts to which the user has access, in addition to all public accounts.</p>
+                    <p class="content-box__text">Note for those upgrading from v1.2: The v1.2 version of this call was buggy in that it did not include public accounts if an authenticated user made the call. If you need the previous behaviour, please use the API call for private
+                        accounts (..../accounts/private).</p>
+                </div>
+                <div class="content-box__input-box">
+                    <input type="text" class="default-input" value="/accounts">
+                    <button class="default-button">POST</button>
+                </div>
+                <div class="content-box__info-box">
+                    <span>{</span>
+                    <span>"accounts":[{</span>
+                    <span>"id":"fb51ec3c-9174-4153-a641-19df868d1755",</span>
+                    <span>"label":"Susan R.A Current ..422",</span>
+                    <span>"views_available":[{</span>
+                    <span>"id":"public",</span>
+                    <span> "short_name":"Public",</span>
+                    <span> "description":"Public View",</span>
+                    <span>"is_public":true,</span>
+                    <span>"alias":"public",</span>
+                    <span>"hide_metadata_if_alias_used":true,</span>
+                    <span>"can_see_transaction_this_bank_account":true, </span>
+                    <img src="./media/images/close-icon.png" alt="Close icon" class="content-box__close-icon">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content-wrapper">
+                <div class="footer-box">
+                    <p class="footer-box__paragraph">Open Bank Project </p>
+                    <p class="footer-box__paragraph">&copy; 2011-2015 TESOBE and distributed under the AGPL and commercial licenses.</p>
+                </div>
+                <div class="footer-logo-box">
+                    <a href="#" class="footer-box__link"><img src="./media/images/logo-footer.png" alt="Tesobe logo" class="footer-box__logo"></a>
+                </div>
+            </div>
+            <div class="footer-links-box">
+                <a href="#" class="footer-link-box__link">Twitter</a>
+                <a href="#" class="footer-link-box__link">Github</a>
+                <a href="#" class="footer-link-box__link">API Documentation</a>
+            </div>
+        </div>
+    </footer>
+</div>
+
+ <!--
+<script src="../js/vendor/jquery.js"></script>
+<script src="js/scripts.js"></script>
+-->
+
+</body>
+
+</html>

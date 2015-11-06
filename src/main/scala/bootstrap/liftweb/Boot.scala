@@ -326,25 +326,10 @@ class Boot extends Loggable{
     val sitemap = List(
       Menu.i("OBP API Explorer") / "api-explorer",
       Menu.i("Home") / "index",
+      Menu.i("New") / "new",
       Menu.i("OAuth Callback") / "oauthcallback" >> EarlyResponse(() => {
         OAuthClient.handleCallback()
-      }),
-      //test if the bank exists and if the user has access to the management page
-      Menu.params[(OtherAccountsJson, ManagementURLParams)]("Management", "management", getAccount _ , t => List("")) / "banks" / * / "accounts" / * / "management",
-
-      Menu.params[ViewsDataJSON]("Views","Views Overview", getCompleteAccountViews _ , x => List("")) / "banks" / * / "accounts" / * / "views" / "list",
-
-      Menu.params[(List[ViewJson], AccountJson, PermissionsUrlParams)]("Create Permission", "create permissions", getAccountViewsAndPermission _ , x => List(""))
-      / "banks" / * / "accounts" / * / "permissions" / "create" ,
-
-      Menu.params[(PermissionsJson, AccountJson, List[ViewJson], PermissionsUrlParams)]("Permissions", "permissions", getPermissions _ , x => List("")) / "banks" / * / "accounts" / * / "permissions" ,
-      Menu.params[List[BarebonesAccountJson]]("Manage Accounts", "manage accounts", getAccounts _ , x => List("")) / "list-accounts" ,
-
-      Menu.params[(TransactionsJson, AccountJson, TransactionsListURLParams)]("Bank Account", "bank accounts", getTransactions _ ,  t => List("") )
-      / "banks" / * / "accounts" / * / *,
-
-      Menu.params[(TransactionJson, CommentsURLParams)]("transaction", "transaction", getTransaction _ ,  t => List("") )
-      / "banks" / * / "accounts" / * / "transactions" / * / *
+      })
     )
 
     LiftRules.setSiteMap(SiteMap.build(sitemap.toArray))
