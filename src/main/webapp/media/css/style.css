@@ -76,6 +76,7 @@ a img {
   margin: 0;
 }
 
+
 .signed {
   font-size: 18px;
   line-height: 22px;
@@ -100,6 +101,12 @@ a img {
 .settings-imgs__icon {
   display: block;
 }
+
+
+.logout {
+  display: block;
+}
+
 
 .breadcrumb-section {
   background-color: #333333;
