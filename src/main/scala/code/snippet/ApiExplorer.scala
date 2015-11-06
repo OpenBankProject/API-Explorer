@@ -291,9 +291,9 @@ class ApiExplorer extends Loggable {
 
       val selectOne = OAuthClient.loggedIn match {
         case true => ("", "Select Counterparty")
-        case false => ("", "Login for Counterparties")
+        case false => ("", "Login for CPs")
       }
-      val noneFound = ("", "No Counterparties Found")
+      val noneFound = ("", "No Counterparties")
 
       // TODO Should check for both presetBankId and presetAccountId
       val options: List[(String, String)] = presetViewId match {
@@ -313,9 +313,9 @@ class ApiExplorer extends Loggable {
 
       val selectOne = OAuthClient.loggedIn match {
         case true => ("", "Select Transaction")
-        case false => ("", "Login for Transactions")
+        case false => ("", "Login for Trans")
       }
-      val noneFound = ("", "No Transactions Found")
+      val noneFound = ("", "No Transactions")
 
       // TODO Should check for both presetBankId and presetAccountId
       val options: List[(String, String)] = presetViewId match {
