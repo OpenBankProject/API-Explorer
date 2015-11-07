@@ -131,7 +131,6 @@ class ApiExplorer extends Loggable {
     var requestVerb = ""
     var requestUrl = ""
     var requestBody = "{}"
-    //var sOverView = "" // not used
 
     def process(): JsCmd = {
       logger.info(s"requestUrl is $requestUrl")
@@ -143,15 +142,20 @@ class ApiExplorer extends Loggable {
       val jsonObject = JsonParser.parse(requestBody).asInstanceOf[JObject]
 
       // the id of the element we want to populate and format.
-      val target = "result_" + resourceId
+      val result_target = "result_" + resourceId
+
+
+      val box_target = "result_box_" + resourceId
+
 
       // This will highlight the json. Replace the $ sign after we've constructed the string
-      val jsCommand : String =  s"DOLLAR_SIGN('#$target').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
+
+      val jsCommand : String =  s"DOLLAR_SIGN('#$box_target').fadeToggle();DOLLAR_SIGN('#$result_target').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
 
       logger.info(s"command is $jsCommand")
 
       // Return the commands to call the url with optional body and put the response into the appropriate result div
-      SetHtml(target, Text(getResponse(apiVersion, requestUrl, requestVerb, jsonObject))) &
+      SetHtml(result_target, Text(getResponse(apiVersion, requestUrl, requestVerb, jsonObject))) &
       Run (jsCommand)
     }
 
@@ -401,11 +405,10 @@ class ApiExplorer extends Loggable {
       // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
       ".content-box__text-box *" #> i.description &
       "@resource_description [id]" #> s"description_${i.id}" &
-//      ".resource_url_td [id]" #> s"resource_url_td_${i.id}" &   // Probably don't need this now
-//      ".resource_verb_td [id]" #> s"resource_verb_td_${i.id}" & // Probably don't need this now
       ".url_caller [id]" #> s"url_caller_${i.id}" &
       // ".try_me_button [onclick]" #> s"$$(DOUBLE-QUOTE#url_caller_${i.id}DOUBLE-QUOTE).fadeToggle();".replaceAll("DOUBLE-QUOTE","""") &
       "@result [id]" #> s"result_${i.id}" &
+      "@result_box [id]" #> s"result_box_${i.id}" &
       "@example_request_body [id]" #> s"example_request_body_${i.id}" &
       "@example_request_body [style]" #> s"display: ${displayRequestBody(i.verb)};" &
       //////
