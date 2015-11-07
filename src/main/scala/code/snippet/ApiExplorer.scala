@@ -401,8 +401,8 @@ class ApiExplorer extends Loggable {
       // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
       ".content-box__text-box *" #> i.description &
       "@resource_description [id]" #> s"description_${i.id}" &
-      ".resource_url_td [id]" #> s"resource_url_td_${i.id}" &   // Probably don't need this now
-      ".resource_verb_td [id]" #> s"resource_verb_td_${i.id}" & // Probably don't need this now
+//      ".resource_url_td [id]" #> s"resource_url_td_${i.id}" &   // Probably don't need this now
+//      ".resource_verb_td [id]" #> s"resource_verb_td_${i.id}" & // Probably don't need this now
       ".url_caller [id]" #> s"url_caller_${i.id}" &
       // ".try_me_button [onclick]" #> s"$$(DOUBLE-QUOTE#url_caller_${i.id}DOUBLE-QUOTE).fadeToggle();".replaceAll("DOUBLE-QUOTE","""") &
       "@result [id]" #> s"result_${i.id}" &

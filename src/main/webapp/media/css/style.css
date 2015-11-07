@@ -378,11 +378,12 @@ a img {
 }
 
 .content-box__info-box span {
-  display: block;
+  /*display: block;*/
   padding: 0 0 1.5px 0;
   font-size: 14px;
   line-height: 24px;
 }
+/*
 .content-box__info-box span:nth-child(n+2) {
   padding-left: 10px;
 }
@@ -392,6 +393,7 @@ a img {
 .content-box__info-box span:nth-child(n+6) {
   padding-left: 29px;
 }
+*/
 
 .content-box__close-icon {
   position: absolute;

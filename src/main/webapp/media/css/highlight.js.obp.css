@@ -1,0 +1,68 @@
+/* Base16 OBP - Theme */
+/* Based on a theme by Bram de Haan (http://atelierbram.github.io/syntax-highlighting/atelier-schemes/heath) */
+/* Original Base16 color scheme by Chris Kempson (https://github.com/chriskempson/base16) */
+
+/* Atelier-Heath Comment */
+.hljs-comment,
+.hljs-quote {
+  color: #776977;
+}
+
+/* OBP Grey */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-attribute,
+.hljs-tag,
+.hljs-name,
+.hljs-regexp,
+.hljs-link,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: #50B165;
+}
+
+/* OBP Blue */
+.hljs-number,
+.hljs-meta,
+.hljs-built_in,
+.hljs-literal,
+.hljs-type,
+.hljs-params {
+  color: #31B8CD;
+}
+
+/* OBP Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet {
+  color: #504854;
+}
+
+/* Atelier-Heath Blue */
+.hljs-title,
+.hljs-section {
+  color: #516aec;
+}
+
+/* Atelier-Heath Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+  color: #7b59c0;
+}
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  background: none;
+  color: #695d69;
+  padding: 0.5em;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
