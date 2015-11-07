@@ -150,7 +150,7 @@ class ApiExplorer extends Loggable {
 
       // This will highlight the json. Replace the $ sign after we've constructed the string
 
-      val jsCommand : String =  s"DOLLAR_SIGN('#$box_target').fadeToggle();DOLLAR_SIGN('#$result_target').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
+      val jsCommand : String =  s"DOLLAR_SIGN('#$box_target').fadeIn();DOLLAR_SIGN('#$result_target').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
 
       logger.info(s"command is $jsCommand")
 
