@@ -261,6 +261,10 @@ a img {
   width: 97.1%;
   height: 100%;
 }
+.content-box pre {
+  margin: -45px 0px 0px 0px; /* remove somewhat invisible margin */
+  padding: 0;
+}
 .content-box:after {
   content: '';
   display: table;
