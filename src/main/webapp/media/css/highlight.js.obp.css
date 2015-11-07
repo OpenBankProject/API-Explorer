@@ -8,7 +8,7 @@
   color: #776977;
 }
 
-/* OBP Grey */
+/* OBP Green for attributes etc. */
 .hljs-variable,
 .hljs-template-variable,
 .hljs-attribute,
@@ -19,10 +19,10 @@
 .hljs-name,
 .hljs-selector-id,
 .hljs-selector-class {
-  color: #50B165;
+  color: #504854;
 }
 
-/* OBP Blue */
+/* OBP Blue for booleans etc. */
 .hljs-number,
 .hljs-meta,
 .hljs-built_in,
@@ -32,11 +32,11 @@
   color: #31B8CD;
 }
 
-/* OBP Green */
+/* OBP Green for string values  */
 .hljs-string,
 .hljs-symbol,
 .hljs-bullet {
-  color: #504854;
+  color: #50B165;
 }
 
 /* Atelier-Heath Blue */
