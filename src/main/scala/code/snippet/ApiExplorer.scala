@@ -405,11 +405,11 @@ class ApiExplorer extends Loggable {
       ".resource_verb_td [id]" #> s"resource_verb_td_${i.id}" & // Probably don't need this now
       ".url_caller [id]" #> s"url_caller_${i.id}" &
       // ".try_me_button [onclick]" #> s"$$(DOUBLE-QUOTE#url_caller_${i.id}DOUBLE-QUOTE).fadeToggle();".replaceAll("DOUBLE-QUOTE","""") &
-      ".result [id]" #> s"result_${i.id}" &
+      "@result [id]" #> s"result_${i.id}" &
       "@example_request_body [id]" #> s"example_request_body_${i.id}" &
       "@example_request_body [style]" #> s"display: ${displayRequestBody(i.verb)};" &
       //////
-      // The form field (on the left) is bound to the variable (urlToCall)
+      // The form field (on the left) is bound to the variable (requestUrl)
       // (However, updating the var here does not seem to update the form field value)
       // We provide a default value (i.url) and bind the user input to requestUrl. requestURL is available in the function process
       // text creates a text box and we can capture its input in requestUrl
@@ -421,9 +421,9 @@ class ApiExplorer extends Loggable {
       "@request_verb_input" #> text(i.verb, s => requestVerb = s, "type" -> "hidden", "id" -> s"request_verb_input_${i.id}") &
       "@resource_id_input" #> text(i.id.toString, s => resourceId = s, "type" -> "hidden", "id" -> s"resource_id_input_${i.id}") &
       // Replace the type=submit with Javascript that makes the ajax call.
+       "@success_response_body [id]" #> s"success_response_body_${i.id}" &
       // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
-      "@success_response_body [id]" #> s"success_response_body_${i.id}" &
-      ".call_button" #> ajaxSubmit(i.verb, process)
+      "@call_button" #> ajaxSubmit(i.verb, process)
     }
   }
 }

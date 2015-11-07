@@ -94,8 +94,17 @@
                         </ul>
                     </div>
                     <div class="content-box__input-box">
-                        <input type="text" class="default-input" value="OBP URL to call">
-                        <button class="default-button">POST</button>
+                        <form class="lift:form.ajax" id="form1">
+                            <!-- Attributes for these fields are replaced -->
+                            <input type="hidden" name="resource_id_input">
+                            <input type="hidden" name="request_verb_input" placeholder="GET, POST, PUT etc.">
+                            <!-- The url_to_call is populated at render (but it can be edited manually) -->
+                            <input type="text" name="request_url_input" class="default-input" placeholder="OBP URL to call">
+                            <button name="call_button" class="default-button">POST</button>
+                       </form>
+                    </div>
+                    <div name="result" class="content-box__info-box">
+                        <img src="./media/images/close-icon.png" alt="Close icon" class="content-box__close-icon">
                     </div>
                 </div>
             </div>
