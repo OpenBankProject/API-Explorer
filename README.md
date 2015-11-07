@@ -1,4 +1,5 @@
 Welcome to the OBP API Explorer
+===============================
 
 # ABOUT
 
@@ -12,7 +13,7 @@ This project is licensed under the AGPL V3 (see NOTICE) and a commercial license
 
 # SETUP
 
-The project is using sbt or Maven 2 as a build tool.
+The project is using sbt or Maven 3 as a build tool.
 See build.scala or pom.xml respectively for the dependencies.
 
 ----
@@ -50,6 +51,17 @@ Note: You may need to add the pluginGroup to the $HOME/.m2/settings.xml
 </settings>
 
 ---
+
+## Ubuntu
+
+If you use Ubuntu (or a derivate) and encrypted home directories (e.g. you have ~/.Private), you might run into the following error when the project is built:
+
+    uncaught exception during compilation: java.io.IOException
+    [ERROR] File name too long
+    [ERROR] two errors found
+    [DEBUG] Compilation failed (CompilerInterface)
+
+The current workaround is to move the project directory onto a different partition, e.g. under /opt/ .
 
 # PROPS FILE
 
