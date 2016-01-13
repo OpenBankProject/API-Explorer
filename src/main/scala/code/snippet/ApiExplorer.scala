@@ -96,12 +96,25 @@ class ApiExplorer extends Loggable {
 
   def showResources = {
 
+    val defaultVersion : String = "2.0.0"
+
     // Get the requested version from the url parameter and default if none
-    val apiVersionRequested = S.param("api-version").getOrElse("1.4.0")
+    val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
 
-    if (apiVersionRequested != "1.4.0") S.notice("Note: Only 1.4.0 is currently supported")
 
-    logger.info (s"API version requested is: $apiVersionRequested")
+    val supportedApiVersions = List ("1.2.1", "1.3.0", "1.4.0", "2.0.0")
+
+
+    val apiVersion : String = {
+      if (supportedApiVersions.contains(apiVersionRequested)) {
+        s"v$apiVersionRequested"
+      } else {
+        S.notice(s"Note: Requested version $apiVersionRequested is not currently supported. Set to v$defaultVersion")
+        s"v$defaultVersion"
+      }
+    }
+
+    logger.info (s"API version to use is: $apiVersion")
 
     // Get a list of resource docs from the API server
     // This will throw an exception if resource_docs key is not populated
@@ -110,7 +123,7 @@ class ApiExplorer extends Loggable {
 
     // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
     val resources = for {
-      r <- getResourceDocsJson.map(_.resource_docs).get
+      r <- getResourceDocsJson(apiVersion).map(_.resource_docs).get
     } yield ResourceDoc(id = r.operation_id, verb = r.request_verb, url = modifiedRequestUrl(r.request_url, presetBankId, presetAccountId), summary = r.summary, description = stringToNodeSeq(r.description), example_request_body = r.example_request_body)
 
     // Controls when we display the request body.
@@ -122,10 +135,6 @@ class ApiExplorer extends Loggable {
         case _ => "none"
       }
     }
-
-
-    // Constant
-    val apiVersion = "v1.4.0"
 
     var resourceId = ""
     var requestVerb = ""

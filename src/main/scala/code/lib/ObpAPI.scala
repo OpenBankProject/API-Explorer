@@ -127,8 +127,8 @@ object ObpAPI extends Loggable {
 
 
   // Returns Json containing Resource Docs
-  def getResourceDocsJson : Box[ResourceDocsJson] = {
-    ObpGet("/v1.4.0/resource-docs/obp").flatMap(_.extractOpt[ResourceDocsJson])
+  def getResourceDocsJson(apiVersion : String) : Box[ResourceDocsJson] = {
+    ObpGet(s"/$apiVersion/resource-docs/obp").flatMap(_.extractOpt[ResourceDocsJson])
   }
 
   /**
