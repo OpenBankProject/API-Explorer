@@ -407,6 +407,7 @@ class ApiExplorer extends Loggable {
     "#version *+" #> apiVersion &
     // replace the node identified by the class "resource" with the following
     // This creates the list of resources in the DOM
+    ".info-box__headline *" #> s"Explore the OBP API $apiVersion" &
     ".resource" #> resources.map { i =>
       ".content-box__headline *" #> i.summary &
       ".resource_summary [href]" #> s"#${i.id}" &

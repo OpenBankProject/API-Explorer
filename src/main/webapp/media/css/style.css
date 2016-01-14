@@ -861,3 +861,14 @@ td,
 th {
   padding: 0;
 }
+
+
+
+a.version {
+  font-size: 12px;
+  line-height: 22px;
+  color: #fff;
+  margin: 0 0 0 0;
+  letter-spacing: 0.2px;
+  text-decoration: none;
+}
