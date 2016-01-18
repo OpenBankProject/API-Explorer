@@ -315,6 +315,12 @@ a img {
   position: relative;
 }
 
+.content-box__available-since {
+  float: left;
+  width: 720px;
+  position: relative;
+}
+
 .default-input {
   margin: 2px 0 0 2px;
   padding: 13px 108px 9px 20px;
