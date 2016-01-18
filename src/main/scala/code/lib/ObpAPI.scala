@@ -128,7 +128,7 @@ object ObpAPI extends Loggable {
 
   // Returns Json containing Resource Docs
   def getResourceDocsJson(apiVersion : String) : Box[ResourceDocsJson] = {
-    ObpGet(s"/$apiVersion/resource-docs/obp").flatMap(_.extractOpt[ResourceDocsJson])
+    ObpGet(s"/v1.4.0/resource-docs/$apiVersion/obp").flatMap(_.extractOpt[ResourceDocsJson])
   }
 
   /**
@@ -839,11 +839,7 @@ object ObpJson {
   // Copied from OBP-API JSONFactory1_4_0
   // TODO: Import these and others from API jar file?
 
-  // Matches OBP-API representation of Resource Docs etc. Used to describe where an API call is implemented
-  case class ImplementedByJson (
-                                 version : String, // Short hand for the version e.g. "1_4_0" means Implementations1_4_0
-                                 function : String // The val / partial function that implements the call e.g. "getBranches"
-                                 )
+
 
 
   // Used to describe the OBP API calls for documentation and API discovery purposes
@@ -861,12 +857,28 @@ object ObpJson {
 
 
   // Internal representation of the ResourceDoc (may differ from the OBP API representation (for instance OBP representation does not have id)
+
+
+  // Used to describe where an API call is implemented (format from API)
+  case class ImplementedByJson (
+   version : String, // Short hand for the version e.g. "1_4_0" means Implementations1_4_0
+   function : String // The val / partial function that implements the call e.g. "getBranches
+  )
+
+  // Internal format (currently the same)
+  case class ImplementedBy (
+   version : String, // Short hand for the version e.g. "1_4_0" means Implementations1_4_0
+   function : String // The val / partial function that implements the call e.g. "getBranche
+  )
+
+
   case class ResourceDoc(id: String,
                          verb: String,
                          url: String,
                          summary: String,
                          description: NodeSeq,
-                         example_request_body: JValue)
+                         example_request_body: JValue,
+                         implementedBy: ImplementedBy)
 
 
   case class ResourceDocs (resourceDocs : List[ResourceDoc])

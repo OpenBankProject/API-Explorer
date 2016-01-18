@@ -1,7 +1,7 @@
 package code.snippet
 
 import _root_.net.liftweb._
-import code.lib.ObpJson.{BarebonesAccountJson, BarebonesAccountsJson, ResourceDoc}
+import code.lib.ObpJson.{ImplementedBy, BarebonesAccountJson, BarebonesAccountsJson, ResourceDoc}
 import code.lib._
 import net.liftweb.http.js.jquery.JqJsCmds.DisplayMessage
 
@@ -124,7 +124,15 @@ class ApiExplorer extends Loggable {
     // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
     val resources = for {
       r <- getResourceDocsJson(apiVersion).map(_.resource_docs).get
-    } yield ResourceDoc(id = r.operation_id, verb = r.request_verb, url = modifiedRequestUrl(r.request_url, presetBankId, presetAccountId), summary = r.summary, description = stringToNodeSeq(r.description), example_request_body = r.example_request_body)
+    } yield ResourceDoc(
+      id = r.operation_id,
+      verb = r.request_verb,
+      url = modifiedRequestUrl(r.request_url, presetBankId, presetAccountId),
+      summary = r.summary,
+      description = stringToNodeSeq(r.description),
+      example_request_body = r.example_request_body,
+      implementedBy = ImplementedBy(r.implemented_by.version, r.implemented_by.function)
+    )
 
     // Controls when we display the request body.
     def displayRequestBody(resourceVerb : String) = {
@@ -436,7 +444,8 @@ class ApiExplorer extends Loggable {
       // Replace the type=submit with Javascript that makes the ajax call.
        "@success_response_body [id]" #> s"success_response_body_${i.id}" &
       // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
-      "@call_button" #> ajaxSubmit(i.verb, process)
+      "@call_button" #> ajaxSubmit(i.verb, process) &
+      ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version}"
     }
   }
 }

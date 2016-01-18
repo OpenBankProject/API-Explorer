@@ -319,6 +319,8 @@ a img {
   float: left;
   width: 720px;
   position: relative;
+  color: #504854;
+  font-size: 8px;
 }
 
 .default-input {
