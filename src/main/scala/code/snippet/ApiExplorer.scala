@@ -417,7 +417,9 @@ class ApiExplorer extends Loggable {
     // This creates the list of resources in the DOM
     ".info-box__headline *" #> s"Explore the OBP API $apiVersion" &
     ".resource" #> resources.map { i =>
+      ".end-point-anchor [href]" #> s"#${i.id}" & // append the anchor to the current uurl
       ".content-box__headline *" #> i.summary &
+      ".content-box__headline [id]" #> i.id & // id for the anchor to find
       ".resource_summary [href]" #> s"#${i.id}" &
       ".resource_summary [name]" #> s"${i.id}" &
       // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)

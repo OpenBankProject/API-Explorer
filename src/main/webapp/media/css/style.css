@@ -880,3 +880,8 @@ a.version {
   letter-spacing: 0.2px;
   text-decoration: none;
 }
+
+
+a.end-point-anchor {
+  text-decoration: none;
+}
