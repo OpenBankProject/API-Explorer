@@ -4,6 +4,7 @@ import _root_.net.liftweb._
 import code.lib.ObpJson.{ImplementedBy, BarebonesAccountJson, BarebonesAccountsJson, ResourceDoc}
 import code.lib._
 import net.liftweb.http.js.jquery.JqJsCmds.DisplayMessage
+import net.liftweb.util.Props
 
 //import code.snippet.CallUrlForm._
 import net.liftweb.http.{SHtml, S}
@@ -30,6 +31,16 @@ import net.liftweb.json.Serialization.writePretty
 import code.lib.ObpAPI.{getResourceDocsJson, allBanks, allAccountsAtOneBank}
 
 import net.liftweb.http.CurrentReq
+
+
+case class Bank(
+                 id : String,
+                 short_name : String,
+                 full_name : String,
+                 logo : String,
+                 website : String)
+
+
 
 
 /*
@@ -213,14 +224,27 @@ class ApiExplorer extends Loggable {
     }
 
 
-
-
-
     val url = s"${CurrentReq.value.uri}?version=${apiVersionRequested}"
 
 
+    //val banks = allBanks
 
-    val banks = allBanks
+    // In case we want to only show the "active" banks in a sandbox.
+    val showBankIdsFromProps = Props.get("showBankIds", "").split(",").toList
+
+    // Filter out empty items
+    val showBankIds = showBankIdsFromProps.filter(i => i.length > 0) // List ("rbs-xx-1")
+
+    // Filter out banks if we have a list of ones to use, else use all of them.
+    val banksFiltered = for {
+      a <- allBanks.toList
+      b <- a.bankJsons
+    if (showBankIds.length == 0  || showBankIds.contains(b.id.get))
+    } yield Bank (b.id.get, b.short_name.getOrElse(""), b.full_name.getOrElse(""), b.logo.getOrElse(""), b.website.getOrElse(""))
+
+
+    //logger.info(s"here we are    ${banksFiltered.isEmpty}")
+
 
     // TODO dehardcode the redirect path.
 
@@ -252,7 +276,12 @@ class ApiExplorer extends Loggable {
 
     // Get a list of tuples List(("bank short name", "id"),("bank two", "id2")) to populate the drop down select list.
     // Could we write this in a way such that if there are no banks the doBankSelect is not run?
-    val bankOptions = ("", "Select Bank") :: banks.map(b => b.bankJsons.map(bj => (bj.id.getOrElse(""), bj.short_name.getOrElse("") + " (" + bj.id.getOrElse("") + ")"))).getOrElse(List(("", "No Banks")))
+    //val bankOptions = ("", "Select Bank") :: banks.map(b => b.bankJsons.map(bj => (bj.id.getOrElse(""), bj.short_name.getOrElse("") + " (" + bj.id.getOrElse("") + ")"))).getOrElse(List(("", "No Banks")))
+
+    val bankOptions = ("", "Select Bank") :: banksFiltered.map(b => (b.id, b.short_name + " ("  + b.id + ")"))
+
+
+
 
     // TODO create BankId case class like in the API
     type BankID = String

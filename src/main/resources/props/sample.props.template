@@ -30,3 +30,8 @@ base_url=FILL_ME_IN
 #if you want to change the port when running via the command line, use "mvn -Djetty.port=8082 jetty:run" instead
 dev.port=8082
 
+
+# Comma separated list of Banks IDs we want to show in drop down list. If not present or empty all available banks will be shown.
+#showBankIds=ub-ni-1,ub-roi-1,bnpparibas-xx-26
+#showBankIds=
+
