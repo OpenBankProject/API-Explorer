@@ -50,6 +50,10 @@ class ApiExplorer extends Loggable {
 
 
 
+  val listAllBanks = S.param("list-all-banks").getOrElse("false").toBoolean
+  logger.info(s"all_banks in url param is $listAllBanks")
+
+
   val presetBankId = S.param("bank_id").getOrElse("")
   logger.info(s"bank_id in url param is $presetBankId")
 
@@ -224,7 +228,7 @@ class ApiExplorer extends Loggable {
     }
 
 
-    val url = s"${CurrentReq.value.uri}?version=${apiVersionRequested}"
+    val url = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}"
 
 
     //val banks = allBanks
@@ -236,14 +240,12 @@ class ApiExplorer extends Loggable {
     val showBankIds = showBankIdsFromProps.filter(i => i.length > 0) // List ("rbs-xx-1")
 
     // Filter out banks if we have a list of ones to use, else use all of them.
+    // Also, show all if requested by url parameter
     val banksFiltered = for {
       a <- allBanks.toList
       b <- a.bankJsons
-    if (showBankIds.length == 0  || showBankIds.contains(b.id.get))
+    if (showBankIds.length == 0  || showBankIds.contains(b.id.get)  || listAllBanks)
     } yield Bank (b.id.get, b.short_name.getOrElse(""), b.full_name.getOrElse(""), b.logo.getOrElse(""), b.website.getOrElse(""))
-
-
-    //logger.info(s"here we are    ${banksFiltered.isEmpty}")
 
 
     // TODO dehardcode the redirect path.
