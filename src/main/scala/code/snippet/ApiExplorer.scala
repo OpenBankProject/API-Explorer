@@ -231,28 +231,25 @@ class ApiExplorer extends Loggable {
 
     val url = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}"
 
-
-    //val banks = allBanks
-
-    // In case we want to only show the "active" banks in a sandbox.
+    // So we can highlight or exclusively show the "active" banks in a sandbox.
     // Filter out empty string items
     val featuredBankIds = Props.get("featuredBankIds", "").split(",").toList.filter(i => i.length > 0)
 
-    // Filter out banks if we have a list of ones to use, else use all of them.
-    // Also, show all if requested by url parameter
 
 
     val banks = for {
       a <- allBanks.toList
       b <- a.bankJsons
-      // if featuredBankIds.length == 0  || featuredBankIds.contains(b.id.get)  || listAllBanks
+    // This filtering could be turned on/off by Props setting
+    // Filter out banks if we have a list of ones to use, else use all of them.
+    // Also, show all if requested by url parameter
+    // if featuredBankIds.length == 0  || featuredBankIds.contains(b.id.get)  || listAllBanks
     } yield Bank (b.id.get,
                   b.short_name.getOrElse(""),
                   b.full_name.getOrElse(""),
                   b.logo.getOrElse(""),
                   b.website.getOrElse(""),
                   featuredBankIds.contains(b.id.get)) // Add a flag to say if this bank is featured.
-
 
     // TODO dehardcode the redirect path.
 
@@ -283,24 +280,19 @@ class ApiExplorer extends Loggable {
 
 
     // Get a list of tuples List(("bank short name", "id"),("bank two", "id2")) to populate the drop down select list.
-
     // TODO Add this again if banks is empty getOrElse(List(("", "No Banks")))
-
     //val bankOptions = ("", "Select Bank") :: banks.map(b => b.bankJsons.map(bj => (bj.id.getOrElse(""), bj.short_name.getOrElse("") + " (" + bj.id.getOrElse("") + ")"))).getOrElse(List(("", "No Banks")))
 
 
     val selectBank = ("", "Select Bank")
 
-    def highlightFeatured(value: Boolean) : String = if (value) " * " else ""
+    def highlightFeatured(value: Boolean) : String = if (value) " *" else ""
 
-    // TODO nicer way to create * from true?
     val bankOptions = banks.map(b => (b.id, b.shortName + " ("  + b.id + ")" + highlightFeatured(b.isFeatured) )).sortBy(a => (a._2, a._1))
 
 
     val selectBankOptions = selectBank :: bankOptions
-
-
-
+    
 
     // TODO create BankId case class like in the API
     type BankID = String
