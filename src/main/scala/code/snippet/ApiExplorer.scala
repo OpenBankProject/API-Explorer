@@ -236,8 +236,8 @@ class ApiExplorer extends Loggable {
     // In case we want to only show the "active" banks in a sandbox.
     val showBankIdsFromProps = Props.get("showBankIds", "").split(",").toList
 
-    // Filter out empty items
-    val showBankIds = showBankIdsFromProps.filter(i => i.length > 0) // List ("rbs-xx-1")
+    // Filter out empty string items
+    val showBankIds = showBankIdsFromProps.filter(i => i.length > 0)
 
     // Filter out banks if we have a list of ones to use, else use all of them.
     // Also, show all if requested by url parameter
@@ -277,10 +277,14 @@ class ApiExplorer extends Loggable {
 
 
     // Get a list of tuples List(("bank short name", "id"),("bank two", "id2")) to populate the drop down select list.
-    // Could we write this in a way such that if there are no banks the doBankSelect is not run?
+
+    // TODO Add this again if banks is empty getOrElse(List(("", "No Banks")))
+
     //val bankOptions = ("", "Select Bank") :: banks.map(b => b.bankJsons.map(bj => (bj.id.getOrElse(""), bj.short_name.getOrElse("") + " (" + bj.id.getOrElse("") + ")"))).getOrElse(List(("", "No Banks")))
 
-    val bankOptions = ("", "Select Bank") :: banksFiltered.map(b => (b.id, b.short_name + " ("  + b.id + ")"))
+
+
+    val bankOptions = ("", "Select Bank") :: banksFiltered.map(b => (b.id, b.short_name + " ("  + b.id + ")")).sortBy(a => (a._2, a._1)) // Sort by the field the user sees
 
 
 
@@ -311,7 +315,7 @@ class ApiExplorer extends Loggable {
         } yield (accountId, label)
       }
 
-      selectAccount :: options
+      selectAccount :: options.sortBy(i => (i._2, i._1)) // Sort by the field the user sees
     }
 
     def getViewOptions : List[(String,String)] = {
@@ -335,7 +339,7 @@ class ApiExplorer extends Loggable {
         } yield (viewId, shortName)
       }
 
-      selectOne :: options
+      selectOne :: options.sortBy(i => (i._2, i._1)) // Sort by the field the user sees
     }
 
 
@@ -356,7 +360,7 @@ class ApiExplorer extends Loggable {
         } yield (counterparty.id, counterparty.holder.name)
       }
 
-      selectOne :: options
+      selectOne :: options.sortBy(i => (i._2, i._1)) // Sort by the field the user sees
     }
 
 
@@ -378,7 +382,7 @@ class ApiExplorer extends Loggable {
         } yield (transaction.id, s"${transaction.other_account.holder.name} ${transaction.details.value.amount}")
       }
 
-      selectOne :: options
+      selectOne :: options.sortBy(i => (i._2, i._1)) // Sort by the field the user sees
     }
 
 
