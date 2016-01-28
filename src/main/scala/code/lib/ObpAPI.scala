@@ -44,7 +44,7 @@ object ObpAPI extends Loggable {
   def allBanks : Box[BanksJson]= {
     allBanksVar.get match {
       case Full(a) => Full(a)
-      case _ => ObpGet("/v1.2/banks").flatMap(_.extractOpt[BanksJson])
+      case _ => ObpGet("/v1.2/banks").flatMap(_.extractOpt[BanksJson]) // TODO use more recent API version
     }
   }
   

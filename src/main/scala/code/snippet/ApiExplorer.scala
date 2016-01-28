@@ -35,10 +35,11 @@ import net.liftweb.http.CurrentReq
 
 case class Bank(
                  id : String,
-                 short_name : String,
-                 full_name : String,
+                 shortName : String,
+                 fullName : String,
                  logo : String,
-                 website : String)
+                 website : String,
+                 isFeatured : Boolean)
 
 
 
@@ -234,18 +235,23 @@ class ApiExplorer extends Loggable {
     //val banks = allBanks
 
     // In case we want to only show the "active" banks in a sandbox.
-    val showBankIdsFromProps = Props.get("showBankIds", "").split(",").toList
-
     // Filter out empty string items
-    val showBankIds = showBankIdsFromProps.filter(i => i.length > 0)
+    val featuredBankIds = Props.get("featuredBankIds", "").split(",").toList.filter(i => i.length > 0)
 
     // Filter out banks if we have a list of ones to use, else use all of them.
     // Also, show all if requested by url parameter
-    val banksFiltered = for {
+
+
+    val banks = for {
       a <- allBanks.toList
       b <- a.bankJsons
-    if (showBankIds.length == 0  || showBankIds.contains(b.id.get)  || listAllBanks)
-    } yield Bank (b.id.get, b.short_name.getOrElse(""), b.full_name.getOrElse(""), b.logo.getOrElse(""), b.website.getOrElse(""))
+      // if featuredBankIds.length == 0  || featuredBankIds.contains(b.id.get)  || listAllBanks
+    } yield Bank (b.id.get,
+                  b.short_name.getOrElse(""),
+                  b.full_name.getOrElse(""),
+                  b.logo.getOrElse(""),
+                  b.website.getOrElse(""),
+                  featuredBankIds.contains(b.id.get)) // Add a flag to say if this bank is featured.
 
 
     // TODO dehardcode the redirect path.
@@ -283,8 +289,15 @@ class ApiExplorer extends Loggable {
     //val bankOptions = ("", "Select Bank") :: banks.map(b => b.bankJsons.map(bj => (bj.id.getOrElse(""), bj.short_name.getOrElse("") + " (" + bj.id.getOrElse("") + ")"))).getOrElse(List(("", "No Banks")))
 
 
+    val selectBank = ("", "Select Bank")
 
-    val bankOptions = ("", "Select Bank") :: banksFiltered.map(b => (b.id, b.short_name + " ("  + b.id + ")")).sortBy(a => (a._2, a._1)) // Sort by the field the user sees
+    def highlightFeatured(value: Boolean) : String = if (value) " * " else ""
+
+    // TODO nicer way to create * from true?
+    val bankOptions = banks.map(b => (b.id, b.shortName + " ("  + b.id + ")" + highlightFeatured(b.isFeatured) )).sortBy(a => (a._2, a._1))
+
+
+    val selectBankOptions = selectBank :: bankOptions
 
 
 
@@ -389,7 +402,7 @@ class ApiExplorer extends Loggable {
 
 
     // Drop down box to select bank. Selected item taken from url param.
-    def doBankSelect(in: NodeSeq) = ajaxSelect(bankOptions,
+    def doBankSelect(in: NodeSeq) = ajaxSelect(selectBankOptions,
       Full(presetBankId),
       v => onBankChange(v))
 
