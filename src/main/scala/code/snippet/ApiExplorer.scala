@@ -51,6 +51,7 @@ class ApiExplorer extends Loggable {
 
 
 
+
   val listAllBanks = S.param("list-all-banks").getOrElse("false").toBoolean
   logger.info(s"all_banks in url param is $listAllBanks")
 
@@ -132,11 +133,13 @@ class ApiExplorer extends Loggable {
 
     logger.info (s"API version to use is: $apiVersion")
 
+    // Use to show the developer the current base version url
+    val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}/$apiVersion"
+
+
     // Get a list of resource docs from the API server
     // This will throw an exception if resource_docs key is not populated
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
-
-
     // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
     val resources = for {
       r <- getResourceDocsJson(apiVersion).map(_.resource_docs).get
@@ -231,7 +234,7 @@ class ApiExplorer extends Loggable {
 
     val url = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}"
 
-    // So we can highlight or exclusively show the "active" banks in a sandbox.
+    // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
     // Filter out empty string items
     val featuredBankIds = Props.get("featuredBankIds", "").split(",").toList.filter(i => i.length > 0)
 
@@ -455,7 +458,9 @@ class ApiExplorer extends Loggable {
     "#version *+" #> apiVersion &
     // replace the node identified by the class "resource" with the following
     // This creates the list of resources in the DOM
-    ".info-box__headline *" #> s"Explore the OBP API $apiVersion" &
+    ".info-box__headline *" #> s"Explore the OBP API" &
+    "@version_path *" #> s"$baseVersionUrl" &
+    "@version_path [href]" #> s"$baseVersionUrl" &
     ".resource" #> resources.map { i =>
       ".end-point-anchor [href]" #> s"#${i.id}" & // append the anchor to the current uurl
       ".content-box__headline *" #> i.summary &
