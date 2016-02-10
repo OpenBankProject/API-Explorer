@@ -850,7 +850,12 @@ object ObpJson {
                              description: String,      // Description of call in markdown
                              example_request_body: JValue,  // An example request body
                              success_response_body: JValue, // Success response body
-                             implemented_by: ImplementedByJson)
+                             implemented_by: ImplementedByJson,
+                             is_core : Boolean,
+                             is_psd2 : Boolean,
+                             is_obwg : Boolean, // This may be tracking isCore
+                             tags : List[String]
+                            )
 
   case class ResourceDocsJson (resource_docs : List[ResourceDocJson])
   ///////////////////////////////////////////
@@ -878,7 +883,11 @@ object ObpJson {
                          summary: String,
                          description: NodeSeq,
                          example_request_body: JValue,
-                         implementedBy: ImplementedBy)
+                         implementedBy: ImplementedBy,
+                         isCore: Boolean,
+                         isPSD2: Boolean,
+                         isOBWG: Boolean,
+                         tags: List[String])
 
 
   case class ResourceDocs (resourceDocs : List[ResourceDoc])

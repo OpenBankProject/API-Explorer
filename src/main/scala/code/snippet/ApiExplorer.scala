@@ -6,6 +6,8 @@ import code.lib._
 import net.liftweb.http.js.jquery.JqJsCmds.DisplayMessage
 import net.liftweb.util.Props
 
+import scala.collection.immutable.Nil
+
 //import code.snippet.CallUrlForm._
 import net.liftweb.http.{SHtml, S}
 
@@ -70,6 +72,41 @@ class ApiExplorer extends Loggable {
 
   val presetTransactionId = S.param("transaction_id").getOrElse("")
   logger.info(s"transaction_id in url param is $presetTransactionId")
+
+
+
+
+
+  def stringToOptBoolean (x: String) : Option[Boolean] = x.toLowerCase match {
+    case "true" | "yes" | "1" | "-1" => Some(true)
+    case "false" | "no" | "0" => Some(false)
+    case _ => Empty
+  }
+
+  val showCore: Option[Boolean] = for {
+    x <- S.param("core")
+    y <- stringToOptBoolean(x)
+  } yield y
+
+  logger.info(s"showCore is $showCore")
+
+  val showPSD2: Option[Boolean] = for {
+    x <- S.param("psd2")
+    y <- stringToOptBoolean(x)
+  } yield y
+
+
+  logger.info(s"showPSD2 is $showPSD2")
+
+
+  val showOBWG: Option[Boolean] = for {
+    x <- S.param("obwg")
+    y <- stringToOptBoolean(x)
+  } yield y
+
+
+  logger.info(s"showOBWG is $showOBWG")
+
 
 
   def stringToNodeSeq(html : String) : NodeSeq = {
@@ -141,7 +178,7 @@ class ApiExplorer extends Loggable {
     // This will throw an exception if resource_docs key is not populated
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
     // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
-    val resources = for {
+    val allResources = for {
       r <- getResourceDocsJson(apiVersion).map(_.resource_docs).get
     } yield ResourceDoc(
       id = r.operation_id,
@@ -150,8 +187,61 @@ class ApiExplorer extends Loggable {
       summary = r.summary,
       description = stringToNodeSeq(r.description),
       example_request_body = r.example_request_body,
-      implementedBy = ImplementedBy(r.implemented_by.version, r.implemented_by.function)
+      implementedBy = ImplementedBy(r.implemented_by.version, r.implemented_by.function),
+      isCore = r.is_core,
+      isPSD2 = r.is_psd2,
+      isOBWG = r.is_obwg,
+      tags = r.tags
     )
+
+
+    // Filter
+    val filteredResources1 : List[ResourceDoc] = showCore match {
+      case Some(true) => allResources.filter(x => x.isCore == true)
+      case Some(false) => allResources.filter(x => x.isCore == false)
+      case _ => allResources
+    }
+
+    val filteredResources2 : List[ResourceDoc] = showPSD2 match {
+      case Some(true) => filteredResources1.filter(x => x.isPSD2 == true)
+      case Some(false) => filteredResources1.filter(x => x.isPSD2 == false)
+      case _ => filteredResources1
+    }
+
+    val filteredResources3 : List[ResourceDoc] = showOBWG match {
+      case Some(true) => filteredResources2.filter(x => x.isOBWG == true)
+      case Some(false) => filteredResources2.filter(x => x.isOBWG == false)
+      case _ => filteredResources2
+    }
+
+    val resources = filteredResources3
+
+
+
+
+    val showingOBPMessage : String = showCore match {
+      case Some(true) => "OBP Core"
+      case Some(false) => "OBP Non-Core"
+      case _ => ""
+    }
+
+    val showingPSD2Message : String = showPSD2 match {
+      case Some(true) => "PSD2"
+      case Some(false) => "Non PSD2"
+      case _ => ""
+    }
+
+    val showingOBWGMessage : String = showOBWG match {
+      case Some(true) => "OBWG"
+      case Some(false) => "Non OBWG"
+      case _ => ""
+    }
+
+    val showingMessage : String = s"$showingOBPMessage $showingPSD2Message $showingOBWGMessage (${resources.length})".trim()
+
+    logger.info (s"showingMessage is: $showingMessage")
+
+
 
     // Controls when we display the request body.
     def displayRequestBody(resourceVerb : String) = {
@@ -458,7 +548,7 @@ class ApiExplorer extends Loggable {
     "#version *+" #> apiVersion &
     // replace the node identified by the class "resource" with the following
     // This creates the list of resources in the DOM
-    ".info-box__headline *" #> s"Explore the OBP API" &
+    ".info-box__headline *" #> s"Explore the OBP API $showingMessage"  &
     "@version_path *" #> s"$baseVersionUrl" &
     "@version_path [href]" #> s"$baseVersionUrl" &
     ".resource" #> resources.map { i =>
