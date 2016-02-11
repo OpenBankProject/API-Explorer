@@ -108,6 +108,14 @@ class ApiExplorer extends Loggable {
   logger.info(s"showOBWG is $showOBWG")
 
 
+  val showString = showCore.map(i => s"core=$showCore&").toString + showPSD2.map(i => s"psd2=$showPSD2").toString
+
+
+  val showParams = s"&core=${showCore.getOrElse("")}&psd2=${showPSD2.getOrElse("")}&obwg=${showOBWG.getOrElse("")}"
+
+  println(showParams)
+
+
 
   def stringToNodeSeq(html : String) : NodeSeq = {
     scala.xml.XML.loadString("<div>" + html + "</div>")
@@ -322,7 +330,7 @@ class ApiExplorer extends Loggable {
     }
 
 
-    val url = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}"
+    val url = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${showParams}"
 
     // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
     // Filter out empty string items
