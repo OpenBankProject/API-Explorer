@@ -242,8 +242,19 @@ class ApiExplorer extends Loggable {
       case _ => ""
     }
 
+    // Headline we display
     val showingMessage : String = s"$oBPMessage $psd2Message $obwgMessage APIs (${resources.length})".trim()
     logger.info (s"showingMessage is: $showingMessage")
+
+    // Used to show / hide the Views selector
+    val displayViews = if (showCore.getOrElse(false) || showOBWG.getOrElse(false)) {
+      logger.info("not show views drop down")
+      "none"
+    } else {
+      logger.info("show views drop down")
+      "block"
+    }
+
 
 
 
@@ -555,6 +566,7 @@ class ApiExplorer extends Loggable {
     ".info-box__headline *" #> s"$showingMessage"  &
     "@version_path *" #> s"$baseVersionUrl" &
     "@version_path [href]" #> s"$baseVersionUrl" &
+    "@views_box [style]" #> s"display: $displayViews;" &
     ".resource" #> resources.map { i =>
       ".end-point-anchor [href]" #> s"#${i.id}" & // append the anchor to the current uurl
       ".content-box__headline *" #> i.summary &
