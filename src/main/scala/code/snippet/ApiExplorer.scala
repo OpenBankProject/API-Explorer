@@ -224,29 +224,25 @@ class ApiExplorer extends Loggable {
 
     val resources = filteredResources3
 
-
-
-
-    val showingOBPMessage : String = showCore match {
-      case Some(true) => "OBP Core"
-      case Some(false) => "OBP Non-Core"
+    val oBPMessage : String = showCore match {
+      case Some(true) => "Core"
+      case Some(false) => "Non-Core"
       case _ => ""
     }
 
-    val showingPSD2Message : String = showPSD2 match {
-      case Some(true) => "PSD2"
+    val psd2Message : String = showPSD2 match {
+      case Some(true) => "Possible PSD2"
       case Some(false) => "Non PSD2"
       case _ => ""
     }
 
-    val showingOBWGMessage : String = showOBWG match {
-      case Some(true) => "OBWG"
+    val obwgMessage : String = showOBWG match {
+      case Some(true) => "OBWG Demo"
       case Some(false) => "Non OBWG"
       case _ => ""
     }
 
-    val showingMessage : String = s"$showingOBPMessage $showingPSD2Message $showingOBWGMessage (${resources.length})".trim()
-
+    val showingMessage : String = s"$oBPMessage $psd2Message $obwgMessage APIs (${resources.length})".trim()
     logger.info (s"showingMessage is: $showingMessage")
 
 
@@ -556,7 +552,7 @@ class ApiExplorer extends Loggable {
     "#version *+" #> apiVersion &
     // replace the node identified by the class "resource" with the following
     // This creates the list of resources in the DOM
-    ".info-box__headline *" #> s"Explore the OBP API $showingMessage"  &
+    ".info-box__headline *" #> s"$showingMessage"  &
     "@version_path *" #> s"$baseVersionUrl" &
     "@version_path [href]" #> s"$baseVersionUrl" &
     ".resource" #> resources.map { i =>
