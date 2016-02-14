@@ -224,29 +224,49 @@ class ApiExplorer extends Loggable {
 
     val resources = filteredResources3
 
-    val oBPMessage : String = showCore match {
-      case Some(true) => "Core"
-      case Some(false) => "Non-Core"
-      case _ => ""
+
+    // Headline and Description of the search
+    val (catalogHeadline, catalogDescription) = List(showCore, showOBWG, showPSD2)  match {
+      case List(Some(true), Some(true), Some(true)) => ("Intersection of OBP Core, UK Open Banking and PSD2",
+        "API calls that are common to the three catalogs")
+
+      case List(Some(false), None, None) => ("Non-Core OBP",
+        "These calls don't assume the owner of the account is accessing the account related resources (so they support accountant, auditor, public, admin access) " +
+          "Meta data, data sharing, data redaction and entitlements is included. ")
+
+      case List(None, None, None) => ("Full OBP",
+        "All available API calls." +
+          "Includes the calls that assume account owner access plus calls that require an explicit view.")
+
+      case List(Some(true), None, None) => ("Core OBP",
+        "A selection of API calls easy for banks to support: " +
+          "Customer data (accounts, transactions etc.) is provided only from the perspective of the account owner. " +
+          "Meta data, data sharing, data redaction and entitlements are not included. " +
+          "Branches, ATMs and Products are included.")
+
+      case List(None, Some(true), None) => ("UK Open Banking",
+        "A suggested set of calls covering customer account and transaction data, payments and some of the bank's related open data. " +
+          "Meta data, data sharing (accountant views), data redaction and entitlements are not included. ")
+
+      case List(None,  None, Some(true)) => ("PSD2",
+        "API calls to support customer account and transaction history, payments and pricing transparency.")
+
+      case _ => ("APIs", "")
     }
 
-    val psd2Message : String = showPSD2 match {
-      case Some(true) => "Possible PSD2"
-      case Some(false) => "Non PSD2"
-      case _ => ""
-    }
 
-    val obwgMessage : String = showOBWG match {
-      case Some(true) => "OBWG Demo"
-      case Some(false) => "Non OBWG"
-      case _ => ""
-    }
+    logger.info (s"catalogHeadline is: $catalogHeadline")
+    logger.info (s"catalogDescription is: $catalogDescription")
 
-    // Headline we display
-    val showingMessage : String = s"$oBPMessage $psd2Message $obwgMessage APIs (${resources.length})".trim()
-    logger.info (s"showingMessage is: $showingMessage")
+
+
+    // Headline we display including count of APIs
+    val headline : String = s"$catalogHeadline APIs (${resources.length})".trim()
+    logger.info (s"showingMessage is: $headline")
+
 
     // Used to show / hide the Views selector
+    // TODO disable instead of hiding
     val displayViews = if (showCore.getOrElse(false) || showOBWG.getOrElse(false)) {
       logger.info("not show views drop down")
       "none"
@@ -314,7 +334,7 @@ class ApiExplorer extends Loggable {
           case "POST" => ObpPost(urlWithVersion, json)
           case "PUT" => ObpPut(urlWithVersion, json)
           case _ => {
-            val failMsg = s"Live Docs says: Unsupported resourceVerb: $resourceVerb. Url requested was: $url"
+            val failMsg = s"API Explorer says: Unsupported resourceVerb: $resourceVerb. Url requested was: $url"
             logger.warn(failMsg)
             Failure(failMsg)
           }
@@ -563,10 +583,11 @@ class ApiExplorer extends Loggable {
     "#version *+" #> apiVersion &
     // replace the node identified by the class "resource" with the following
     // This creates the list of resources in the DOM
-    ".info-box__headline *" #> s"$showingMessage"  &
+    ".info-box__headline *" #> s"$headline"  &
     "@version_path *" #> s"$baseVersionUrl" &
     "@version_path [href]" #> s"$baseVersionUrl" &
     "@views_box [style]" #> s"display: $displayViews;" &
+    ".info-box__about_selected *" #> s"$catalogDescription" &
     ".resource" #> resources.map { i =>
       ".end-point-anchor [href]" #> s"#${i.id}" & // append the anchor to the current uurl
       ".content-box__headline *" #> i.summary &

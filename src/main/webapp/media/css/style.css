@@ -165,10 +165,26 @@ a img {
   letter-spacing: 0.5px;
 }
 
+.info-box__about_selected {
+  font-weight: 300;
+  font-size: 25px;
+  color: #fff;
+  line-height: 29px;
+  margin: 0 0 0 0;
+  padding: 21px 0 8px 0;
+  letter-spacing: 0.5px;
+}
+
+
 .text-wrapper {
   float: left;
   width: 33%;
   padding: 0 0 27px 0;
+  font-size: 12px;
+  line-height: 22px;
+  color: #fff;
+  margin: 0 0 0 0;
+  letter-spacing: 0.2px;
 }
 .text-wrapper:nth-child(3) {
   text-align: center;
