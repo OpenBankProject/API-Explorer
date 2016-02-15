@@ -231,25 +231,23 @@ class ApiExplorer extends Loggable {
         "API calls that are common to the three catalogs")
 
       case List(Some(false), None, None) => ("Non-Core OBP",
-        "These calls don't assume the owner of the account is accessing the account related resources (so they support accountant, auditor, public, admin access) " +
+        "These APIs don't assume the owner of the account is accessing the account related resources (so they support accountant, auditor, public, admin access) " +
           "Meta data, data sharing, data redaction and entitlements is included. ")
 
-      case List(None, None, None) => ("Full OBP",
-        "All available API calls." +
-          "Includes the calls that assume account owner access plus calls that require an explicit view.")
+      case List(None, None, None) => ("OBP",
+        "All available API calls.")
 
       case List(Some(true), None, None) => ("Core OBP",
-        "A selection of API calls easy for banks to support: " +
+        "This core set of APIs is chosen to support common customer facing applications: " +
           "Customer data (accounts, transactions etc.) is provided only from the perspective of the account owner. " +
           "Meta data, data sharing, data redaction and entitlements are not included. " +
           "Branches, ATMs and Products are included.")
 
       case List(None, Some(true), None) => ("UK Open Banking",
-        "A suggested set of calls covering customer account and transaction data, payments and some of the bank's related open data. " +
-          "Meta data, data sharing (accountant views), data redaction and entitlements are not included. ")
+        "These APIs support customer account and transaction data (from the perspective of the account holder), payments and some of the bank's related open data. ")
 
       case List(None,  None, Some(true)) => ("PSD2",
-        "API calls to support customer account and transaction history, payments and pricing transparency.")
+        "These APIs support customer account and transaction history, payments and pricing transparency.")
 
       case _ => ("APIs", "")
     }
