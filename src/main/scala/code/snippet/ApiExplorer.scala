@@ -235,16 +235,15 @@ class ApiExplorer extends Loggable {
           "Meta data, data sharing, data redaction and entitlements is included. ")
 
       case List(None, None, None) => ("OBP",
-        "All available API calls.")
+        "These APIs support the full range of functionality including: Transaction history, payments, counterparty and transaction metadata, delegated account access, data redaction and entitlements.")
 
       case List(Some(true), None, None) => ("Core OBP",
-        "This core set of APIs is chosen to support common customer facing applications: " +
+        "This core set of APIs is chosen to support common customer facing applications that rely on existing core banking services only. " +
           "Customer data (accounts, transactions etc.) is provided only from the perspective of the account owner. " +
-          "Meta data, data sharing, data redaction and entitlements are not included. " +
-          "Branches, ATMs and Products are included.")
+          "Bank Branches, ATMs and Products are available too.")
 
       case List(None, Some(true), None) => ("UK Open Banking",
-        "These APIs support customer account and transaction data (from the perspective of the account holder), payments and some of the bank's related open data. ")
+        "These APIs support customer account and transaction data (from the perspective of the account holder), payments and some of the bank's open data too. ")
 
       case List(None,  None, Some(true)) => ("PSD2",
         "These APIs support customer account and transaction history, payments and pricing transparency.")
