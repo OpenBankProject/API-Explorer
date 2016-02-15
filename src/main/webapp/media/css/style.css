@@ -116,6 +116,25 @@ a img {
 .breadcrumbs__row {
   padding: 0;
   margin: 0;
+  float: left;
+
+  font-size: 12px;
+  line-height: 16px;
+  color: #fff;
+
+}
+
+.version_path {
+  display: inline-block;
+  float: right;
+  padding: 14px 2px 12px 2px;
+
+  margin: 0 0 0 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: #fff;
+  letter-spacing: 0.2px;
+  text-decoration: none;
 }
 
 .breadcrumbs__list {
@@ -167,11 +186,11 @@ a img {
 
 .info-box__about_selected {
   font-weight: 300;
-  font-size: 25px;
+  font-size: 20px;
   color: #fff;
   line-height: 29px;
   margin: 0 0 0 0;
-  padding: 21px 0 8px 0;
+  padding: 5px 0 8px 0;
   letter-spacing: 0.5px;
 }
 

@@ -52,8 +52,6 @@ Present a list of OBP resource URLs
 class ApiExplorer extends Loggable {
 
 
-
-
   val listAllBanks = S.param("list-all-banks").getOrElse("false").toBoolean
   logger.info(s"all_banks in url param is $listAllBanks")
 
@@ -74,9 +72,6 @@ class ApiExplorer extends Loggable {
   logger.info(s"transaction_id in url param is $presetTransactionId")
 
 
-
-
-
   def stringToOptBoolean (x: String) : Option[Boolean] = x.toLowerCase match {
     case "true" | "yes" | "1" | "-1" => Some(true)
     case "false" | "no" | "0" => Some(false)
@@ -95,15 +90,12 @@ class ApiExplorer extends Loggable {
     y <- stringToOptBoolean(x)
   } yield y
 
-
   logger.info(s"showPSD2 is $showPSD2")
-
 
   val showOBWG: Option[Boolean] = for {
     x <- S.param("obwg")
     y <- stringToOptBoolean(x)
   } yield y
-
 
   logger.info(s"showOBWG is $showOBWG")
 
@@ -178,8 +170,17 @@ class ApiExplorer extends Loggable {
 
     logger.info (s"API version to use is: $apiVersion")
 
+
+
+    // To link to API home page (this is duplicated in OAuthClient)
+    val baseUrl = Props.get("api_hostname", S.hostName)
+
+
     // Use to show the developer the current base version url
     val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}/$apiVersion"
+
+
+
 
 
     // Get a list of resource docs from the API server
@@ -235,7 +236,7 @@ class ApiExplorer extends Loggable {
           "Meta data, data sharing, data redaction and entitlements is included. ")
 
       case List(None, None, None) => ("OBP",
-        "These APIs support the full range of functionality including: Transaction history, payments, counterparty and transaction metadata, delegated account access, data redaction and entitlements.")
+        "The full set of Open Bank Project APIs supports functionality including: Transaction history, payments, onboarding & KYC, cards, customer and customer messages, counterparty and transaction metadata, delegated account access, data redaction and entitlements.")
 
       case List(Some(true), None, None) => ("Core OBP",
         "This core set of APIs is chosen to support common customer facing applications that rely on existing core banking services only. " +
@@ -583,6 +584,7 @@ class ApiExplorer extends Loggable {
     ".info-box__headline *" #> s"$headline"  &
     "@version_path *" #> s"$baseVersionUrl" &
     "@version_path [href]" #> s"$baseVersionUrl" &
+    "#api_home_link [href]" #> s"$baseUrl" &
     "@views_box [style]" #> s"display: $displayViews;" &
     ".info-box__about_selected *" #> s"$catalogDescription" &
     ".resource" #> resources.map { i =>
