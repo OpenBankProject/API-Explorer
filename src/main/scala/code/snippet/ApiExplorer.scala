@@ -78,34 +78,66 @@ class ApiExplorer extends Loggable {
     case _ => Empty
   }
 
-  val showCore: Option[Boolean] = for {
+  val showCoreParam: Option[Boolean] = for {
     x <- S.param("core")
     y <- stringToOptBoolean(x)
   } yield y
 
-  logger.info(s"showCore is $showCore")
+  logger.info(s"showCore is $showCoreParam")
 
-  val showPSD2: Option[Boolean] = for {
+  val showPSD2Param: Option[Boolean] = for {
     x <- S.param("psd2")
     y <- stringToOptBoolean(x)
   } yield y
 
-  logger.info(s"showPSD2 is $showPSD2")
+  logger.info(s"showPSD2 is $showPSD2Param")
 
-  val showOBWG: Option[Boolean] = for {
+  val showOBWGParam: Option[Boolean] = for {
     x <- S.param("obwg")
     y <- stringToOptBoolean(x)
   } yield y
 
-  logger.info(s"showOBWG is $showOBWG")
+  logger.info(s"showOBWG is $showOBWGParam")
+
+
+  // This parameter stops the default catalog kicking in
+  val ignoreDefaultCatalog: Option[Boolean] = for {
+    x <- S.param("ignoredefcat")
+    y <- stringToOptBoolean(x)
+  } yield y
+
+  logger.info(s"ignoreDefaultCatalog is $ignoreDefaultCatalog")
+
+
+
+
+  // If there is a main purpose of the sandbox, then know that.
+  val defaultCatalog = Props.get("defaultCatalog", "")
+
+
+  val showCore = showCoreParam
+
+  // If no catalog preferences have been set and not asking for all and we are on an OBWG sandbox, set that preference
+  val showOBWG : Option[Boolean] =  if (showCoreParam == None && showPSD2Param == None && showOBWGParam == None && (defaultCatalog == "OBWG") && !ignoreDefaultCatalog.getOrElse(false)) {
+    Some(true)
+  } else {
+    showOBWGParam
+  }
+
+  val showPSD2 = showPSD2Param
+
+
+
+
+
 
 
   val showString = showCore.map(i => s"core=$showCore&").toString + showPSD2.map(i => s"psd2=$showPSD2").toString
 
 
-  val showParams = s"&core=${showCore.getOrElse("")}&psd2=${showPSD2.getOrElse("")}&obwg=${showOBWG.getOrElse("")}"
+  val catalogParams = s"&core=${showCore.getOrElse("")}&psd2=${showPSD2.getOrElse("")}&obwg=${showOBWG.getOrElse("")}&ignoredefcat=${ignoreDefaultCatalog.getOrElse("")}"
 
-  println(showParams)
+  println(catalogParams)
 
 
 
@@ -362,7 +394,12 @@ class ApiExplorer extends Loggable {
     }
 
 
-    val url = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${showParams}"
+    val url = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${catalogParams}"
+
+
+    // Create a list of (version, url) used to populate the versions whilst preserving the other parameters
+    val versionUrls = supportedApiVersions.map(i => (i, s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}${catalogParams}"))
+
 
     // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
     // Filter out empty string items
@@ -586,6 +623,10 @@ class ApiExplorer extends Loggable {
     // Show the version to the user.
     // Append to the content child of id="version" e.g. the fixed text "Version:" is replacedWith "Version: 1.2.3"
     "#version *+" #> apiVersion &
+    ".versions" #> versionUrls.map { i =>
+      ".version *" #> s" ${i._1} " &
+      ".version [href]" #> s"${i._2}"
+    } &
     // replace the node identified by the class "resource" with the following
     // This creates the list of resources in the DOM
     ".info-box__headline *" #> s"$headline"  &

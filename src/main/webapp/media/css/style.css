@@ -142,7 +142,7 @@ a img {
   padding: 0;
 }
 .breadcrumbs__list:after {
-  content: "/";
+  content: "\00a0/\00a0";
   color: #fff;
   font-size: 14px;
 }
