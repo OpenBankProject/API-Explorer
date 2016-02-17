@@ -137,6 +137,10 @@ a img {
   text-decoration: none;
 }
 
+.footer_link {
+  text-decoration: none;
+}
+
 .breadcrumbs__list {
   display: inline-block;
   padding: 0;
