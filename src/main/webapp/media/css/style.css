@@ -362,6 +362,16 @@ a img {
   font-size: 8px;
 }
 
+
+.content-box__swagger_etc {
+  float: right;
+  width: 720px;
+  position: relative;
+  color: #504854;
+  font-size: 8px;
+  text-decoration: none;
+}
+
 .default-input {
   margin: 2px 0 0 2px;
   padding: 13px 108px 9px 20px;

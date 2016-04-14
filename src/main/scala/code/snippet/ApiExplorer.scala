@@ -211,7 +211,11 @@ class ApiExplorer extends Loggable {
     // Use to show the developer the current base version url
     val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}/$apiVersion"
 
+    // Link to the API endpoint for the resource docs json
+    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/v1.4.0/resource-docs/$apiVersion/obp"
 
+    // Link to the API endpoint for the swagger json
+    val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/v1.4.0/resource-docs/$apiVersion/swagger"
 
 
 
@@ -627,16 +631,19 @@ class ApiExplorer extends Loggable {
       ".version *" #> s" ${i._1} " &
       ".version [href]" #> s"${i._2}"
     } &
-    // replace the node identified by the class "resource" with the following
-    // This creates the list of resources in the DOM
     ".info-box__headline *" #> s"$headline"  &
     "@version_path *" #> s"$baseVersionUrl" &
     "@version_path [href]" #> s"$baseVersionUrl" &
+    "@resource_docs_path [href]" #> s"$resourceDocsPath" &
+    "@swagger_path [href]" #> s"$swaggerPath" &
     "#api_home_link [href]" #> s"$baseUrl" &
     "@views_box [style]" #> s"display: $displayViews;" &
     ".info-box__about_selected *" #> s"$catalogDescription" &
+      // replace the node identified by the class "resource" with the following
+      // This creates the list of resources in the DOM
     ".resource" #> resources.map { i =>
-      ".end-point-anchor [href]" #> s"#${i.id}" & // append the anchor to the current uurl
+      // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
+      ".end-point-anchor [href]" #> s"#${i.id}" &
       ".content-box__headline *" #> i.summary &
       ".content-box__headline [id]" #> i.id & // id for the anchor to find
       ".resource_summary [href]" #> s"#${i.id}" &
