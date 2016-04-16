@@ -30,7 +30,7 @@ import net.liftweb.http.js.JsCmds.{Run, SetHtml}
 
 import net.liftweb.json.Serialization.writePretty
 
-import code.lib.ObpAPI.{getResourceDocsJson, allBanks, allAccountsAtOneBank}
+import code.lib.ObpAPI.{getResourceDocsJson, allBanks, allAccountsAtOneBank, privateAccountsCache}
 
 import net.liftweb.http.CurrentReq
 
@@ -41,7 +41,8 @@ case class Bank(
                  fullName : String,
                  logo : String,
                  website : String,
-                 isFeatured : Boolean)
+                 isFeatured : Boolean,
+                 showToUser : Boolean)
 
 
 
@@ -127,11 +128,6 @@ class ApiExplorer extends Loggable {
   val showPSD2 = showPSD2Param
 
 
-
-
-
-
-
   val showString = showCore.map(i => s"core=$showCore&").toString + showPSD2.map(i => s"psd2=$showPSD2").toString
 
 
@@ -179,6 +175,27 @@ class ApiExplorer extends Loggable {
 
     url6
   }
+
+
+  //val myPrivateAccounts = privateAccountsCache
+
+
+  case class BankId(val value : String) {
+    override def toString = value
+  }
+
+  object BankId {
+    def unapply(id : String) = Some(BankId(id))
+  }
+
+
+  // Get a list of BankIds that are relevant to the logged in user i.e. banks where the user has at least one non public account
+  val myBankIds: List[BankId] = for {
+      allAccountsJson <- ObpAPI.privateAccounts.toList
+      barebonesAccountJson <- allAccountsJson.accounts.toList.flatten
+      bankId <- barebonesAccountJson.bank_id
+    } yield BankId(bankId)
+
 
   def showResources = {
 
@@ -423,9 +440,11 @@ class ApiExplorer extends Loggable {
                   b.full_name.getOrElse(""),
                   b.logo.getOrElse(""),
                   b.website.getOrElse(""),
-                  featuredBankIds.contains(b.id.get)) // Add a flag to say if this bank is featured.
+                  featuredBankIds.contains(b.id.get), // Add a flag to say if this bank is featured.
+                  myBankIds.contains(BankId(b.id.get)) || myBankIds.isEmpty) // Will show to user if relevant (has an account or not logged in)
 
     // TODO dehardcode the redirect path.
+
 
     def onBankChange (v: Any) = {
       logger.info("bank changed to " + v.toString)
@@ -462,7 +481,10 @@ class ApiExplorer extends Loggable {
 
     def highlightFeatured(value: Boolean) : String = if (value) " *" else ""
 
-    val bankOptions = banks.map(b => (b.id, b.shortName + " ("  + b.id + ")" + highlightFeatured(b.isFeatured) )).sortBy(a => (a._2, a._1))
+
+    val banksForUser = banks.filter(b => b.showToUser)
+
+    val bankOptions = banksForUser.map(b => (b.id, b.shortName + " ("  + b.id + ")" + highlightFeatured(b.isFeatured) )).sortBy(a => (a._2, a._1))
 
 
     val selectBankOptions = selectBank :: bankOptions

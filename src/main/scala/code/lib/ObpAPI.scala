@@ -40,13 +40,27 @@ object ObpAPI extends Loggable {
    * made multiple times
    */
   object allBanksVar extends RequestVar[Box[BanksJson]] (Empty)
-  
+
   def allBanks : Box[BanksJson]= {
     allBanksVar.get match {
       case Full(a) => Full(a)
       case _ => ObpGet("/v1.2/banks").flatMap(_.extractOpt[BanksJson]) // TODO use more recent API version
     }
   }
+
+  object privateAccountsVar extends RequestVar[Box[BarebonesAccountsJson]] (Empty)
+
+  def privateAccountsCache : Box[BarebonesAccountsJson]= {
+    privateAccountsVar.get match {
+      case Full(a) => Full(a)
+      case _ => privateAccounts // TODO use more recent API version
+    }
+  }
+
+
+
+
+
   
   trait SortDirection {
     val value : String
