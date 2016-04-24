@@ -130,8 +130,13 @@ class ApiExplorer extends Loggable {
 
   val showString = showCore.map(i => s"core=$showCore&").toString + showPSD2.map(i => s"psd2=$showPSD2").toString
 
+  // Used for links to the Resource Docs / Swagger json (don't include default default catalog)
+  // Note: No leading &
+  val pureCatalogParams = s"core=${showCore.getOrElse("")}&psd2=${showPSD2.getOrElse("")}&obwg=${showOBWG.getOrElse("")}"
 
-  val catalogParams = s"&core=${showCore.getOrElse("")}&psd2=${showPSD2.getOrElse("")}&obwg=${showOBWG.getOrElse("")}&ignoredefcat=${ignoreDefaultCatalog.getOrElse("")}"
+
+  // Used for links in this web application
+  val catalogParams = s"&$pureCatalogParams&ignoredefcat=${ignoreDefaultCatalog.getOrElse("")}"
 
   println(catalogParams)
 
@@ -229,10 +234,10 @@ class ApiExplorer extends Loggable {
     val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}/$apiVersion"
 
     // Link to the API endpoint for the resource docs json
-    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/v1.4.0/resource-docs/$apiVersion/obp"
+    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/v1.4.0/resource-docs/$apiVersion/obp?$pureCatalogParams"
 
     // Link to the API endpoint for the swagger json
-    val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/v1.4.0/resource-docs/$apiVersion/swagger"
+    val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/v1.4.0/resource-docs/$apiVersion/swagger?$pureCatalogParams"
 
 
 
