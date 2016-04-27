@@ -124,8 +124,13 @@ class ApiExplorer extends Loggable {
   } else {
     showOBWGParam
   }
+  
+  val showPSD2 : Option[Boolean] =  if (showCoreParam == None && showPSD2Param == None && showOBWGParam == None && (defaultCatalog == "PSD2") && !ignoreDefaultCatalog.getOrElse(false)) {
+    Some(true)
+  } else {
+    showPSD2Param
+  }
 
-  val showPSD2 = showPSD2Param
 
 
   val showString = showCore.map(i => s"core=$showCore&").toString + showPSD2.map(i => s"psd2=$showPSD2").toString
