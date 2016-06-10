@@ -100,6 +100,14 @@ class ApiExplorer extends Loggable {
 
   logger.info(s"showOBWG is $showOBWGParam")
 
+  val tagsParam: Option[List[String]] = for {
+    x <- S.param("tags")
+    y <- Some(x.split(",").toList)
+  } yield {
+    y
+  }
+  logger.info(s"tags are $tagsParam")
+
 
   // This parameter stops the default catalog kicking in
   val ignoreDefaultCatalog: Option[Boolean] = for {
@@ -286,8 +294,19 @@ class ApiExplorer extends Loggable {
       case _ => filteredResources2
     }
 
-    val resources = filteredResources3
+    val tags = tagsParam match {
+      case Some(x) => x
+      case _ => List()
+    }
+    val filteredResources4 :  List[ResourceDoc] = for {
+      x <- filteredResources3
+      y <- tags
+      if x.tags.contains(y.trim)
+    } yield {
+      x
+    }
 
+    val resources = if (filteredResources4.length > 0) filteredResources4 else filteredResources3
 
     // Headline and Description of the search
     val (catalogHeadline, catalogDescription) = List(showCore, showOBWG, showPSD2)  match {
@@ -429,7 +448,7 @@ class ApiExplorer extends Loggable {
 
 
     // Create a list of (version, url) used to populate the versions whilst preserving the other parameters
-    val versionUrls = supportedApiVersions.map(i => (i, s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}${catalogParams}"))
+    val versionUrls: List[(String, String)] = supportedApiVersions.map(i => (i, s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}${catalogParams}"))
 
 
     // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
