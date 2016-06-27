@@ -109,6 +109,14 @@ class ApiExplorer extends Loggable {
   logger.info(s"tags are $tagsParam")
 
 
+
+  val tagsHeadline : String = tagsParam match {
+    case Some(x) => "tagged: " + x.mkString(", ")
+    case _ => "(all tags)"
+  }
+
+
+
   // This parameter stops the default catalog kicking in
   val ignoreDefaultCatalog: Option[Boolean] = for {
     x <- S.param("ignoredefcat")
@@ -298,6 +306,7 @@ class ApiExplorer extends Loggable {
       case Some(x) => x
       case _ => List()
     }
+    
     val filteredResources4 :  List[ResourceDoc] = for {
       x <- filteredResources3
       y <- tags
@@ -306,7 +315,12 @@ class ApiExplorer extends Loggable {
       x
     }
 
-    val resources = if (filteredResources4.length > 0) filteredResources4 else filteredResources3
+    val resources = if (filteredResources4.length > 0) {
+      logger.debug("tags filter reduced the list of resource docs to zero so not using that filter")
+      filteredResources4
+    } else {
+      filteredResources3
+    }
 
     // Headline and Description of the search
     val (catalogHeadline, catalogDescription) = List(showCore, showOBWG, showPSD2)  match {
@@ -348,7 +362,7 @@ class ApiExplorer extends Loggable {
 
 
     // Headline we display including count of APIs
-    val headline : String = s"$catalogHeadline APIs (${resources.length})".trim()
+    val headline : String = s"$catalogHeadline APIs $tagsHeadline (${resources.length})".trim()
     logger.info (s"showingMessage is: $headline")
 
 
