@@ -372,6 +372,18 @@ a img {
   text-decoration: none;
 }
 
+
+.api_call_index {
+  margin: 0 0 0px 0;
+  font-size: 10px;
+  line-height: 33px;
+  color: #24bc65;
+  font-weight: 400;
+  padding: 0px 0 0 0;
+  letter-spacing: 0.8px;
+}
+
+
 .default-input {
   margin: 2px 0 0 2px;
   padding: 13px 108px 9px 20px;

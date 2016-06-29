@@ -704,12 +704,12 @@ class ApiExplorer extends Loggable {
     "#api_home_link [href]" #> s"$baseUrl" &
     "@views_box [style]" #> s"display: $displayViews;" &
     ".info-box__about_selected *" #> s"$catalogDescription" &
-    ".index_of_api_calls" #> resources.map { i =>
+    ".api_call_index" #> resources.map { i =>
       // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-      ".end-point-anchor [href]" #> s"#${i.id}" &
-        ".index__headline *" #> i.summary &
-        ".index__headline [id]" #> s"index_of_${i.id}" & // id for the anchor to find
-        ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
+      ".api_call_index_link [href]" #> s"#${i.id}" &
+        ".api_call_index_link *" #> i.summary &
+        ".api_call_index_link [id]" #> s"index_of_${i.id}"
+       // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
     } &
       // replace the node identified by the class "resource" with the following
       // This creates the list of resources in the DOM
