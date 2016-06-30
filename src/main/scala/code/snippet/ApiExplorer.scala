@@ -307,7 +307,7 @@ class ApiExplorer extends Loggable {
       case Some(x) => x
       case _ => List()
     }
-    
+
     val filteredResources4 :  List[ResourceDoc] = for {
       x <- filteredResources3
       y <- tags
@@ -705,6 +705,13 @@ class ApiExplorer extends Loggable {
     "#api_home_link [href]" #> s"$baseUrl" &
     "@views_box [style]" #> s"display: $displayViews;" &
     ".info-box__about_selected *" #> s"$catalogDescription" &
+    ".api_list_item" #> resources.map { i =>
+      // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
+      ".api_list_item_link [href]" #> s"#${i.id}" &
+        ".api_list_item_link *" #> i.summary &
+        ".api_list_item_link [id]" #> s"index_of_${i.id}"
+       // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
+    } &
       // replace the node identified by the class "resource" with the following
       // This creates the list of resources in the DOM
     ".resource" #> resources.map { i =>
@@ -712,8 +719,8 @@ class ApiExplorer extends Loggable {
       ".end-point-anchor [href]" #> s"#${i.id}" &
       ".content-box__headline *" #> i.summary &
       ".content-box__headline [id]" #> i.id & // id for the anchor to find
-      ".resource_summary [href]" #> s"#${i.id}" &
-      ".resource_summary [name]" #> s"${i.id}" &
+//      ".resource_summary [href]" #> s"#${i.id}" &
+//      ".resource_summary [name]" #> s"${i.id}" &
       // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
       ".content-box__text-box *" #> i.description &
       "@resource_description [id]" #> s"description_${i.id}" &

@@ -19,7 +19,7 @@ a img {
 
 .container {
   width: 1017px;
-  margin: 0 auto;
+  margin-left: 270px;
 }
 .container:after {
   content: '';
@@ -371,6 +371,31 @@ a img {
   font-size: 8px;
   text-decoration: none;
 }
+
+
+
+
+/* This is the list of Api calls on the left panel */
+.api_list {
+    position: fixed;
+    top: 0;
+    z-index: 10;
+    overflow: scroll;
+    width: 250px;
+    height: 750px;
+    background-color: white;
+}
+
+
+.api_list_item {
+  margin: 0 0 0px 0;
+  font-size: 8px;
+  color: #24bc65;
+  font-weight: 400;
+  padding: 0px 0 0 0;
+  letter-spacing: 0.8px;
+}
+
 
 .default-input {
   margin: 2px 0 0 2px;
