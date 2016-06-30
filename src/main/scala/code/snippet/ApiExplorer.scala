@@ -315,12 +315,17 @@ class ApiExplorer extends Loggable {
       x
     }
 
-    val resources = if (filteredResources4.length > 0) {
+    val resourcesToUse = if (filteredResources4.length > 0) {
       logger.debug("tags filter reduced the list of resource docs to zero so not using that filter")
       filteredResources4
     } else {
       filteredResources3
     }
+
+
+    val resources = resourcesToUse.sortBy(r => (r.tags.take(1).toString(), r.summary.toString))
+
+
 
     // Headline and Description of the search
     val (catalogHeadline, catalogDescription) = List(showCore, showOBWG, showPSD2)  match {
