@@ -380,20 +380,18 @@ a img {
     position: fixed;
     top: 0;
     z-index: 10;
-    overflow: scroll;
+    overflow-y: scroll;
     width: 250px;
-    height: 750px;
+    height: 100%;
     background-color: white;
 }
 
 
 .api_list_item {
-  margin: 0 0 0px 0;
-  font-size: 8px;
+  margin: 10px 10px 10px 0;
   color: #24bc65;
   font-weight: 400;
-  padding: 0px 0 0 0;
-  letter-spacing: 0.8px;
+  padding: 0;
 }
 
 
