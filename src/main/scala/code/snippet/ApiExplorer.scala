@@ -267,7 +267,8 @@ class ApiExplorer extends Loggable {
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
     // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
     val allResources = for {
-      r <- getResourceDocsJson(apiVersion).map(_.resource_docs).get
+      rs <- getResourceDocsJson(apiVersion).toList
+      r <- rs.resource_docs
     } yield ResourceDoc(
       id = r.operation_id,
       verb = r.request_verb,
