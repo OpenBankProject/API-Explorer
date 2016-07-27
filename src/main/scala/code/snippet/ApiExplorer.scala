@@ -324,7 +324,9 @@ class ApiExplorer extends Loggable {
     }
 
 
-    val resources = resourcesToUse.sortBy(r => (r.tags.take(1).toString(), r.summary.toString))
+    // Sort by the first and second tags (if any) then the summary.
+    // In order to help sorting, the first tag in a call should be most general, then more specific etc.
+    val resources = resourcesToUse.sortBy(r => (r.tags.take(0).toString(), r.tags.take(1).toString(), r.summary.toString))
 
 
 
