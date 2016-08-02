@@ -225,13 +225,13 @@ class ApiExplorer extends Loggable {
 
   def showResources = {
 
-    val defaultVersion : String = "2.0.0"
+    val defaultVersion : String = "2.1.0"
 
     // Get the requested version from the url parameter and default if none
     val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
 
 
-    val supportedApiVersions = List ("1.2.1", "1.3.0", "1.4.0", "2.0.0")
+    val supportedApiVersions = List ("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0")
 
 
     val apiVersion : String = {
@@ -744,7 +744,7 @@ class ApiExplorer extends Loggable {
       // text creates a text box and we can capture its input in requestUrl
       "@request_url_input" #> text(i.url, s => requestUrl = s, "maxlength" -> "512", "size" -> "100", "id" -> s"request_url_input_${i.id}") &
       // Extraction.decompose creates json representation of JObject.
-      "@example_request_body_input" #> text(pretty(render(i.example_request_body)), s => requestBody = s, "maxlength" -> "4096", "size" -> "100", "type" -> "text") &
+      "@example_request_body_input" #> text(pretty(render(i.example_request_body)), s => requestBody = s, "maxlength" -> "100000", "size" -> "100", "type" -> "text") &
       // TODO get this working. requestBody is not populated with textarea value "@request_body_input" #> textarea(pretty(render(i.example_request_body)), s => requestBody = s, "cols" -> "90", "rows" -> "5") &
       // We're not using the id at the moment
       "@request_verb_input" #> text(i.verb, s => requestVerb = s, "type" -> "hidden", "id" -> s"request_verb_input_${i.id}") &
