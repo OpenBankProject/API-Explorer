@@ -57,7 +57,9 @@ object ObpAPI extends Loggable {
     }
   }
 
-
+  def currentUser : Box[CurrentUserJson]= {
+    ObpGet("/v2.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
+  }
 
 
 
@@ -534,6 +536,13 @@ object ObpJson {
     full_name: Option[String],
     logo: Option[String],
     website: Option[String])
+
+  case class CurrentUserJson(user_id: String,
+                             email: String,
+                             provider_id: String,
+                             provider: String,
+                             display_name: String
+                            )
 		  		  
   case class UserJson(id: Option[String],
     provider: Option[String],

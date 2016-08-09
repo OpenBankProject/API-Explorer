@@ -36,7 +36,7 @@ import net.liftweb.http.js.JsCmd
 import net.liftweb.util.Helpers
 import Helpers._
 import net.liftweb.http.SHtml
-import code.lib.OAuthClient
+import code.lib.{ObpAPI, OAuthClient}
 import net.liftweb.http.js.JsCmds.Noop
 
 class Login {
@@ -44,6 +44,7 @@ class Login {
   // TODO show currently logged-in user / name
   private def loggedIn = {
     ".logged-out *" #> "" &
+      ".username *" #> ObpAPI.currentUser.map(u => u.display_name) &
     "#logout [onclick+]" #> SHtml.onEvent(s => {
       OAuthClient.logoutAll()
       Noop
