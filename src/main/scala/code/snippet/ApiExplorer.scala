@@ -230,9 +230,15 @@ class ApiExplorer extends Loggable {
     // Get the requested version from the url parameter and default if none
     val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
 
+    // Get disbled API versions from props
+    val disabledVersions = Props.get("api_disabled_versions").getOrElse("").replace("[", "").replace("]", "").split(",")
 
-    val supportedApiVersions = List ("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0")
-
+    var supportedApiVersions: List[String] = Nil
+    if (!disabledVersions.contains("v1_2_1")) supportedApiVersions = supportedApiVersions:::List("1.2.1")
+    if (!disabledVersions.contains("v1_3_0")) supportedApiVersions = supportedApiVersions:::List("1.3.0")
+    if (!disabledVersions.contains("v1_4_0")) supportedApiVersions = supportedApiVersions:::List("1.4.0")
+    if (!disabledVersions.contains("v2_0_0")) supportedApiVersions = supportedApiVersions:::List("2.0.0")
+    if (!disabledVersions.contains("v2_1_0")) supportedApiVersions = supportedApiVersions:::List("2.1.0")
 
     val apiVersion : String = {
       if (supportedApiVersions.contains(apiVersionRequested)) {

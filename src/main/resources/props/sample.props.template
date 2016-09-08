@@ -34,3 +34,9 @@ dev.port=8082
 # Comma separated list of Banks IDs we want to feature / show in drop down list. If not present or empty all available banks will be shown.
 #featuredBankIds=ub-ni-1,ub-roi-1,bnpparibas-xx-26,obp-bankx-n
 
+api_disabled_versions=[\
+version1,\
+version2,\
+...,\
+versionN]
+
