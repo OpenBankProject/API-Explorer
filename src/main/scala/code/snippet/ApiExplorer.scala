@@ -563,7 +563,9 @@ class ApiExplorer extends Loggable {
           allAccountsJson <- ObpAPI.allAccountsAtOneBank(presetBankId).toList
           barebonesAccountJson <- allAccountsJson.accounts.toList.flatten
           accountId <- barebonesAccountJson.id
-          label <- barebonesAccountJson.label
+          // Show the label if it exists, else the id
+          // TODO show the AccountJson.number (if owner) in preference to the ID.
+          label = barebonesAccountJson.label.getOrElse(barebonesAccountJson.id.getOrElse("NO ID"))
         } yield (accountId, label)
       }
 
