@@ -44,7 +44,7 @@ class Login {
   // TODO show currently logged-in user / name
   private def loggedIn = {
     ".logged-out *" #> "" &
-      ".username *" #> ObpAPI.currentUser.map(u => u.display_name) &
+      ".username *" #> ObpAPI.currentUser.map(u => u.username) &
     "#logout [onclick+]" #> SHtml.onEvent(s => {
       OAuthClient.logoutAll()
       Noop

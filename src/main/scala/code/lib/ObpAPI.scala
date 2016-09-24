@@ -541,7 +541,7 @@ object ObpJson {
                              email: String,
                              provider_id: String,
                              provider: String,
-                             display_name: String
+                             username: String
                             )
 		  		  
   case class UserJson(id: Option[String],
