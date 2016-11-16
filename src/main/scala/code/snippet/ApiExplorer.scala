@@ -485,7 +485,7 @@ class ApiExplorer extends Loggable {
     // This filtering could be turned on/off by Props setting
     // Filter out banks if we have a list of ones to use, else use all of them.
     // Also, show all if requested by url parameter
-    // if featuredBankIds.length == 0  || featuredBankIds.contains(b.id.get)  || listAllBanks
+    if featuredBankIds.length == 0  || featuredBankIds.contains(b.id.get)  || listAllBanks
     } yield Bank (b.id.get,
                   b.short_name.getOrElse(""),
                   b.full_name.getOrElse(""),
