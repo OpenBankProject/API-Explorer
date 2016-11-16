@@ -8,16 +8,16 @@
 # The base url of the api to use (e.g. https://apisandbox.openbankproject.com)
 api_hostname=FILL_ME_IN
 
-# For now, this should be identical to "api_hostname"
+# For now, this value should be identical to the value of api_hostname
 defaultAuthProvider=FILL_ME_IN
 
 # These are the oauth keys obtained from the api (at /consumer-registration)
 obp_consumer_key=FILL_ME_IN
 obp_secret_key=FILL_ME_IN
 
-# The base url of this application (e.g. http://localhost:8080) which is used for the oauth callback url.
-# Note: if you are running a local api instance and a local API Explorer instance, you will want to access one via
-# Localhost and one via 127.0.0.1 to avoid weird cookie issues
+# The base url of THIS application (e.g. http://localhost:8082) which is used for the oauth callback url.
+# Note: if you are running a local api instance and a local API Explorer instance on the same machine,
+# we recommend you run the API on 127.0.0.1 and API Explorer on localhost to avoid weird cookie issues
 base_url=FILL_ME_IN
 
 ## End of REQUIRED ###################
