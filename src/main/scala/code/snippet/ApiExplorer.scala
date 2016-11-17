@@ -41,8 +41,10 @@ case class Bank(
                  fullName : String,
                  logo : String,
                  website : String,
-                 isFeatured : Boolean,
-                 showToUser : Boolean)
+                 isFeatured : Boolean
+               )
+
+                // showToUser : Boolean)
 
 
 
@@ -482,19 +484,36 @@ class ApiExplorer extends Loggable {
     val banks = for {
       a <- allBanks.toList
       b <- a.bankJsons
-    // This filtering could be turned on/off by Props setting
-    // Filter out banks if we have a list of ones to use, else use all of them.
-    // Also, show all if requested by url parameter
-    if featuredBankIds.length == 0  || featuredBankIds.contains(b.id.get)  || listAllBanks
     } yield Bank (b.id.get,
                   b.short_name.getOrElse(""),
                   b.full_name.getOrElse(""),
                   b.logo.getOrElse(""),
                   b.website.getOrElse(""),
-                  featuredBankIds.contains(b.id.get), // Add a flag to say if this bank is featured.
-                  myBankIds.contains(BankId(b.id.get)) || myBankIds.isEmpty) // Will show to user if relevant (has an account or not logged in)
+                  featuredBankIds.contains(b.id.get) // Add a flag to say if this bank is featured.
+      )
 
-    // TODO dehardcode the redirect path.
+    val banksForUser =
+      if (listAllBanks) // Url param says show all.
+        banks
+      else
+        if(!myBankIds.isEmpty) // User has accounts so show those banks
+          banks.filter(b => myBankIds.contains(BankId(b.id)))
+        else
+          // If we have a featured list of banks show those, else all.
+          banks.filter(b => b.isFeatured || featuredBankIds.length == 0)
+
+
+    def highlightFeatured(value: Boolean) : String = if (value) " *" else ""
+
+
+    // Format and Sort banks.
+    val bankOptions = banksForUser.map(b => (b.id, b.shortName + " ("  + b.id + ")" + highlightFeatured(b.isFeatured) )).sortBy(a => (a._2, a._1))
+
+
+    val selectBank = ("", "Select Bank")
+    val selectBankOptions = selectBank :: bankOptions
+
+
 
 
     def onBankChange (v: Any) = {
@@ -523,22 +542,11 @@ class ApiExplorer extends Loggable {
     }
 
 
-    // Get a list of tuples List(("bank short name", "id"),("bank two", "id2")) to populate the drop down select list.
-    // TODO Add this again if banks is empty getOrElse(List(("", "No Banks")))
-    //val bankOptions = ("", "Select Bank") :: banks.map(b => b.bankJsons.map(bj => (bj.id.getOrElse(""), bj.short_name.getOrElse("") + " (" + bj.id.getOrElse("") + ")"))).getOrElse(List(("", "No Banks")))
 
 
-    val selectBank = ("", "Select Bank")
-
-    def highlightFeatured(value: Boolean) : String = if (value) " *" else ""
 
 
-    val banksForUser = banks.filter(b => b.showToUser)
 
-    val bankOptions = banksForUser.map(b => (b.id, b.shortName + " ("  + b.id + ")" + highlightFeatured(b.isFeatured) )).sortBy(a => (a._2, a._1))
-
-
-    val selectBankOptions = selectBank :: bankOptions
     
 
     // TODO create BankId case class like in the API
