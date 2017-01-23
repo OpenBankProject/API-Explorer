@@ -227,7 +227,7 @@ class ApiExplorer extends Loggable {
 
   def showResources = {
 
-    val defaultVersion : String = "2.2.0"
+    val defaultVersion : String = "2.1.0"
 
     // Get the requested version from the url parameter and default if none
     val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
@@ -318,12 +318,15 @@ class ApiExplorer extends Loggable {
       x
     }
 
-    val resourcesToUse = if (filteredResources4.length > 0) {
-      logger.debug("tags filter reduced the list of resource docs to zero so not using that filter")
-      filteredResources4
-    } else {
-      filteredResources3
+
+    val resourcesToUse = filteredResources4
+
+    if (filteredResources4.length > 0 && resourcesToUse.length == 0) {
+      logger.debug("tags filter reduced the list of resource docs to zero")
     }
+
+
+
 
 
     // Sort by the first and second tags (if any) then the summary.
