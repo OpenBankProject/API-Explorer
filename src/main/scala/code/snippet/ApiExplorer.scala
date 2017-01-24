@@ -305,17 +305,16 @@ class ApiExplorer extends Loggable {
       case _ => filteredResources2
     }
 
-    val tags = tagsParam match {
-      case Some(x) => x
-      case _ => List()
-    }
-
-    val filteredResources4 :  List[ResourceDoc] = for {
-      x <- filteredResources3
-      y <- tags
-      if x.tags.contains(y.trim)
-    } yield {
-      x
+    // If we have tags, filter by them
+    val filteredResources4 :  List[ResourceDoc] = tagsParam match {
+      case Some(tags) => for {
+        x <- filteredResources3
+        y <- tags
+        if x.tags.contains(y.trim)
+      } yield {
+        x
+      }
+      case _ => filteredResources3
     }
 
 
