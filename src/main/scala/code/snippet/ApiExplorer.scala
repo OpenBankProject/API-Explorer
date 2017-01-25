@@ -102,11 +102,21 @@ class ApiExplorer extends Loggable {
 
   logger.info(s"showOBWG is $showOBWGParam")
 
-  val tagsParam: Option[List[String]] = for {
-    x <- S.param("tags")
-    y <- Some(x.split(",").toList)
-  } yield {
-    y
+
+  val rawTagsParam = S.param("tags")
+
+  val tagsParam: Option[List[String]] = rawTagsParam match {
+    // if tags= is supplied in the url we want to ignore it
+    case Full("") => None
+    case _  => {
+      for {
+        x <- rawTagsParam
+        y <- Some(x.trim().split(",").toList)
+      } yield {
+        y
+      }
+
+    }
   }
   logger.info(s"tags are $tagsParam")
 
@@ -305,16 +315,20 @@ class ApiExplorer extends Loggable {
       case _ => filteredResources2
     }
 
-    // If we have tags, filter by them
+    // Check if we have tags, and if so filter by them
     val filteredResources4 :  List[ResourceDoc] = tagsParam match {
-      case Some(tags) => for {
-        x <- filteredResources3
-        y <- tags
-        if x.tags.contains(y.trim)
-      } yield {
-        x
-      }
-      case _ => filteredResources3
+      // We have tags
+      case Some(tags) => {
+        for {
+            x <- filteredResources3
+            y <- tags
+            if x.tags.contains(y.trim)
+          } yield {
+            x
+          }
+        }
+      // tags param was not mentioned in url, return all
+      case None => filteredResources3
     }
 
 
