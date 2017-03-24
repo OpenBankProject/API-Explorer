@@ -237,7 +237,7 @@ class ApiExplorer extends Loggable {
 
   def showResources = {
 
-    val defaultVersion : String = "2.1.0"
+    val defaultVersion : String = "2.2.0"
 
     // Get the requested version from the url parameter and default if none
     val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
