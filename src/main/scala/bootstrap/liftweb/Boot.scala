@@ -53,7 +53,6 @@ import code.util.{Helper, MyExceptionLogger}
 class Boot extends Loggable{
   def boot {
 
-    MDC.clear()
     MDC.put( ("host", Helper.getHostname()) )
 
     val runningMode = Props.mode match {
