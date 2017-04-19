@@ -43,7 +43,7 @@ import net.liftmodules.widgets.tablesorter.TableSorter
 import java.io.FileInputStream
 import java.io.File
 
-import code.lib.{OAuthClient, ObpJson}
+import code.lib.OAuthClient
 import code.util.{Helper, MyExceptionLogger}
 
 /**
