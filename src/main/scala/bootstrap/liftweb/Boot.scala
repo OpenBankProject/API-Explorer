@@ -45,12 +45,13 @@ import java.io.File
 
 import code.lib.OAuthClient
 import code.util.{Helper, MyExceptionLogger}
+import code.util.Helper.MdcLoggable
 
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
-class Boot extends Loggable{
+class Boot extends MdcLoggable{
   def boot {
 
     MDC.put( ("host", Helper.getHostname()) )

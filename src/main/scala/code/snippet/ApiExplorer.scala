@@ -5,6 +5,7 @@ import code.lib.ObpJson.{ImplementedBy, BarebonesAccountJson, BarebonesAccountsJ
 import code.lib._
 import net.liftweb.http.js.jquery.JqJsCmds.DisplayMessage
 import net.liftweb.util.Props
+import code.util.Helper.MdcLoggable
 
 import scala.collection.immutable.Nil
 
@@ -52,7 +53,7 @@ case class Bank(
 /*
 Present a list of OBP resource URLs
  */
-class ApiExplorer extends Loggable {
+class ApiExplorer extends MdcLoggable {
 
 
   val listAllBanks = S.param("list-all-banks").getOrElse("false").toBoolean

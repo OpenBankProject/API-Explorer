@@ -1,9 +1,10 @@
 package code.util
 
-import net.liftweb.common.{Failure, Full, Box, Loggable}
+import net.liftweb.common.{Failure, Full, Box}
 import net.liftweb.util.{Mailer, Props}
+import code.util.Helper.MdcLoggable
 
-object MyExceptionLogger extends Loggable{
+object MyExceptionLogger extends MdcLoggable{
   import net.liftweb.http.Req
 
   def unapply(in: (Props.RunModes.Value, Req, Throwable)): Option[(Props.RunModes.Value, Req, Throwable)] = {

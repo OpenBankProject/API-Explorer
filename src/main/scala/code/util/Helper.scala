@@ -2,7 +2,7 @@ package code.util
 
 import code.lib.ObpAPI._
 import code.lib.ObpJson.AccountJson
-import net.liftweb.common.Full
+import net.liftweb.common._
 import net.liftweb.util.Props
 
 
@@ -53,6 +53,11 @@ Returns a string which can be used for the title of the account
       case _ => "unknown"
     }
   }
+
+  trait MdcLoggable extends Loggable {
+    MDC.put("host" -> getHostname)
+  }
+
 
 
 }
