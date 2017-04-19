@@ -45,7 +45,7 @@ Returns a string which can be used for the title of the account
 
 
   def getHostname(): String = {
-    Props.get("hostname", "") match {
+    Props.get("base_url", "") match {
       case s: String if s.nonEmpty => s.split(":").lift(1) match {
         case Some(s) => s.replaceAll("\\/", "").replaceAll("\\.", "-")
         case None => "unknown"
