@@ -3,6 +3,7 @@ package code.util
 import code.lib.ObpAPI._
 import code.lib.ObpJson.AccountJson
 import net.liftweb.common.Full
+import net.liftweb.util.Props
 
 
 object Helper {
@@ -43,7 +44,15 @@ Returns a string which can be used for the title of the account
   }
 
 
-
+  def getHostname(): String = {
+    Props.get("hostname", "") match {
+      case s: String if s.nonEmpty => s.split(":").lift(1) match {
+        case Some(s) => s.replaceAll("\\/", "").replaceAll("\\.", "-")
+        case None => "unknown"
+      }
+      case _ => "unknown"
+    }
+  }
 
 
 }
