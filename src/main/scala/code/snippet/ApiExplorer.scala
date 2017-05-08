@@ -238,13 +238,13 @@ class ApiExplorer extends MdcLoggable {
 
   def showResources = {
 
-    val defaultVersion : String = "2.2.0"
+    val defaultVersion : String = "3.0.0"
 
     // Get the requested version from the url parameter and default if none
     val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
 
 
-    val supportedApiVersions = List ("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0", "2.2.0")
+    val supportedApiVersions = List ("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0")
 
 
     val apiVersion : String = {
