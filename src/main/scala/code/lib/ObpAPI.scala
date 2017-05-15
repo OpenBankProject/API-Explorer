@@ -873,6 +873,7 @@ object ObpJson {
                              description: String,      // Description of call in markdown
                              example_request_body: JValue,  // An example request body
                              success_response_body: JValue, // Success response body
+                             error_response_bodies: List[String],
                              implemented_by: ImplementedByJson,
                              is_core : Boolean,
                              is_psd2 : Boolean,
@@ -906,6 +907,8 @@ object ObpJson {
                          summary: String,
                          description: NodeSeq,
                          example_request_body: JValue,
+                         success_response_body: JValue,
+                         error_response_bodies: List[String],
                          implementedBy: ImplementedBy,
                          isCore: Boolean,
                          isPSD2: Boolean,
