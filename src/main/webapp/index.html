@@ -187,26 +187,24 @@
 
                             <div name="example_request_body" style="display: block;">
                                 <input name="example_request_body_input" class="default-input" placeholder="JSON body to POST or PUT">
-                                <!-- TODO get this working: <textarea name="request_body_input" form="form1">Enter text here...</textarea>  -->
                             </div>
-
-
-
 
                             <button name="call_button" class="default-button">POST</button>
                        </form>
                     </div>
-                    <div name="result_box" class="content-box__info-box" style="display: none;">
+                    <div name="result_box" class="content-box__info-box">
                         <pre>
                             <code>
-                                <div name="result"></div>
+                                <div name="result">
+                                    <div name="request_body_input"
+                                         class="content-box__info-box"></div>
+                                </div>
                                 <!-- TODO: This should hide the result
                                 <img src="./media/images/close-icon.png" alt="Close icon" class="content-box__close-icon">
                                 -->
-	                    </code>
+                                </code>
                         </pre>
-		            </div>
-
+                    </div>
                 </div>
                 <div class="content-box__available-since"></div>
             </div>
