@@ -780,7 +780,7 @@ class ApiExplorer extends MdcLoggable {
       "@request_url_input" #> text(i.url, s => requestUrl = s, "maxlength" -> "512", "size" -> "100", "id" -> s"request_url_input_${i.id}") &
       // Extraction.decompose creates json representation of JObject.
       "@example_request_body_input" #> text(pretty(render(i.example_request_body)), s => requestBody = s, "maxlength" -> "100000", "size" -> "100", "type" -> "text") &
-      "@request_body_input" #> textarea(("Success Body: " + pretty(render(i.success_response_body))+"\nErrors : {\n  "+i.error_response_bodies.mkString("\n  ") + " \n}"), s => requestBody = s, "cols" -> "1000", "rows" -> "10","style"->"border:none") &
+      "@request_body_input" #> textarea(("Typical Success Body: " + pretty(render(i.success_response_body))+"\n\nPossible Errors : {\n  "+i.error_response_bodies.mkString("\n  ") + " \n}"), s => requestBody = s, "cols" -> "1000", "rows" -> "10","style"->"border:none") &
       // We're not using the id at the moment
       "@request_verb_input" #> text(i.verb, s => requestVerb = s, "type" -> "hidden", "id" -> s"request_verb_input_${i.id}") &
       "@resource_id_input" #> text(i.id.toString, s => resourceId = s, "type" -> "hidden", "id" -> s"resource_id_input_${i.id}") &
