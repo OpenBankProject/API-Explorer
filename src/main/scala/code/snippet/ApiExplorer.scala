@@ -439,21 +439,32 @@ class ApiExplorer extends MdcLoggable {
       val jsonErrorResponse = errorResponseBodies
 
       // the id of the element we want to populate and format.
-      val result_target = "result_" + resourceId
-
-
-      val box_target = "result_box_" + resourceId
-
-
+      val resultTarget = "result_" + resourceId
+      val boxTarget = "result_box_" + resourceId
       // This will highlight the json. Replace the $ sign after we've constructed the string
+      val jsCommand : String =  s"DOLLAR_SIGN('#$boxTarget').fadeIn();DOLLAR_SIGN('#$resultTarget').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
 
-      val jsCommand : String =  s"DOLLAR_SIGN('#$box_target').fadeIn();DOLLAR_SIGN('#$result_target').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
+      // The id of the possible error responses box we want to hide after calling the API
+      val possibleErrorResponsesBoxTarget = "possible_error_responses_box_" + resourceId
+      // The javascript to hide it.
+      val jsCommandHidePossibleErrorResponsesBox : String =  s"DOLLAR_SIGN('#$possibleErrorResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
 
-      logger.info(s"command is $jsCommand")
+
+      // The id of the possible error responses box we want to hide after calling the API
+      val typicalSuccessResponseBoxTarget = "typical_success_response_box_" + resourceId
+      // The javascript to hide it.
+      val jsCommandHideTypicalSuccessResponseBox : String =  s"DOLLAR_SIGN('#$typicalSuccessResponseBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
+
+
+
+      //logger.info(s"jsCommand is $jsCommand")
+      //logger.info(s"jsCommand2 is $jsCommandHidePossibleErrorResponsesBox")
 
       // Return the commands to call the url with optional body and put the response into the appropriate result div
-      SetHtml(result_target, Text(getResponse(apiVersion, requestUrl, requestVerb, jsonObject))) &
-      Run (jsCommand)
+      SetHtml(resultTarget, Text(getResponse(apiVersion, requestUrl, requestVerb, jsonObject))) &
+      Run (jsCommand) &
+      Run (jsCommandHidePossibleErrorResponsesBox) &
+      Run (jsCommandHideTypicalSuccessResponseBox)
     }
 
 
@@ -761,13 +772,10 @@ class ApiExplorer extends MdcLoggable {
       ".end-point-anchor [href]" #> s"#${i.id}" &
       ".content-box__headline *" #> i.summary &
       ".content-box__headline [id]" #> i.id & // id for the anchor to find
-//      ".resource_summary [href]" #> s"#${i.id}" &
-//      ".resource_summary [name]" #> s"${i.id}" &
       // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
       ".content-box__text-box *" #> i.description &
       "@resource_description [id]" #> s"description_${i.id}" &
       ".url_caller [id]" #> s"url_caller_${i.id}" &
-      // ".try_me_button [onclick]" #> s"$$(DOUBLE-QUOTE#url_caller_${i.id}DOUBLE-QUOTE).fadeToggle();".replaceAll("DOUBLE-QUOTE","""") &
       "@result [id]" #> s"result_${i.id}" &
       "@result_box [id]" #> s"result_box_${i.id}" &
       "@example_request_body [id]" #> s"example_request_body_${i.id}" &
@@ -780,8 +788,18 @@ class ApiExplorer extends MdcLoggable {
       "@request_url_input" #> text(i.url, s => requestUrl = s, "maxlength" -> "512", "size" -> "100", "id" -> s"request_url_input_${i.id}") &
       // Extraction.decompose creates json representation of JObject.
       "@example_request_body_input" #> text(pretty(render(i.example_request_body)), s => requestBody = s, "maxlength" -> "100000", "size" -> "100", "type" -> "text") &
-      "@request_body_input" #> textarea(("Typical Success Body: " + pretty(render(i.success_response_body))+"\n\nPossible Errors : {\n  "+i.error_response_bodies.mkString("\n  ") + " \n}"), s => requestBody = s, "cols" -> "1000", "rows" -> "10","style"->"border:none") &
-      // We're not using the id at the moment
+      //"@request_body_input" #> textarea((""), s => requestBody = s, "cols" -> "1000", "rows" -> "10","style"->"border:none") &
+      //
+      // Typical Success Response
+      "@typical_success_response_box [id]" #> s"typical_success_response_box_${i.id}" &
+      //"@typical_success_response [id]" #> s"typical_success_response_${i.id}" &
+      "@typical_success_response *" #> pretty(render(i.success_response_body)) &
+      // Possible Errors
+      "@possible_error_responses_box [id]" #> s"possible_error_responses_box_${i.id}" &
+      // This class gets a list of several possible error reponse items
+      ".possible_error_item" #> i.error_response_bodies.map { i =>
+          ".possible_error_item *" #> i
+      } &
       "@request_verb_input" #> text(i.verb, s => requestVerb = s, "type" -> "hidden", "id" -> s"request_verb_input_${i.id}") &
       "@resource_id_input" #> text(i.id.toString, s => resourceId = s, "type" -> "hidden", "id" -> s"resource_id_input_${i.id}") &
       // Replace the type=submit with Javascript that makes the ajax call.

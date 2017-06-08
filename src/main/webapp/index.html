@@ -192,19 +192,36 @@
                             <button name="call_button" class="default-button">POST</button>
                        </form>
                     </div>
-                    <div name="result_box" class="content-box__info-box">
+                    <div name="result_box" class="content-box__info-box" style="display: none;">
                         <pre>
                             <code>
-                                <div name="result">
-                                    <div name="request_body_input"
-                                         class="content-box__info-box"></div>
-                                </div>
+                                <div name="result" ></div>
                                 <!-- TODO: This should hide the result
                                 <img src="./media/images/close-icon.png" alt="Close icon" class="content-box__close-icon">
                                 -->
-                                </code>
+                            </code>
                         </pre>
                     </div>
+
+                    <div name="typical_success_response_box" class="content-box__info-box">
+                        <div>Typical Successful Response:</div>
+                        <br/>
+                        <pre>
+                            <code>
+                                <div name="typical_success_response">I will become a typical successful response</div>
+                            </code>
+                        </pre>
+                    </div>
+
+                    <div name="possible_error_responses_box" class="content-box__info-box">
+                        Possible Errors:
+                        <ul>
+                            <li class="possible_error_item">
+                                Possible Error Item
+                            </li>
+                        </ul>
+                    </div>
+
                 </div>
                 <div class="content-box__available-since"></div>
             </div>
