@@ -391,7 +391,7 @@ class ApiExplorer extends MdcLoggable {
 
 
     // Headline we display including count of APIs
-    val headline : String = s"$catalogHeadline APIs $tagsHeadline (${resources.length})".trim()
+    val headline : String = s"$catalogHeadline APIs v$apiVersionRequested $tagsHeadline (${resources.length})".trim()
     logger.info (s"showingMessage is: $headline")
 
 
