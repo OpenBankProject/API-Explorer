@@ -977,3 +977,13 @@ a.version {
 a.end-point-anchor {
   text-decoration: none;
 }
+
+
+.full_path {
+    font-size: 12px;
+    line-height: 22px;
+    color: #24bc65;
+    margin: 0 0 0 50;
+    letter-spacing: 0.2px;
+}
+

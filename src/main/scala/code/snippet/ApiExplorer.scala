@@ -1,5 +1,7 @@
 package code.snippet
 
+import java.net.URL
+
 import _root_.net.liftweb._
 import code.lib.ObpJson.{ImplementedBy, BarebonesAccountJson, BarebonesAccountsJson, ResourceDoc}
 import code.lib._
@@ -442,7 +444,7 @@ class ApiExplorer extends MdcLoggable {
       val resultTarget = "result_" + resourceId
       val boxTarget = "result_box_" + resourceId
       // This will highlight the json. Replace the $ sign after we've constructed the string
-      val jsCommand : String =  s"DOLLAR_SIGN('#$boxTarget').fadeIn();DOLLAR_SIGN('#$resultTarget').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
+      val jsCommandHighlightResult : String =  s"DOLLAR_SIGN('#$boxTarget').fadeIn();DOLLAR_SIGN('#$resultTarget').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
 
       // The id of the possible error responses box we want to hide after calling the API
       val possibleErrorResponsesBoxTarget = "possible_error_responses_box_" + resourceId
@@ -455,16 +457,33 @@ class ApiExplorer extends MdcLoggable {
       // The javascript to hide it.
       val jsCommandHideTypicalSuccessResponseBox : String =  s"DOLLAR_SIGN('#$typicalSuccessResponseBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
 
+      // The id of the full path
+      val fullPathTarget = "full_path_" + resourceId
+      // The javascript to show it
 
+      val jsCommandShowFullPath : String =  s"DOLLAR_SIGN('#$fullPathTarget').fadeIn();".replace("DOLLAR_SIGN","$")
 
+      // alert('$fullPathTarget');
       //logger.info(s"jsCommand is $jsCommand")
       //logger.info(s"jsCommand2 is $jsCommandHidePossibleErrorResponsesBox")
 
+
+      /////////////
+      // TODO we should modify getResponse and underlying functions to return more information about the request including full path and headers
+      // For now we duplicate the construction of the fullPath
+      val apiUrl = OAuthClient.currentApiBaseUrl
+      val urlWithVersion = s"/$apiVersion$requestUrl"
+      val fullPath = new URL(apiUrl + urlWithVersion)
+      //////////////
+
+
       // Return the commands to call the url with optional body and put the response into the appropriate result div
       SetHtml(resultTarget, Text(getResponse(apiVersion, requestUrl, requestVerb, jsonObject))) &
-      Run (jsCommand) &
+      Run (jsCommandHighlightResult) &
       Run (jsCommandHidePossibleErrorResponsesBox) &
-      Run (jsCommandHideTypicalSuccessResponseBox)
+      Run (jsCommandHideTypicalSuccessResponseBox) &
+      Run (jsCommandShowFullPath) &
+      SetHtml(fullPathTarget, Text(fullPath.toString))
     }
 
 
@@ -786,6 +805,7 @@ class ApiExplorer extends MdcLoggable {
       // We provide a default value (i.url) and bind the user input to requestUrl. requestURL is available in the function process
       // text creates a text box and we can capture its input in requestUrl
       "@request_url_input" #> text(i.url, s => requestUrl = s, "maxlength" -> "512", "size" -> "100", "id" -> s"request_url_input_${i.id}") &
+      "@full_path [id]" #> s"full_path_${i.id}" &
       // Extraction.decompose creates json representation of JObject.
       "@example_request_body_input" #> text(pretty(render(i.example_request_body)), s => requestBody = s, "maxlength" -> "100000", "size" -> "100", "type" -> "text") &
       //"@request_body_input" #> textarea((""), s => requestBody = s, "cols" -> "1000", "rows" -> "10","style"->"border:none") &
