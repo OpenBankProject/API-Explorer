@@ -507,7 +507,7 @@ object APIUtils extends MdcLoggable {
 
   def getAPIResponseBody(responseCode : Int, body : String) : Box[JValue] = {
     responseCode match {
-      case 200 | 201 => tryo{parse(body)}
+      case 200 | 201 | 202 |204 => tryo{parse(body)}
       case _ => {
         val failMsg = "Bad response code (" + responseCode + ") from OBP API server: " + body
         logger.warn(failMsg)
@@ -518,7 +518,7 @@ object APIUtils extends MdcLoggable {
 
   def apiResponseWorked(responseCode : Int, result : String) : Boolean = {
     responseCode match {
-      case 200 | 201 | 204 => true
+      case 200 | 201 | 202 |204 => true
       case _ => false
     }
   }
