@@ -240,16 +240,16 @@ class ApiExplorer extends MdcLoggable {
 
   def showResources = {
 
-    val defaultVersion : String = "3.0.0"
+    val defaultVersion: String = "3.0.0"
 
     // Get the requested version from the url parameter and default if none
     val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
 
 
-    val supportedApiVersions = List ("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0")
+    val supportedApiVersions = List("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0")
 
 
-    val apiVersion : String = {
+    val apiVersion: String = {
       if (supportedApiVersions.contains(apiVersionRequested)) {
         s"v$apiVersionRequested"
       } else {
@@ -258,7 +258,7 @@ class ApiExplorer extends MdcLoggable {
       }
     }
 
-    logger.info (s"API version to use is: $apiVersion")
+    logger.info(s"API version to use is: $apiVersion")
 
 
 
@@ -302,36 +302,36 @@ class ApiExplorer extends MdcLoggable {
 
 
     // Filter
-    val filteredResources1 : List[ResourceDoc] = showCore match {
+    val filteredResources1: List[ResourceDoc] = showCore match {
       case Some(true) => allResources.filter(x => x.isCore == true)
       case Some(false) => allResources.filter(x => x.isCore == false)
       case _ => allResources
     }
 
-    val filteredResources2 : List[ResourceDoc] = showPSD2 match {
+    val filteredResources2: List[ResourceDoc] = showPSD2 match {
       case Some(true) => filteredResources1.filter(x => x.isPSD2 == true)
       case Some(false) => filteredResources1.filter(x => x.isPSD2 == false)
       case _ => filteredResources1
     }
 
-    val filteredResources3 : List[ResourceDoc] = showOBWG match {
+    val filteredResources3: List[ResourceDoc] = showOBWG match {
       case Some(true) => filteredResources2.filter(x => x.isOBWG == true)
       case Some(false) => filteredResources2.filter(x => x.isOBWG == false)
       case _ => filteredResources2
     }
 
     // Check if we have tags, and if so filter by them
-    val filteredResources4 :  List[ResourceDoc] = tagsParam match {
+    val filteredResources4: List[ResourceDoc] = tagsParam match {
       // We have tags
       case Some(tags) => {
         for {
-            x <- filteredResources3
-            y <- tags
-            if x.tags.contains(y.trim)
-          } yield {
-            x
-          }
+          x <- filteredResources3
+          y <- tags
+          if x.tags.contains(y.trim)
+        } yield {
+          x
         }
+      }
       // tags param was not mentioned in url, return all
       case None => filteredResources3
     }
@@ -352,6 +352,9 @@ class ApiExplorer extends MdcLoggable {
     val resources = resourcesToUse.sortBy(r => (r.tags.take(0).toString(), r.tags.take(1).toString(), r.summary.toString))
 
 
+    // The list generated here might be used by an administrator as a white or black list of API calls for the API itself.
+    val commaSeparatedListOfResources = resources.map(_.implementedBy.function).mkString("[", ", ", "]")
+
 
     // Headline and Description of the search
     val (catalogHeadline, catalogDescription) = List(showCore, showOBWG, showPSD2)  match {
@@ -369,7 +372,7 @@ class ApiExplorer extends MdcLoggable {
 
       // All
       case List(None, None, None) => ("OBP",
-        "The full set of Open Bank Project APIs supports functionality including transaction history, payments, onboarding & KYC, cards, customer and customer messages, counterparty and transaction metadata, delegated account access, data redaction and entitlements.")
+        "The full set of Open Bank Project APIs.")
 
       // UK OBWG
       case List(None, Some(true), None) => ("UK Open Banking",
@@ -784,6 +787,8 @@ class ApiExplorer extends MdcLoggable {
         ".api_list_item_link [id]" #> s"index_of_${i.id}"
        // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
     } &
+    // This is used by API administrators who want to create white or black lists of API calls to use in Props for the API.
+    ".comma_separated_api_call_list *" #> commaSeparatedListOfResources &
       // replace the node identified by the class "resource" with the following
       // This creates the list of resources in the DOM
     ".resource" #> resources.map { i =>

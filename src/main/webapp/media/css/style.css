@@ -368,7 +368,7 @@ a img {
   width: 720px;
   position: relative;
   color: #504854;
-  font-size: 8px;
+  font-size: 12px;
   text-decoration: none;
 }
 
@@ -385,6 +385,15 @@ a img {
     height: 750px;
     background-color: white;
 }
+
+.comma_separated_api_call_list {
+    background-color: white;
+    font-size: 8px;
+    text-decoration: none;
+}
+
+
+
 
 
 .api_list_item {

@@ -8,7 +8,10 @@
                     <a class="api_list_item_link" href="./#anchor">API call title</a>
                 </li>
             </ul>
+
         </div>
+
+
 
 
     <section class="breadcrumb-section">
@@ -17,7 +20,7 @@
 
                 <ul class="breadcrumbs__row">
                     <li class="breadcrumbs__list">
-                        <a id="api_home_link" href="simon says" class="breadcrumbs__link">API Home</a>
+                        <a id="api_home_link" href="This href should be replaced" class="breadcrumbs__link">API Home</a>
                     </li>
 
 
@@ -236,11 +239,39 @@
         </section>
 
 
+    <!-- End of Resources loop (one for each API call -->
     </div>
-        <div class="docs-as-json">
-            <a class="content-box__swagger_etc" name="resource_docs_path" href="" >Resource Docs JSON</a>
-            <a class="content-box__swagger_etc" name="swagger_path" href="" class="footer-link-box__link">Swagger JSON (experimental)</a>
+
+
+    <!-- Footer of this page. Note we reuse footer css from default.html -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content-wrapper">
+                <div class="footer-box">
+                    <p class="footer-box__paragraph"></p>
+                </div>
+            </div>
+
+            <div class="footer-links-box">
+                <p class="footer-box__paragraph">The following links may be useful for API integrators:</p>
+                <a class="content-box__swagger_etc" name="resource_docs_path" href="" >The selected API calls as Resource Docs JSON</a>
+                <a class="content-box__swagger_etc" name="swagger_path" href="" class="footer-link-box__link">The selected API calls as Swagger JSON (Work in Progress)</a>
+            </div>
+
+            <div class="footer-content-wrapper">
+                <div class="footer-box">
+                    <p class="footer-box__paragraph">A comma separated list of endpoint functions:</p>
+                    <div class="comma_separated_api_call_list"></div>
+                </div>
+            </div>
+
         </div>
+    </footer>
+
+
+
+
+<!-- End of Lift generated content -->
 </div>
 
 </div>
