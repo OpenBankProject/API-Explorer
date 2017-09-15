@@ -324,12 +324,13 @@ class ApiExplorer extends MdcLoggable {
     val filteredResources4: List[ResourceDoc] = tagsParam match {
       // We have tags
       case Some(tags) => {
+       // This can create duplicates to use toSet below
         for {
-          x <- filteredResources3
-          y <- tags
-          if x.tags.contains(y.trim)
+          r <- filteredResources3
+          t <- tags
+          if r.tags.contains(t.trim)
         } yield {
-          x
+          r
         }
       }
       // tags param was not mentioned in url, return all
@@ -337,11 +338,25 @@ class ApiExplorer extends MdcLoggable {
     }
 
 
-    val resourcesToUse = filteredResources4
+    val resourcesToUse = filteredResources4.toSet.toList
+
+    logger.debug(s"allResources count is ${allResources.length}")
+    logger.debug(s"filteredResources1 count is ${filteredResources1.length}")
+    logger.debug(s"filteredResources2 count is ${filteredResources2.length}")
+    logger.debug(s"filteredResources3 count is ${filteredResources3.length}")
+    logger.debug(s"resourcesToUse count is ${resourcesToUse.length}")
+
 
     if (filteredResources4.length > 0 && resourcesToUse.length == 0) {
-      logger.debug("tags filter reduced the list of resource docs to zero")
+      logger.info("tags filter reduced the list of resource docs to zero")
     }
+
+
+
+
+
+
+
 
 
 
