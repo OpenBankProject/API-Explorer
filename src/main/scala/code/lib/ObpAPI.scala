@@ -44,7 +44,7 @@ object ObpAPI {
   def allBanks : Box[BanksJson]= {
     allBanksVar.get match {
       case Full(a) => Full(a)
-      case _ => ObpGet("/v1.2/banks").flatMap(_.extractOpt[BanksJson]) // TODO use more recent API version
+      case _ => ObpGet("/v1.2.1/banks").flatMap(_.extractOpt[BanksJson])
     }
   }
 
@@ -80,7 +80,7 @@ object ObpAPI {
       fromDate.map(f => Header("obp_from_date", dateFormat.format(f))).toList ::: toDate.map(t => Header("obp_to_date", dateFormat.format(t))).toList :::
       sortDirection.map(s => Header("obp_sort_direction", s.value)).toList ::: Nil
     
-    ObpGet("/v1.2/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) +
+    ObpGet("/v1.2.1/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) +
               "/transactions", headers).flatMap(x => x.extractOpt[TransactionsJson])
   }
 
@@ -107,7 +107,7 @@ object ObpAPI {
 
 
   def publicAccounts(bankId : String) : Box[BarebonesAccountsJson] = {
-    ObpGet("/v1.2/banks/" + urlEncode(bankId) + "/accounts/public").flatMap(_.extractOpt[BarebonesAccountsJson])
+    ObpGet("/v1.2.1/banks/" + urlEncode(bankId) + "/accounts/public").flatMap(_.extractOpt[BarebonesAccountsJson])
   }
 
   def publicAccounts : Box[BarebonesAccountsJson] = {
@@ -115,7 +115,7 @@ object ObpAPI {
   }
 
   def privateAccounts(bankId : String) : Box[BarebonesAccountsJson] = {
-    ObpGet("/v1.2/banks/" + urlEncode(bankId) + "/accounts/private").flatMap(_.extractOpt[BarebonesAccountsJson])
+    ObpGet("/v1.2.1/banks/" + urlEncode(bankId) + "/accounts/private").flatMap(_.extractOpt[BarebonesAccountsJson])
   }
 
   def privateAccounts : Box[BarebonesAccountsJson] = {
@@ -132,7 +132,7 @@ object ObpAPI {
   }
 
   def getAccount(bankId: String, accountId: String, viewId: String) : Box[AccountJson] = {
-    ObpGet("/v1.2/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/account").flatMap(x => x.extractOpt[AccountJson])
+    ObpGet("/v1.2.1/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/account").flatMap(x => x.extractOpt[AccountJson])
   }
 
   def getCounterparties(bankId: String, accountId: String, viewId: String): Box[DirectOtherAccountsJson] = {
@@ -171,7 +171,7 @@ object ObpAPI {
     
     val addCommentJson = ("value" -> comment)
     
-    val addCommentUrl = "/v1.2/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) +
+    val addCommentUrl = "/v1.2.1/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) +
       "/transactions/" + urlEncode(transactionId) + "/metadata/comments"
     
     ObpPost(addCommentUrl, addCommentJson).flatMap(_.extractOpt[TransactionCommentJson])
@@ -267,7 +267,7 @@ object ObpAPI {
       ("value" -> tag)
     })
     
-    val addTagUrl = "/v1.2/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/transactions/" + urlEncode(transactionId) + "/metadata/tags"
+    val addTagUrl = "/v1.2.1/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/transactions/" + urlEncode(transactionId) + "/metadata/tags"
     
     addTagJsons.map(addTagJson => ObpPost(addTagUrl, addTagJson).flatMap(_.extractOpt[TransactionTagJson])).flatten
   }
@@ -277,7 +277,7 @@ object ObpAPI {
    */
   def deleteTag(bankId : String, accountId : String, viewId : String,
       transactionId: String, tagId: String) : Boolean  = {
-    val deleteTagUrl = "/v1.2/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/transactions/" + 
+    val deleteTagUrl = "/v1.2.1/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/transactions/" + 
       urlEncode(transactionId) + "/metadata/tags/" + urlEncode(tagId)
     ObpDeleteBoolean(deleteTagUrl)
   }
@@ -292,7 +292,7 @@ object ObpAPI {
       ("label" -> imageDescription) ~
       ("URL" -> imageURL)
     
-    val addImageUrl = "/v1.2/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + 
+    val addImageUrl = "/v1.2.1/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + 
       "/transactions/" + urlEncode(transactionId) + "/metadata/images"
       
     ObpPost(addImageUrl, json).flatMap(_.extractOpt[TransactionImageJson])
@@ -304,7 +304,7 @@ object ObpAPI {
   def deleteImage(bankId : String, accountId : String, viewId : String,
       transactionId: String, imageId: String) : Boolean  = {
     
-    val deleteImageUrl = "/v1.2/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + 
+    val deleteImageUrl = "/v1.2.1/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + 
       "/transactions/" + urlEncode(transactionId) + "/metadata/images/" + urlEncode(imageId)
     ObpDeleteBoolean(deleteImageUrl)
   }
@@ -710,7 +710,7 @@ object ObpJson {
     amount: Option[String])
 		  					  
   case class TransactionDetailsJson(`type`: Option[String],
-    label: Option[String],
+    description: Option[String],
     posted: Option[Date], //TODO: Check if the default date formatter is okay
     completed: Option[Date], //TODO: Check if the default date formatter is okay
     new_balance: Option[AccountBalanceJson],
