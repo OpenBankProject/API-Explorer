@@ -352,19 +352,15 @@ class ApiExplorer extends MdcLoggable {
     }
 
 
-
-
-
-
-
-
-
-
-
-
     // Sort by the first and second tags (if any) then the summary.
     // In order to help sorting, the first tag in a call should be most general, then more specific etc.
     val resources = resourcesToUse.sortBy(r => (r.tags.take(0).toString(), r.tags.take(1).toString(), r.summary.toString))
+
+    // Group resources by the first tag
+    val unsortedGroupedResources: Map[String, List[ResourceDoc]] = resources.groupBy(_.tags.headOr("ToTag"))
+
+    // Sort the groups by the Tag. Note in the rendering we sort the resources by summary.
+    val groupedResources  = unsortedGroupedResources.toSeq.sortBy(_._1)
 
 
     // The list generated here might be used by an administrator as a white or black list of API calls for the API itself.
@@ -795,13 +791,18 @@ class ApiExplorer extends MdcLoggable {
     "#api_home_link [href]" #> s"$baseUrl" &
     "@views_box [style]" #> s"display: $displayViews;" &
     ".info-box__about_selected *" #> s"$catalogDescription" &
-    ".api_list_item" #> resources.map { i =>
-      // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-      ".api_list_item_link [href]" #> s"#${i.id}" &
-        ".api_list_item_link *" #> i.summary &
-        ".api_list_item_link [id]" #> s"index_of_${i.id}"
-       // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
-    } &
+    // List the resources grouped by the first tag
+      ".api_group_item" #> groupedResources.map { i =>
+          ".api_group_name *" #> s"${i._1}" &
+            // Within each group (first tag), list the resources
+            ".api_list_item" #> i._2.sortBy(_.summary.toString()).map { i =>
+              // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
+                ".api_list_item_link [href]" #> s"#${i.id}" &
+                  ".api_list_item_link *" #> i.summary &
+                  ".api_list_item_link [id]" #> s"index_of_${i.id}"
+                  // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
+        }
+      } &
     // This is used by API administrators who want to create white or black lists of API calls to use in Props for the API.
     ".comma_separated_api_call_list *" #> commaSeparatedListOfResources &
       // replace the node identified by the class "resource" with the following
