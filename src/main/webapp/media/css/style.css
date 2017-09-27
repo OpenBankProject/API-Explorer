@@ -34,6 +34,7 @@ a img {
   border-bottom: 0;
 }
 
+
 .logo-box {
   float: left;
 }
@@ -95,7 +96,7 @@ a img {
 .settings-imgs__link:first-child {
   border-right: 1px solid #cccccc;
   margin: 1px 7px 0 0;
-  padding: 2px 8px 11px 0;
+  padding: 2px 8px 0 0;
 }
 
 .settings-imgs__icon {
@@ -129,7 +130,7 @@ a img {
   float: right;
   padding: 14px 2px 12px 2px;
 
-  margin: 0 0 0 0;
+  margin: 0 6px 0 0;
   font-size: 12px;
   line-height: 16px;
   color: #fff;
@@ -1003,3 +1004,63 @@ a.end-point-anchor {
     letter-spacing: 0.2px;
 }
 
+
+/* Scroll feature */
+.header-scroll {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 5;
+}
+.header-scroll .logo-box__img {
+  height: 40px;
+}
+.header-scroll .site-title-box {
+  margin-top: 20px;
+}
+.header-scroll .settings-box {
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+.header-scroll .settings-imgs__link:first-child {
+}
+
+.breadcrumb-section-scroll {
+  position: fixed;
+  top: 65px;
+  width: 100%;
+  z-index: 5;
+}
+.breadcrumb-section-scroll .version_path,
+.breadcrumb-section-scroll .breadcrumbs__link {
+  padding: 0;
+}
+
+.option-section-scroll {
+  position: fixed;
+  top: 89px;
+  background-color: #f2f2f2;
+  width: 100%;
+  z-index: 5;
+}
+.option-section-scroll .option-box {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-top: 0;
+  padding-bottom: 10px;
+}
+.option-section-scroll h4 {
+  font-size: 14px;
+  padding-top: 0;
+  padding-bottom: 5px;
+}
+.option-section-scroll select {
+  font-size: 12px;
+  height: 19px;
+  padding: 0 0 0 7px;
+  background: url(../images/select-arrow.png) no-repeat right 6px top 8px;
+  background-color: #333333;
+}
+.spacer-section-scroll {
+  margin-top: 500px;
+}
