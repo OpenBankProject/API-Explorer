@@ -382,7 +382,7 @@ a img {
     z-index: 10;
     overflow: scroll;
     width: 250px;
-    height: 750px;
+    height: 100%;
     background-color: white;
 }
 
