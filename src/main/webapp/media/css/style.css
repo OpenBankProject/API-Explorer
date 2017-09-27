@@ -404,6 +404,13 @@ a img {
   padding: 0 0 0 0;
   letter-spacing: 0.8px;
 }
+.api_list_item a {
+  text-decoration: none;
+  color: #000;
+}
+.api_list_item a:hover {
+  color: #24bc65;
+}
 
 
 .default-input {
