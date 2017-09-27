@@ -388,20 +388,20 @@ a img {
 
 .comma_separated_api_call_list {
     background-color: white;
-    font-size: 8px;
+    font-size: 10px;
     text-decoration: none;
 }
 
-
-
-
+.api_group_item {
+  margin: 0 0 25px -20px;
+}
 
 .api_list_item {
-  margin: 0 0 0px 0;
-  font-size: 8px;
+  margin: 0 0 5px -40px;
+  font-size: 10px;
   color: #24bc65;
   font-weight: 400;
-  padding: 0px 0 0 0;
+  padding: 0 0 0 0;
   letter-spacing: 0.8px;
 }
 
