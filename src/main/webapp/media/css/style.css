@@ -30,8 +30,13 @@ a img {
 .header {
   background-color: #fff;
   border: 0px solid #666666;
-  margin: 0px 0 0 0;
   border-bottom: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100px;
+  width: 100%;
+  z-index: 5;
 }
 
 
@@ -112,6 +117,12 @@ a img {
 .breadcrumb-section {
   background-color: #333333;
   border: 1px solid #3a3a3a;
+  position: fixed;
+  top: 100px;
+  left: 0;
+  height: 45px;
+  width: 100%;
+  z-index: 5;
 }
 
 .breadcrumbs__row {
@@ -167,6 +178,12 @@ a img {
 }
 
 .api-info-section {
+  position: fixed;
+  top: 145px;
+  left: 0;
+  width: 100%;
+  height: 160px;
+  z-index: 5;
   background-color: #31b8cd;
 }
 
@@ -227,19 +244,29 @@ a img {
   text-decoration: none;
 }
 
+.option-section {
+  position: fixed;
+  top: 305px;
+  left: 0;
+  height: 130px;
+  background-color: #f2f2f2;
+  width: 100%;
+  z-index: 5;
+}
+
 .option-box {
   float: left;
   background-color: #39b54a;
   width: 17%;
   padding: 8px 8px 38px 8px;
-  margin: 39px 8px 38px 8px;
+  margin: 20px 8px 38px 8px;
   position: relative;
 }
 .option-box:first-child {
-  margin: 39px 8px 38px 2px;
+  margin: 20px 8px 38px 2px;
 }
 .option-box:last-child {
-  margin: 39px 2px 38px 11px;
+  margin: 20px 2px 38px 11px;
 }
 
 .option-box__headline {
@@ -298,7 +325,7 @@ a img {
 
 .content-box {
   padding: 0 7px 31px 12px;
-  width: 97.1%;
+  width: 97.7%; /* awkward width */
   height: 100%;
 }
 .content-box pre {
@@ -1006,12 +1033,6 @@ a.end-point-anchor {
 
 
 /* Scroll feature */
-.header-scroll {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 5;
-}
 .header-scroll .logo-box__img {
   height: 40px;
 }
@@ -1022,26 +1043,20 @@ a.end-point-anchor {
   margin-top: 20px;
   margin-bottom: 0;
 }
-.header-scroll .settings-imgs__link:first-child {
-}
 
 .breadcrumb-section-scroll {
-  position: fixed;
   top: 65px;
-  width: 100%;
-  z-index: 5;
 }
 .breadcrumb-section-scroll .version_path,
 .breadcrumb-section-scroll .breadcrumbs__link {
   padding: 0;
 }
-
+.api-info-section-scroll {
+  display: none;
+}
 .option-section-scroll {
-  position: fixed;
   top: 89px;
-  background-color: #f2f2f2;
-  width: 100%;
-  z-index: 5;
+  height: 70px;
 }
 .option-section-scroll .option-box {
   margin-top: 10px;
@@ -1061,6 +1076,9 @@ a.end-point-anchor {
   background: url(../images/select-arrow.png) no-repeat right 6px top 8px;
   background-color: #333333;
 }
-.spacer-section-scroll {
-  margin-top: 500px;
+.content-box__headline {
+  padding-top: 470px;
+}
+.content-box__headline-scroll {
+  padding-top: 170px;
 }
