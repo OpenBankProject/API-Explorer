@@ -3,13 +3,16 @@
     <div data-lift="ApiExplorer.showResources">
 
         <div class="api_list">
+           <div class="api-info-about">
+                <div class="info-box">
+                    <h3 class="info-box__about_selected">This version...</h3>
+                </div>
+            </div>
 
             <ul>
                 <li class="api_group_item">
                     <div class="api_group_name">API group</div>
-
                     <ul>
-
                         <li class="api_list_item">
                             <a class="api_list_item_link" href="./#anchor">API call title</a>
                         </li>
@@ -17,8 +20,6 @@
 
                 </li>
             </ul>
-
-
         </div>
 
 
@@ -73,28 +74,14 @@
     </section>
 
 
-
-
-
         <section class="api-info-section">
             <div class="container">
                 <div class="info-box">
                     <h2 class="info-box__headline">Use the API in the context of your login</h2>
-                </div>
-
-                <div class="info-box">
-                    <h3 class="info-box__about_selected">This version...</h3>
-                </div>
-
+               </div>
             </div>
-
-
-
-
-
-
-
         </section>
+
 
         <section class="option-section">
             <div class="container">
@@ -167,7 +154,6 @@
         </section>
 
 
-
     <div class="resource">
 
         <section class="content-section">
@@ -176,6 +162,7 @@
                     <a class="end-point-anchor" href="./#anchor">
                         <h2 id="anchor" class="content-box__headline">The root of the API</h2>
                     </a>
+
                     <div class="content-box__text-box">
                         <ul class="content-box__row">
                             <li class="content-box__link">Returns information about:</li>
@@ -184,60 +171,61 @@
                             <li class="content-box__link">Git Commit</li>
                         </ul>
                     </div>
-                    <div class="content-box__input-box">
-                        <form class="lift:form.ajax" id="form1">
-                            <!-- Attributes for these fields are replaced -->
-                            <input type="hidden" name="resource_id_input">
-                            <input type="hidden" name="request_verb_input" placeholder="GET, POST, PUT etc.">
-                            <!-- The url_to_call is populated at render (but it can be edited manually) -->
-                            <input type="text" name="request_url_input" class="default-input" placeholder="OBP URL to call">
 
-                            <div name="example_request_body" style="display: block;">
-                                <input name="example_request_body_input" class="default-input" placeholder="JSON body to POST or PUT">
-                            </div>
+                    <div class="content-box__right-box">
+						<div class="content-box__input-box">
+							<form class="lift:form.ajax" id="form1">
+								<!-- Attributes for these fields are replaced -->
+								<input type="hidden" name="resource_id_input">
+								<input type="hidden" name="request_verb_input" placeholder="GET, POST, PUT etc.">
+								<!-- The url_to_call is populated at render (but it can be edited manually) -->
+								<input type="text" name="request_url_input" class="default-input" placeholder="OBP URL to call">
 
-                            <button name="call_button" class="default-button">POST</button>
-                       </form>
-                    </div>
+								<div name="example_request_body" style="display: block;">
+									<input name="example_request_body_input" class="default-input" placeholder="JSON body to POST or PUT">
+								</div>
 
-                    <div name="full_path" class="full_path" style="display: none;">I will become the full path</div>
+								<button name="call_button" class="default-button">POST</button>
+						   </form>
+						</div>
 
-                    <div name="result_box" class="content-box__info-box" style="display: none;">
-                        <pre>
-                            <code>
-                                <div name="result" ></div>
-                                <!-- This could hide the result
-                                <img src="./media/images/close-icon.png" alt="Close icon" class="content-box__close-icon">
-                                -->
-                            </code>
-                        </pre>
-                    </div>
+						<div name="full_path" class="full_path" style="display: none;">I will become the full path</div>
 
-
-
-
+						<div name="result_box" class="content-box__info-box" style="display: none;">
+							<pre>
+								<code>
+									<div name="result" ></div>
+									<!-- This could hide the result
+									<img src="./media/images/close-icon.png" alt="Close icon" class="content-box__close-icon">
+									-->
+								</code>
+							</pre>
+						</div>
 
 
-                    <div name="typical_success_response_box" class="content-box__info-box">
-                        <div>Typical Successful Response:</div>
-                        <br/>
-                        <pre>
-                            <code>
-                                <div name="typical_success_response">I will become a typical successful response</div>
-                            </code>
-                        </pre>
-                    </div>
 
-                    <div name="possible_error_responses_box" class="content-box__info-box">
-                        Possible Errors:
-                        <ul>
-                            <li class="possible_error_item">
-                                Possible Error Item
-                            </li>
-                        </ul>
-                    </div>
+						<div name="typical_success_response_box" class="content-box__info-box">
+							<div>Typical Successful Response:</div>
+							<br/>
+							<pre>
+								<code>
+									<div name="typical_success_response">I will become a typical successful response</div>
+								</code>
+							</pre>
+						</div>
+
+						<div name="possible_error_responses_box" class="content-box__info-box">
+							Possible Errors:
+							<ul>
+								<li class="possible_error_item">
+									Possible Error Item
+								</li>
+							</ul>
+						</div>
+					</div>
 
                 </div>
+				<div class="clearfloat"></div>
                 <div class="content-box__available-since"></div>
             </div>
         </section>
