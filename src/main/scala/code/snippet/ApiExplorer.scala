@@ -372,9 +372,7 @@ class ApiExplorer extends MdcLoggable {
 
       // Core
       case List(Some(true), None, None) => ("Core OBP",
-        "This core set of APIs is chosen to support common customer facing applications that rely on existing core banking services only. " +
-          "Customer data (accounts, transactions etc.) is provided only from the perspective of the account owner. " +
-          "Bank Branches, ATMs and Products are available too.")
+        "A core set of customer facing APIs built on core banking services and bank open data.")
 
       // Non Core
       case List(Some(false), None, None) => ("Non-Core OBP",
@@ -387,11 +385,11 @@ class ApiExplorer extends MdcLoggable {
 
       // UK OBWG
       case List(None, Some(true), None) => ("UK Open Banking",
-        "These APIs support customer account and transaction data (from the perspective of the account holder), payments and some of the bank's open data too. ")
+        "A core set of customer facing APIs built on core banking services and bank open data.")
 
       // PSD2
       case List(None,  None, Some(true)) => ("PSD2",
-        "These APIs support customer account and transaction history, payments and pricing transparency.")
+        "APIs that support customer account and transaction history, payments and pricing transparency.")
 
       // Intersection
       case List(Some(true), Some(true), Some(true)) => ("Intersection of OBP Core, UK Open Banking and PSD2",
