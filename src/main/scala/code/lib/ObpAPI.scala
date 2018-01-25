@@ -721,7 +721,14 @@ object ObpJson {
     value: Option[String],
     user: Option[UserJson],
     reply_to: Option[String])
-  
+
+  case class ResourceDocCommentJsonV300(id: Option[String],
+                                        text: Option[String],
+                                        user: Option[MinimalUserJsonV300],
+                                    date: Option[Date],
+                                    reply_to_id: Option[String])
+
+
   case class TransactionTagJson(id: Option[String],
     date: Option[Date], //TODO: Check if the default date formatter is okay
     value: Option[String],
@@ -858,12 +865,11 @@ object ObpJson {
    )
 
 
-
-  ////////////////////////////////////////
-  // Copied from OBP-API JSONFactory1_4_0
-  // TODO: Import these and others from API jar file?
-
-
+  case class MinimalUserJsonV300(
+                          user_id : String,
+                          username : String,
+                          provider : String
+                        )
 
 
   // Used to describe the OBP API calls for documentation and API discovery purposes

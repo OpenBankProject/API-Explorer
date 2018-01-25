@@ -1,12 +1,13 @@
 package code.snippet
 
 import java.net.URL
+import java.text.SimpleDateFormat
 
 import _root_.net.liftweb._
-import code.lib.ObpJson.{BarebonesAccountJson, BarebonesAccountsJson, ImplementedBy, ResourceDoc}
+import code.lib.ObpJson._
 import code.lib._
 import net.liftweb.http.js.jquery.JqJsCmds.DisplayMessage
-import net.liftweb.util.Props
+import net.liftweb.util.{CssSel, Props}
 import code.util.Helper.MdcLoggable
 
 import scala.collection.immutable.Nil
@@ -56,6 +57,75 @@ case class EmptyClassJson()
 Present a list of OBP resource URLs
  */
 class ApiExplorer extends MdcLoggable {
+
+
+/*
+
+WIP to add comments on resource docs. This code copied from Sofit.
+
+  val commentDateFormat = new SimpleDateFormat("kk:mm:ss EEE MMM dd yyyy")
+  val NOOP_SELECTOR = "#i_am_an_id_that_should_never_exist" #> ""
+
+
+  val user =  MinimalUserJsonV300(
+                                 user_id = "Asdf",
+                                 username = "simonredfern",
+                                 provider = "google.com"
+                               )
+
+
+  def showComments = {
+    val commentJsons = List(
+      ResourceDocCommentJsonV300(
+        id = Some("123"),
+        text = Some("abc"),
+        user = Some(user),
+        date = Some(now),
+        reply_to_id = None)
+    )
+
+    def showComments(comments: List[ResourceDocCommentJsonV300]) = {
+
+      def orderByDateDescending =
+        (comment1: ResourceDocCommentJsonV300, comment2: ResourceDocCommentJsonV300) =>
+          comment1.date.getOrElse(now).before(comment2.date.getOrElse(now))
+
+      ".commentsContainer" #> {
+        "#noComments" #> "" &
+          ".comment" #> comments.sortWith(orderByDateDescending).zipWithIndex.map {
+            case (commentJson, position) => commentCssSel(commentJson, position + 1)
+          }
+      }
+    }
+  }
+
+
+  def commentCssSel(commentJson: ResourceDocCommentJsonV300, displayPosition : Int) = {
+    def commentDate: CssSel = {
+      commentJson.date.map(d => {
+        ".commentDate *" #> commentDateFormat.format(d)
+      }) getOrElse
+        ".commentDate" #> ""
+    }
+
+    def userInfo: CssSel = {
+      commentJson.user.map(u => {
+        ".userInfo *" #> {
+          " -- " + u.username
+        }
+      }) getOrElse
+        ".userInfo" #> ""
+    }
+
+    ".text *" #> commentJson.text.getOrElse("") &
+      ".commentLink * " #> { "#" + displayPosition } &
+      ".commentLink [id]" #> displayPosition &
+      commentDate &
+      userInfo
+  }
+
+*/
+
 
 
   val listAllBanks = S.param("list-all-banks").getOrElse("false").toBoolean
@@ -373,9 +443,7 @@ class ApiExplorer extends MdcLoggable {
 
       // Core
       case List(Some(true), None, None) => ("Core OBP",
-        "This core set of APIs is chosen to support common customer facing applications that rely on existing core banking services only. " +
-          "Customer data (accounts, transactions etc.) is provided only from the perspective of the account owner. " +
-          "Bank Branches, ATMs and Products are available too.")
+        "A core set of customer facing APIs built on core banking services and bank open data.")
 
       // Non Core
       case List(Some(false), None, None) => ("Non-Core OBP",
@@ -388,11 +456,11 @@ class ApiExplorer extends MdcLoggable {
 
       // UK OBWG
       case List(None, Some(true), None) => ("UK Open Banking",
-        "These APIs support customer account and transaction data (from the perspective of the account holder), payments and some of the bank's open data too. ")
+        "A core set of customer facing APIs built on core banking services and bank open data.")
 
       // PSD2
       case List(None,  None, Some(true)) => ("PSD2",
-        "These APIs support customer account and transaction history, payments and pricing transparency.")
+        "APIs that support customer account and transaction history, payments and pricing transparency.")
 
       // Intersection
       case List(Some(true), Some(true), Some(true)) => ("Intersection of OBP Core, UK Open Banking and PSD2",
