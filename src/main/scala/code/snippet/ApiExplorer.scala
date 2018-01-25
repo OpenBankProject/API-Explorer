@@ -3,7 +3,7 @@ package code.snippet
 import java.net.URL
 
 import _root_.net.liftweb._
-import code.lib.ObpJson.{ImplementedBy, BarebonesAccountJson, BarebonesAccountsJson, ResourceDoc}
+import code.lib.ObpJson.{BarebonesAccountJson, BarebonesAccountsJson, ImplementedBy, ResourceDoc}
 import code.lib._
 import net.liftweb.http.js.jquery.JqJsCmds.DisplayMessage
 import net.liftweb.util.Props
@@ -49,7 +49,7 @@ case class Bank(
 
                 // showToUser : Boolean)
 
-
+case class EmptyClassJson()
 
 
 /*
@@ -297,7 +297,8 @@ class ApiExplorer extends MdcLoggable {
       isCore = r.is_core,
       isPSD2 = r.is_psd2,
       isOBWG = r.is_obwg,
-      tags = r.tags
+      tags = r.tags,
+      roles = r.roles
     )
 
 
@@ -462,9 +463,13 @@ class ApiExplorer extends MdcLoggable {
 
       // The id of the possible error responses box we want to hide after calling the API
       val possibleErrorResponsesBoxTarget = "possible_error_responses_box_" + resourceId
+  
+      // The id of the roles responses box we want to hide after calling the API
+      val requestRolesResponsesBoxTarget = "request_role_box_" + resourceId
       // The javascript to hide it.
       val jsCommandHidePossibleErrorResponsesBox : String =  s"DOLLAR_SIGN('#$possibleErrorResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
-
+      
+      val jsCommandHideRequestRolesResponsesBox : String =  s"DOLLAR_SIGN('#$requestRolesResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
 
       // The id of the possible error responses box we want to hide after calling the API
       val typicalSuccessResponseBoxTarget = "typical_success_response_box_" + resourceId
@@ -495,6 +500,7 @@ class ApiExplorer extends MdcLoggable {
       SetHtml(resultTarget, Text(getResponse(apiVersion, requestUrl, requestVerb, jsonObject))) &
       Run (jsCommandHighlightResult) &
       Run (jsCommandHidePossibleErrorResponsesBox) &
+      Run (jsCommandHideRequestRolesResponsesBox) &
       Run (jsCommandHideTypicalSuccessResponseBox) &
       Run (jsCommandShowFullPath) &
       SetHtml(fullPathTarget, Text(fullPath.toString))
@@ -841,6 +847,9 @@ class ApiExplorer extends MdcLoggable {
       ".possible_error_item" #> i.error_response_bodies.map { i =>
           ".possible_error_item *" #> i
       } &
+      //required roles
+      "@required_roles_response_box [id]" #> s"required_roles_response_box_${i.id}" &
+      "@required_roles_response *" #> pretty(render(i.roles.getOrElse(Extraction.decompose(EmptyClassJson())(net.liftweb.json.DefaultFormats)))) &
       "@request_verb_input" #> text(i.verb, s => requestVerb = s, "type" -> "hidden", "id" -> s"request_verb_input_${i.id}") &
       "@resource_id_input" #> text(i.id.toString, s => resourceId = s, "type" -> "hidden", "id" -> s"resource_id_input_${i.id}") &
       // Replace the type=submit with Javascript that makes the ajax call.
