@@ -137,7 +137,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 // Get entitlements for the logged in user
 
-  val entitlements : List[Entitlement] = getEntitlementsV300 match {
+  val entitlementsForCurrentUser : List[Entitlement] = getEntitlementsV300 match {
     case Full(x) => x.list.map(i => Entitlement(entitlementId = i.entitlement_id, roleName = i.role_name, bankId = i.bank_id))
     case _ => List()
   }
@@ -366,24 +366,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
-
-    //      val thisEndpointRequiredRolesStringList = for {
-    //        JObject(roleJValuelist) <- thisEndpointRequiredRoles
-    //        JField("role",JString(roleName)) <- roleJValuelist
-    //      } yield {
-    //        roleName
-    //      }
-
-
-
-    //      val newRolePairs : List[(String, Boolean)]  = for{
-    //        role <- thisEndpointRequiredRolesStringList
-    //      } yield {
-    //        (role,entitlements.contains(role))
-    //      }
-    //      val responseRoleString = newRolePairs.map(roleParie => s"${roleParie._1} : ${roleParie._2.toString}\n").mkString("")
-
-
     // Get a list of resource docs from the API server
     // This will throw an exception if resource_docs key is not populated
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
@@ -391,7 +373,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val allResources = for {
       rs <- getResourceDocsJson(apiVersion).toList
       r <- rs.resource_docs
-    } yield ResourceDoc(
+    } yield ResourceDocPlus(
       id = r.operation_id,
       verb = r.request_verb,
       url = modifiedRequestUrl(r.request_url, presetBankId, presetAccountId),
@@ -405,31 +387,31 @@ WIP to add comments on resource docs. This code copied from Sofit.
       isPSD2 = r.is_psd2,
       isOBWG = r.is_obwg,
       tags = r.tags,
-      roles = r.roles.map(i => Role(role = i.role, requiresBankId = i.requires_bank_id))
+      roleInfos = r.roles.map(i => RoleInfo(role = i.role, requiresBankId = i.requires_bank_id, userHas = (entitlementsForCurrentUser.contains(i.role)) ))
     )
 
 
     // Filter
-    val filteredResources1: List[ResourceDoc] = showCore match {
+    val filteredResources1: List[ResourceDocPlus] = showCore match {
       case Some(true) => allResources.filter(x => x.isCore == true)
       case Some(false) => allResources.filter(x => x.isCore == false)
       case _ => allResources
     }
 
-    val filteredResources2: List[ResourceDoc] = showPSD2 match {
+    val filteredResources2: List[ResourceDocPlus] = showPSD2 match {
       case Some(true) => filteredResources1.filter(x => x.isPSD2 == true)
       case Some(false) => filteredResources1.filter(x => x.isPSD2 == false)
       case _ => filteredResources1
     }
 
-    val filteredResources3: List[ResourceDoc] = showOBWG match {
+    val filteredResources3: List[ResourceDocPlus] = showOBWG match {
       case Some(true) => filteredResources2.filter(x => x.isOBWG == true)
       case Some(false) => filteredResources2.filter(x => x.isOBWG == false)
       case _ => filteredResources2
     }
 
     // Check if we have tags, and if so filter by them
-    val filteredResources4: List[ResourceDoc] = tagsParam match {
+    val filteredResources4: List[ResourceDocPlus] = tagsParam match {
       // We have tags
       case Some(tags) => {
        // This can create duplicates to use toSet below
@@ -465,7 +447,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val resources = resourcesToUse.sortBy(r => (r.tags.take(0).toString(), r.tags.take(1).toString(), r.summary.toString))
 
     // Group resources by the first tag
-    val unsortedGroupedResources: Map[String, List[ResourceDoc]] = resources.groupBy(_.tags.headOr("ToTag"))
+    val unsortedGroupedResources: Map[String, List[ResourceDocPlus]] = resources.groupBy(_.tags.headOr("ToTag"))
 
     // Sort the groups by the Tag. Note in the rendering we sort the resources by summary.
     val groupedResources  = unsortedGroupedResources.toSeq.sortBy(_._1)
@@ -565,26 +547,22 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val boxTarget = "result_box_" + resourceId
       // This will highlight the json. Replace the $ sign after we've constructed the string
       val jsCommandHighlightResult : String =  s"DOLLAR_SIGN('#$boxTarget').fadeIn();DOLLAR_SIGN('#$resultTarget').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
-      
+
       val rolesTarget = "roles_" + resourceId
       val rolesboxTarget = "roles_box_" + resourceId
-      val jsCommandHighlightRolesResult : String =  s"DOLLAR_SIGN('#$rolesboxTarget').fadeIn();DOLLAR_SIGN('#$rolesTarget').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
-  
-      val thisEndpointRequiredRoles = resources.find(resource => resource.url == requestUrl && resource.verb == requestVerb).head.roles // .getOrElse(JsonParser.parse("{}").asInstanceOf[JObject])
 
+      //val jsCommandHighlightRolesResult : String =  s"DOLLAR_SIGN('#$rolesboxTarget').fadeIn();DOLLAR_SIGN('#$rolesTarget').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
 
-
-      
-      jsCommandHighlightRolesResult.contains("afsf")
+      //jsCommandHighlightRolesResult.contains("afsf")
 
       // The id of the possible error responses box we want to hide after calling the API
       val possibleErrorResponsesBoxTarget = "possible_error_responses_box_" + resourceId
-  
+
       // The id of the roles responses box we want to hide after calling the API
       val requestRolesResponsesBoxTarget = "required_roles_response_box_" + resourceId
       // The javascript to hide it.
       val jsCommandHidePossibleErrorResponsesBox : String =  s"DOLLAR_SIGN('#$possibleErrorResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
-      
+
       val jsCommandHideRequestRolesResponsesBox : String =  s"DOLLAR_SIGN('#$requestRolesResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
 
       // The id of the possible error responses box we want to hide after calling the API
@@ -616,7 +594,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       SetHtml(resultTarget, Text(getResponse(apiVersion, requestUrl, requestVerb, jsonObject))) &
      // SetHtml(rolesTarget, Text(responseRoleString)) &
       Run (jsCommandHighlightResult) &
-      Run (jsCommandHighlightRolesResult) &
+      //Run (jsCommandHighlightRolesResult) &
       Run (jsCommandHidePossibleErrorResponsesBox) &
       Run (jsCommandHideRequestRolesResponsesBox) &
       Run (jsCommandHideTypicalSuccessResponseBox) &
@@ -740,7 +718,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
-    
+
 
     // TODO create BankId case class like in the API
     type BankID = String
@@ -967,17 +945,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
       ".possible_error_item" #> i.error_response_bodies.map { i =>
           ".possible_error_item *" #> i
       } &
-      //required roles
-//      "#version *+" #> apiVersion &
-//        ".versions" #> versionUrls.map { i =>
-//          ".version *" #> s" ${i._1} " &
-//            ".version [href]" #> s"${i._2}"
-//        } &
+      //required roles and related user information
       "@roles_box [id]" #> s"roles_box_${i.id}" &
-      ".role_item" #> i.roles.map { i =>
-           s"${i}"
+      ".role_item" #> i.roleInfos.map { i =>
+        ".role_item *" #> s"${i.role}"
         } &
-      // "@required_roles_response *" #> pretty(render(i.roles.getOrElse(JsonParser.parse("{}").asInstanceOf[JObject]))) &
       "@request_verb_input" #> text(i.verb, s => requestVerb = s, "type" -> "hidden", "id" -> s"request_verb_input_${i.id}") &
       "@resource_id_input" #> text(i.id.toString, s => resourceId = s, "type" -> "hidden", "id" -> s"resource_id_input_${i.id}") &
       // Replace the type=submit with Javascript that makes the ajax call.

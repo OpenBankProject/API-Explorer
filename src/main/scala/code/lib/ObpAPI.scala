@@ -942,28 +942,34 @@ object ObpJson {
 
 
   case class Role (
-                        role: String,
-                        requiresBankId: Boolean
-                      )
+                                           role: String,
+                                           requiresBankId: Boolean
+                                         )
+// Role and indication if the current user has it.
+  case class RoleInfo(
+                    role: String,
+                    requiresBankId: Boolean,
+                    userHas: Boolean
+                  )
 
 
 
-  case class ResourceDoc(id: String,
-                         verb: String,
-                         url: String,
-                         summary: String,
-                         description: NodeSeq,
-                         example_request_body: JValue,
-                         success_response_body: JValue,
-                         error_response_bodies: List[String],
-                         implementedBy: ImplementedBy,
-                         isCore: Boolean,
-                         isPSD2: Boolean,
-                         isOBWG: Boolean,
-                         tags: List[String],
-                         roles: List[Role])
+  case class ResourceDocPlus(id: String,
+                             verb: String,
+                             url: String,
+                             summary: String,
+                             description: NodeSeq,
+                             example_request_body: JValue,
+                             success_response_body: JValue,
+                             error_response_bodies: List[String],
+                             implementedBy: ImplementedBy,
+                             isCore: Boolean,
+                             isPSD2: Boolean,
+                             isOBWG: Boolean,
+                             tags: List[String],
+                             roleInfos: List[RoleInfo])
 
 
-  case class ResourceDocs (resourceDocs : List[ResourceDoc])
+  case class ResourceDocs (resourceDocs : List[ResourceDocPlus])
   
 }
