@@ -202,7 +202,8 @@
 							</pre>
 						</div>
 
-                        <div name="roles_box" class="content-box__info-box" style="display: none;">
+                        <!-- Not working.
+                        <div name="roles_box" class="content-box__info-box">
                             <button type="button" onclick="location = 'https://apiexplorersandbox.openbankproject.com/?ignoredefcat=true&tags=#v3_0_0-addEntitlementRequest'">Call `addEntitlementRequest'</button>
 							<pre>
 								<code>
@@ -210,6 +211,7 @@
 								</code>
 							</pre>
                         </div>
+-->
 
 						<div name="typical_success_response_box" class="content-box__info-box">
 							<div>Typical Successful Response:</div>
@@ -230,14 +232,27 @@
 							</ul>
 						</div>
 
-                        <div name="required_roles_response_box" class="content-box__info-box">
+                        <div name="roles_box" class="content-box__info-box">
                             <div>Required Roles:</div>
+
+                            <ul name="roles_list">
+                                <li class="role_item">
+                                    I will become a Required Role Item
+                                    <button name="call_button" class="default-button">Request Entitlement</button>
+                                    <div name="role_response">I will become the role response</div>
+                                </li>
+                            </ul>
+
+                            <!--
                             <br/>
                             <pre>
 								<code>
 									<div name="required_roles_response">I will become the required roles</div>
+
 								</code>
 							</pre>
+                            -->
+
                         </div>
 
 

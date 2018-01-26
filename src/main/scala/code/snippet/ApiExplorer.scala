@@ -35,7 +35,7 @@ import net.liftweb.http.js.JsCmds.{Run, SetHtml}
 
 import net.liftweb.json.Serialization.writePretty
 
-import code.lib.ObpAPI.{getResourceDocsJson, allBanks, allAccountsAtOneBank, privateAccountsCache}
+import code.lib.ObpAPI.{getResourceDocsJson, allBanks, getEntitlementsV300, allAccountsAtOneBank, privateAccountsCache}
 
 import net.liftweb.http.CurrentReq
 
@@ -50,6 +50,15 @@ case class Bank(
                )
 
                 // showToUser : Boolean)
+
+
+
+
+
+
+//"roles":[{"role":"CanCreateUserCustomerLink","requires_bank_id":true}
+
+
 
 /*
 Present a list of OBP resource URLs
@@ -123,6 +132,18 @@ WIP to add comments on resource docs. This code copied from Sofit.
   }
 
 */
+
+
+
+// Get entitlements for the logged in user
+
+  val entitlements : List[Entitlement] = getEntitlementsV300 match {
+    case Full(x) => x.list.map(i => Entitlement(entitlementId = i.entitlement_id, roleName = i.role_name, bankId = i.bank_id))
+    case _ => List()
+  }
+
+
+
 
 
 
@@ -345,6 +366,24 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
+
+    //      val thisEndpointRequiredRolesStringList = for {
+    //        JObject(roleJValuelist) <- thisEndpointRequiredRoles
+    //        JField("role",JString(roleName)) <- roleJValuelist
+    //      } yield {
+    //        roleName
+    //      }
+
+
+
+    //      val newRolePairs : List[(String, Boolean)]  = for{
+    //        role <- thisEndpointRequiredRolesStringList
+    //      } yield {
+    //        (role,entitlements.contains(role))
+    //      }
+    //      val responseRoleString = newRolePairs.map(roleParie => s"${roleParie._1} : ${roleParie._2.toString}\n").mkString("")
+
+
     // Get a list of resource docs from the API server
     // This will throw an exception if resource_docs key is not populated
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
@@ -366,7 +405,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       isPSD2 = r.is_psd2,
       isOBWG = r.is_obwg,
       tags = r.tags,
-      roles = r.roles
+      roles = r.roles.map(i => Role(role = i.role, requiresBankId = i.requires_bank_id))
     )
 
 
@@ -531,21 +570,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val rolesboxTarget = "roles_box_" + resourceId
       val jsCommandHighlightRolesResult : String =  s"DOLLAR_SIGN('#$rolesboxTarget').fadeIn();DOLLAR_SIGN('#$rolesTarget').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
   
-      val thisEndpointRequiredRoles = resources.find(resource => resource.url == requestUrl && resource.verb == requestVerb).head.roles.getOrElse(JsonParser.parse("{}").asInstanceOf[JObject])
-      val thisEndpointRequiredRolesStringList = for {
-        JObject(roleJValuelist) <- thisEndpointRequiredRoles
-        JField("role",JString(roleName)) <- roleJValuelist
-      } yield {
-        roleName
-      }
-      
-      val allRolesThisUserHave = getResponse("v3.0.0", "/entitlements", "GET", JsonParser.parse("{}").asInstanceOf[JObject])
-      val newRolePairs : List[(String, Boolean)]  = for{
-        role <- thisEndpointRequiredRolesStringList
-      } yield {
-        (role,allRolesThisUserHave.contains(role))
-      }
-      val responseRoleString = newRolePairs.map(roleParie => s"${roleParie._1} : ${roleParie._2.toString}\n").mkString("")
+      val thisEndpointRequiredRoles = resources.find(resource => resource.url == requestUrl && resource.verb == requestVerb).head.roles // .getOrElse(JsonParser.parse("{}").asInstanceOf[JObject])
+
+
+
       
       jsCommandHighlightRolesResult.contains("afsf")
 
@@ -586,7 +614,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
       // Return the commands to call the url with optional body and put the response into the appropriate result div
       SetHtml(resultTarget, Text(getResponse(apiVersion, requestUrl, requestVerb, jsonObject))) &
-      SetHtml(rolesTarget, Text(responseRoleString)) &
+     // SetHtml(rolesTarget, Text(responseRoleString)) &
       Run (jsCommandHighlightResult) &
       Run (jsCommandHighlightRolesResult) &
       Run (jsCommandHidePossibleErrorResponsesBox) &
@@ -914,8 +942,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       ".url_caller [id]" #> s"url_caller_${i.id}" &
       "@result [id]" #> s"result_${i.id}" &
       "@result_box [id]" #> s"result_box_${i.id}" &
-      "@roles [id]" #> s"roles_${i.id}" &
-      "@roles_box [id]" #> s"roles_box_${i.id}" &
+//      "@roles [id]" #> s"roles_${i.id}" &
+//      "@roles_box [id]" #> s"roles_box_${i.id}" &
       "@example_request_body [id]" #> s"example_request_body_${i.id}" &
       "@example_request_body [style]" #> s"display: ${displayRequestBody(i.verb)};" &
       //////
@@ -940,8 +968,16 @@ WIP to add comments on resource docs. This code copied from Sofit.
           ".possible_error_item *" #> i
       } &
       //required roles
-      "@required_roles_response_box [id]" #> s"required_roles_response_box_${i.id}" &
-      "@required_roles_response *" #> pretty(render(i.roles.getOrElse(JsonParser.parse("{}").asInstanceOf[JObject]))) &
+//      "#version *+" #> apiVersion &
+//        ".versions" #> versionUrls.map { i =>
+//          ".version *" #> s" ${i._1} " &
+//            ".version [href]" #> s"${i._2}"
+//        } &
+      "@roles_box [id]" #> s"roles_box_${i.id}" &
+      ".role_item" #> i.roles.map { i =>
+           s"${i}"
+        } &
+      // "@required_roles_response *" #> pretty(render(i.roles.getOrElse(JsonParser.parse("{}").asInstanceOf[JObject]))) &
       "@request_verb_input" #> text(i.verb, s => requestVerb = s, "type" -> "hidden", "id" -> s"request_verb_input_${i.id}") &
       "@resource_id_input" #> text(i.id.toString, s => resourceId = s, "type" -> "hidden", "id" -> s"resource_id_input_${i.id}") &
       // Replace the type=submit with Javascript that makes the ajax call.

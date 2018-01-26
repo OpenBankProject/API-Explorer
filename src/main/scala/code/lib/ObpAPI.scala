@@ -142,6 +142,12 @@ object ObpAPI {
 
 
 
+  def getEntitlementsV300 : Box[EntitlementsJson] = {
+    ObpGet(s"/v3.0.0/entitlements").flatMap(_.extractOpt[EntitlementsJson])
+  }
+
+
+
   // Returns Json containing Resource Docs
   def getResourceDocsJson(apiVersion : String) : Box[ResourceDocsJson] = {
     ObpGet(s"/v1.4.0/resource-docs/$apiVersion/obp").flatMap(_.extractOpt[ResourceDocsJson])
@@ -872,6 +878,31 @@ object ObpJson {
                         )
 
 
+
+
+
+  case class EntitlementJson (
+  entitlement_id :String,
+  role_name: String,
+  bank_id: String)
+
+
+  case class EntitlementsJson (list : List[EntitlementJson])
+
+  case class Entitlement (
+                               entitlementId :String,
+                               roleName: String,
+                               bankId: String)
+
+
+// Extract the roles in Resource Doc to this:
+  case class RoleJson (
+                    role: String,
+                    requires_bank_id: Boolean
+                  )
+
+
+
   // Used to describe the OBP API calls for documentation and API discovery purposes
   case class ResourceDocJson(operation_id: String,
                              request_verb: String,
@@ -886,7 +917,7 @@ object ObpJson {
                              is_psd2 : Boolean,
                              is_obwg : Boolean, // This may be tracking isCore
                              tags : List[String],
-                             roles: Option[JValue]
+                             roles: List[RoleJson]
                             )
 
   case class ResourceDocsJson (resource_docs : List[ResourceDocJson])
@@ -909,6 +940,14 @@ object ObpJson {
   )
 
 
+
+  case class Role (
+                        role: String,
+                        requiresBankId: Boolean
+                      )
+
+
+
   case class ResourceDoc(id: String,
                          verb: String,
                          url: String,
@@ -922,7 +961,7 @@ object ObpJson {
                          isPSD2: Boolean,
                          isOBWG: Boolean,
                          tags: List[String],
-                         roles: Option[JValue])
+                         roles: List[Role])
 
 
   case class ResourceDocs (resourceDocs : List[ResourceDoc])
