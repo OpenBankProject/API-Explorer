@@ -9,6 +9,7 @@ import code.lib._
 import net.liftweb.http.js.jquery.JqJsCmds.DisplayMessage
 import net.liftweb.util.{CssSel, Props}
 import code.util.Helper.MdcLoggable
+import net.liftweb.json.JValue
 
 import scala.collection.immutable.Nil
 
@@ -49,9 +50,6 @@ case class Bank(
                )
 
                 // showToUser : Boolean)
-
-case class EmptyClassJson()
-
 
 /*
 Present a list of OBP resource URLs
@@ -528,12 +526,34 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val boxTarget = "result_box_" + resourceId
       // This will highlight the json. Replace the $ sign after we've constructed the string
       val jsCommandHighlightResult : String =  s"DOLLAR_SIGN('#$boxTarget').fadeIn();DOLLAR_SIGN('#$resultTarget').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
+      
+      val rolesTarget = "roles_" + resourceId
+      val rolesboxTarget = "roles_box_" + resourceId
+      val jsCommandHighlightRolesResult : String =  s"DOLLAR_SIGN('#$rolesboxTarget').fadeIn();DOLLAR_SIGN('#$rolesTarget').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
+  
+      val thisEndpointRequiredRoles = resources.find(resource => resource.url == requestUrl && resource.verb == requestVerb).head.roles.getOrElse(JsonParser.parse("{}").asInstanceOf[JObject])
+      val thisEndpointRequiredRolesStringList = for {
+        JObject(roleJValuelist) <- thisEndpointRequiredRoles
+        JField("role",JString(roleName)) <- roleJValuelist
+      } yield {
+        roleName
+      }
+      
+      val allRolesThisUserHave = getResponse("v3.0.0", "/entitlements", "GET", JsonParser.parse("{}").asInstanceOf[JObject])
+      val newRolePairs : List[(String, Boolean)]  = for{
+        role <- thisEndpointRequiredRolesStringList
+      } yield {
+        (role,allRolesThisUserHave.contains(role))
+      }
+      val responseRoleString = newRolePairs.map(roleParie => s"${roleParie._1} : ${roleParie._2.toString}\n").mkString("")
+      
+      jsCommandHighlightRolesResult.contains("afsf")
 
       // The id of the possible error responses box we want to hide after calling the API
       val possibleErrorResponsesBoxTarget = "possible_error_responses_box_" + resourceId
   
       // The id of the roles responses box we want to hide after calling the API
-      val requestRolesResponsesBoxTarget = "request_role_box_" + resourceId
+      val requestRolesResponsesBoxTarget = "required_roles_response_box_" + resourceId
       // The javascript to hide it.
       val jsCommandHidePossibleErrorResponsesBox : String =  s"DOLLAR_SIGN('#$possibleErrorResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
       
@@ -566,7 +586,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
       // Return the commands to call the url with optional body and put the response into the appropriate result div
       SetHtml(resultTarget, Text(getResponse(apiVersion, requestUrl, requestVerb, jsonObject))) &
+      SetHtml(rolesTarget, Text(responseRoleString)) &
       Run (jsCommandHighlightResult) &
+      Run (jsCommandHighlightRolesResult) &
       Run (jsCommandHidePossibleErrorResponsesBox) &
       Run (jsCommandHideRequestRolesResponsesBox) &
       Run (jsCommandHideTypicalSuccessResponseBox) &
@@ -892,6 +914,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       ".url_caller [id]" #> s"url_caller_${i.id}" &
       "@result [id]" #> s"result_${i.id}" &
       "@result_box [id]" #> s"result_box_${i.id}" &
+      "@roles [id]" #> s"roles_${i.id}" &
+      "@roles_box [id]" #> s"roles_box_${i.id}" &
       "@example_request_body [id]" #> s"example_request_body_${i.id}" &
       "@example_request_body [style]" #> s"display: ${displayRequestBody(i.verb)};" &
       //////
@@ -917,7 +941,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       } &
       //required roles
       "@required_roles_response_box [id]" #> s"required_roles_response_box_${i.id}" &
-      "@required_roles_response *" #> pretty(render(i.roles.getOrElse(Extraction.decompose(EmptyClassJson())(net.liftweb.json.DefaultFormats)))) &
+      "@required_roles_response *" #> pretty(render(i.roles.getOrElse(JsonParser.parse("{}").asInstanceOf[JObject]))) &
       "@request_verb_input" #> text(i.verb, s => requestVerb = s, "type" -> "hidden", "id" -> s"request_verb_input_${i.id}") &
       "@resource_id_input" #> text(i.id.toString, s => resourceId = s, "type" -> "hidden", "id" -> s"resource_id_input_${i.id}") &
       // Replace the type=submit with Javascript that makes the ajax call.
