@@ -1101,7 +1101,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           "@user_has_entitlement_request" #> s"${r.userHasEntitlementRequest}" &
         // ajaxSubmit will submit the form.
         // The value of entitlementRequestBankId is given to bank_id_input field and the value of bank_id_input entered by user is given back to entitlementRequestBankId
-        "@roles__bank_id_input" #> SHtml.text(entitlementRequestBankId, entitlementRequestBankId = _, "type" -> "text") & // {() => if (r.requiresBankId) "text" else "hidden"}) &
+        "@roles__bank_id_input" #> SHtml.text(entitlementRequestBankId, entitlementRequestBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") & 
         "@roles__role_input" #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
         "@roles__resource_id_input" #> text(i.id.toString, s => entReqResourceId = s, "type" -> "hidden", "id" -> s"roles__resource_id_input_${i.id}") &
         "@request_entitlement_button" #> ajaxSubmit("Request", processEntitlementRequest) &
