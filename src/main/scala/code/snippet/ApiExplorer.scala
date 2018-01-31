@@ -1106,7 +1106,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         "@roles__resource_id_input" #> text(i.id.toString, s => entReqResourceId = s, "type" -> "hidden", "id" -> s"roles__resource_id_input_${i.id}") &
         "@roles__request_entitlement_button" #> ajaxSubmit("Request", processEntitlementRequest) &
         "@roles__entitlement_request_response [id]" #> s"roles__entitlement_request_response_${i.id}_${r.role}" &
-        "@entitlement_request_button_box [style]" #> s"display: $displayRequestEntitlementButton"
+        "@roles__entitlement_request_button_box [style]" #> s"display: $displayRequestEntitlementButton"
       } &
       //
       "@request_verb_input" #> text(i.verb, s => requestVerb = s, "type" -> "hidden", "id" -> s"request_verb_input_${i.id}") &
