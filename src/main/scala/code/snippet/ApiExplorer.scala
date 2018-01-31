@@ -1095,8 +1095,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       "@roles_box [id]" #> s"roles_box_${i.id}" &
       // We generate mulutiple .role_items from roleInfos (including the form defined in index.html)
       ".role_item" #> i.roleInfos.map { r =>
-        "@status" #> {if (ObpAPI.currentUser.isEmpty) s" - Please login to request this Role" else if  (r.userHasEntitlement) s" - You have this Role." else if (r.userHasEntitlementRequest) s" - You have requested this." else s" - You can request this Role."} &
-        "@role_name" #> s"${r.role}" &
+        "@roles__status" #> {if (ObpAPI.currentUser.isEmpty) s" - Please login to request this Role" else if  (r.userHasEntitlement) s" - You have this Role." else if (r.userHasEntitlementRequest) s" - You have requested this." else s" - You can request this Role."} &
+        "@roles__role_name" #> s"${r.role}" &
           "@user_has_entitlement" #> s"${r.userHasEntitlement}" &
           "@user_has_entitlement_request" #> s"${r.userHasEntitlementRequest}" &
         // ajaxSubmit will submit the form.
