@@ -189,7 +189,8 @@
 						   </form>
 						</div>
 
-						<div name="full_path" class="full_path" style="display: none;">I will become the full path</div>
+
+                        <div name="full_path" class="full_path" style="display: none;">I will become the full path</div>
 
 						<div name="result_box" class="content-box__info-box" style="display: none;">
 							<pre>
@@ -201,17 +202,6 @@
 								</code>
 							</pre>
 						</div>
-
-                        <!-- Not working.
-                        <div name="roles_box" class="content-box__info-box">
-                            <button type="button" onclick="location = 'https://apiexplorersandbox.openbankproject.com/?ignoredefcat=true&tags=#v3_0_0-addEntitlementRequest'">Call `addEntitlementRequest'</button>
-							<pre>
-								<code>
-									<div name="roles" ></div>
-								</code>
-							</pre>
-                        </div>
--->
 
 						<div name="typical_success_response_box" class="content-box__info-box">
 							<div>Typical Successful Response:</div>
@@ -236,22 +226,39 @@
                             <div>Required Roles:</div>
 
                             <ul name="roles_list">
-                                <li class="role_item">
-                                    I will become a Required Role Item
-                                    <button name="call_button" class="default-button">Request Entitlement</button>
-                                    <div name="role_response">I will become the role response</div>
+                                <li class="role_item"> <!-- we generate multiple of these -->
+
+                                    <div name="role_name">I will become the role name</div>
+                                    <div name="status">status</div>
+
+
+                                    <div class="content-box__input-box">
+                                        <form class="lift:form.ajax" id="formInList">
+                                            <!-- Attributes for these fields are replaced -->
+                                            <input type="hidden" name="roles__resource_id_input">
+                                            <input type="text" name="roles__bank_id_input" placeholder="Bank Id">
+                                            <input type="hidden" name="roles__role_input">
+                                            <div name="entitlement_request_button_box">
+                                                <button name="request_entitlement_button" class="default-button">REQUEST</button>
+                                            </div>
+                                            <div name="entitlement_request_response_status"></div>
+                                        </form>
+                                    </div>
+
                                 </li>
                             </ul>
 
-                            <!--
-                            <br/>
-                            <pre>
-								<code>
-									<div name="required_roles_response">I will become the required roles</div>
 
-								</code>
+                            <div name="entitlement_request_box" class="content-box__info-box" style="display: none;">
+							<pre>
+								<code>
+                                    <div name="entitlement_request_result" ></div>
+                                </code>
 							</pre>
-                            -->
+                            </div>
+
+
+
 
                         </div>
 

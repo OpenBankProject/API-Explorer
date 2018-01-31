@@ -40,8 +40,6 @@ import code.lib.{ObpAPI, OAuthClient}
 import net.liftweb.http.js.JsCmds.Noop
 
 class Login {
-
-  // TODO show currently logged-in user / name
   private def loggedIn = {
     ".logged-out *" #> "" &
       ".username *" #> ObpAPI.currentUser.map(u => u.username) &

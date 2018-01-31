@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat
 import _root_.net.liftweb._
 import code.lib.ObpJson._
 import code.lib._
+import com.sun.tools.corba.se.idl.Noop
 import net.liftweb.http.js.jquery.JqJsCmds.DisplayMessage
 import net.liftweb.util.{CssSel, Props}
 import code.util.Helper.MdcLoggable
@@ -31,13 +32,16 @@ import common._
 import net.liftweb.util.Helpers._
 import net.liftweb.http.SHtml.{text,ajaxSubmit, textarea, select, ajaxSelect}
 import net.liftweb.http.js.JsCmd
-import net.liftweb.http.js.JsCmds.{Run, SetHtml}
+import net.liftweb.http.js.JsCmds.{RedirectTo, Run, SetHtml}
 
 import net.liftweb.json.Serialization.writePretty
 
 import code.lib.ObpAPI.{getResourceDocsJson, allBanks, getEntitlementsV300, allAccountsAtOneBank, privateAccountsCache}
 
 import net.liftweb.http.CurrentReq
+
+
+// see https://simply.liftweb.net/index-7.10.html on css selectors
 
 
 case class Bank(
@@ -52,11 +56,11 @@ case class Bank(
                 // showToUser : Boolean)
 
 
+case class CreateEntitlementRequestJSON(bank_id: String, role_name: String)
 
 
 
 
-//"roles":[{"role":"CanCreateUserCustomerLink","requires_bank_id":true}
 
 
 
@@ -138,6 +142,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
 // Get entitlements for the logged in user
 
   val entitlementsForCurrentUser : List[Entitlement] = getEntitlementsV300 match {
+    case Full(x) => x.list.map(i => Entitlement(entitlementId = i.entitlement_id, roleName = i.role_name, bankId = i.bank_id))
+    case _ => List()
+  }
+
+  // TODO WIP needs to return correct thing.
+  val entitlementRequestsForCurrentUser : List[Entitlement] = getEntitlementsV300 match {
     case Full(x) => x.list.map(i => Entitlement(entitlementId = i.entitlement_id, roleName = i.role_name, bankId = i.bank_id))
     case _ => List()
   }
@@ -387,7 +397,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
       isPSD2 = r.is_psd2,
       isOBWG = r.is_obwg,
       tags = r.tags,
-      roleInfos = r.roles.map(i => RoleInfo(role = i.role, requiresBankId = i.requires_bank_id, userHas = (entitlementsForCurrentUser.contains(i.role)) ))
+      roleInfos = r.roles.map(i => RoleInfo(role = i.role,
+                                            requiresBankId = i.requires_bank_id,
+                                            userHasEntitlement = entitlementsForCurrentUser.flatMap(_.roleName).contains(i.role),
+                                            userHasEntitlementRequest = entitlementRequestsForCurrentUser.flatMap(_.roleName).contains(i.role)
+      )
+      )
     )
 
 
@@ -510,6 +525,17 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
 
+    // Do we want to show the Request Entitlement button.
+    // Should also consider if User has submitted an entitlment request or already has the role.
+    val displayRequestEntitlementButton = if (ObpAPI.currentUser.isEmpty) {
+      logger.info("not show button")
+      "none"
+    } else {
+      logger.info("show button")
+      "block"
+    }
+
+
 
 
     // Controls when we display the request body.
@@ -529,6 +555,22 @@ WIP to add comments on resource docs. This code copied from Sofit.
     var responseBody = "{}"
     var errorResponseBodies = List("")
 
+
+
+
+
+    var entitlementRequestStatus = ""
+
+    // This value is used to pre populate the form for Entitlement Request.
+    // It maybe be changed by the user in the form.
+    var entitlementRequestBankId = presetBankId
+
+    var entReqResourceId = ""
+
+
+    var entitlementRequestRoleName = ""
+
+
     def process(): JsCmd = {
       logger.info(s"requestUrl is $requestUrl")
       logger.info(s"resourceId is $resourceId")
@@ -536,6 +578,83 @@ WIP to add comments on resource docs. This code copied from Sofit.
       logger.info(s"responseBody is $responseBody")
       logger.info(s"errorResponseBodies is $errorResponseBodies")
 
+
+      // Create json object from input string
+      val jsonObject = JsonParser.parse(requestBody).asInstanceOf[JObject]
+      val jsonResponseObject = JsonParser.parse(responseBody).asInstanceOf[JObject]
+      val jsonErrorResponse = errorResponseBodies
+
+      // the id of the element we want to populate and format.
+      val resultTarget = "result_" + resourceId
+      val boxTarget = "result_box_" + resourceId
+      // This will highlight the json. Replace the $ sign after we've constructed the string
+      val jsCommandHighlightResult : String =  s"DOLLAR_SIGN('#$boxTarget').fadeIn();DOLLAR_SIGN('#$resultTarget').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
+
+      val rolesTarget = "roles_" + resourceId
+      val rolesboxTarget = "roles_box_" + resourceId
+
+      //val jsCommandHighlightRolesResult : String =  s"DOLLAR_SIGN('#$rolesboxTarget').fadeIn();DOLLAR_SIGN('#$rolesTarget').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
+
+      //jsCommandHighlightRolesResult.contains("afsf")
+
+      // The id of the possible error responses box we want to hide after calling the API
+      val possibleErrorResponsesBoxTarget = "possible_error_responses_box_" + resourceId
+
+      // The id of the roles responses box we want to hide after calling the API
+      val requestRolesResponsesBoxTarget = "required_roles_response_box_" + resourceId
+      // The javascript to hide it.
+      val jsCommandHidePossibleErrorResponsesBox : String =  s"DOLLAR_SIGN('#$possibleErrorResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
+
+      val jsCommandHideRequestRolesResponsesBox : String =  s"DOLLAR_SIGN('#$requestRolesResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
+
+      // The id of the possible error responses box we want to hide after calling the API
+      val typicalSuccessResponseBoxTarget = "typical_success_response_box_" + resourceId
+      // The javascript to hide it.
+      val jsCommandHideTypicalSuccessResponseBox : String =  s"DOLLAR_SIGN('#$typicalSuccessResponseBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
+
+      // The id of the full path
+      val fullPathTarget = "full_path_" + resourceId
+      // The javascript to show it
+
+      val jsCommandShowFullPath : String =  s"DOLLAR_SIGN('#$fullPathTarget').fadeIn();".replace("DOLLAR_SIGN","$")
+
+      // alert('$fullPathTarget');
+      //logger.info(s"jsCommand is $jsCommand")
+      //logger.info(s"jsCommand2 is $jsCommandHidePossibleErrorResponsesBox")
+
+
+      /////////////
+      // TODO It would be nice to modify getResponse and underlying functions to return more information about the request including full path and headers
+      // For now we duplicate the construction of the fullPath
+      val apiUrl = OAuthClient.currentApiBaseUrl
+      val urlWithVersion = s"/$apiVersion$requestUrl"
+      val fullPath = new URL(apiUrl + urlWithVersion)
+      //////////////
+
+
+      // Return the commands to call the url with optional body and put the response into the appropriate result div
+      SetHtml(resultTarget, Text(getResponse(apiVersion, requestUrl, requestVerb, jsonObject))) &
+     // SetHtml(rolesTarget, Text(responseRoleString)) &
+      Run (jsCommandHighlightResult) &
+      //Run (jsCommandHighlightRolesResult) &
+      Run (jsCommandHidePossibleErrorResponsesBox) &
+      Run (jsCommandHideRequestRolesResponsesBox) &
+      Run (jsCommandHideTypicalSuccessResponseBox) &
+      Run (jsCommandShowFullPath) &
+      SetHtml(fullPathTarget, Text(fullPath.toString))
+    }
+
+
+    def processEntitlementRequest(): JsCmd = {
+      logger.debug(s"processEntitlementRequest entitlementRequestStatus is $entitlementRequestStatus entitlementRequestBankId is $entitlementRequestBankId")
+
+     // Run ("alert('hello');")
+
+
+      logger.debug(s"processEntitlementRequest  says resourceId is $resourceId")
+
+
+/*
 
       // Create json object from input string
       val jsonObject = JsonParser.parse(requestBody).asInstanceOf[JObject]
@@ -592,15 +711,44 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
       // Return the commands to call the url with optional body and put the response into the appropriate result div
       SetHtml(resultTarget, Text(getResponse(apiVersion, requestUrl, requestVerb, jsonObject))) &
-     // SetHtml(rolesTarget, Text(responseRoleString)) &
-      Run (jsCommandHighlightResult) &
-      //Run (jsCommandHighlightRolesResult) &
-      Run (jsCommandHidePossibleErrorResponsesBox) &
-      Run (jsCommandHideRequestRolesResponsesBox) &
-      Run (jsCommandHideTypicalSuccessResponseBox) &
-      Run (jsCommandShowFullPath) &
-      SetHtml(fullPathTarget, Text(fullPath.toString))
+        // SetHtml(rolesTarget, Text(responseRoleString)) &
+        Run (jsCommandHighlightResult) &
+        //Run (jsCommandHighlightRolesResult) &
+        Run (jsCommandHidePossibleErrorResponsesBox) &
+        Run (jsCommandHideRequestRolesResponsesBox) &
+        Run (jsCommandHideTypicalSuccessResponseBox) &
+        Run (jsCommandShowFullPath) &
+        SetHtml(fullPathTarget, Text(fullPath.toString))
+
+    */
+
+
+
+
+      val entitlementRequestResponseStatusId = s"entitlement_request_response_status_${entReqResourceId}_${entitlementRequestRoleName}"
+
+
+      logger.debug(s"id to set is: $entitlementRequestResponseStatusId")
+
+
+      val apiUrl = OAuthClient.currentApiBaseUrl
+
+      val entitlementRequestsUrl = "/entitlement-requests"
+
+      val entitlementRequest =  CreateEntitlementRequestJSON(bank_id = entitlementRequestBankId, role_name = entitlementRequestRoleName)
+
+      implicit val formats = DefaultFormats
+
+      // Convert case class to JValue
+      val entitlementRequestJValue: JValue  = Extraction.decompose(entitlementRequest)
+
+
+      // call url and put the response into the appropriate result div
+      // SetHtml accepts an id and value
+      SetHtml(entitlementRequestResponseStatusId, Text(getResponse(apiVersion, entitlementRequestsUrl, "POST", entitlementRequestJValue)))
+
     }
+
 
 
     def getResponse (apiVersion : String, url : String, resourceVerb: String, json : JValue) : String = {
@@ -920,8 +1068,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
       ".url_caller [id]" #> s"url_caller_${i.id}" &
       "@result [id]" #> s"result_${i.id}" &
       "@result_box [id]" #> s"result_box_${i.id}" &
-//      "@roles [id]" #> s"roles_${i.id}" &
-//      "@roles_box [id]" #> s"roles_box_${i.id}" &
       "@example_request_body [id]" #> s"example_request_body_${i.id}" &
       "@example_request_body [style]" #> s"display: ${displayRequestBody(i.verb)};" &
       //////
@@ -947,9 +1093,22 @@ WIP to add comments on resource docs. This code copied from Sofit.
       } &
       //required roles and related user information
       "@roles_box [id]" #> s"roles_box_${i.id}" &
-      ".role_item" #> i.roleInfos.map { i =>
-        ".role_item *" #> s"${i.role}"
-        } &
+      // We generate mulutiple .role_items from roleInfos (including the form defined in index.html)
+      ".role_item" #> i.roleInfos.map { r =>
+        "@status" #> {if (ObpAPI.currentUser.isEmpty) s" - Please login to request this Role" else if  (r.userHasEntitlement) s" - You have this Role." else if (r.userHasEntitlementRequest) s" - You have requested this." else s" - You can request this Role."} &
+        "@role_name" #> s"${r.role}" &
+          "@user_has_entitlement" #> s"${r.userHasEntitlement}" &
+          "@user_has_entitlement_request" #> s"${r.userHasEntitlementRequest}" &
+        // ajaxSubmit will submit the form.
+        // The value of entitlementRequestBankId is given to bank_id_input field and the value of bank_id_input entered by user is given back to entitlementRequestBankId
+        "@roles__bank_id_input" #> SHtml.text(entitlementRequestBankId, entitlementRequestBankId = _, "type" -> "text") & // {() => if (r.requiresBankId) "text" else "hidden"}) &
+        "@roles__role_input" #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
+        "@roles__resource_id_input" #> text(i.id.toString, s => entReqResourceId = s, "type" -> "hidden", "id" -> s"roles__resource_id_input_${i.id}") &
+        "@request_entitlement_button" #> ajaxSubmit("Request", processEntitlementRequest) &
+        "@entitlement_request_response_status [id]" #> s"entitlement_request_response_status_${i.id}_${r.role}" &
+        "@entitlement_request_button_box [style]" #> s"display: $displayRequestEntitlementButton"
+      } &
+      //
       "@request_verb_input" #> text(i.verb, s => requestVerb = s, "type" -> "hidden", "id" -> s"request_verb_input_${i.id}") &
       "@resource_id_input" #> text(i.id.toString, s => resourceId = s, "type" -> "hidden", "id" -> s"resource_id_input_${i.id}") &
       // Replace the type=submit with Javascript that makes the ajax call.
@@ -960,3 +1119,5 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
   }
 }
+
+

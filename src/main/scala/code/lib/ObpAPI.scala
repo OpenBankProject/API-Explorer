@@ -147,6 +147,11 @@ object ObpAPI {
   }
 
 
+  def getEntitlementRequestsV300 : Box[EntitlementRequestsJson] = {
+    ObpGet(s"/v3.0.0/my/entitlement-requests").flatMap(_.extractOpt[EntitlementRequestsJson])
+  }
+
+
 
   // Returns Json containing Resource Docs
   def getResourceDocsJson(apiVersion : String) : Box[ResourceDocsJson] = {
@@ -889,10 +894,32 @@ object ObpJson {
 
   case class EntitlementsJson (list : List[EntitlementJson])
 
+
+  case class EntitlementRequestJson (
+                               entitlement_request_id :String,
+                                    user: String, // will be object
+                               role_name: String,
+                               bank_id: String,
+                               created: String)
+
+
+  case class EntitlementRequestsJson (list : List[EntitlementRequestJson])
+
+
+
+
   case class Entitlement (
                                entitlementId :String,
                                roleName: String,
                                bankId: String)
+
+
+  case class EntitlementRequest (
+                                  entitlementRequestId :String,
+                                  user: String, // will be object
+                                  roleName: String,
+                                  bankId: String,
+                                  created: String)
 
 
 // Extract the roles in Resource Doc to this:
@@ -947,9 +974,10 @@ object ObpJson {
                                          )
 // Role and indication if the current user has it.
   case class RoleInfo(
-                    role: String,
-                    requiresBankId: Boolean,
-                    userHas: Boolean
+                       role: String,
+                       requiresBankId: Boolean,
+                       userHasEntitlement: Boolean,
+                       userHasEntitlementRequest: Boolean
                   )
 
 
