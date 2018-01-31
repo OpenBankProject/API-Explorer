@@ -725,7 +725,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
-      val entitlementRequestResponseStatusId = s"entitlement_request_response_status_${entReqResourceId}_${entitlementRequestRoleName}"
+      val entitlementRequestResponseStatusId = s"roles__entitlement_request_response_${entReqResourceId}_${entitlementRequestRoleName}"
 
 
       logger.debug(s"id to set is: $entitlementRequestResponseStatusId")
@@ -1105,7 +1105,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         "@roles__role_input" #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
         "@roles__resource_id_input" #> text(i.id.toString, s => entReqResourceId = s, "type" -> "hidden", "id" -> s"roles__resource_id_input_${i.id}") &
         "@roles__request_entitlement_button" #> ajaxSubmit("Request", processEntitlementRequest) &
-        "@entitlement_request_response_status [id]" #> s"entitlement_request_response_status_${i.id}_${r.role}" &
+        "@roles__entitlement_request_response [id]" #> s"roles__entitlement_request_response_${i.id}_${r.role}" &
         "@entitlement_request_button_box [style]" #> s"display: $displayRequestEntitlementButton"
       } &
       //
