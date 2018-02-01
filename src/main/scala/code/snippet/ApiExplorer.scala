@@ -431,7 +431,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
                                                 {
                                                   val rolesFound = entitlementsForCurrentUser.map(_.roleName)
                                                   //logger.debug(s"rolesFound are $rolesFound")
-                                                  rolesFound.contains(i.role)
+                                                  // We only want to consider the user has the role if the role does not require bank id
+                                                  // Otherwise users would find it difficult to request same role for different banks.
+                                                  rolesFound.contains(i.role) && ! i.requires_bank_id
                                                 }
                                                 case _ => false
                                               }
@@ -444,7 +446,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
                                                 {
                                                   val requestedRolesFound = userEntitlementRequests.map(_.roleName)
                                                   //logger.debug(s"requestedRolesFound are $requestedRolesFound")
-                                                  requestedRolesFound.contains(i.role)
+                                                  // We only want to consider the user has requested the role if the role does not require bank id
+                                                  // Otherwise users would find it difficult to request same role for different banks.
+                                                  requestedRolesFound.contains(i.role) && ! i.requires_bank_id
                                                 }
                                                 case _ => false
                                               }
@@ -711,10 +715,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
       val createEntitlementRequest =  CreateEntitlementRequestJSON(bank_id = rolesBankId, role_name = entitlementRequestRoleName)
 
-      implicit val formats = DefaultFormats
-
-
       // Convert case class to JValue
+      implicit val formats = DefaultFormats
       val entitlementRequestJValue: JValue  = Extraction.decompose(createEntitlementRequest)
 
       val response : String = getResponse(apiVersion, entitlementRequestsUrl, "POST", entitlementRequestJValue)
@@ -1095,8 +1097,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
                             else
                               s" - You can request this Role."} &
         "@roles__role_name" #> s"${r.role}" &
-         // "@user_has_entitlement" #> s"${r.userHasEntitlement}" &
-         // "@user_has_entitlement_request" #> s"${r.userHasEntitlementRequest}" &
         // ajaxSubmit will submit the form.
         // The value of rolesBankId is given to bank_id_input field and the value of bank_id_input entered by user is given back to rolesBankId
         "@roles__bank_id_input" #> SHtml.text(rolesBankId, rolesBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") &
