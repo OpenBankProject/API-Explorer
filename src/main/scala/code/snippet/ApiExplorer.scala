@@ -425,14 +425,28 @@ WIP to add comments on resource docs. This code copied from Sofit.
       tags = r.tags,
       roleInfos = r.roles.map(i => RoleInfo(role = i.role,
                                             requiresBankId = i.requires_bank_id,
-                                            userHasEntitlement = if (isLoggedIn) entitlementsForCurrentUser.flatMap(_.roleName).contains(i.role) else false,
-                                            userHasEntitlementRequest = {
+                                            userHasEntitlement = {
+                                              //if (isLoggedIn) entitlementsForCurrentUser.flatMap(_.roleName).contains(i.role) else false,
+
                                               val result: Boolean = isLoggedIn match {
                                                 case true =>
                                                 {
-                                                  val rolesFound = userEntitlementRequests.map(_.roleName)
+                                                  val rolesFound = entitlementsForCurrentUser.map(_.roleName)
                                                   logger.debug(s"rolesFound are $rolesFound")
                                                   rolesFound.contains(i.role)
+                                                }
+                                                case _ => false
+                                              }
+                                              logger.debug(s"userHasEntitlement will return: $result")
+                                              result
+                                            },
+                                              userHasEntitlementRequest = {
+                                              val result: Boolean = isLoggedIn match {
+                                                case true =>
+                                                {
+                                                  val requestedRolesFound = userEntitlementRequests.map(_.roleName)
+                                                  logger.debug(s"requestedRolesFound are $requestedRolesFound")
+                                                  requestedRolesFound.contains(i.role)
                                                 }
                                                 case _ => false
                                               }
