@@ -697,82 +697,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     def processEntitlementRequest(): JsCmd = {
       logger.debug(s"processEntitlementRequest entitlementRequestStatus is $entitlementRequestStatus rolesBankId is $rolesBankId")
 
-     // Run ("alert('hello');")
-
-
       logger.debug(s"processEntitlementRequest  says resourceId is $resourceId")
-
-
-/*
-
-      // Create json object from input string
-      val jsonObject = JsonParser.parse(requestBody).asInstanceOf[JObject]
-      val jsonResponseObject = JsonParser.parse(responseBody).asInstanceOf[JObject]
-      val jsonErrorResponse = errorResponseBodies
-
-      // the id of the element we want to populate and format.
-      val resultTarget = "result_" + resourceId
-      val boxTarget = "result_box_" + resourceId
-      // This will highlight the json. Replace the $ sign after we've constructed the string
-      val jsCommandHighlightResult : String =  s"DOLLAR_SIGN('#$boxTarget').fadeIn();DOLLAR_SIGN('#$resultTarget').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
-
-      val rolesTarget = "roles_" + resourceId
-      val rolesboxTarget = "roles_box_" + resourceId
-
-      //val jsCommandHighlightRolesResult : String =  s"DOLLAR_SIGN('#$rolesboxTarget').fadeIn();DOLLAR_SIGN('#$rolesTarget').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
-
-      //jsCommandHighlightRolesResult.contains("afsf")
-
-      // The id of the possible error responses box we want to hide after calling the API
-      val possibleErrorResponsesBoxTarget = "possible_error_responses_box_" + resourceId
-
-      // The id of the roles responses box we want to hide after calling the API
-      val requestRolesResponsesBoxTarget = "required_roles_response_box_" + resourceId
-      // The javascript to hide it.
-      val jsCommandHidePossibleErrorResponsesBox : String =  s"DOLLAR_SIGN('#$possibleErrorResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
-
-      val jsCommandHideRequestRolesResponsesBox : String =  s"DOLLAR_SIGN('#$requestRolesResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
-
-      // The id of the possible error responses box we want to hide after calling the API
-      val typicalSuccessResponseBoxTarget = "typical_success_response_box_" + resourceId
-      // The javascript to hide it.
-      val jsCommandHideTypicalSuccessResponseBox : String =  s"DOLLAR_SIGN('#$typicalSuccessResponseBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
-
-      // The id of the full path
-      val fullPathTarget = "full_path_" + resourceId
-      // The javascript to show it
-
-      val jsCommandShowFullPath : String =  s"DOLLAR_SIGN('#$fullPathTarget').fadeIn();".replace("DOLLAR_SIGN","$")
-
-      // alert('$fullPathTarget');
-      //logger.info(s"jsCommand is $jsCommand")
-      //logger.info(s"jsCommand2 is $jsCommandHidePossibleErrorResponsesBox")
-
-
-      /////////////
-      // TODO we should modify getResponse and underlying functions to return more information about the request including full path and headers
-      // For now we duplicate the construction of the fullPath
-      val apiUrl = OAuthClient.currentApiBaseUrl
-      val urlWithVersion = s"/$apiVersion$requestUrl"
-      val fullPath = new URL(apiUrl + urlWithVersion)
-      //////////////
-
-
-      // Return the commands to call the url with optional body and put the response into the appropriate result div
-      SetHtml(resultTarget, Text(getResponse(apiVersion, requestUrl, requestVerb, jsonObject))) &
-        // SetHtml(rolesTarget, Text(responseRoleString)) &
-        Run (jsCommandHighlightResult) &
-        //Run (jsCommandHighlightRolesResult) &
-        Run (jsCommandHidePossibleErrorResponsesBox) &
-        Run (jsCommandHideRequestRolesResponsesBox) &
-        Run (jsCommandHideTypicalSuccessResponseBox) &
-        Run (jsCommandShowFullPath) &
-        SetHtml(fullPathTarget, Text(fullPath.toString))
-
-    */
-
-
-
 
       val entitlementRequestResponseStatusId = s"roles__entitlement_request_response_${RolesResourceId}_${entitlementRequestRoleName}"
 
@@ -784,17 +709,34 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
       val entitlementRequestsUrl = "/entitlement-requests"
 
-      val entitlementRequest =  CreateEntitlementRequestJSON(bank_id = rolesBankId, role_name = entitlementRequestRoleName)
+      val createEntitlementRequest =  CreateEntitlementRequestJSON(bank_id = rolesBankId, role_name = entitlementRequestRoleName)
 
       implicit val formats = DefaultFormats
 
-      // Convert case class to JValue
-      val entitlementRequestJValue: JValue  = Extraction.decompose(entitlementRequest)
 
+      // Convert case class to JValue
+      val entitlementRequestJValue: JValue  = Extraction.decompose(createEntitlementRequest)
+
+      val response : String = getResponse(apiVersion, entitlementRequestsUrl, "POST", entitlementRequestJValue)
+
+      val result: String =
+      try {
+        // parse the string we get back from the API into a JValue
+        val json : JValue = parse(response)
+        // Convert to case class
+        val entitlementRequest: EntitlementRequestJson = json.extract[EntitlementRequestJson]
+        s"Entitlement Request with Id ${entitlementRequest.entitlement_request_id} was created. It will be reviewed shortly."
+      }
+      catch {
+        case _ => {
+          logger.info("")
+          s"The API Explorer could not create an Entitlement Request: $response"
+        }
+      }
 
       // call url and put the response into the appropriate result div
       // SetHtml accepts an id and value
-      SetHtml(entitlementRequestResponseStatusId, Text(getResponse(apiVersion, entitlementRequestsUrl, "POST", entitlementRequestJValue)))
+      SetHtml(entitlementRequestResponseStatusId, Text(result))
 
     }
 
