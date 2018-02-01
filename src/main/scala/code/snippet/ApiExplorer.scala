@@ -36,7 +36,7 @@ import net.liftweb.http.js.JsCmds.{RedirectTo, Run, SetHtml}
 
 import net.liftweb.json.Serialization.writePretty
 
-import code.lib.ObpAPI.{getResourceDocsJson, allBanks, getEntitlementsV300, allAccountsAtOneBank, privateAccountsCache}
+import code.lib.ObpAPI.{getResourceDocsJson, allBanks, getEntitlementsV300, getEntitlementRequestsV300, isLoggedIn, allAccountsAtOneBank, privateAccountsCache}
 
 import net.liftweb.http.CurrentReq
 
@@ -59,6 +59,11 @@ case class Bank(
 case class CreateEntitlementRequestJSON(bank_id: String, role_name: String)
 
 
+case class UserEntitlementRequests(entitlementRequestId: String,
+                                   roleName: String,
+                                   bankId : String,
+                                   username : String )
+
 
 
 
@@ -70,7 +75,7 @@ Present a list of OBP resource URLs
 class ApiExplorer extends MdcLoggable {
 
 
-/*
+  /*
 
 WIP to add comments on resource docs. This code copied from Sofit.
 
@@ -138,20 +143,28 @@ WIP to add comments on resource docs. This code copied from Sofit.
 */
 
 
+  // Get entitlements for the logged in user
 
-// Get entitlements for the logged in user
-
-  val entitlementsForCurrentUser : List[Entitlement] = getEntitlementsV300 match {
+  def getEntitlementsForCurrentUser: List[Entitlement] = getEntitlementsV300 match {
     case Full(x) => x.list.map(i => Entitlement(entitlementId = i.entitlement_id, roleName = i.role_name, bankId = i.bank_id))
     case _ => List()
   }
 
-  // TODO WIP needs to return correct thing.
-  val entitlementRequestsForCurrentUser : List[Entitlement] = getEntitlementsV300 match {
-    case Full(x) => x.list.map(i => Entitlement(entitlementId = i.entitlement_id, roleName = i.role_name, bankId = i.bank_id))
-    case _ => List()
-  }
 
+  def getUserEntitlementRequests: List[UserEntitlementRequests] = {
+
+   val result =  getEntitlementRequestsV300 match {
+      case Full(x) => x.entitlement_requests.map(i => UserEntitlementRequests(
+        entitlementRequestId = i.entitlement_request_id,
+        roleName = i.role_name,
+        bankId = i.bank_id,
+        username = i.user.username)
+      )
+      case _ => List()
+    }
+    logger.debug(s"getUserEntitlementRequests will return: $result" )
+    result
+  }
 
 
 
@@ -254,7 +267,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   } else {
     showOBWGParam
   }
-  
+
   val showPSD2 : Option[Boolean] =  if (showCoreParam == None && showPSD2Param == None && showOBWGParam == None && (defaultCatalog == "PSD2") && !ignoreDefaultCatalog.getOrElse(false)) {
     Some(true)
   } else {
@@ -376,6 +389,19 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
+    val entitlementsForCurrentUser = getEntitlementsForCurrentUser
+    logger.info(s"there are ${entitlementsForCurrentUser.length} entitlementsForCurrentUser(s)")
+
+
+    val userEntitlementRequests = getUserEntitlementRequests
+
+
+
+    logger.info(s"there are ${userEntitlementRequests.length} userEntitlementRequests(s)")
+
+
+
+
     // Get a list of resource docs from the API server
     // This will throw an exception if resource_docs key is not populated
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
@@ -399,10 +425,21 @@ WIP to add comments on resource docs. This code copied from Sofit.
       tags = r.tags,
       roleInfos = r.roles.map(i => RoleInfo(role = i.role,
                                             requiresBankId = i.requires_bank_id,
-                                            userHasEntitlement = entitlementsForCurrentUser.flatMap(_.roleName).contains(i.role),
-                                            userHasEntitlementRequest = entitlementRequestsForCurrentUser.flatMap(_.roleName).contains(i.role)
-      )
-      )
+                                            userHasEntitlement = if (isLoggedIn) entitlementsForCurrentUser.flatMap(_.roleName).contains(i.role) else false,
+                                            userHasEntitlementRequest = {
+                                              val result: Boolean = isLoggedIn match {
+                                                case true =>
+                                                {
+                                                  val rolesFound = userEntitlementRequests.map(_.roleName)
+                                                  logger.debug(s"rolesFound are $rolesFound")
+                                                  rolesFound.contains(i.role)
+                                                }
+                                                case _ => false
+                                              }
+                                              logger.debug(s"userHasEntitlementRequest will return: $result")
+                                              result
+                                            }
+                                              ))
     )
 
 
@@ -528,10 +565,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Do we want to show the Request Entitlement button.
     // Should also consider if User has submitted an entitlment request or already has the role.
     val displayRequestEntitlementButton = if (ObpAPI.currentUser.isEmpty) {
-      logger.info("not show button")
+      logger.info("not show Request Entitlemnt button")
       "none"
     } else {
-      logger.info("show button")
+      logger.info("show Request Entitlemnt button")
       "block"
     }
 
@@ -563,9 +600,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // This value is used to pre populate the form for Entitlement Request.
     // It maybe be changed by the user in the form.
-    var entitlementRequestBankId = presetBankId
+    var rolesBankId = presetBankId
 
-    var entReqResourceId = ""
+    var RolesResourceId = ""
 
 
     var entitlementRequestRoleName = ""
@@ -646,7 +683,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     def processEntitlementRequest(): JsCmd = {
-      logger.debug(s"processEntitlementRequest entitlementRequestStatus is $entitlementRequestStatus entitlementRequestBankId is $entitlementRequestBankId")
+      logger.debug(s"processEntitlementRequest entitlementRequestStatus is $entitlementRequestStatus rolesBankId is $rolesBankId")
 
      // Run ("alert('hello');")
 
@@ -725,7 +762,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
-      val entitlementRequestResponseStatusId = s"roles__entitlement_request_response_${entReqResourceId}_${entitlementRequestRoleName}"
+      val entitlementRequestResponseStatusId = s"roles__entitlement_request_response_${RolesResourceId}_${entitlementRequestRoleName}"
 
 
       logger.debug(s"id to set is: $entitlementRequestResponseStatusId")
@@ -735,7 +772,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
       val entitlementRequestsUrl = "/entitlement-requests"
 
-      val entitlementRequest =  CreateEntitlementRequestJSON(bank_id = entitlementRequestBankId, role_name = entitlementRequestRoleName)
+      val entitlementRequest =  CreateEntitlementRequestJSON(bank_id = rolesBankId, role_name = entitlementRequestRoleName)
 
       implicit val formats = DefaultFormats
 
@@ -1095,15 +1132,22 @@ WIP to add comments on resource docs. This code copied from Sofit.
       "@roles_box [id]" #> s"roles_box_${i.id}" &
       // We generate mulutiple .role_items from roleInfos (including the form defined in index.html)
       ".role_item" #> i.roleInfos.map { r =>
-        "@roles__status" #> {if (ObpAPI.currentUser.isEmpty) s" - Please login to request this Role" else if  (r.userHasEntitlement) s" - You have this Role." else if (r.userHasEntitlementRequest) s" - You have requested this." else s" - You can request this Role."} &
+        "@roles__status" #> {if (! isLoggedIn)
+                              s" - Please login to request this Role"
+                            else if  (r.userHasEntitlement)
+                              s" - You have this Role."
+                            else if (r.userHasEntitlementRequest)
+                              s" - You have requested this Role."
+                            else
+                              s" - You can request this Role."} &
         "@roles__role_name" #> s"${r.role}" &
-          "@user_has_entitlement" #> s"${r.userHasEntitlement}" &
-          "@user_has_entitlement_request" #> s"${r.userHasEntitlementRequest}" &
+         // "@user_has_entitlement" #> s"${r.userHasEntitlement}" &
+         // "@user_has_entitlement_request" #> s"${r.userHasEntitlementRequest}" &
         // ajaxSubmit will submit the form.
-        // The value of entitlementRequestBankId is given to bank_id_input field and the value of bank_id_input entered by user is given back to entitlementRequestBankId
-        "@roles__bank_id_input" #> SHtml.text(entitlementRequestBankId, entitlementRequestBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") & 
+        // The value of rolesBankId is given to bank_id_input field and the value of bank_id_input entered by user is given back to rolesBankId
+        "@roles__bank_id_input" #> SHtml.text(rolesBankId, rolesBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") &
         "@roles__role_input" #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
-        "@roles__resource_id_input" #> text(i.id.toString, s => entReqResourceId = s, "type" -> "hidden", "id" -> s"roles__resource_id_input_${i.id}") &
+        "@roles__resource_id_input" #> text(i.id.toString, s => RolesResourceId = s, "type" -> "hidden", "id" -> s"roles__resource_id_input_${i.id}") &
         "@roles__request_entitlement_button" #> ajaxSubmit("Request", processEntitlementRequest) &
         "@roles__entitlement_request_response [id]" #> s"roles__entitlement_request_response_${i.id}_${r.role}" &
         "@roles__entitlement_request_button_box [style]" #> s"display: $displayRequestEntitlementButton"

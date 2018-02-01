@@ -27,7 +27,7 @@ import scala.xml.NodeSeq
 
 case class Header(key: String, value: String)
 
-object ObpAPI {
+object ObpAPI extends MdcLoggable {
   implicit val formats = DefaultFormats
   val dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
   
@@ -61,6 +61,10 @@ object ObpAPI {
     ObpGet("/v2.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
   }
 
+  // Wrapper for looking at OAuth headers.
+  def isLoggedIn : Boolean = {
+    OAuthClient.loggedIn
+  }
 
 
   
@@ -148,7 +152,9 @@ object ObpAPI {
 
 
   def getEntitlementRequestsV300 : Box[EntitlementRequestsJson] = {
-    ObpGet(s"/v3.0.0/my/entitlement-requests").flatMap(_.extractOpt[EntitlementRequestsJson])
+    val result = ObpGet(s"/v3.0.0/my/entitlement-requests").flatMap(_.extractOpt[EntitlementRequestsJson])
+    logger.debug(s"We got this result for EntitlementRequestsJson: ${result}")
+    result
   }
 
 
@@ -894,16 +900,21 @@ object ObpJson {
 
   case class EntitlementsJson (list : List[EntitlementJson])
 
+  case class UserJsonV200(
+                           user_id: String,
+                           email : String,
+                           provider_id: String,
+                           provider : String,
+                           username : String,
+                           entitlements : EntitlementsJson
+                         )
 
-  case class EntitlementRequestJson (
-                               entitlement_request_id :String,
-                                    user: String, // will be object
-                               role_name: String,
-                               bank_id: String,
-                               created: String)
+  case class EntitlementRequestJson(entitlement_request_id: String, user: UserJsonV200, role_name: String, bank_id: String, created: String)
+  case class EntitlementRequestsJson(entitlement_requests: List[EntitlementRequestJson])
 
 
-  case class EntitlementRequestsJson (list : List[EntitlementRequestJson])
+
+
 
 
 
@@ -916,7 +927,7 @@ object ObpJson {
 
   case class EntitlementRequest (
                                   entitlementRequestId :String,
-                                  user: String, // will be object
+                                  user: UserJsonV200,
                                   roleName: String,
                                   bankId: String,
                                   created: String)
