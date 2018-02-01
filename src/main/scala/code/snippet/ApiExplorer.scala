@@ -1086,6 +1086,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
       } &
       //required roles and related user information
       "@roles_box [id]" #> s"roles_box_${i.id}" &
+      "@roles_box [style]" #> { if (i.roleInfos.isEmpty)
+          s"display: none"
+        else
+          s"display: block"
+        } &
       // We generate mulutiple .role_items from roleInfos (including the form defined in index.html)
       ".role_item" #> i.roleInfos.map { r =>
         "@roles__status" #> {if (! isLoggedIn)
