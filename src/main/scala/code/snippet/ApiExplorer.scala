@@ -426,18 +426,16 @@ WIP to add comments on resource docs. This code copied from Sofit.
       roleInfos = r.roles.map(i => RoleInfo(role = i.role,
                                             requiresBankId = i.requires_bank_id,
                                             userHasEntitlement = {
-                                              //if (isLoggedIn) entitlementsForCurrentUser.flatMap(_.roleName).contains(i.role) else false,
-
                                               val result: Boolean = isLoggedIn match {
                                                 case true =>
                                                 {
                                                   val rolesFound = entitlementsForCurrentUser.map(_.roleName)
-                                                  logger.debug(s"rolesFound are $rolesFound")
+                                                  //logger.debug(s"rolesFound are $rolesFound")
                                                   rolesFound.contains(i.role)
                                                 }
                                                 case _ => false
                                               }
-                                              logger.debug(s"userHasEntitlement will return: $result")
+                                              //logger.debug(s"userHasEntitlement will return: $result")
                                               result
                                             },
                                               userHasEntitlementRequest = {
@@ -445,12 +443,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
                                                 case true =>
                                                 {
                                                   val requestedRolesFound = userEntitlementRequests.map(_.roleName)
-                                                  logger.debug(s"requestedRolesFound are $requestedRolesFound")
+                                                  //logger.debug(s"requestedRolesFound are $requestedRolesFound")
                                                   requestedRolesFound.contains(i.role)
                                                 }
                                                 case _ => false
                                               }
-                                              logger.debug(s"userHasEntitlementRequest will return: $result")
+                                              //logger.debug(s"userHasEntitlementRequest will return: $result")
                                               result
                                             }
                                               ))
@@ -578,12 +576,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Do we want to show the Request Entitlement button.
     // Should also consider if User has submitted an entitlment request or already has the role.
-    val displayRequestEntitlementButton = if (ObpAPI.currentUser.isEmpty) {
-      logger.info("not show Request Entitlemnt button")
-      "none"
-    } else {
+    val displayRequestEntitlementButton = if (isLoggedIn) {
       logger.info("show Request Entitlemnt button")
       "block"
+    } else {
+      logger.info("not show Request Entitlemnt button")
+      "none"
     }
 
 
@@ -1164,7 +1162,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
         "@roles__resource_id_input" #> text(i.id.toString, s => RolesResourceId = s, "type" -> "hidden", "id" -> s"roles__resource_id_input_${i.id}") &
         "@roles__request_entitlement_button" #> ajaxSubmit("Request", processEntitlementRequest) &
         "@roles__entitlement_request_response [id]" #> s"roles__entitlement_request_response_${i.id}_${r.role}" &
-        "@roles__entitlement_request_button_box [style]" #> s"display: $displayRequestEntitlementButton"
+        "@roles__entitlement_request_button_box [style]" #> { if (! isLoggedIn || r.userHasEntitlement || r.userHasEntitlementRequest)
+            s"display: none"
+          else
+            s"display: block"
+        }
       } &
       //
       "@request_verb_input" #> text(i.verb, s => requestVerb = s, "type" -> "hidden", "id" -> s"request_verb_input_${i.id}") &
