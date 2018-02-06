@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat
 import _root_.net.liftweb._
 import code.lib.ObpJson._
 import code.lib._
-import com.sun.tools.corba.se.idl.Noop
 import net.liftweb.http.js.jquery.JqJsCmds.DisplayMessage
 import net.liftweb.util.{CssSel, Props}
 import code.util.Helper.MdcLoggable
