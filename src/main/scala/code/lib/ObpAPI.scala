@@ -27,7 +27,7 @@ import scala.xml.NodeSeq
 
 case class Header(key: String, value: String)
 
-object ObpAPI extends MdcLoggable {
+object ObpAPI extends Loggable {
   implicit val formats = DefaultFormats
   val dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
   
