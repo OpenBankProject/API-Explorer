@@ -143,8 +143,7 @@ object ObpAPI {
 
 
   def getEntitlementsV300 : Box[EntitlementsJson] = {
-    val userId = currentUser.map(_.user_id).getOrElse("")
-    ObpGet(s"/v3.0.0/users/" + urlEncode(userId) + "/entitlements").flatMap(_.extractOpt[EntitlementsJson])
+    ObpGet(s"/v3.0.0/my/entitlements").flatMap(_.extractOpt[EntitlementsJson])
   }
 
 
