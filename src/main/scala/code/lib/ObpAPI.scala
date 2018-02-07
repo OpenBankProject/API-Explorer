@@ -147,7 +147,7 @@ object ObpAPI extends Loggable {
 
 
   def getEntitlementsV300 : Box[EntitlementsJson] = {
-    ObpGet(s"/v3.0.0/entitlements").flatMap(_.extractOpt[EntitlementsJson])
+    ObpGet(s"/v3.0.0/my/entitlements").flatMap(_.extractOpt[EntitlementsJson])
   }
 
 
