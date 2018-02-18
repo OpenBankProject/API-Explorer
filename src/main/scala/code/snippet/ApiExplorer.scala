@@ -35,7 +35,7 @@ import net.liftweb.http.js.JsCmds.{RedirectTo, Run, SetHtml}
 
 import net.liftweb.json.Serialization.writePretty
 
-import code.lib.ObpAPI.{getResourceDocsJson, allBanks, getEntitlementsV300, getEntitlementRequestsV300, isLoggedIn, allAccountsAtOneBank, privateAccountsCache}
+import code.lib.ObpAPI.{getResourceDocsJson, allBanks, getEntitlementsV300, getEntitlementRequestsV300, isLoggedIn, privateAccountsCache}
 
 import net.liftweb.http.CurrentReq
 
@@ -879,7 +879,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val options: List[(String, String)] = presetBankId match {
         case "" => List(noneFound)
         case _ => for {
-          allAccountsJson <- ObpAPI.allAccountsAtOneBank(presetBankId).toList
+          allAccountsJson <- OAuthClient.loggedIn match {
+            case true => ObpAPI.privateAccounts(presetBankId).toList
+            case false => ObpAPI.publicAccounts(presetBankId).toList
+          }
           barebonesAccountJson <- allAccountsJson.accounts.toList.flatten
           accountId <- barebonesAccountJson.id
           // Show the label if it exists, else the id
