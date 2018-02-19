@@ -125,7 +125,8 @@ object ObpAPI extends Loggable {
   def privateAccounts : Box[BarebonesAccountsJson] = {
     ObpGet("/v1.2.1/accounts/private").flatMap(_.extractOpt[BarebonesAccountsJson])
   }
-
+  
+  @deprecated("This method will mix public and private, not clear for Apps.","2018-02-18")
   def allAccountsAtOneBank(bankId : String) : Box[BarebonesAccountsJson] = {
     ObpGet("/v1.4.0/banks/" + urlEncode(bankId) + "/accounts").flatMap(_.extractOpt[BarebonesAccountsJson])
   }
@@ -339,6 +340,7 @@ object OBPRequest extends MdcLoggable {
       val credentials = OAuthClient.getAuthorizedCredential
       val apiUrl = OAuthClient.currentApiBaseUrl
       val url = new URL(apiUrl + apiPath)
+      logger.info(s"OBP Server Request URL: ${url.getHost}${url.getPath}")
       //bleh
       val request = url.openConnection().asInstanceOf[HttpURLConnection] //blagh!
       request.setDoOutput(true)
