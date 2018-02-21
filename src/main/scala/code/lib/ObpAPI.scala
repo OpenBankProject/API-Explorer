@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat
 import net.liftweb.util.Props
 import code.util.Helper.MdcLoggable
 
+import scala.collection.immutable.List
 import scala.xml.NodeSeq
 
 case class Header(key: String, value: String)
@@ -164,6 +165,14 @@ object ObpAPI extends Loggable {
   def getResourceDocsJson(apiVersion : String) : Box[ResourceDocsJson] = {
     ObpGet(s"/v1.4.0/resource-docs/$apiVersion/obp").flatMap(_.extractOpt[ResourceDocsJson])
   }
+
+
+
+
+  def getGlossaryItemsJson : Box[GlossaryItemsJsonV300] = {
+    ObpGet(s"/v3.0.0/api/glossary").flatMap(_.extractOpt[GlossaryItemsJsonV300])
+  }
+
 
   /**
    * @return True if the account was deleted
@@ -1014,3 +1023,12 @@ object ObpJson {
   case class ResourceDocs (resourceDocs : List[ResourceDocPlus])
   
 }
+
+case class GlossaryDescriptionJsonV300 (markdown: String, html: String)
+
+case class GlossaryItemJsonV300 (title: String,
+                                 description : GlossaryDescriptionJsonV300
+                                )
+
+case class GlossaryItemsJsonV300 (glossary_items: List[GlossaryItemJsonV300])
+

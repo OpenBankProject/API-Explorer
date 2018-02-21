@@ -152,7 +152,7 @@ class Boot extends MdcLoggable{
     val sitemap = List(
       Menu.i("OBP API Explorer") / "api-explorer",
       Menu.i("Home") / "index",
-      Menu.i("New") / "new",
+      Menu.i("Glossary") / "glossary",
       Menu.i("OAuth Callback") / "oauthcallback" >> EarlyResponse(() => {
         OAuthClient.handleCallback()
       })
