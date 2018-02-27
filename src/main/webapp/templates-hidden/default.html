@@ -55,27 +55,33 @@ along with this program.  If not, see www.gnu.org/licenses/
 <div id="page-wrapper">
     <header class="header">
         <div class="container">
-            <div class="logo-box">
-                <a href="#" class="logo-box__link"><img src="./media/images/logo-header.png" alt="Logo" class="logo-box__img"></a>
+            <div class="logo-box" id="logo-left" data-lift="WebUI.headerLogoLeft">
+                <a href="/"><img src=""></a>
             </div>
-            <div class="site-title-box">
+
+            <div class="site-title-box" id="site-title-text">
                 <p class="site-title-box__text">API EXPLORER</p>
             </div>
+
+            <div class="logo-box" id="logo-right" data-lift="WebUI.headerLogoRight">
+                <a href="/"><img src=""></a>
+            </div>
+
             <div class="settings-box" data-lift="Login.login">
                 <div class="sign-box">
 
-                        <div class="logged-out">
+                    <div class="logged-out">
 
-                                <a id="start-login" class="sign-box__text signed"  href="#">Login</a>
+                        <a id="start-login" class="sign-box__text signed"  href="#">Login</a>
 
-                        </div>
-                        <div class="logged-in">
-                            <!--
-                            <p class="sign-box__text">SIGNED IN AS</p>
-                            <span class="sign-box__text signed">Tom</span>
-                            <span class="logout">Logout</span>
-                            -->
-                        </div>
+                    </div>
+                    <div class="logged-in">
+                        <!--
+                        <p class="sign-box__text">SIGNED IN AS</p>
+                        <span class="sign-box__text signed">Tom</span>
+                        <span class="logout">Logout</span>
+                        -->
+                    </div>
 
                 </div>
                 <div class="settings-imgs">
@@ -93,6 +99,7 @@ along with this program.  If not, see www.gnu.org/licenses/
 
                 </div>
             </div>
+
         </div>
     </header>
 

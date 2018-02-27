@@ -140,6 +140,7 @@ a img {
   padding: 0;
 
   margin: 0 10px 0 0;
+  font-family: Arial, sans-serif;
   font-size: 12px;
   line-height: 16px;
   color: #fff;
@@ -1051,4 +1052,21 @@ a.end-point-anchor {
 
 .clearfloat {
 	clear: both;
+}
+
+#logo-left{
+  margin-left: 0;
+  margin-right: 0;
+}
+
+#logo-right{
+  margin-left: 20%;
+  margin-right: 0;
+  padding-top: 10px;
+}
+
+#site-title-text{
+  margin-left: 20%;
+  margin-right: 5%;
+  position: relative;
 }
