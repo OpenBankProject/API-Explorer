@@ -626,9 +626,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
     def process(): JsCmd = {
       logger.info(s"requestUrl is $requestUrl")
       logger.info(s"resourceId is $resourceId")
-      logger.info(s"requestBody is $requestBody")
-      logger.info(s"responseBody is $responseBody")
-      logger.info(s"errorResponseBodies is $errorResponseBodies")
+      logger.debug(s"requestBody is $requestBody")
+      logger.debug(s"responseBody is $responseBody")
+      logger.debug(s"errorResponseBodies is $errorResponseBodies")
 
 
       // Create json object from input string
@@ -764,7 +764,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       }
 
 
-      logger.info(s"responseBodyBox is ${responseBodyBox}")
+      logger.debug(s"responseBodyBox is ${responseBodyBox}")
 
       // Handle the contents of the Box
       val responseBody =
@@ -774,7 +774,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           case Failure(message, _, _) => message
         }
 
-      logger.info(s"responseBody is $responseBody")
+      logger.debug(s"responseBody is $responseBody")
       responseBody
     }
 
