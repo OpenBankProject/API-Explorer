@@ -346,7 +346,7 @@ a img {
   padding: 5px;
 }
 .content-box pre {
-  margin: -45px 0px 0px 0px; /* remove somewhat invisible margin */
+  margin: 0px 0px 0px 0px; /* remove somewhat invisible margin */
   padding: 0;
 }
 .content-box:after {
@@ -1060,7 +1060,7 @@ a.end-point-anchor {
 }
 
 #logo-right{
-  margin-left: 20%;
+  margin-left: 10%;
   margin-right: 0;
   padding-top: 10px;
 }
