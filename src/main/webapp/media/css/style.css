@@ -377,7 +377,7 @@ a img {
 .content-box__text-box {
   float: left;
   left: 0;
-  width: 350px;
+  width: 75%;
   padding: 5px;
 }
 .content-box__text-box p:first-child {
@@ -626,6 +626,19 @@ a img {
   letter-spacing: 0.1px;
   border-right: 1px solid #fff;
 }
+
+.hosted-by-link {
+    padding: 0 8px 0 0;
+    margin: 0 0 0 0;
+    display: inline-block;
+    font-size: 14px;
+    line-height: 15px;
+    color: #00c4d2;
+    text-decoration: none;
+    letter-spacing: 0.1px;
+    border-right: 1px solid #fff;
+}
+
 .footer-link-box__link:last-child {
   border-right: 0;
 }
@@ -1055,8 +1068,7 @@ a.end-point-anchor {
 }
 
 #logo-left{
-  margin-left: 0;
-  margin-right: 0;
+    margin: 13px 0 0 3px;
 }
 
 #logo-right{
