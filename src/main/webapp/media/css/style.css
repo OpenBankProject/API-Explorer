@@ -140,6 +140,7 @@ a img {
   padding: 0;
 
   margin: 0 10px 0 0;
+  font-family: Arial, sans-serif;
   font-size: 12px;
   line-height: 16px;
   color: #fff;
@@ -345,7 +346,7 @@ a img {
   padding: 5px;
 }
 .content-box pre {
-  margin: -45px 0px 0px 0px; /* remove somewhat invisible margin */
+  margin: 0px 0px 0px 0px; /* remove somewhat invisible margin */
   padding: 0;
 }
 .content-box:after {
@@ -369,14 +370,14 @@ a img {
   line-height: 33px;
   color: #24bc65;
   font-weight: 400;
-  padding: 240px 0 0 0;
+  padding: 260px 0 0 0;
   letter-spacing: 0.8px;
 }
 
 .content-box__text-box {
   float: left;
   left: 0;
-  width: 350px;
+  width: 75%;
   padding: 5px;
 }
 .content-box__text-box p:first-child {
@@ -625,6 +626,19 @@ a img {
   letter-spacing: 0.1px;
   border-right: 1px solid #fff;
 }
+
+.hosted-by-link {
+    padding: 0 8px 0 0;
+    margin: 0 0 0 0;
+    display: inline-block;
+    font-size: 14px;
+    line-height: 15px;
+    color: #00c4d2;
+    text-decoration: none;
+    letter-spacing: 0.1px;
+    border-right: 1px solid #fff;
+}
+
 .footer-link-box__link:last-child {
   border-right: 0;
 }
@@ -1051,4 +1065,20 @@ a.end-point-anchor {
 
 .clearfloat {
 	clear: both;
+}
+
+#logo-left{
+    margin: 13px 0 0 3px;
+}
+
+#logo-right{
+  margin-left: 10%;
+  margin-right: 0;
+  padding-top: 10px;
+}
+
+#site-title-text{
+  margin-left: 20%;
+  margin-right: 5%;
+  position: relative;
 }
