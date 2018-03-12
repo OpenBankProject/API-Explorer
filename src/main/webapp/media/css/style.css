@@ -20,6 +20,7 @@ a img {
 .container {
   margin-left: 260px;
 }
+
 .container:after {
   content: '';
   display: table;
@@ -68,14 +69,22 @@ a img {
 }
 
 .sign-box {
-  float: left;
-  margin: 0 6px 0 0;
+  float: right;
+  margin: 0 10px 0 0;
+}
+
+.sign-box a {
+  text-decoration: none;
+}
+
+.settings-imgs a {
+  text-decoration: none;
 }
 
 .sign-box__text {
   font-size: 12px;
   line-height: 16px;
-  color: #31b8cd;
+  color: #fff;
   display: block;
   padding: 0 0 0 0;
   margin: 0;
@@ -100,7 +109,7 @@ a img {
 }
 .settings-imgs__link:first-child {
   border-right: 1px solid #cccccc;
-  margin: 1px 7px 0 0;
+  margin: -1px 7px 0 0;
   padding: 2px 8px 0 0;
 }
 
@@ -134,7 +143,21 @@ a img {
   color: #fff;
 
 }
-.breadcrumb-section .version_path {
+
+.container .version_path {
+  display: inline-block;
+  float: right;
+  padding: 0;
+  margin: -30px 10px 0 0;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  line-height: 16px;
+  color: #fff;
+  letter-spacing: 0.2px;
+  text-decoration: none;
+}
+
+/*.breadcrumb-section .version_path {
   display: inline-block;
   float: right;
   padding: 0;
@@ -146,7 +169,7 @@ a img {
   color: #fff;
   letter-spacing: 0.2px;
   text-decoration: none;
-}
+}*/
 
 .footer_link {
   text-decoration: none;
@@ -1073,12 +1096,21 @@ a.end-point-anchor {
 
 #logo-right{
   margin-left: 10%;
-  margin-right: 0;
+  margin-right: 5px;
   padding-top: 10px;
+  float: right;
 }
 
 #site-title-text{
-  margin-left: 20%;
+  margin-left: 40%;
   margin-right: 5%;
-  position: relative;
+  position: absolute;
+}
+
+.username {
+  color: #fff;
+}
+
+.logout-link {
+  color: #fff;
 }
