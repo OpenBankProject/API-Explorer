@@ -77,9 +77,20 @@ a img {
   text-decoration: none;
 }
 
-.settings-imgs a {
-  text-decoration: none;
+.logged-in a {
+    text-decoration: none;
 }
+
+.sign-box:hover {
+    text-decoration: underline;
+    color: #fff
+}
+
+.logout-link:hover {
+    text-decoration: underline;
+    color: #fff
+}
+
 
 .sign-box__text {
   font-size: 12px;
@@ -92,7 +103,7 @@ a img {
 
 
 .signed {
-  font-size: 18px;
+  font-size: 12px;
   line-height: 22px;
   letter-spacing: -0.9px;
 }
@@ -1109,8 +1120,10 @@ a.end-point-anchor {
 
 .username {
   color: #fff;
+  font-size: 12px;
 }
 
 .logout-link {
   color: #fff;
+  font-size: 12px;
 }
