@@ -966,7 +966,9 @@ object ObpJson {
                              is_psd2 : Boolean,
                              is_obwg : Boolean, // This may be tracking isCore
                              tags : List[String],
-                             roles: List[RoleJson]
+                             roles: List[RoleJson],
+                             is_featured: Boolean,
+                             special_instructions: String
                             )
 
   case class ResourceDocsJson (resource_docs : List[ResourceDocJson])
@@ -1017,7 +1019,9 @@ object ObpJson {
                              isPSD2: Boolean,
                              isOBWG: Boolean,
                              tags: List[String],
-                             roleInfos: List[RoleInfo])
+                             roleInfos: List[RoleInfo],
+                             isFeatured: Boolean,
+                             specialInstructions: NodeSeq)
 
 
   case class ResourceDocs (resourceDocs : List[ResourceDocPlus])
