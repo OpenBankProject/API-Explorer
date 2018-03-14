@@ -522,6 +522,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val groupedResources  = unsortedGroupedResources.toSeq.sortBy(_._1)
 
 
+    // Featured /////
+    val featuredResources = resources.filter(r => r.isFeatured == true)
+    // Group resources by the first tag
+    val unsortedFeaturedGroupedResources: Map[String, List[ResourceDocPlus]] = featuredResources.groupBy(_.tags.headOr("ToTag"))
+    // Sort the groups by the Tag. Note in the rendering we sort the resources by summary.
+    val groupedFeaturedResources  = unsortedFeaturedGroupedResources.toSeq.sortBy(_._1)
+    /////////////////
+
     // The list generated here might be used by an administrator as a white or black list of API calls for the API itself.
     val commaSeparatedListOfResources = resources.map(_.implementedBy.function).mkString("[", ", ", "]")
 
@@ -540,19 +548,19 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
       // All
       case List(None, None, None) => ("OBP",
-        "The full set of Open Bank Project APIs.")
+        "All OBP APIs.")
 
       // UK OBWG
       case List(None, Some(true), None) => ("UK Open Banking",
-        "A core set of customer facing APIs built on core banking services and bank open data.")
+        "Open Banking + Data APIs")
 
       // PSD2
       case List(None,  None, Some(true)) => ("PSD2",
-        "APIs that support customer account and transaction history, payments and pricing transparency.")
+        "OBP PSD2 APIs")
 
       // Intersection
       case List(Some(true), Some(true), Some(true)) => ("Intersection of OBP Core, UK Open Banking and PSD2",
-        "API calls that are common to the three catalogs")
+        "APIs common to OBP, UK and PSD2")
 
       case _ => ("APIs", "")
     }
@@ -577,6 +585,19 @@ WIP to add comments on resource docs. This code copied from Sofit.
       logger.info("show views drop down")
       "block"
     }
+
+
+    val displayFeatured = if (featuredResources.length > 0 ) {
+      logger.info("show featured")
+      "block"
+    } else {
+      logger.info("not show featured")
+      "none"
+    }
+
+
+
+
 
 
     // Do we want to show the Request Entitlement button.
@@ -1037,16 +1058,30 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "@swagger_path [href]" #> s"$swaggerPath" &
     "#api_home_link [href]" #> s"$baseUrl" &
     "@views_box [style]" #> s"display: $displayViews;" &
-    ".info-box__about_selected *" #> s"$catalogDescription" &
+    "@catalog_description *" #> s"$catalogDescription" &
+    // Show / hide featured
+    "@featured_box [style]" #> s"display: $displayFeatured;" &
+      "@featured_list [style]" #> s"display: $displayFeatured;" &
+      // List the Featured resources grouped by the first tag
+      "@featured_api_group_item" #> groupedFeaturedResources.map { i =>
+        "@featured_api_group_name *" #> s"${i._1.replace("-"," ")}" &
+          // Within each group (first tag), list the resources
+          "@featured_api_list_item" #> i._2.sortBy(_.summary.toString()).map { i =>
+            // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
+            "@featured_api_list_item_link [href]" #> s"#${i.id}" &
+              "@featured_api_list_item_link *" #> i.summary &
+              "@featured_api_list_item_link [id]" #> s"index_of_${i.id}"
+          }
+      } &
     // List the resources grouped by the first tag
-      ".api_group_item" #> groupedResources.map { i =>
-          ".api_group_name *" #> s"${i._1.replace("-"," ")}" &
+      "@api_group_item" #> groupedResources.map { i =>
+          "@api_group_name *" #> s"${i._1.replace("-"," ")}" &
             // Within each group (first tag), list the resources
-            ".api_list_item" #> i._2.sortBy(_.summary.toString()).map { i =>
+            "@api_list_item" #> i._2.sortBy(_.summary.toString()).map { i =>
               // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-                ".api_list_item_link [href]" #> s"#${i.id}" &
-                  ".api_list_item_link *" #> i.summary &
-                  ".api_list_item_link [id]" #> s"index_of_${i.id}"
+                "@api_list_item_link [href]" #> s"#${i.id}" &
+                  "@api_list_item_link *" #> i.summary &
+                  "@api_list_item_link [id]" #> s"index_of_${i.id}"
                   // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
         }
       } &

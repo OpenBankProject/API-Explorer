@@ -3,18 +3,41 @@
     <div data-lift="ApiExplorer.showResources">
 
         <div class="api_list">
+
+            <div name="featured_box" class="api-info-about">
+                <div class="info-box">
+                    <h3 class="info-box__about_selected">Featured APIs</h3>
+                </div>
+            </div>
+
+            <div name="featured_list">
+            <ul>
+                <li name="featured_api_group_item" class="api_group_item">
+                    <div name="featured_api_group_name" class="api_group_name">API group</div>
+                    <ul>
+                        <li name="featured_api_list_item" class="api_list_item">
+                            <a name="featured_api_list_item_link" class="api_list_item_link" href="./#anchor">API call title</a>
+                        </li>
+                    </ul>
+
+                </li>
+            </ul>
+
+            </div>
+
+
            <div class="api-info-about">
                 <div class="info-box">
-                    <h3 class="info-box__about_selected">This version...</h3>
+                    <h3 name="catalog_description" class="info-box__about_selected">This version...</h3>
                 </div>
             </div>
 
             <ul>
-                <li class="api_group_item">
-                    <div class="api_group_name">API group</div>
+                <li name="api_group_item" class="api_group_item">
+                    <div name="api_group_name" class="api_group_name">API group</div>
                     <ul>
-                        <li class="api_list_item">
-                            <a class="api_list_item_link" href="./#anchor">API call title</a>
+                        <li name="api_list_item" class="api_list_item">
+                            <a name="api_list_item_link" class="api_list_item_link" href="./#anchor">API call title</a>
                         </li>
                     </ul>
 
