@@ -444,13 +444,6 @@ a img {
 .content-box__input-box {
 }
 
-.special_instructions {
-  float: left;
-  left: 0;
-  width: 75%;
-  padding: 5px;
-}
-
 
 .content-box__available-since {
   float: left;

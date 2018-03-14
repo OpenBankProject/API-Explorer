@@ -1060,8 +1060,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       ".content-box__headline *" #> i.summary &
       ".content-box__headline [id]" #> i.id & // id for the anchor to find
       // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
-      ".content-box__text-box *" #> i.description &
-      ".special_instructions *" #> i.specialInstructions &
+      "@description *" #> i.description &
+      "@special_instructions *" #> i.specialInstructions &
       "@resource_description [id]" #> s"description_${i.id}" &
       ".url_caller [id]" #> s"url_caller_${i.id}" &
       "@result [id]" #> s"result_${i.id}" &
