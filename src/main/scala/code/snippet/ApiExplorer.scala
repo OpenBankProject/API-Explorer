@@ -547,16 +547,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
           "Meta data, data sharing, data redaction and entitlements is included. ")
 
       // All
-      case List(None, None, None) => ("OBP",
-        "All OBP APIs.")
+      case List(None, None, None) => ("OBP", "All APIs")
 
       // UK OBWG
-      case List(None, Some(true), None) => ("UK Open Banking",
-        "Open Banking + Data APIs")
+      case List(None, Some(true), None) => ("OBWG", "Open Banking + Open Data")
 
       // PSD2
-      case List(None,  None, Some(true)) => ("PSD2",
-        "OBP PSD2 APIs")
+      case List(None,  None, Some(true)) => ("PSD2", "PSD2 APIs")
 
       // Intersection
       case List(Some(true), Some(true), Some(true)) => ("Intersection of OBP Core, UK Open Banking and PSD2",
