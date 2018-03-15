@@ -146,7 +146,9 @@ object ObpAPI extends Loggable {
     counterparties
   }
 
-
+  def getExplictCounterparties(bankId: String, accountId: String, viewId: String): Box[ExplictCounterpartiesJson] = {
+     ObpGet("/v2.2.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/counterparties").flatMap(x => x.extractOpt[ExplictCounterpartiesJson])
+  }
 
   def getEntitlementsV300 : Box[EntitlementsJson] = {
     ObpGet(s"/v3.0.0/my/entitlements").flatMap(_.extractOpt[EntitlementsJson])
@@ -693,6 +695,29 @@ object ObpJson {
   case class DirectOtherAccountsJson(
                                 other_accounts : List[OtherAccountJson121]
                                 )
+
+  case class ExplictCounterparty(
+                                  name: String,
+                                  description: String,
+                                  created_by_user_id: String,
+                                  this_bank_id: String,
+                                  this_account_id: String,
+                                  this_view_id: String,
+                                  counterparty_id: String,
+                                  other_bank_routing_scheme: String,
+                                  other_bank_routing_address: String,
+                                  other_branch_routing_scheme: String,
+                                  other_branch_routing_address: String,
+                                  other_account_routing_scheme: String,
+                                  other_account_routing_address: String,
+                                  other_account_secondary_routing_scheme: String,
+                                  other_account_secondary_routing_address: String,
+                                  is_beneficiary: Boolean
+                                )
+  
+  case class ExplictCounterpartiesJson(
+                                      counterparties : List[ExplictCounterparty]
+                                    )
 
   case class AccountHolderJson121(
     name : String,

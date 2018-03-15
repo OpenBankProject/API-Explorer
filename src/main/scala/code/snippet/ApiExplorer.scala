@@ -316,7 +316,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Potentially replace OTHER_ACCOUNT_ID
     val url5: String = presetCounterpartyId match {
       case "" => url4
-      case _ => url4.replaceAll("OTHER_ACCOUNT_ID", presetCounterpartyId)
+      case _ => url4.replaceAll("OTHER_ACCOUNT_ID", presetCounterpartyId).replaceAll("COUNTERPARTY_ID",presetCounterpartyId)
     }
 
     // Potentially replace TRANSACTION_ID
@@ -950,10 +950,19 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // TODO Should check for both presetBankId and presetAccountId
       val options: List[(String, String)] = presetViewId match {
         case "" => List(noneFound)
-        case _ => for {
-          counterpartiesJson <- ObpAPI.getCounterparties(presetBankId, presetAccountId, presetViewId).toList
-          counterparty <- counterpartiesJson.other_accounts
-        } yield (counterparty.id, counterparty.holder.name)
+        case _ =>{
+          val implicitCounterparties = for {
+            counterpartiesJson <- ObpAPI.getCounterparties(presetBankId, presetAccountId, presetViewId).toList
+            counterparty <- counterpartiesJson.other_accounts
+          } yield (counterparty.id, counterparty.holder.name)
+
+          val explictCounterparties = for {
+            counterpartiesJson <- ObpAPI.getExplictCounterparties(presetBankId, presetAccountId, presetViewId).toList
+            counterparty <- counterpartiesJson.counterparties
+          } yield (counterparty.counterparty_id, counterparty.name)
+          
+          implicitCounterparties ++ explictCounterparties
+        }
       }
 
       selectOne :: options.sortBy(i => (i._2, i._1)) // Sort by the field the user sees
