@@ -70,7 +70,7 @@ trait DefaultProvider extends Provider {
   val name = "The Open Bank Project Demo"
 
   val baseUrl = Props.get("api_hostname", S.hostName)
-  val apiBaseUrl = baseUrl + "/obp"
+  val apiBaseUrl = baseUrl + "" // Was "/obp"
   val requestTokenUrl = baseUrl + "/oauth/initiate"
   val accessTokenUrl = baseUrl + "/oauth/token"
   val authorizeUrl = baseUrl + "/oauth/authorize"

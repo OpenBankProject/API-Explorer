@@ -699,7 +699,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // TODO It would be nice to modify getResponse and underlying functions to return more information about the request including full path and headers
       // For now we duplicate the construction of the fullPath
       val apiUrl = OAuthClient.currentApiBaseUrl
-      val urlWithVersion = s"/$apiVersion$requestUrl"
+
+      val urlWithVersion = s"$requestUrl"
+
+      //val urlWithVersion = s"/$apiVersion$requestUrl"
       val fullPath = new URL(apiUrl + urlWithVersion)
       //////////////
 
@@ -767,7 +770,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
       implicit val formats = net.liftweb.json.DefaultFormats
 
-      val urlWithVersion = s"/$apiVersion$url"
+      // version is now included in the url
+      val urlWithVersion = s"$url"
 
       val responseBodyBox = {
         resourceVerb match {
