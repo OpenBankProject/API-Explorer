@@ -357,13 +357,21 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
 
 
-    val supportedApiVersions = List("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0", "1")
 
+    // Possible OBP Versions
+    val obpVersionsSupported = List("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0")
 
+    // Possible other APIs like STET, UK, Berlin Group etc.
+    val otherVersionsSupported = List("1")
+
+    // Set the version to use.
     val apiVersion: String = {
-      if (supportedApiVersions.contains(apiVersionRequested)) {
+      if (obpVersionsSupported.contains(apiVersionRequested)) {
         s"v$apiVersionRequested"
-      } else {
+      } else
+      if (otherVersionsSupported.contains(apiVersionRequested)) {
+          s"v$apiVersionRequested"
+        } else {
         S.notice(s"Note: Requested version $apiVersionRequested is not currently supported. Set to v$defaultVersion")
         s"v$defaultVersion"
       }
@@ -372,13 +380,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
     logger.info(s"API version to use is: $apiVersion")
 
 
-
     // To link to API home page (this is duplicated in OAuthClient)
     val baseUrl = Props.get("api_hostname", S.hostName)
 
 
     // Use to show the developer the current base version url
-    val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}/$apiVersion"
+    val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}"
 
     // Link to the API endpoint for the resource docs json
     val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/v1.4.0/resource-docs/$apiVersion/obp?$pureCatalogParams"
@@ -547,17 +554,17 @@ WIP to add comments on resource docs. This code copied from Sofit.
           "Meta data, data sharing, data redaction and entitlements is included. ")
 
       // All
-      case List(None, None, None) => ("OBP", "All APIs")
+      case List(None, None, None) => ("OBP", "APIs")
 
       // UK OBWG
-      case List(None, Some(true), None) => ("OBWG", "Open Banking + Open Data")
+      case List(None, Some(true), None) => ("OBP Open Banking", "Open Banking + Open Data")
 
       // PSD2
-      case List(None,  None, Some(true)) => ("PSD2", "PSD2 APIs")
+      case List(None,  None, Some(true)) => ("OBP PSD2", "PSD2 APIs")
 
       // Intersection
-      case List(Some(true), Some(true), Some(true)) => ("Intersection of OBP Core, UK Open Banking and PSD2",
-        "APIs common to OBP, UK and PSD2")
+      case List(Some(true), Some(true), Some(true)) => ("Intersection of Core, Open Banking and PSD2",
+        "APIs common to Core, Open Banking and PSD2")
 
       case _ => ("APIs", "")
     }
@@ -807,7 +814,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     // Create a list of (version, url) used to populate the versions whilst preserving the other parameters
-    val versionUrls: List[(String, String)] = supportedApiVersions.map(i => (i, s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}${catalogParams}"))
+    val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i, s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}${catalogParams}"))
+
+    // Create a list of (version, url) used to populate the versions whilst preserving the other parameters except catalog
+    val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i, s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
 
     // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
@@ -1057,10 +1067,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Show the version to the user.
     // Append to the content child of id="version" e.g. the fixed text "Version:" is replacedWith "Version: 1.2.3"
     "#version *+" #> apiVersion &
-    ".versions" #> versionUrls.map { i =>
-      ".version *" #> s" ${i._1} " &
-      ".version [href]" #> s"${i._2}"
+    "@obp_versions" #> obpVersionUrls.map { i =>
+      "@obp_version *" #> s" ${i._1} " &
+      "@obp_version [href]" #> s"${i._2}"
     } &
+      "@other_versions" #> otherVersionUrls.map { i =>
+        "@other_version *" #> s" ${i._1} " &
+          "@other_version [href]" #> s"${i._2}"
+      } &
     ".info-box__headline *" #> s"$headline"  &
     "@version_path *" #> s"$baseVersionUrl" &
     "@version_path [href]" #> s"$baseVersionUrl" &
