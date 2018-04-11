@@ -388,10 +388,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}"
 
     // Link to the API endpoint for the resource docs json
-    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/v1.4.0/resource-docs/$apiVersion/obp?$pureCatalogParams"
+    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/$apiVersion/obp?$pureCatalogParams"
 
     // Link to the API endpoint for the swagger json
-    val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/v1.4.0/resource-docs/$apiVersion/swagger?$pureCatalogParams"
+    val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/$apiVersion/swagger?$pureCatalogParams"
 
 
 
