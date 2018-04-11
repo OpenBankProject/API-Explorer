@@ -715,7 +715,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
       // Return the commands to call the url with optional body and put the response into the appropriate result div
-      SetHtml(resultTarget, Text(getResponse(apiVersion, requestUrl, requestVerb, jsonObject))) &
+      SetHtml(resultTarget, Text(getResponse(requestUrl, requestVerb, jsonObject))) &
      // SetHtml(rolesTarget, Text(responseRoleString)) &
       Run (jsCommandHighlightResult) &
       //Run (jsCommandHighlightRolesResult) &
@@ -740,7 +740,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
       val apiUrl = OAuthClient.currentApiBaseUrl
 
-      val entitlementRequestsUrl = "/entitlement-requests"
+      val entitlementRequestsUrl = "/obp/v3.0.0/entitlement-requests"
 
       val createEntitlementRequest =  CreateEntitlementRequestJSON(bank_id = rolesBankId, role_name = entitlementRequestRoleName)
 
@@ -748,7 +748,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       implicit val formats = DefaultFormats
       val entitlementRequestJValue: JValue  = Extraction.decompose(createEntitlementRequest)
 
-      val response : String = getResponse(apiVersion, entitlementRequestsUrl, "POST", entitlementRequestJValue)
+      // TODO: Put this in ObpAPI.scala
+      val response : String = getResponse(entitlementRequestsUrl, "POST", entitlementRequestJValue)
 
       val result: String =
       try {
@@ -773,7 +774,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
-    def getResponse (apiVersion : String, url : String, resourceVerb: String, json : JValue) : String = {
+    def getResponse (url : String, resourceVerb: String, json : JValue) : String = {
 
       implicit val formats = net.liftweb.json.DefaultFormats
 
