@@ -570,7 +570,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
       // UK OBWG
-      case List(None, Some(true), None) => ("PSD2 + Open Banking Data APIs", "PSD2 + Open Banking Data: Access to Accounts, Payments and Open Data related to the Bank.")
+      case List(None, Some(true), None) => ("PSD2 + Open Data APIs", "PSD2 + Open Data: Access to Accounts, Payments and Open Data related to the Bank.")
 
       // PSD2
       case List(None,  None, Some(true)) => ("PSD2 APIs", "PSD2: Access to Accounts and Payments")
