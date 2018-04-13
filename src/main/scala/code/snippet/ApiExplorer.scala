@@ -237,8 +237,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
   val tagsHeadline : String = tagsParam match {
-    case Some(x) => "tagged: " + x.mkString(", ")
-    case _ => "(all tags)"
+    case Some(x) => "filtered by tag: " + x.mkString(", ")
+    case _ => ""
   }
 
 
@@ -544,27 +544,27 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Headline and Description of the search
     val (catalogHeadline, catalogDescription) = List(showCore, showOBWG, showPSD2)  match {
 
-      // Core
+      // Core / Minimal (basically same as PSD2)
       case List(Some(true), None, None) => ("Core OBP",
-        "A core set of customer facing APIs built on core banking services and bank open data.")
+        "A core set of customer facing APIs built on core banking services.")
 
-      // Non Core
+      // Non Core (this query not used by API Explorer)
       case List(Some(false), None, None) => ("Non-Core OBP",
         "These APIs don't assume the owner of the account is accessing the account related resources (so they support accountant, auditor, public, admin access) " +
           "Meta data, data sharing, data redaction and entitlements is included. ")
 
       // All
-      case List(None, None, None) => ("OBP", "APIs")
+      case List(None, None, None) => ("All OBP APIs", "All OBP APIs")
 
       // UK OBWG
-      case List(None, Some(true), None) => ("OBP Open Banking", "Open Banking + Open Data")
+      case List(None, Some(true), None) => ("PSD2 + Open Banking Data APIs", "PSD2 + Open Banking Data: Access to Accounts, Payments and Open Data related to the Bank.")
 
       // PSD2
-      case List(None,  None, Some(true)) => ("OBP PSD2", "PSD2 APIs")
+      case List(None,  None, Some(true)) => ("PSD2 APIs", "PSD2: Access to Accounts and Payments")
 
       // Intersection
-      case List(Some(true), Some(true), Some(true)) => ("Intersection of Core, Open Banking and PSD2",
-        "APIs common to Core, Open Banking and PSD2")
+      case List(Some(true), Some(true), Some(true)) => ("Intersection of all Catalogs",
+        "APIs common to Catalogs")
 
       case _ => ("APIs", "")
     }
@@ -576,7 +576,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     // Headline we display including count of APIs
-    val headline : String = s"$catalogHeadline APIs v$apiVersionRequested $tagsHeadline (${resources.length})".trim()
+    val headline : String = s"$catalogHeadline v$apiVersionRequested $tagsHeadline (${resources.length})".trim()
     logger.info (s"showingMessage is: $headline")
 
 
