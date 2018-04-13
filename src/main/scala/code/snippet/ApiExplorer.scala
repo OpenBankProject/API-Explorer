@@ -359,22 +359,31 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     // Possible OBP Versions
-    val obpVersionsSupported = List("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0")
+    //val obpVersionsSupported = List("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0")
+
+    // Save some space, only show from 1.4.0
+    val obpVersionsSupported = List("1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0")
 
     // Possible other APIs like STET, UK, Berlin Group etc.
-    val otherVersionsSupported = List("1")
+    // val otherVersionsSupported = List("berlin.group.v1")
+    val otherVersionsSupported = List("v1")
 
     // Set the version to use.
     val apiVersion: String = {
       if (obpVersionsSupported.contains(apiVersionRequested)) {
+        // Prefix with v (for OBP versions because they come just with number from API Explorer)
         s"v$apiVersionRequested"
       } else
       if (otherVersionsSupported.contains(apiVersionRequested)) {
-          s"v$apiVersionRequested"
+          s"$apiVersionRequested"
         } else {
         S.notice(s"Note: Requested version $apiVersionRequested is not currently supported. Set to v$defaultVersion")
         s"v$defaultVersion"
       }
+    }
+
+    val isObpVersion: Boolean = {
+      obpVersionsSupported.contains(apiVersionRequested)
     }
 
     logger.info(s"API version to use is: $apiVersion")
@@ -554,7 +563,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
           "Meta data, data sharing, data redaction and entitlements is included. ")
 
       // All
-      case List(None, None, None) => ("All OBP APIs", "All OBP APIs")
+      case List(None, None, None) => isObpVersion match {
+        case true => ("All OBP APIs", "All OBP APIs")
+        case _  => ("All APIs", "All APIs")
+      }
+
 
       // UK OBWG
       case List(None, Some(true), None) => ("PSD2 + Open Banking Data APIs", "PSD2 + Open Banking Data: Access to Accounts, Payments and Open Data related to the Bank.")
@@ -818,7 +831,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i, s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}${catalogParams}"))
 
     // Create a list of (version, url) used to populate the versions whilst preserving the other parameters except catalog
-    val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i, s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
+    // Includes hack for Berlin Group
+    val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i.replace("v1", "Berlin Group V1"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
 
     // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
