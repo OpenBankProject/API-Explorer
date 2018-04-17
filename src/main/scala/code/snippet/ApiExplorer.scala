@@ -565,6 +565,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // All
       case List(None, None, None) => isObpVersion match {
         case true => ("All OBP APIs", "All OBP APIs")
+        case false if apiVersionRequested == ("v1") => ("All Berlin Group APIs", "All Berlin Group APIs")
+        case false if apiVersionRequested == ("v2.0") => ("All UK APIs", "All UK APIs")
         case _  => ("All APIs", "All APIs")
       }
 
@@ -589,7 +591,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     // Headline we display including count of APIs
-    val headline : String = s"$catalogHeadline v$apiVersionRequested $tagsHeadline (${resources.length})".trim()
+    val headline : String = s"$catalogHeadline v${apiVersionRequested.replace("v","")} $tagsHeadline (${resources.length})".trim()
     logger.info (s"showingMessage is: $headline")
 
 
