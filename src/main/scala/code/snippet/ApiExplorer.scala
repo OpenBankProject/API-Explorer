@@ -566,7 +566,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       case List(None, None, None) => isObpVersion match {
         case true => ("All OBP APIs", "All OBP APIs")
         case false if apiVersionRequested == ("v1") => ("All Berlin Group APIs", "All Berlin Group APIs")
-        case false if apiVersionRequested == ("v2.0") => ("All Open Banking APIs", "All Open Banking APIs")
+        case false if apiVersionRequested == ("v2.0") => ("All UK APIs", "All UK APIs")
         case _  => ("All APIs", "All APIs")
       }
 
