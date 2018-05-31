@@ -294,11 +294,19 @@ WIP to add comments on resource docs. This code copied from Sofit.
   }
 
 
-  def modifiedRequestUrl(url: String, presetBankId: String, presetAccountId: String) = {
-     // Potentially replace BANK_ID
+  def modifiedRequestUrl(url: String, baseVersionUrl: String, presetBankId: String, presetAccountId: String) = {
+     
+    val versionPattern = "v([0-9].[0-9].[0-9])".r
+    val versionInUrl = (versionPattern findFirstIn url).getOrElse(baseVersionUrl)
+    // replace the version in URL, the user will see it change when they click the version.
+    val url1: String = presetBankId match {
+        case _ => url.replaceAll(versionInUrl, baseVersionUrl)
+      }
+    
+    // Potentially replace BANK_ID
      val url2: String = presetBankId match {
-        case "" => url
-        case _ => url.replaceAll("BANK_ID", presetBankId)
+        case "" => url1
+        case _ => url1.replaceAll("BANK_ID", presetBankId)
       }
 
     // Potentially replace ACCOUNT_ID
@@ -427,7 +435,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     } yield ResourceDocPlus(
       id = r.operation_id,
       verb = r.request_verb,
-      url = modifiedRequestUrl(r.request_url, presetBankId, presetAccountId),
+      url = modifiedRequestUrl(r.request_url, apiVersion, presetBankId, presetAccountId),
       summary = r.summary,
       description = stringToNodeSeq(r.description),
       example_request_body = r.example_request_body,
