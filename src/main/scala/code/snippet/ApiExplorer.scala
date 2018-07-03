@@ -1225,7 +1225,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     ".glossary" #> glossaryItems.map  { i =>
       // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-      ".end-point-anchor [href]" #> s"#${i.title.replaceAll(" ", "-")}" &
+      ".end-point-anchor [href]" #> s"#${urlEncode(i.title.replaceAll(" ", "-"))}" &
         ".content-box__headline *" #> i.title &
         ".content-box__headline [id]" #> i.title.replaceAll(" ", "-") & // id for the anchor to find
         //   // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
@@ -1233,9 +1233,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
     } &
       ".api_list_item" #> glossaryItems.map { i =>
         // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-        ".api_list_item_link [href]" #> s"#${i.title.replaceAll(" ", "-")}" &
+        ".api_list_item_link [href]" #> s"#${urlEncode(i.title.replaceAll(" ", "-"))}" &
           ".api_list_item_link *" #> i.title &
-          ".api_list_item_link [id]" #> s"index_of_${i.title.replaceAll(" ", "-")}"
+          ".api_list_item_link [id]" #> s"index_of_${urlEncode(i.title.replaceAll(" ", "-"))}"
       }
   }
 
