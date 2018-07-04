@@ -359,7 +359,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   def showResources = {
 
-    val defaultVersion: String = "3.0.0"
+    val defaultVersion: String = "3.1.0"
 
     // Get the requested version from the url parameter and default if none
     val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
@@ -370,7 +370,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     //val obpVersionsSupported = List("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0")
 
     // Save some space, only show from 1.4.0
-    val obpVersionsSupported = List("1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0")
+    val obpVersionsSupported = List("1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0", "3.1.0")
 
     // Possible other APIs like STET, UK, Berlin Group etc.
     // val otherVersionsSupported = List("berlin.group.v1")
