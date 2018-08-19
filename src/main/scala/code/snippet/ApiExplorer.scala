@@ -374,7 +374,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Possible other APIs like STET, UK, Berlin Group etc.
     // val otherVersionsSupported = List("berlin.group.v1")
-    val otherVersionsSupported = List("v1", "v2.0")
+    val otherVersionsSupported = List("v1", "v2.0","b1")
 
     // Set the version to use.
     val apiVersion: String = {
@@ -575,6 +575,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         case true => ("All OBP APIs", "All OBP APIs")
         case false if apiVersionRequested == ("v1") => ("All Berlin Group APIs", "All Berlin Group APIs")
         case false if apiVersionRequested == ("v2.0") => ("All UK APIs", "All UK APIs")
+        case false if apiVersionRequested == ("b1") => ("All Builder APIs", "All Builder APIs")
         case _  => ("All APIs", "All APIs")
       }
 
@@ -842,7 +843,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Create a list of (version, url) used to populate the versions whilst preserving the other parameters except catalog
     // Includes hack for Berlin Group
-    val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i.replace("v1", "Berlin Group V1").replace("v2.0", "UK V2.0"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
+    val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i.replace("b1", "APIBuilder B1").replace("v1", "Berlin Group V1").replace("v2.0", "UK V2.0"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
 
     // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
