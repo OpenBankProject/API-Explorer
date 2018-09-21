@@ -1,43 +1,31 @@
 package code.snippet
 
 import java.net.URL
-import java.text.SimpleDateFormat
 
-import _root_.net.liftweb._
 import code.lib.ObpJson._
 import code.lib._
-import net.liftweb.http.js.jquery.JqJsCmds.DisplayMessage
-import net.liftweb.util.{CssSel, Props}
 import code.util.Helper.MdcLoggable
-import net.liftweb.json.JValue
+import net.liftweb.util.Props
 
-import scala.collection.immutable.Nil
+import scala.collection.immutable.{List, Nil}
 
 //import code.snippet.CallUrlForm._
-import net.liftweb.http.{SHtml, S}
-
-import net.liftweb.json.{Extraction, JsonParser, JsonAST}
-import net.liftweb.json.JsonAST.{JField, JObject, JValue}
-import scala.xml.{XML, NodeSeq, Text}
-
-
 import net.liftweb._
+import net.liftweb.http.{S, SHtml}
+import net.liftweb.json.JsonAST.{JObject, JValue}
+import net.liftweb.json.{Extraction, JsonParser}
+
+import scala.xml.{NodeSeq, Text}
 // for compact render
-import net.liftweb.json._
-
-
-import common._
-
-import net.liftweb.util.Helpers._
-import net.liftweb.http.SHtml.{text,ajaxSubmit, textarea, select, ajaxSelect}
-import net.liftweb.http.js.JsCmd
-import net.liftweb.http.js.JsCmds.{RedirectTo, Run, SetHtml}
-
-import net.liftweb.json.Serialization.writePretty
-
-import code.lib.ObpAPI.{getResourceDocsJson, allBanks, getEntitlementsV300, getEntitlementRequestsV300, isLoggedIn, privateAccountsCache, getGlossaryItemsJson}
-
+import code.lib.ObpAPI.{allBanks, getEntitlementRequestsV300, getEntitlementsV300, getGlossaryItemsJson, getResourceDocsJson, isLoggedIn}
+import net.liftweb.common._
 import net.liftweb.http.CurrentReq
+import net.liftweb.http.SHtml.{ajaxSelect, ajaxSubmit, text}
+import net.liftweb.http.js.JsCmd
+import net.liftweb.http.js.JsCmds.{Run, SetHtml}
+import net.liftweb.json.Serialization.writePretty
+import net.liftweb.json._
+import net.liftweb.util.Helpers._
 
 
 // see https://simply.liftweb.net/index-7.10.html on css selectors
@@ -717,9 +705,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
       // The id of the full path
       val fullPathTarget = "full_path_" + resourceId
+      val fullHeadersTarget = "full_headers_" + resourceId
       // The javascript to show it
 
       val jsCommandShowFullPath : String =  s"DOLLAR_SIGN('#$fullPathTarget').fadeIn();".replace("DOLLAR_SIGN","$")
+      val jsCommandShowFullHeaders : String =  s"DOLLAR_SIGN('#$fullHeadersTarget').fadeIn();".replace("DOLLAR_SIGN","$")
 
       // alert('$fullPathTarget');
       //logger.info(s"jsCommand is $jsCommand")
@@ -737,9 +727,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val fullPath = new URL(apiUrl + urlWithVersion)
       //////////////
 
-
+      val (body, headers) = getResponse(requestUrl, requestVerb, jsonObject)
       // Return the commands to call the url with optional body and put the response into the appropriate result div
-      SetHtml(resultTarget, Text(getResponse(requestUrl, requestVerb, jsonObject))) &
+      SetHtml(resultTarget, Text(body)) &
      // SetHtml(rolesTarget, Text(responseRoleString)) &
       Run (jsCommandHighlightResult) &
       //Run (jsCommandHighlightRolesResult) &
@@ -747,7 +737,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
       Run (jsCommandHideRequestRolesResponsesBox) &
       Run (jsCommandHideTypicalSuccessResponseBox) &
       Run (jsCommandShowFullPath) &
-      SetHtml(fullPathTarget, Text(fullPath.toString))
+      Run (jsCommandShowFullHeaders) &
+      SetHtml(fullPathTarget, Text(fullPath.toString)) &
+      SetHtml(fullHeadersTarget, Text(headers))
     }
 
 
@@ -773,7 +765,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val entitlementRequestJValue: JValue  = Extraction.decompose(createEntitlementRequest)
 
       // TODO: Put this in ObpAPI.scala
-      val response : String = getResponse(entitlementRequestsUrl, "POST", entitlementRequestJValue)
+      val response : String = getResponse(entitlementRequestsUrl, "POST", entitlementRequestJValue)._1
 
       val result: String =
       try {
@@ -798,19 +790,33 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
-    def getResponse (url : String, resourceVerb: String, json : JValue) : String = {
+    def getResponse (url : String, resourceVerb: String, json : JValue) : (String, String) = {
 
       implicit val formats = net.liftweb.json.DefaultFormats
 
       // version is now included in the url
       val urlWithVersion = s"$url"
 
+      var headersOfCurrentCall: List[String] = Nil
+
       val responseBodyBox = {
         resourceVerb match {
-          case "GET" => ObpGet(urlWithVersion)
-          case "DELETE" => ObpDelete(urlWithVersion)
-          case "POST" => ObpPost(urlWithVersion, json)
-          case "PUT" => ObpPut(urlWithVersion, json)
+          case "GET" =>
+            val x = ObpGetWithHeader(urlWithVersion)
+            headersOfCurrentCall = x._2
+            x._1
+          case "DELETE" =>
+            val x = ObpDeleteWithHeader(urlWithVersion)
+            headersOfCurrentCall = x._2
+            x._1
+          case "POST" =>
+            val x = ObpPostWithHeader(urlWithVersion, json)
+            headersOfCurrentCall = x._2
+            x._1
+          case "PUT" =>
+            val x = ObpPutWithHeader(urlWithVersion, json)
+            headersOfCurrentCall = x._2
+            x._1
           case _ => {
             val failMsg = s"API Explorer says: Unsupported resourceVerb: $resourceVerb. Url requested was: $url"
             logger.warn(failMsg)
@@ -831,7 +837,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         }
 
       logger.debug(s"responseBody is $responseBody")
-      responseBody
+      (responseBody, headersOfCurrentCall.mkString("\n"))
     }
 
 
@@ -1160,6 +1166,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // text creates a text box and we can capture its input in requestUrl
       "@request_url_input" #> text(i.url, s => requestUrl = s, "maxlength" -> "512", "size" -> "100", "id" -> s"request_url_input_${i.id}") &
       "@full_path [id]" #> s"full_path_${i.id}" &
+      "@full_headers [id]" #> s"full_headers_${i.id}" &
       // Extraction.decompose creates json representation of JObject.
       "@example_request_body_input" #> text(pretty(render(i.example_request_body)), s => requestBody = s, "maxlength" -> "100000", "size" -> "100", "type" -> "text") &
       //"@request_body_input" #> textarea((""), s => requestBody = s, "cols" -> "1000", "rows" -> "10","style"->"border:none") &

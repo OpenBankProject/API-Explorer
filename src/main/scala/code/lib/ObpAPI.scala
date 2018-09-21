@@ -178,7 +178,7 @@ object OBPRequest extends MdcLoggable {
   implicit val formats = DefaultFormats
   //returns a tuple of the status code and response body as a string
   // TODO In addition we should return the full list of headers so we can display to user?
-  def apply(apiPath : String, jsonBody : Option[JValue], method : String, headers : List[Header]) : Box[(Int, String)] = {
+  def apply(apiPath : String, jsonBody : Option[JValue], method : String, headers : List[Header]) : Box[(Int, String, List[String])] = {
     val statusAndBody = tryo {
       val credentials = OAuthClient.getAuthorizedCredential
       val apiUrl = OAuthClient.currentApiBaseUrl
@@ -208,6 +208,9 @@ object OBPRequest extends MdcLoggable {
 
       request.connect()
       val status = request.getResponseCode()
+      import scala.collection.JavaConverters._
+      val responseHeaders: List[(String, Set[String])] = request.getHeaderFields().asScala.mapValues(_.asScala.toSet).toList
+      val adjustedResponseHeaders = responseHeaders.map(x => x._1 + ": " + x._2.mkString(", ")).sortWith(_ < _).filter(_.startsWith("null") == false)
 
       //get reponse body
       val inputStream = if(status >= 400) request.getErrorStream() else request.getInputStream()
@@ -223,7 +226,7 @@ object OBPRequest extends MdcLoggable {
       }
       readLines()
       reader.close();
-      (status, builder.toString())
+      (status, builder.toString(), adjustedResponseHeaders)
     }
 
     statusAndBody pass {
@@ -304,7 +307,14 @@ object OBPInternalRequest extends MdcLoggable {
 object ObpPut {
   def apply(apiPath: String, json : JValue): Box[JValue] = {
     OBPRequest(apiPath, Some(json), "PUT", Nil).flatMap {
-      case(status, result) => APIUtils.getAPIResponseBody(status, result)
+      case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+    }
+  }
+}
+object ObpPutWithHeader {
+  def apply(apiPath: String, json : JValue): (Box[JValue], List[String]) = {
+    OBPRequest(apiPath, Some(json), "PUT", Nil) match {
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
     }
   }
 }
@@ -312,7 +322,14 @@ object ObpPut {
 object ObpPost {
   def apply(apiPath: String, json : JValue): Box[JValue] = {
     OBPRequest(apiPath, Some(json), "POST", Nil).flatMap {
-      case(status, result) => APIUtils.getAPIResponseBody(status, result)
+      case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+    }
+  }
+}
+object ObpPostWithHeader {
+  def apply(apiPath: String, json : JValue): (Box[JValue], List[String]) = {
+    OBPRequest(apiPath, Some(json), "POST", Nil) match {
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
     }
   }
 }
@@ -323,7 +340,7 @@ object ObpDeleteBoolean {
    */
   def apply(apiPath: String): Boolean = {
     val worked = OBPRequest(apiPath, None, "DELETE", Nil).map {
-      case(status, result) => APIUtils.apiResponseWorked(status, result)
+      case(status, result, _) => APIUtils.apiResponseWorked(status, result)
     }
     worked.getOrElse(false)
   }
@@ -336,18 +353,31 @@ object ObpDeleteBoolean {
 object ObpDelete {
   def apply(apiPath: String): Box[JValue] = {
     OBPRequest(apiPath, None, "DELETE", Nil).map {
-      case(status, result) => APIUtils.apiResponseWorked(status, result)
+      case(status, result, _) => APIUtils.apiResponseWorked(status, result)
+    }
+  }
+}
+object ObpDeleteWithHeader {
+  def apply(apiPath: String): (Box[JValue], List[String]) = {
+    OBPRequest(apiPath, None, "DELETE", Nil) match {
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
     }
   }
 }
 
 
 
-
 object ObpGet {
   def apply(apiPath: String, headers : List[Header] = Nil): Box[JValue] = {
     OBPRequest(apiPath, None, "GET", headers).flatMap {
-      case(status, result) => APIUtils.getAPIResponseBody(status, result)
+      case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+    }
+  }
+}
+object ObpGetWithHeader {
+  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+    OBPRequest(apiPath, None, "GET", headers) match {
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
     }
   }
 }
