@@ -360,7 +360,7 @@ object ObpDelete {
 object ObpDeleteWithHeader {
   def apply(apiPath: String): (Box[JValue], List[String]) = {
     OBPRequest(apiPath, None, "DELETE", Nil) match {
-      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
+      case Full(value) => (tryo{parse(APIUtils.apiResponseWorked(value._1, value._2).toString())}, value._3)
     }
   }
 }
