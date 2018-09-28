@@ -717,7 +717,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
       /////////////
-      // TODO It would be nice to modify getResponse and underlying functions to return more information about the request including full path and headers
+      // TODO It would be nice to modify getResponse and underlying functions to return more information about the request including full path
       // For now we duplicate the construction of the fullPath
       val apiUrl = OAuthClient.currentApiBaseUrl
 
