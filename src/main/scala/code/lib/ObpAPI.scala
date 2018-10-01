@@ -176,8 +176,7 @@ case class ObpError(error :String)
 
 object OBPRequest extends MdcLoggable {
   implicit val formats = DefaultFormats
-  //returns a tuple of the status code and response body as a string
-  // TODO In addition we should return the full list of headers so we can display to user?
+  //returns a tuple of the status code,  response body and list of headers
   def apply(apiPath : String, jsonBody : Option[JValue], method : String, headers : List[Header]) : Box[(Int, String, List[String])] = {
     val statusAndBody = tryo {
       val credentials = OAuthClient.getAuthorizedCredential
@@ -360,7 +359,7 @@ object ObpDelete {
 object ObpDeleteWithHeader {
   def apply(apiPath: String): (Box[JValue], List[String]) = {
     OBPRequest(apiPath, None, "DELETE", Nil) match {
-      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
+      case Full(value) => (tryo{parse(APIUtils.apiResponseWorked(value._1, value._2).toString())}, value._3)
     }
   }
 }
