@@ -849,7 +849,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Create a list of (version, url) used to populate the versions whilst preserving the other parameters except catalog
     // Includes hack for Berlin Group
-    val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i.replace("b1", "APIBuilder B1").replace("v1", "Berlin Group V1").replace("v2.0", "UK V2.0"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
+    val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i.replace("b1", "API Builder").replace("v1", "Berlin Group").replace("v2.0", "UK"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
 
     // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
