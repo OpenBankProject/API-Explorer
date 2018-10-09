@@ -516,6 +516,7 @@ a img {
   -moz-appearance: none;
   -webkit-appearance: none;
   margin-top: 5px;
+  max-width:80%;
 }
 
 .default-button {
@@ -557,6 +558,7 @@ a img {
 }
 
 .content-box__info-box {
+  max-width:95%;
   background-color: #eaf8fa;
   margin-top: 20px;
   padding: 14px 19px 44px 19px;
