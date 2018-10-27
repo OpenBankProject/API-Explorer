@@ -168,8 +168,8 @@ object ObpAPI extends Loggable {
     ObpGet(s"$obpPrefix/v3.0.0/api/glossary").flatMap(_.extractOpt[GlossaryItemsJsonV300])
   }
 
-  def getMessageDocsJson : Box[GlossaryItemsJsonV300] = {
-    ObpGet(s"$obpPrefix/v3.0.0/api/glossary").flatMap(_.extractOpt[GlossaryItemsJsonV300])
+  def getMessageDocsJson : Box[MessageDocsJsonV220] = {
+    ObpGet(s"$obpPrefix/v2.2.0/message-docs/kafka_vSept2018").flatMap(_.extractOpt[MessageDocsJsonV220])
   }
 
 }
@@ -923,4 +923,23 @@ case class GlossaryItemJsonV300 (title: String,
                                 )
 
 case class GlossaryItemsJsonV300 (glossary_items: List[GlossaryItemJsonV300])
+
+
+case class MessageDocJsonV220(
+                           process: String, // Should be unique
+                           message_format: String,
+                           outbound_topic: Option[String] = None,
+                           inbound_topic: Option[String] = None,
+                           description: String,
+                           example_outbound_message: JValue,
+                           example_inbound_message: JValue,
+                           outboundAvroSchema: Option[JValue] = None,
+                           inboundAvroSchema: Option[JValue] = None
+                         )
+
+
+case class MessageDocsJsonV220 (message_docs: List[MessageDocJsonV220])
+
+
+
 
