@@ -177,6 +177,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
   logger.info(s"transaction_id in url param is $presetTransactionId")
 
 
+  val presetConnector = S.param("connector").getOrElse("kafka_vSept2018")
+  logger.info(s"connector in url param is $presetConnector")
+
+
+
   def stringToOptBoolean (x: String) : Option[Boolean] = x.toLowerCase match {
     case "true" | "yes" | "1" | "-1" => Some(true)
     case "false" | "no" | "0" => Some(false)
@@ -358,7 +363,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     //val obpVersionsSupported = List("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0")
 
     // Save some space, only show from 1.4.0
-    val obpVersionsSupported = List("1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0", "3.1.0")
+    val obpVersionsSupported = List("2.0.0", "2.1.0", "2.2.0", "3.0.0", "3.1.0")
 
     // Possible other APIs like STET, UK, Berlin Group etc.
     // val otherVersionsSupported = List("berlin.group.v1")
@@ -1255,16 +1260,19 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // logger.info(s"showGlossary hello ")
 
     // TODO cache this.
-    val messageDocs = getMessageDocsJson.map(_.message_docs).getOrElse(List())
+    val messageDocs = getMessageDocsJson(presetConnector).map(_.message_docs).getOrElse(List())
 
 
-    ".glossary" #> messageDocs.map  { i =>
+    ".info-box__headline *" #> s"Message Docs for Connector: $presetConnector" &
+    ".message-doc" #> messageDocs.map  { i =>
       // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
       ".end-point-anchor [href]" #> s"#${urlEncode(i.process.replaceAll(" ", "-"))}" &
         ".content-box__headline *" #> i.process &
         ".content-box__headline [id]" #> i.process.replaceAll(" ", "-") & // id for the anchor to find
-        //   // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
-        ".content-box__text-box *" #> stringToNodeSeq(i.process)
+        ".outbound-topic *" #> stringToNodeSeq(i.outbound_topic.getOrElse("")) &
+        ".inbound-topic *" #> stringToNodeSeq(i.inbound_topic.getOrElse("")) &
+        ".outbound-message *" #> stringToNodeSeq(pretty(render(i.example_outbound_message))) &
+        ".inbound-message *" #> stringToNodeSeq(pretty(render(i.example_inbound_message)))
     } &
       ".api_list_item" #> messageDocs.map { i =>
         // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
@@ -1273,12 +1281,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
           ".api_list_item_link [id]" #> s"index_of_${urlEncode(i.process.replaceAll(" ", "-"))}"
       }
   }
-
-
-
-
-
-
 }
 
 

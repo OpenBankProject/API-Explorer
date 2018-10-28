@@ -1133,3 +1133,20 @@ a.end-point-anchor {
   color: #fff;
   font-size: 12px;
 }
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 100px 450px 450px;
+  grid-gap: 10px;
+  background-color: #fff;
+  color: #444;
+  float: left;
+}
+
+.box {
+  background-color: #444;
+  color: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  font-size: 80%;
+}

@@ -168,8 +168,8 @@ object ObpAPI extends Loggable {
     ObpGet(s"$obpPrefix/v3.0.0/api/glossary").flatMap(_.extractOpt[GlossaryItemsJsonV300])
   }
 
-  def getMessageDocsJson : Box[MessageDocsJsonV220] = {
-    ObpGet(s"$obpPrefix/v2.2.0/message-docs/kafka_vSept2018").flatMap(_.extractOpt[MessageDocsJsonV220])
+  def getMessageDocsJson(connector: String) : Box[MessageDocsJsonV220] = {
+    ObpGet(s"$obpPrefix/v2.2.0/message-docs/$connector").flatMap(_.extractOpt[MessageDocsJsonV220])
   }
 
 }
