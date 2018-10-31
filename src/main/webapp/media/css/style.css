@@ -1134,13 +1134,14 @@ a.end-point-anchor {
   font-size: 12px;
 }
 
-.wrapper {
+.grid-container {
   display: grid;
   grid-template-columns: 100px 450px 450px;
   grid-gap: 10px;
   background-color: #fff;
   color: #444;
   float: left;
+  grid-template-areas: "header header header";
 }
 
 .box {
@@ -1150,3 +1151,6 @@ a.end-point-anchor {
   padding: 20px;
   font-size: 80%;
 }
+
+ .grid-header {grid-area: header}
+

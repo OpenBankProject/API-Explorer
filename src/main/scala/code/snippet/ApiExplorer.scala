@@ -1272,7 +1272,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".outbound-topic *" #> stringToNodeSeq(i.outbound_topic.getOrElse("")) &
         ".inbound-topic *" #> stringToNodeSeq(i.inbound_topic.getOrElse("")) &
         ".outbound-message *" #> stringToNodeSeq(pretty(render(i.example_outbound_message))) &
-        ".inbound-message *" #> stringToNodeSeq(pretty(render(i.example_inbound_message)))
+        ".inbound-message *" #> stringToNodeSeq(pretty(render(i.example_inbound_message))) &
+        ".description *" #> stringToNodeSeq((i.description))
     } &
       ".api_list_item" #> messageDocs.map { i =>
         // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
