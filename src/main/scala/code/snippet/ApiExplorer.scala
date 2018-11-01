@@ -1251,21 +1251,29 @@ WIP to add comments on resource docs. This code copied from Sofit.
           ".api_list_item_link [id]" #> s"index_of_${urlEncode(i.title.replaceAll(" ", "-"))}"
       }
   }
-
-
-  //
-
+  
   def showMessageDocs = {
 
-    // logger.info(s"showGlossary hello ")
-
     // TODO cache this.
-    val messageDocs = getMessageDocsJson(presetConnector).map(_.message_docs).getOrElse(List())
+    val messageDocs = getMessageDocsJson(presetConnector).map(_.message_docs).getOrElse(List()).sortBy(i => (i.adapter_implementation.group, i.adapter_implementation.suggested_order))
 
+    // Group message docs by group in adapter implementation.
+    val unsortedGroupedmessageDocs: Map[String, List[MessageDocJsonV220]] = messageDocs.groupBy(_.adapter_implementation.group)
+
+    // Sort by group
+    val groupedMessageDocs  = unsortedGroupedmessageDocs.toSeq.sortBy(_._1)
 
     ".info-box__headline *" #> s"Message Docs for Connector: $presetConnector" &
+    "@api_group_item" #> groupedMessageDocs.map { i =>
+      "@api_group_name *" #> s"${i._1.replace("-"," ")}" &
+        // Within each group, list the message docs
+        "@api_list_item" #> i._2.sortBy(_.process.toString()).map { i =>
+          "@api_list_item_link [href]" #> s"#${i.process}" &
+            "@api_list_item_link *" #> i.process &
+            "@api_list_item_link [id]" #> s"index_of_${i.process}"
+        }
+    } &
     ".message-doc" #> messageDocs.map  { i =>
-      // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
       ".end-point-anchor [href]" #> s"#${urlEncode(i.process.replaceAll(" ", "-"))}" &
         ".content-box__headline *" #> i.process &
         ".content-box__headline [id]" #> i.process.replaceAll(" ", "-") & // id for the anchor to find
@@ -1274,14 +1282,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".outbound-message *" #> stringToNodeSeq(pretty(render(i.example_outbound_message))) &
         ".inbound-message *" #> stringToNodeSeq(pretty(render(i.example_inbound_message))) &
         ".description *" #> stringToNodeSeq((i.description))
-    } &
-      ".api_list_item" #> messageDocs.map { i =>
-        // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-        ".api_list_item_link [href]" #> s"#${urlEncode(i.process.replaceAll(" ", "-"))}" &
-          ".api_list_item_link *" #> i.process &
-          ".api_list_item_link [id]" #> s"index_of_${urlEncode(i.process.replaceAll(" ", "-"))}"
+    }
       }
-  }
 }
 
 
