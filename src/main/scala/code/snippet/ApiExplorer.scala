@@ -1251,7 +1251,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           ".api_list_item_link [id]" #> s"index_of_${urlEncode(i.title.replaceAll(" ", "-"))}"
       }
   }
-  
+
   def showMessageDocs = {
 
     // TODO cache this.
@@ -1266,10 +1266,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     ".info-box__headline *" #> s"Message Docs for Connector: $presetConnector" &
     "@api_group_item" #> groupedMessageDocs.map { i =>
       "@api_group_name *" #> s"${i._1.replace("-"," ")}" &
-        // Within each group, list the message docs
-        "@api_list_item" #> i._2.sortBy(_.process.toString()).map { i =>
+        // Within each group, and sort by suggested_order. List the message docs
+        "@api_list_item" #> i._2.sortBy(_.adapter_implementation.suggested_order).map { i =>
           "@api_list_item_link [href]" #> s"#${i.process}" &
-            "@api_list_item_link *" #> i.process &
+            "@api_list_item_link *" #> s"${i.process}" & //  ${i.adapter_implementation.suggested_order}" &
             "@api_list_item_link [id]" #> s"index_of_${i.process}"
         }
     } &
