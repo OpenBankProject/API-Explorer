@@ -558,10 +558,11 @@ a img {
 }
 
 .content-box__info-box {
-  max-width:95%;
+  max-width:80em;
   background-color: #eaf8fa;
   margin-top: 20px;
   padding: 14px 19px 44px 19px;
+  overflow-x: auto;
 }
 
 .content-box__info-box span {
