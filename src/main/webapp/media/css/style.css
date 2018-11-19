@@ -210,6 +210,18 @@ a img {
   text-decoration: none;
 }
 
+
+.extra_small_text {
+  padding: 5;
+  display: inline-block;
+  margin: 10 10 10 10;
+  font-size: 12px;
+  line-height: 16px;
+  color: #fff;
+  letter-spacing: 0.2px;
+  text-decoration: none;
+}
+
 .api-info-section {
   position: fixed;
   top: 90px;
