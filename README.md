@@ -64,6 +64,8 @@ Note: You may need to add the pluginGroup to the $HOME/.m2/settings.xml
 
 * Alternatively you can do File -> New -> Project from VCS and checkout the project directly from github.
 
+* Alternatively you can do File -> Open Folder and select the folder that contains pom.xml *This is the currently recommended method*
+
 * When / if prompted for SDK, choose Java 1.8 (and Scala 2.11) otherwise keep the defaults. Use the Maven options. Do not change the project name etc.
 
 * If you see a message about an unmanaged pom.xml, click the option to let Maven manage it.
