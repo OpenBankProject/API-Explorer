@@ -76,7 +76,7 @@ Note: You may need to add the pluginGroup to the $HOME/.m2/settings.xml
 
 * Now **Rebuild** the project so everything is compiled. At this point you may need to select the SDK, see above.
 
-* Once you have rebuilt the project wihtout compile errors, you should be able to RunWebApp in test/scala
+* Once you have rebuilt the project without compile errors, you should be able to RunWebApp in test/scala
 
 * Run RunWebApp by right clicking on it or selecting Run. The built in jetty server should start on localhost:8082
 
