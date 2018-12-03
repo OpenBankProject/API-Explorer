@@ -69,7 +69,7 @@ sealed trait Provider {
 trait DefaultProvider extends Provider {
   val name = "The Open Bank Project Demo"
 
-  val baseUrl = Props.get("api_hostname", S.hostName)
+  val baseUrl = Props.get("oauth_1.hostname", S.hostName)
   val apiBaseUrl = baseUrl + "" // Was "/obp"
   val requestTokenUrl = baseUrl + "/oauth/initiate"
   val accessTokenUrl = baseUrl + "/oauth/token"
