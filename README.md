@@ -52,6 +52,36 @@ Note: You may need to add the pluginGroup to the $HOME/.m2/settings.xml
 
 ---
 
+## To run with IntelliJ IDEA
+
+* Make sure you have the IntelliJ Scala plugin installed.
+
+* Create a new folder e.g. OpenBankProject and cd there
+
+* git clone https://github.com/OpenBankProject/API-Explorer.git
+
+* In IntelliJ IDEA do File -> New -> Project from existing sources, navigate to the folder and select pom.xml
+
+* Alternatively you can do File -> New -> Project from VCS and checkout the project directly from github.
+
+* Alternatively you can do File -> Open Folder and select the folder that contains pom.xml *This is the currently recommended method*
+
+* When / if prompted for SDK, choose Java 1.8 (and Scala 2.11) otherwise keep the defaults. Use the Maven options. Do not change the project name etc.
+
+* If you see a message about an unmanaged pom.xml, click the option to let Maven manage it.
+
+* Navigate to test/scala/RunWebApp. You may see a Setup Scala SDK link. Click this and check Scala 2.11.8 or so.
+
+* In src/main/resources/props create a \<yourloginname\>.props (or default.props) for development. For localhost set api_hostname=http://127.0.0.1:8080, defaultAuthProvider=http://127.0.0.1:8080, base_url=http://localhost:8082, dev.port=8082 and oauth keys obtained from the api (at /consumer-registration) i.e. obp_consumer_key and obp_consumer_secret
+
+* Now **Rebuild** the project so everything is compiled. At this point you may need to select the SDK, see above.
+
+* Once you have rebuilt the project wihtout compile errors, you should be able to RunWebApp in test/scala
+
+* Run RunWebApp by right clicking on it or selecting Run. The built in jetty server should start on localhost:8082
+
+* Browse to localhost:8082 but don't try anything else there yet.
+
 ## Ubuntu
 
 If you use Ubuntu (or a derivate) and encrypted home directories (e.g. you have ~/.Private), you might run into the following error when the project is built:
@@ -79,7 +109,7 @@ should be the easiest way to get started.
 The base_url is used to calculate the callback url to give to the Open Bank Project API server. This should just be the
 base url used to access the API Explorer. So if you're running a copy of the API Explorer at
 api-explorer.example.com over https, on the standard port, it would be "https://api-explorer.example.com".
-An example value for local development could be: http://127.0.0.1:8082 (8080 is the default Lift development port)
+An example value for local development could be: http://127.0.0.1:8082 (8082 is the default Lift development port)
 
 *api_hostname*
 
