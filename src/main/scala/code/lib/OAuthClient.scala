@@ -66,10 +66,24 @@ sealed trait Provider {
   val consumerSecret : String
 }
 
-trait DefaultProvider extends Provider {
+trait DefaultProvider extends Provider with MdcLoggable {
   val name = "The Open Bank Project Demo"
-
-  val baseUrl = Props.get("oauth_1.hostname", S.hostName)
+  
+  // val baseUrl = Props.get("oauth_1.hostname").getOrElse(Props.get("api_hostname", S.hostName))
+  val baseUrl = Props.get("oauth_1.hostname") match {
+    case Full(v) =>
+      v
+    case _ =>
+      logger.warn("==========>> THERE IS NO THE VALUE FOR PROPS oauth_1.hostname <<====================")
+      Props.get("api_hostname") match {
+      case Full(v) => 
+        v
+      case _ =>
+        logger.warn("==========>> THERE IS NO THE VALUE FOR PROPS api_hostname <<====================")
+        logger.warn("==========>> DEFAULT VALUE: " + S.hostName + " <<====================")
+        S.hostName
+    }
+  }
   val apiBaseUrl = baseUrl + "" // Was "/obp"
   val requestTokenUrl = baseUrl + "/oauth/initiate"
   val accessTokenUrl = baseUrl + "/oauth/token"
