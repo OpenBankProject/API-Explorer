@@ -117,7 +117,7 @@ object ObpAPI extends Loggable {
   }
 
   def privateAccounts : Box[BarebonesAccountsJson] = {
-    ObpGet(s"$obpPrefix/v3.1.0/accounts/private").flatMap(_.extractOpt[BarebonesAccountsJson])
+    ObpGet(s"$obpPrefix/v1.2.1/accounts/private").flatMap(_.extractOpt[BarebonesAccountsJson])
   }
   
   @deprecated("This method will mix public and private, not clear for Apps.","2018-02-18")
