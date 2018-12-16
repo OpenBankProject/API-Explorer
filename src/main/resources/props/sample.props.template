@@ -39,11 +39,25 @@ dev.port=8082
 
 # Web UI
 
+
+# webui_header_logo_left_url = https://static.openbankproject.com/images/OBP_full_web_25pc.png
+
+# webui_header_logo_right_url =
+
+# webui_hosted_by_text = Hosted by TESOBE
+
+# webui_hosted_by_url = https://www.tesobe.com
+
+
 # To change style sheets:
 
 # webui_main_style_sheet=./media/css/style.css
 
 # webui_override_style_sheet=./media/css/your_override.css
+
+
+
+
 
 ## OAuth1.0a #########################
 # The hostname to which the request was sent. This is taken from the "Host" HTTP header, or if that

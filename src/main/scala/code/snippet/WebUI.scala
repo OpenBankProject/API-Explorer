@@ -58,7 +58,7 @@ class WebUI extends MdcLoggable {
 
 
 
-//  These copied from API but not implemented (yet).
+//  These copied from API but not all implemented.
 
   def headerLogoLeft = {
     "img [src]" #> Props.get("webui_header_logo_left_url", "https://static.openbankproject.com/images/OBP_full_web_25pc.png")
@@ -93,11 +93,11 @@ class WebUI extends MdcLoggable {
 */
 
   def hostedByText: CssSel = {
-    "#hosted-by-text *" #> scala.xml.Unparsed(Props.get("hosted_by_text", "is hosted by TESOBE"))
+    "#hosted-by-text *" #> scala.xml.Unparsed(Props.get("webui_hosted_by_text", "Hosted by TESOBE"))
   }
 
   def hostedByLink: CssSel = {
-    ".hosted-by-link a [href]" #> scala.xml.Unparsed(Props.get("hosted_by_url", "https://tesobe.com"))
+    ".hosted-by-link a [href]" #> scala.xml.Unparsed(Props.get("webui_hosted_by_url", "https://www.tesobe.com"))
   }
 
 
