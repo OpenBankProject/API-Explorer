@@ -32,6 +32,8 @@ import net.liftweb.http.{S, SessionVar}
 import net.liftweb.util.Helpers._
 import net.liftweb.util.{CssSel, Props, _}
 
+import code.util.Branding._
+
 
 
 
@@ -42,13 +44,13 @@ class WebUI extends MdcLoggable {
 
   // Change the main style sheet
   def mainStyleSheet: CssSel = {
-    "#main_style_sheet [href]" #> scala.xml.Unparsed(Props.get("webui_main_style_sheet", "./media/css/style.css"))
+    "#main_style_sheet [href]" #> scala.xml.Unparsed(getPropsValue("webui_main_style_sheet", "./media/css/style.css"))
   }
 
 
   // Add an override
   def overrideStyleSheet: CssSel = {
-    val stylesheet = Props.get("webui_override_style_sheet", "")
+    val stylesheet = getPropsValue("webui_override_style_sheet", "")
     if (stylesheet.isEmpty) {
       "#override_style_sheet" #> ""
     } else {
@@ -61,11 +63,11 @@ class WebUI extends MdcLoggable {
 //  These copied from API but not all implemented.
 
   def headerLogoLeft = {
-    "img [src]" #> Props.get("webui_header_logo_left_url", "https://static.openbankproject.com/images/OBP_full_web_25pc.png")
+    "img [src]" #> getPropsValue("webui_header_logo_left_url", "https://static.openbankproject.com/images/OBP_full_web_25pc.png")
   }
 
   def headerLogoRight: CssSel = {
-    "img [src]" #> Props.get("webui_header_logo_right_url", "")
+    "img [src]" #> getPropsValue("webui_header_logo_right_url", "")
   }
 
   /*
@@ -93,11 +95,11 @@ class WebUI extends MdcLoggable {
 */
 
   def hostedByText: CssSel = {
-    "#hosted-by-text *" #> scala.xml.Unparsed(Props.get("webui_hosted_by_text", "Hosted by TESOBE"))
+    "#hosted-by-text *" #> scala.xml.Unparsed(getPropsValue("webui_hosted_by_text", "Hosted by TESOBE"))
   }
 
   def hostedByLink: CssSel = {
-    ".hosted-by-link a [href]" #> scala.xml.Unparsed(Props.get("webui_hosted_by_url", "https://www.tesobe.com"))
+    ".hosted-by-link a [href]" #> scala.xml.Unparsed(getPropsValue("webui_hosted_by_url", "https://www.tesobe.com"))
   }
 
 
