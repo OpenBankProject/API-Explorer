@@ -85,17 +85,17 @@ object ObpAPI extends Loggable {
 
 
   /**
-   * @return Json for transactions of a particular bank account Uses 1.2.1 call and format.
-   */
-  def transactions121(bankId: String, accountId: String, viewId: String, limit: Option[Int],
-                   offset: Option[Int], fromDate: Option[Date], toDate: Option[Date], sortDirection: Option[SortDirection]) : Box[TransactionsJson121]= {
+    * @return Json for transactions of a particular bank account Uses 3.0.0 call and format.
+    */
+  def transactions300(bankId: String, accountId: String, viewId: String, limit: Option[Int],
+                      offset: Option[Int], fromDate: Option[Date], toDate: Option[Date], sortDirection: Option[SortDirection]) : Box[TransactionsJsonV300]= {
 
     val headers : List[Header] = limit.map(l => Header("obp_limit", l.toString)).toList ::: offset.map(o => Header("obp_offset", o.toString)).toList :::
       fromDate.map(f => Header("obp_from_date", dateFormat.format(f))).toList ::: toDate.map(t => Header("obp_to_date", dateFormat.format(t))).toList :::
       sortDirection.map(s => Header("obp_sort_direction", s.value)).toList ::: Nil
 
-    ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) +
-      "/transactions", headers).flatMap(x => x.extractOpt[TransactionsJson121])
+    ObpGet(s"$obpPrefix/v3.0.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) +
+      "/transactions", headers).flatMap(x => x.extractOpt[TransactionsJsonV300])
   }
 
 
@@ -947,3 +947,100 @@ case class AdapterImplementationJson220(
 
 
 
+case class ThisAccountJsonV300(
+                                id: String,
+                                bank_routing: BankRoutingJsonV121,
+                                account_routings: List[AccountRoutingJsonV121],
+                                holders: List[AccountHolderJSON]
+                              )
+case class OtherAccountJsonV300(
+                                 id: String,
+                                 holder: AccountHolderJSON,
+                                 bank_routing: BankRoutingJsonV121,
+                                 account_routings: List[AccountRoutingJsonV121],
+                                 metadata: OtherAccountMetadataJSON
+                               )
+case class OtherAccountsJsonV300(
+                                  other_accounts: List[OtherAccountJsonV300]
+                                )
+case class TransactionJsonV300(
+                                id: String,
+                                this_account: ThisAccountJsonV300,
+                                other_account: OtherAccountJsonV300,
+                                details: TransactionDetailsJSON,
+                                metadata: TransactionMetadataJSON
+                              )
+case class TransactionsJsonV300(
+                                 transactions: List[TransactionJsonV300]
+                               )
+case class BankRoutingJsonV121(
+                                scheme: String,
+                                address: String
+                              )
+case class AccountRoutingJsonV121(
+                                   scheme: String,
+                                   address: String
+                                 )
+case class AccountHolderJSON(
+                              name : String,
+                              is_alias : Boolean
+                            )
+case class OtherAccountMetadataJSON(
+                                     public_alias : String,
+                                     private_alias : String,
+                                     more_info : String,
+                                     URL : String,
+                                     image_URL : String,
+                                     open_corporates_URL : String,
+                                     corporate_location : LocationJSONV121,
+                                     physical_location : LocationJSONV121
+                                   )
+case class LocationJSONV121(
+                             latitude : Double,
+                             longitude : Double,
+                             date : Date,
+                             user : UserJSONV121
+                           )
+case class TransactionDetailsJSON(
+                                   `type` : String,
+                                   description : String,
+                                   posted : Date,
+                                   completed : Date,
+                                   new_balance : AmountOfMoneyJsonV121,
+                                   value : AmountOfMoneyJsonV121
+                                 )
+case class TransactionMetadataJSON(
+                                    narrative : String,
+                                    comments : List[TransactionCommentJSON],
+                                    tags :  List[TransactionTagJSON],
+                                    images :  List[TransactionImageJSON],
+                                    where : LocationJSONV121
+                                  )
+case class UserJSONV121(
+                         id : String,
+                         provider : String,
+                         display_name : String
+                       )
+case class AmountOfMoneyJsonV121(
+                                  currency : String,
+                                  amount : String
+                                )
+case class TransactionCommentJSON(
+                                   id : String,
+                                   value : String,
+                                   date: Date,
+                                   user : UserJSONV121
+                                 )
+case class TransactionTagJSON(
+                               id : String,
+                               value : String,
+                               date : Date,
+                               user : UserJSONV121
+                             )
+case class TransactionImageJSON(
+                                 id : String,
+                                 label : String,
+                                 URL : String,
+                                 date : Date,
+                                 user : UserJSONV121
+                               )
