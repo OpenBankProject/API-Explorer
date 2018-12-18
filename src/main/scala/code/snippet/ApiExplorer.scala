@@ -1137,6 +1137,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // List the resources grouped by the first tag
       "@api_group_item" #> groupedResources.map { i =>
           "@api_group_name *" #> s"${i._1.replace("-"," ")}" &
+            // Set an anchor (href and id) for a group
+            "@api_group_name [href]" #> s"#group-${i._1}" &
+            "@api_group_name [id]" #> s"group-${i._1}" &
             // Within each group (first tag), list the resources
             "@api_list_item" #> i._2.sortBy(_.summary.toString()).map { i =>
               // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.

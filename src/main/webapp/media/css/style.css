@@ -496,6 +496,16 @@ a img {
 .api_group_item {
   margin: 0 0 25px -20px;
 }
+.api_group_item a {
+  text-decoration: none;
+  color: #000;
+}
+.api_group_item a:hover {
+  color: #24bc65;
+}
+
+
+
 
 .api_list_item {
   margin: 0 0 5px -40px;
