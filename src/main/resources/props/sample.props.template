@@ -39,11 +39,37 @@ dev.port=8082
 
 # Web UI
 
+## IMPLEMENTING BANK SPECIFIC BRANDING ON ONE OBP API Explorer INSTANCE ########################
+# Note, you can specify bank specific branding by appending _FOR_BRAND_<BANK_ID> to the standard props names
+# e.g.
+#webui_header_logo_left_url_FOR_BRAND_banku = https://static.openbankproject.com/images/sandbox/bank_u.png
+#webui_header_logo_left_url_FOR_BRAND_banky = https://static.openbankproject.com/images/sandbox/bank_y.png
+# And invoke by calling index etc with ?brand=<BANK_ID>
+# e.g. http://127.0.0.1:8080/?brand=x
+# For any properties that don't have a bank specific flavour, the standard props name will be used.
+####################################################################################
+
+
+
+
+# webui_header_logo_left_url = https://static.openbankproject.com/images/OBP_full_web_25pc.png
+
+# webui_header_logo_right_url =
+
+# webui_hosted_by_text = Hosted by TESOBE
+
+# webui_hosted_by_url = https://www.tesobe.com
+
+
 # To change style sheets:
 
 # webui_main_style_sheet=./media/css/style.css
 
 # webui_override_style_sheet=./media/css/your_override.css
+
+
+
+
 
 ## OAuth1.0a #########################
 # The hostname to which the request was sent. This is taken from the "Host" HTTP header, or if that
