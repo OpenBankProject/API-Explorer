@@ -1033,7 +1033,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val options: List[(String, String)] = presetViewId match {
         case "" => List(noneFound)
         case _ => for {
-          transactionsJson <- ObpAPI.transactions121(presetBankId, presetAccountId, presetViewId, None,None,None,None,None).toList
+          transactionsJson <- ObpAPI.transactions300(presetBankId, presetAccountId, presetViewId, None,None,None,None,None).toList
           transaction <- transactionsJson.transactions
         } yield (transaction.id, s"${transaction.other_account.holder.name} ${transaction.details.value.amount}")
       }
