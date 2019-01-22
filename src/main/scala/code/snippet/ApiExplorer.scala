@@ -725,8 +725,21 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // TODO It would be nice to modify getResponse and underlying functions to return more information about the request including full path
       // For now we duplicate the construction of the fullPath
       val apiUrl = OAuthClient.currentApiBaseUrl
-
-      val urlWithVersion = s"$requestUrl"
+      
+      val urlWithVersion =      
+        if (showPSD2 == Some(true)) {
+          s"$requestUrl".split("\\?").toList match {
+            case url :: params :: Nil =>
+              url + params + "&format=ISO20022"
+            case url :: Nil =>
+              url + "?format=ISO20022"
+            case _ =>
+              s"$requestUrl"
+          }
+        } else {
+          s"$requestUrl"
+        }
+      logger.info(s"urlWithVersion is: " + urlWithVersion)
 
       //val urlWithVersion = s"/$apiVersion$requestUrl"
       val fullPath = new URL(apiUrl + urlWithVersion)
