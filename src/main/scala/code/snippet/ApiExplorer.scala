@@ -363,11 +363,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
     //val obpVersionsSupported = List("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0")
 
     // Save some space, only show from 1.4.0
-    val obpVersionsSupported = List("2.0.0", "2.1.0", "2.2.0", "3.0.0", "3.1.0")
+    val obpVersionsSupported = List("OBPv2.0.0", "OBPv2.1.0", "OBPv2.2.0", "OBPv3.0.0", "OBPv3.1.0")
 
     // Possible other APIs like STET, UK, Berlin Group etc.
     // val otherVersionsSupported = List("berlin.group.v1")
-    val otherVersionsSupported = List("v1", "v2.0","b1")
+    val otherVersionsSupported = List("BGv1", "UKv2.0","b1")
 
     // Set the version to use.
     val apiVersion: String = {
@@ -566,8 +566,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // All
       case List(None, None, None) => isObpVersion match {
         case true => ("All OBP APIs", "All OBP APIs")
-        case false if apiVersionRequested == ("v1") => ("All Berlin Group APIs", "All Berlin Group APIs")
-        case false if apiVersionRequested == ("v2.0") => ("All UK APIs", "All UK APIs")
+        case false if apiVersionRequested == ("BGv1") => ("All Berlin Group APIs", "All Berlin Group APIs")
+        case false if apiVersionRequested == ("UKv2.0") => ("All UK APIs", "All UK APIs")
         case false if apiVersionRequested == ("b1") => ("All Builder APIs", "All Builder APIs")
         case _  => ("All APIs", "All APIs")
       }
@@ -867,7 +867,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Create a list of (version, url) used to populate the versions whilst preserving the other parameters except catalog
     // Includes hack for Berlin Group
-    val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i.replace("b1", "API Builder").replace("v1", "Berlin Group").replace("v2.0", "UK"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
+    val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i.replace("b1", "API Builder").replace("BGv1", "Berlin Group").replace("UKv2.0", "UK").replace("vOBP", "v"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
 
     // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
