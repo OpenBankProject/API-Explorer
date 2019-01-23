@@ -428,7 +428,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     } yield ResourceDocPlus(
       id = r.operation_id,
       verb = r.request_verb,
-      url = modifiedRequestUrl(r.request_url, apiVersion, presetBankId, presetAccountId),
+      url = modifiedRequestUrl(r.request_url, apiVersion.replaceAll("UKv2.0", "v2.0").replaceAll("BGv1", "v1").replaceAll("OBPv", ""), presetBankId, presetAccountId),
       summary = r.summary,
       description = stringToNodeSeq(r.description),
       example_request_body = r.example_request_body,
@@ -739,10 +739,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
         } else {
           s"$requestUrl"
         }
-      logger.info(s"urlWithVersion is: " + urlWithVersion)
+      logger.info(s"urlWithVersion is: " + urlWithVersion.replaceAll("UKv2.0", "v2.0").replaceAll("BGv1", "v1").replaceAll("OBPv", ""))
 
       //val urlWithVersion = s"/$apiVersion$requestUrl"
-      val fullPath = new URL(apiUrl + urlWithVersion)
+      val fullPath = new URL(apiUrl + urlWithVersion.replaceAll("UKv2.0", "v2.0").replaceAll("BGv1", "v1").replaceAll("OBPv", ""))
       //////////////
 
       val (body, headers) = getResponse(requestUrl, requestVerb, jsonObject)
