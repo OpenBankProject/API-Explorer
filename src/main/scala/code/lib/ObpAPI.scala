@@ -1,27 +1,19 @@
 package code.lib
 
-import net.liftweb.json._
-import net.liftweb.json.JObject
-import net.liftweb.json.JsonDSL._
-import net.liftweb.common.Box
-import net.liftweb.common.Full
-import net.liftweb.json.JsonAST.{JValue, JInt}
-import net.liftweb.json.JDouble
-import net.liftweb.common._
-import java.net.URL
-import java.io.{BufferedWriter, OutputStreamWriter}
-import org.apache.http.client.HttpClient
-import java.net.HttpURLConnection
-import net.liftweb.common.Failure
-import java.io.{PrintWriter, StringWriter, BufferedReader, InputStreamReader}
-import net.liftweb.util.Helpers._
-import java.util.Date
-import net.liftweb.http.RequestVar
-import code.lib.ObpJson._
-import sun.reflect.generics.reflectiveObjects.NotImplementedException
+import java.io._
+import java.net.{HttpURLConnection, URL}
 import java.text.SimpleDateFormat
-import net.liftweb.util.Props
+import java.util.Date
+
+import code.lib.ObpJson._
 import code.util.Helper.MdcLoggable
+import net.liftweb.common.{Box, Failure, Full, _}
+import net.liftweb.http.RequestVar
+import net.liftweb.json.JsonAST.{JBool, JValue}
+import net.liftweb.json.JsonDSL._
+import net.liftweb.json._
+import net.liftweb.util.Helpers._
+import net.liftweb.util.Props
 
 import scala.collection.immutable.List
 import scala.xml.NodeSeq
@@ -361,7 +353,7 @@ object ObpDelete {
 object ObpDeleteWithHeader {
   def apply(apiPath: String): (Box[JValue], List[String]) = {
     OBPRequest(apiPath, None, "DELETE", Nil) match {
-      case Full(value) => (tryo{parse(APIUtils.apiResponseWorked(value._1, value._2).toString())}, value._3)
+      case Full(value) => (APIUtils.deleteApiResponse(value._1, value._2), value._3)
     }
   }
 }
@@ -408,7 +400,15 @@ object APIUtils extends MdcLoggable {
       }
     }
   }
-
+  def deleteApiResponse(responseCode : Int, result : String) : Box[JValue] = {
+    responseCode match {
+      case 200 | 201 | 202 |204 =>
+        Full(JBool(true))
+      case _ => val failMsg = "Bad response code (" + responseCode + ") from OBP API server: " + result
+        logger.warn(failMsg)
+        Failure(failMsg)
+    }
+  }
   def apiResponseWorked(responseCode : Int, result : String) : Boolean = {
     responseCode match {
       case 200 | 201 | 202 |204 => true
