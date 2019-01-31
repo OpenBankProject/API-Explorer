@@ -863,7 +863,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     // Create a list of (version, url) used to populate the versions whilst preserving the other parameters
-    val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i, s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}${catalogParams}"))
+    val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i.replace("OBPv", "v"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}${catalogParams}"))
 
     // Create a list of (version, url) used to populate the versions whilst preserving the other parameters except catalog
     // Includes hack for Berlin Group
