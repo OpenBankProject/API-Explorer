@@ -367,7 +367,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Possible other APIs like STET, UK, Berlin Group etc.
     // val otherVersionsSupported = List("berlin.group.v1")
-    val otherVersionsSupported = List("BGv1", "BGv1.3", "UKv2.0","b1")
+    val otherVersionsSupported = List("BGv1.3", "UKv2.0","b1")
 
     // Set the version to use.
     val apiVersion: String = {
@@ -879,7 +879,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Includes hack for Berlin Group
     val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i
       .replace("b1", "API Builder") 
-      .replace("BGv1.3", "Berlin Group1.3")
+      .replace("BGv1.3", "Berlin Group 1.3")
       .replace("BGv1", "Berlin Group")
       .replace("UKv2.0", "UK"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
