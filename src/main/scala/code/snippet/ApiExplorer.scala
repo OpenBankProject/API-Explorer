@@ -367,7 +367,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Possible other APIs like STET, UK, Berlin Group etc.
     // val otherVersionsSupported = List("berlin.group.v1")
-    val otherVersionsSupported = List("BGv1", "UKv2.0","b1")
+    val otherVersionsSupported = List("BGv1", "BGv1.3", "UKv2.0","b1")
 
     // Set the version to use.
     val apiVersion: String = {
@@ -428,7 +428,16 @@ WIP to add comments on resource docs. This code copied from Sofit.
     } yield ResourceDocPlus(
       id = r.operation_id,
       verb = r.request_verb,
-      url = modifiedRequestUrl(r.request_url, apiVersion.replaceAll("UKv2.0", "v2.0").replaceAll("BGv1", "v1").replaceAll("OBPv", ""), presetBankId, presetAccountId),
+      url = modifiedRequestUrl(
+        r.request_url, 
+        apiVersion
+          .replaceAll("UKv2.0", "v2.0")
+          .replaceAll("BGv1", "v1")
+          .replaceAll("BGv1.3", "v1.3")
+          .replaceAll("OBPv", ""), 
+        presetBankId, 
+        presetAccountId
+      ),
       summary = r.summary,
       description = stringToNodeSeq(r.description),
       example_request_body = r.example_request_body,
@@ -567,6 +576,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       case List(None, None, None) => isObpVersion match {
         case true => ("All OBP APIs", "All OBP APIs")
         case false if apiVersionRequested == ("BGv1") => ("All Berlin Group APIs", "All Berlin Group APIs")
+        case false if apiVersionRequested == ("BGv1.3") => ("All Berlin Group APIs", "All Berlin Group APIs")
         case false if apiVersionRequested == ("UKv2.0") => ("All UK APIs", "All UK APIs")
         case false if apiVersionRequested == ("b1") => ("All Builder APIs", "All Builder APIs")
         case _  => ("All APIs", "All APIs")
@@ -742,7 +752,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       logger.info(s"urlWithVersion is: " + urlWithVersion.replaceAll("UKv2.0", "v2.0").replaceAll("BGv1", "v1").replaceAll("OBPv", ""))
 
       //val urlWithVersion = s"/$apiVersion$requestUrl"
-      val fullPath = new URL(apiUrl + urlWithVersion.replaceAll("UKv2.0", "v2.0").replaceAll("BGv1", "v1").replaceAll("OBPv", ""))
+      val fullPath = new URL(apiUrl + urlWithVersion.replaceAll("UKv2.0", "v2.0").replaceAll("BGv1.3", "v1.3").replaceAll("BGv1", "v1").replaceAll("OBPv", ""))
       //////////////
 
       val (body, headers) = getResponse(requestUrl, requestVerb, jsonObject)
@@ -867,7 +877,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Create a list of (version, url) used to populate the versions whilst preserving the other parameters except catalog
     // Includes hack for Berlin Group
-    val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i.replace("b1", "API Builder").replace("BGv1", "Berlin Group").replace("UKv2.0", "UK").replace("vOBP", "v"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
+    val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i
+      .replace("b1", "API Builder") 
+      .replace("BGv1.3", "Berlin Group1.3")
+      .replace("BGv1", "Berlin Group")
+      .replace("UKv2.0", "UK"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
 
     // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
