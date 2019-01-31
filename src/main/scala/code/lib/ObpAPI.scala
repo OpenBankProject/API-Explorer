@@ -175,7 +175,7 @@ object OBPRequest extends MdcLoggable {
     val statusAndBody = tryo {
       val credentials = OAuthClient.getAuthorizedCredential
       val apiUrl = OAuthClient.currentApiBaseUrl
-      val url = new URL(apiUrl + apiPath)
+      val url = new URL(apiUrl + apiPath.replaceAll("UKv2.0", "v2.0").replaceAll("BGv1", "v1").replaceAll("OBPv", ""))
       logger.info(s"OBP Server Request URL: ${url.getHost}${url.getPath}")
       //bleh
       val request = url.openConnection().asInstanceOf[HttpURLConnection] //blagh!
@@ -396,7 +396,7 @@ object APIUtils extends MdcLoggable {
       case _ => {
         val failMsg = "Bad response code (" + responseCode + ") from OBP API server: " + body
         logger.warn(failMsg)
-        Failure(failMsg)
+        Failure(pretty(render(parse(body))))
       }
     }
   }
@@ -406,7 +406,7 @@ object APIUtils extends MdcLoggable {
         Full(JBool(true))
       case _ => val failMsg = "Bad response code (" + responseCode + ") from OBP API server: " + result
         logger.warn(failMsg)
-        Failure(failMsg)
+        Failure(pretty(render(parse(result))))
     }
   }
   def apiResponseWorked(responseCode : Int, result : String) : Boolean = {
