@@ -367,7 +367,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Possible other APIs like STET, UK, Berlin Group etc.
     // val otherVersionsSupported = List("berlin.group.v1")
-    val otherVersionsSupported = List("BGv1.3", "UKv2.0","b1")
+    val otherVersionsSupported = List("BGv1.3", "BGv1","UKv3.1", "UKv2.0","b1")
 
     // Set the version to use.
     val apiVersion: String = {
@@ -432,6 +432,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         r.request_url, 
         apiVersion
           .replaceAll("UKv2.0", "v2.0")
+          .replaceAll("UKv3.1", "v3.1")
           .replaceAll("BGv1", "v1")
           .replaceAll("BGv1.3", "v1.3")
           .replaceAll("OBPv", ""), 
@@ -577,6 +578,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         case true => ("All OBP APIs", "All OBP APIs")
         case false if apiVersionRequested == ("BGv1") => ("All Berlin Group APIs", "All Berlin Group APIs")
         case false if apiVersionRequested == ("BGv1.3") => ("All Berlin Group APIs", "All Berlin Group APIs")
+        case false if apiVersionRequested == ("UKv3.1") => ("All UK APIs", "All UK APIs")
         case false if apiVersionRequested == ("UKv2.0") => ("All UK APIs", "All UK APIs")
         case false if apiVersionRequested == ("b1") => ("All Builder APIs", "All Builder APIs")
         case _  => ("All APIs", "All APIs")
@@ -749,10 +751,21 @@ WIP to add comments on resource docs. This code copied from Sofit.
         } else {
           s"$requestUrl"
         }
-      logger.info(s"urlWithVersion is: " + urlWithVersion.replaceAll("UKv2.0", "v2.0").replaceAll("BGv1", "v1").replaceAll("OBPv", ""))
+      logger.info(s"urlWithVersion is: " + urlWithVersion
+        .replaceAll("UKv2.0", "v2.0")
+        .replaceAll("UKv3.1", "v3.1")
+        .replaceAll("BGv1", "v1")
+        .replaceAll("BGv1.3", "v1.3")
+        .replaceAll("OBPv", "")
+      )
 
       //val urlWithVersion = s"/$apiVersion$requestUrl"
-      val fullPath = new URL(apiUrl + urlWithVersion.replaceAll("UKv2.0", "v2.0").replaceAll("BGv1.3", "v1.3").replaceAll("BGv1", "v1").replaceAll("OBPv", ""))
+      val fullPath = new URL(apiUrl + urlWithVersion
+        .replaceAll("UKv2.0", "v2.0")
+        .replaceAll("UKv3.1", "v3.1")
+        .replaceAll("BGv1.3", "v1.3")
+        .replaceAll("BGv1", "v1")
+        .replaceAll("OBPv", ""))
       //////////////
 
       val (body, headers) = getResponse(requestUrl, requestVerb, jsonObject)
@@ -881,7 +894,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       .replace("b1", "API Builder") 
       .replace("BGv1.3", "Berlin Group 1.3")
       .replace("BGv1", "Berlin Group")
-      .replace("UKv2.0", "UK"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
+      .replace("UKv2.0", "UK 2.0")
+      .replace("UKv3.1", "UK 3.1"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
 
     // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
