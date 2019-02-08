@@ -1139,6 +1139,7 @@ a.end-point-anchor {
   margin-right: 5px;
   padding-top: 10px;
   float: right;
+  visibility: hidden;
 }
 
 #site-title-text{
@@ -1184,6 +1185,8 @@ a.end-point-anchor {
   .content-box__input-box {max-width: 550px;}
   .container {margin-left: 0px;}
   .option-section {display: none;}
+  #logo-left {visibility: hidden;}
+  #logo-right {visibility: visible;}
 } 
 @media only screen and (max-width: 600px) {
   #left_side {visibility: collapse;}
@@ -1191,6 +1194,8 @@ a.end-point-anchor {
   .content-box__input-box {max-width: 450px;}
   .container {margin-left: 0px;}
   .option-section {display: none;}
+  #logo-left {visibility: hidden;}
+  #logo-right {visibility: visible;}
 } 
 @media only screen and (max-width: 500px) {
   #left_side {visibility: collapse;}
@@ -1198,5 +1203,7 @@ a.end-point-anchor {
   .content-box__input-box {max-width: 350px;}
   .container {margin-left: 0px;}
   .option-section {display: none;}
+  #logo-left {visibility: hidden;}
+  #logo-right {visibility: visible;}
 }
 

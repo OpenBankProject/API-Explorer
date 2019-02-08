@@ -67,7 +67,7 @@ class WebUI extends MdcLoggable {
   }
 
   def headerLogoRight: CssSel = {
-    "img [src]" #> getPropsValue("webui_header_logo_right_url", "")
+    "img [src]" #> getPropsValue("webui_header_logo_right_url", "https://static.openbankproject.com/images/obp_logo_stacked.png")
   }
 
   /*
