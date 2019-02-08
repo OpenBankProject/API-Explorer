@@ -1176,4 +1176,24 @@ a.end-point-anchor {
 }
 
  .grid-header {grid-area: header}
+ 
+ 
+@media only screen and (max-width: 700px) {
+  #left_side {visibility: collapse;}
+  .content-box__info-box {max-width: 550px;}
+  .content-box__input-box {max-width: 550px;}
+  .container {margin-left: 0px;}
+} 
+@media only screen and (max-width: 600px) {
+  #left_side {visibility: collapse;}
+  .content-box__info-box {max-width: 450px;}
+  .content-box__input-box {max-width: 450px;}
+  .container {margin-left: 0px;}
+} 
+@media only screen and (max-width: 500px) {
+  #left_side {visibility: collapse;}
+  .content-box__info-box {max-width: 350px;}
+  .content-box__input-box {max-width: 350px;}
+  .container {margin-left: 0px;}
+}
 
