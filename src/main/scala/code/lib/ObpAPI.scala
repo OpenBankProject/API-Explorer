@@ -175,7 +175,13 @@ object OBPRequest extends MdcLoggable {
     val statusAndBody = tryo {
       val credentials = OAuthClient.getAuthorizedCredential
       val apiUrl = OAuthClient.currentApiBaseUrl
-      val url = new URL(apiUrl + apiPath.replaceAll("UKv2.0", "v2.0").replaceAll("BGv1", "v1").replaceAll("OBPv", ""))
+      val url = new URL(apiUrl + apiPath
+        .replaceAll("UKv2.0", "v2.0")
+        .replaceAll("UKv3.1", "v3.1")
+        .replaceAll("BGv1.3", "v1.3")
+        .replaceAll("BGv1", "v1")
+        .replaceAll("OBPv", "")
+      )
       logger.info(s"OBP Server Request URL: ${url.getHost}${url.getPath}")
       //bleh
       val request = url.openConnection().asInstanceOf[HttpURLConnection] //blagh!
