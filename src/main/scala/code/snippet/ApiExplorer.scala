@@ -367,7 +367,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Possible other APIs like STET, UK, Berlin Group etc.
     // val otherVersionsSupported = List("berlin.group.v1")
-    val otherVersionsSupported = List("BGv1.3", "BGv1","UKv3.1", "UKv2.0","STETv1.4", "b1")
+    val otherVersionsSupported = List("BGv1.3", "BGv1","UKv3.1", "UKv2.0","STETv1.4","PAPIv2.1.1.1", "b1")
 
     // Set the version to use.
     val apiVersion: String = {
@@ -581,6 +581,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         case false if apiVersionRequested == ("UKv3.1") => ("All UK APIs", "All UK APIs")
         case false if apiVersionRequested == ("UKv2.0") => ("All UK APIs", "All UK APIs")
         case false if apiVersionRequested == ("STETv1.4") => ("All STET APIs", "All STET APIs")
+        case false if apiVersionRequested == ("PAPIv2.1.1.1") => ("All Polish APIs", "All Polish APIs")
         case false if apiVersionRequested == ("b1") => ("All Builder APIs", "All Builder APIs")
         case _  => ("All APIs", "All APIs")
       }
@@ -897,7 +898,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       .replace("BGv1", "Berlin Group")
       .replace("UKv2.0", "UK 2.0")
       .replace("UKv3.1", "UK 3.1") 
-      .replace("STETv1.4", "STET 1.4"), 
+      .replace("STETv1.4", "STET 1.4")
+      .replace("PAPIv2.1.1.1", "Polish API 2.1.1.1"), 
       s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
 
