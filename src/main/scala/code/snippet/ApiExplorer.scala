@@ -607,7 +607,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     // Headline we display including count of APIs
-    val headline : String = s"$catalogHeadline v${apiVersionRequested.replace("v","")} $tagsHeadline (${resources.length})".trim()
+    val headline : String = s"$catalogHeadline ${apiVersionRequested} $tagsHeadline (${resources.length})".trim()
     logger.info (s"showingMessage is: $headline")
 
 
