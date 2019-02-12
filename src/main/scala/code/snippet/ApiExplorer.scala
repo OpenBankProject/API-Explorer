@@ -289,7 +289,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   def modifiedRequestUrl(url: String, baseVersionUrl: String, presetBankId: String, presetAccountId: String) = {
      
-    val versionPattern = "v([0-9].[0-9].[0-9])".r
+    val versionPattern = "v([0-9].[0-9].[0-9].[0-9])".r
     val versionInUrl = (versionPattern findFirstIn url).getOrElse(baseVersionUrl)
     // replace the version in URL, the user will see it change when they click the version.
     val url1: String = presetBankId match {
@@ -435,6 +435,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           .replaceAll("UKv3.1", "v3.1")
           .replaceAll("BGv1", "v1")
           .replaceAll("BGv1.3", "v1.3")
+          .replaceAll("PAPIv2.1.1.1", "v2.1.1.1")
           .replaceAll("OBPv", ""), 
         presetBankId, 
         presetAccountId
