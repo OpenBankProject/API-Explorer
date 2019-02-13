@@ -289,7 +289,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   def modifiedRequestUrl(url: String, baseVersionUrl: String, presetBankId: String, presetAccountId: String) = {
      
-    val versionPattern = "v([0-9].[0-9].[0-9])".r
+    val versionPattern = "v([0-9].[0-9].[0-9].[0-9])".r
     val versionInUrl = (versionPattern findFirstIn url).getOrElse(baseVersionUrl)
     // replace the version in URL, the user will see it change when they click the version.
     val url1: String = presetBankId match {
@@ -367,7 +367,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Possible other APIs like STET, UK, Berlin Group etc.
     // val otherVersionsSupported = List("berlin.group.v1")
-    val otherVersionsSupported = List("BGv1.3", "BGv1","UKv3.1", "UKv2.0","b1")
+    val otherVersionsSupported = List("BGv1.3", "BGv1","UKv3.1", "UKv2.0","STETv1.4","PAPIv2.1.1.1", "b1")
 
     // Set the version to use.
     val apiVersion: String = {
@@ -435,6 +435,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           .replaceAll("UKv3.1", "v3.1")
           .replaceAll("BGv1", "v1")
           .replaceAll("BGv1.3", "v1.3")
+          .replaceAll("PAPIv2.1.1.1", "v2.1.1.1")
           .replaceAll("OBPv", ""), 
         presetBankId, 
         presetAccountId
@@ -580,6 +581,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
         case false if apiVersionRequested == ("BGv1.3") => ("All Berlin Group APIs", "All Berlin Group APIs")
         case false if apiVersionRequested == ("UKv3.1") => ("All UK APIs", "All UK APIs")
         case false if apiVersionRequested == ("UKv2.0") => ("All UK APIs", "All UK APIs")
+        case false if apiVersionRequested == ("STETv1.4") => ("All STET APIs", "All STET APIs")
+        case false if apiVersionRequested == ("PAPIv2.1.1.1") => ("All Polish APIs", "All Polish APIs")
         case false if apiVersionRequested == ("b1") => ("All Builder APIs", "All Builder APIs")
         case _  => ("All APIs", "All APIs")
       }
@@ -605,7 +608,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     // Headline we display including count of APIs
-    val headline : String = s"$catalogHeadline v${apiVersionRequested.replace("v","")} $tagsHeadline (${resources.length})".trim()
+    val headline : String = s"$catalogHeadline ${apiVersionRequested} $tagsHeadline (${resources.length})".trim()
     logger.info (s"showingMessage is: $headline")
 
 
@@ -895,7 +898,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
       .replace("BGv1.3", "Berlin Group 1.3")
       .replace("BGv1", "Berlin Group")
       .replace("UKv2.0", "UK 2.0")
-      .replace("UKv3.1", "UK 3.1"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
+      .replace("UKv3.1", "UK 3.1") 
+      .replace("STETv1.4", "STET 1.4")
+      .replace("PAPIv2.1.1.1", "Polish API 2.1.1.1"), 
+      s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
 
     // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
