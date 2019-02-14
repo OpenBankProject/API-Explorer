@@ -862,7 +862,8 @@ object ObpJson {
                              tags : List[String],
                              roles: List[RoleJson],
                              is_featured: Boolean,
-                             special_instructions: String
+                             special_instructions: String,
+                             specified_url: String // This is the URL that we want people to call.
                             )
 
   case class ResourceDocsJson (resource_docs : List[ResourceDocJson])

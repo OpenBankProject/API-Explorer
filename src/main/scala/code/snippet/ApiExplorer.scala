@@ -427,11 +427,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
       r <- rs.resource_docs
     } yield ResourceDocPlus(
        //in OBP-API, before it returned v3_1_0, but now, only return v3.1.0
-      //But this filed will be used in JavaScript, so need clean the filed.
+      //But this filed will be used in JavaScript, so need clean the field.
       id = r.operation_id.replace(".","_"),
       verb = r.request_verb,
       url = modifiedRequestUrl(
-        r.request_url, 
+        r.specified_url, // We used to use the request_url - but we want to use the specified url i.e. the later version.
         apiVersion
           .replaceAll("UKv2.0", "v2.0")
           .replaceAll("UKv3.1", "v3.1")
@@ -687,7 +687,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     def process(): JsCmd = {
 
 
-      // The DIVS in the DOM have underscores in their names. 
+      // The DIVS in the DOM have underscores in their names.
       resourceId = resourceId.replace(".","_")
 
       logger.info(s"requestUrl is $requestUrl")
