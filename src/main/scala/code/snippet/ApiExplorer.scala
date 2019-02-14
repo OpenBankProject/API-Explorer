@@ -289,12 +289,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   def modifiedRequestUrl(url: String, baseVersionUrl: String, presetBankId: String, presetAccountId: String) = {
      
+    //For OBP, only use there bits, eg: v3.1.0, but for PolishAPI it used four bits: v2.1.1.1
     val versionPattern = "v([0-9].[0-9].[0-9].[0-9])".r
     val versionInUrl = (versionPattern findFirstIn url).getOrElse(baseVersionUrl)
     // replace the version in URL, the user will see it change when they click the version.
-    val url1: String = presetBankId match {
-        case _ => url.replaceAll(versionInUrl, baseVersionUrl)
-      }
+    // Only need to modify the first version in the url.
+    val url1: String = url.replaceFirst(versionInUrl, baseVersionUrl)
     
     // Potentially replace BANK_ID
      val url2: String = presetBankId match {
@@ -426,7 +426,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
       rs <- getResourceDocsJson(apiVersion).toList
       r <- rs.resource_docs
     } yield ResourceDocPlus(
-      id = r.operation_id,
+       //in OBP-API, before it returned v3_1_0, but now, only return v3.1.0
+      //But this filed will be used in JavaScript, so need clean the filed.
+      id = r.operation_id.replace(".","_"),
       verb = r.request_verb,
       url = modifiedRequestUrl(
         r.request_url, 
