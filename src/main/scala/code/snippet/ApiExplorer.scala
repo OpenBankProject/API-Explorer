@@ -361,13 +361,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Possible OBP Versions
     //val obpVersionsSupported = List("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0")
-
-    // Save some space, only show from 1.4.0
-    val obpVersionsSupported = List("OBPv2.0.0", "OBPv2.1.0", "OBPv2.2.0", "OBPv3.0.0", "OBPv3.1.0")
+    // Save some space:
+    val obpVersionsSupported = List("OBPv2.2.0", "OBPv3.0.0", "OBPv3.1.0")
 
     // Possible other APIs like STET, UK, Berlin Group etc.
-    // val otherVersionsSupported = List("berlin.group.v1")
-    val otherVersionsSupported = List("BGv1.3", "BGv1","UKv3.1", "UKv2.0","STETv1.4","PAPIv2.1.1.1", "b1")
+    // val otherVersionsSupported = List("BGv1.3", "BGv1","UKv3.1", "UKv2.0","STETv1.4","PAPIv2.1.1.1", "b1")
+    val otherVersionsSupported = List("BGv1.3","UKv3.1","STETv1.4","PAPIv2.1.1.1","b1")
+
 
     // Set the version to use.
     val apiVersion: String = {
