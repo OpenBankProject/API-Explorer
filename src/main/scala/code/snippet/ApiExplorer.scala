@@ -685,6 +685,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     def process(): JsCmd = {
+
+
+      // The DIVS in the DOM have underscores in their names. 
+      resourceId = resourceId.replace(".","_")
+
       logger.info(s"requestUrl is $requestUrl")
       logger.info(s"resourceId is $resourceId")
       logger.debug(s"requestBody is $requestBody")
