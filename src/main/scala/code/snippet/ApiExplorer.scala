@@ -366,7 +366,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Possible other APIs like STET, UK, Berlin Group etc.
     // val otherVersionsSupported = List("BGv1.3", "BGv1","UKv3.1", "UKv2.0","STETv1.4","PAPIv2.1.1.1", "b1")
-    val otherVersionsSupported = List("BGv1.3","UKv3.1","STETv1.4","PAPIv2.1.1.1","b1")
+    //val otherVersionsSupported = List("BGv1.3","UKv3.1","STETv1.4","PAPIv2.1.1.1","b1")
+
+    // temp
+    val otherVersionsSupported = List("BGv1.3")
 
 
     // Set the version to use.
