@@ -1284,7 +1284,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
        "@success_response_body [id]" #> s"success_response_body_${i.id}" &
       // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
       "@call_button" #> ajaxSubmit(i.verb, process) &
-      ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
+      ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}"
     }
   }
 
