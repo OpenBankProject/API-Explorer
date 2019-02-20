@@ -369,7 +369,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     //val otherVersionsSupported = List("BGv1.3","UKv3.1","STETv1.4","PAPIv2.1.1.1","b1")
 
     // temp
-    val otherVersionsSupported = List("BGv1.3")
+    val otherVersionsSupported = List("BGv1.3", "STETv1.4")
 
 
     // Set the version to use.
