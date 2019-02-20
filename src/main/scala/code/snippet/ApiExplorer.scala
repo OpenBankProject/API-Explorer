@@ -209,6 +209,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   logger.info(s"showOBWG is $showOBWGParam")
 
+  val implementedInSameVersionParam: Option[Boolean] = for {
+    x <- S.param("implemented_in_same_version")
+    y <- stringToOptBoolean(x)
+  } yield y
+
+  logger.info(s"implementedInSameVersionParam is $implementedInSameVersionParam")
 
   val rawTagsParam = S.param("tags")
 
@@ -390,7 +396,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       obpVersionsSupported.contains(apiVersionRequested)
     }
 
-    logger.info(s"API version to use is: $apiVersion")
+    logger.info(s"apiVersion is: $apiVersion")
 
 
     // To link to API home page (this is duplicated in OAuthClient)
@@ -530,7 +536,28 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
 
-    val resourcesToUse = filteredResources4.toSet.toList
+    val filteredResources5: List[ResourceDocPlus] = implementedInSameVersionParam match {
+      case Some(true) => {
+        for {
+          r <- filteredResources4
+          if (r.implementedBy.version == apiVersion) // only show endpoints which have been implemented in this version.
+        } yield {
+          r
+        }
+      }
+       case Some(false) => {
+          for {
+            r <- filteredResources4
+            if (r.implementedBy.function != apiVersion) // the opposite case
+          } yield {
+            r
+          }
+      }
+      case _ => filteredResources4 // No preference (default) just return everything.
+    }
+
+
+    val resourcesToUse = filteredResources5.toSet.toList
 
     logger.debug(s"allResources count is ${allResources.length}")
     logger.debug(s"filteredResources1 count is ${filteredResources1.length}")
