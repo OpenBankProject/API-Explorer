@@ -209,12 +209,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   logger.info(s"showOBWG is $showOBWGParam")
 
-  val implementedInSameVersionParam: Option[Boolean] = for {
-    x <- S.param("implemented_in_same_version")
+  val implementedHereParam: Option[Boolean] = for {
+    x <- S.param("implemented_here")
     y <- stringToOptBoolean(x)
   } yield y
 
-  logger.info(s"implementedInSameVersionParam is $implementedInSameVersionParam")
+  logger.info(s"implementedHereParam is $implementedHereParam")
 
   val rawTagsParam = S.param("tags")
 
@@ -240,6 +240,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
     case _ => ""
   }
 
+  val implementedHereHeadline : String = implementedHereParam match {
+    case Some(true) => "(those added or modified in this version)"
+    case Some(false) => "(those inherited from previous versions)"
+    case _ => ""
+  }
 
 
   // This parameter stops the default catalog kicking in
@@ -281,6 +286,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val pureCatalogParams = s"core=${showCore.getOrElse("")}&psd2=${showPSD2.getOrElse("")}&obwg=${showOBWG.getOrElse("")}"
 
 
+  val resetCatalogParams = s"&core=&psd2=&obwg="
+
+
   // Used for links in this web application
   val catalogParams = s"&$pureCatalogParams&ignoredefcat=${ignoreDefaultCatalog.getOrElse("")}"
 
@@ -294,14 +302,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
   def modifiedRequestUrl(url: String, baseVersionUrl: String, presetBankId: String, presetAccountId: String) = {
-     
+
     //For OBP, only use there bits, eg: v3.1.0, but for PolishAPI it used four bits: v2.1.1.1
     val versionPattern = "v([0-9].[0-9].[0-9].[0-9])".r
     val versionInUrl = (versionPattern findFirstIn url).getOrElse(baseVersionUrl)
     // replace the version in URL, the user will see it change when they click the version.
     // Only need to modify the first version in the url.
     val url1: String = url.replaceFirst(versionInUrl, baseVersionUrl)
-    
+
     // Potentially replace BANK_ID
      val url2: String = presetBankId match {
         case "" => url1
@@ -358,7 +366,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   def showResources = {
 
-    val defaultVersion: String = "3.1.0"
+    val defaultVersion: String = "OBPv3.1.0"
 
     // Get the requested version from the url parameter and default if none
     val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
@@ -447,8 +455,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
           .replaceAll("BGv1", "v1")
           .replaceAll("BGv1.3", "v1.3")
           .replaceAll("PAPIv2.1.1.1", "v2.1.1.1")
-          .replaceAll("OBPv", ""), 
-        presetBankId, 
+          .replaceAll("OBPv", ""),
+        presetBankId,
         presetAccountId
       ),
       summary = r.summary,
@@ -536,11 +544,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
 
-    val filteredResources5: List[ResourceDocPlus] = implementedInSameVersionParam match {
+    val filteredResources5: List[ResourceDocPlus] = implementedHereParam match {
       case Some(true) => {
         for {
           r <- filteredResources4
-          if (r.implementedBy.version == apiVersion) // only show endpoints which have been implemented in this version.
+          // apiVersion currently has an extra v which should be removed.
+          if (r.implementedBy.version == apiVersion.stripPrefix("v")) // only show endpoints which have been implemented in this version.
         } yield {
           r
         }
@@ -548,7 +557,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
        case Some(false) => {
           for {
             r <- filteredResources4
-            if (r.implementedBy.function != apiVersion) // the opposite case
+            // TODO apiVersion for OBP currently has an extra v which should be removed.
+            if (r.implementedBy.version != apiVersion.stripPrefix("v")) // the opposite case
           } yield {
             r
           }
@@ -608,15 +618,15 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
       // All
       case List(None, None, None) => isObpVersion match {
-        case true => ("All OBP APIs", "All OBP APIs")
-        case false if apiVersionRequested == ("BGv1") => ("All Berlin Group APIs", "All Berlin Group APIs")
-        case false if apiVersionRequested == ("BGv1.3") => ("All Berlin Group APIs", "All Berlin Group APIs")
-        case false if apiVersionRequested == ("UKv3.1") => ("All UK APIs", "All UK APIs")
-        case false if apiVersionRequested == ("UKv2.0") => ("All UK APIs", "All UK APIs")
-        case false if apiVersionRequested == ("STETv1.4") => ("All STET APIs", "All STET APIs")
-        case false if apiVersionRequested == ("PAPIv2.1.1.1") => ("All Polish APIs", "All Polish APIs")
-        case false if apiVersionRequested == ("b1") => ("All Builder APIs", "All Builder APIs")
-        case _  => ("All APIs", "All APIs")
+        case true => ("OBP", "Open Bank Project")
+        case false if apiVersionRequested == ("BGv1") => ("Berlin Group", "Berlin Group")
+        case false if apiVersionRequested == ("BGv1.3") => ("Berlin Group", "Berlin Group")
+        case false if apiVersionRequested == ("UKv3.1") => ("UK", "UK")
+        case false if apiVersionRequested == ("UKv2.0") => ("UK", "UK")
+        case false if apiVersionRequested == ("STETv1.4") => ("STET", "STET")
+        case false if apiVersionRequested == ("PAPIv2.1.1.1") => ("Polish", "Polish")
+        case false if apiVersionRequested == ("b1") => ("Builder", "Builder")
+        case _  => ("", "")
       }
 
 
@@ -624,7 +634,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       case List(None, Some(true), None) => ("PSD2 + Open Data APIs", "PSD2 + Open Data: Access to Accounts, Payments and Open Data related to the Bank.")
 
       // PSD2
-      case List(None,  None, Some(true)) => ("PSD2 APIs", "PSD2: Access to Accounts and Payments")
+      case List(None,  None, Some(true)) => ("OBP PSD2 Catalog", "PSD2: Access to Accounts and Payments")
 
       // Intersection
       case List(Some(true), Some(true), Some(true)) => ("Intersection of all Catalogs",
@@ -639,8 +649,15 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
-    // Headline we display including count of APIs
-    val headline : String = s"$catalogHeadline ${apiVersionRequested} $tagsHeadline (${resources.length})".trim()
+    // Title / Headline we display including count of APIs
+    val headline : String = s"""
+      $catalogHeadline
+      ${apiVersionRequested.stripPrefix("OBP").stripPrefix("BG").stripPrefix("STET").stripPrefix("UK")}
+      $tagsHeadline $implementedHereHeadline (${resources.length} APIs)
+      """.trim()
+
+
+
     logger.info (s"showingMessage is: $headline")
 
 
@@ -926,7 +943,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     // Create a list of (version, url) used to populate the versions whilst preserving the other parameters
-    val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i.replace("OBPv", "v"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}${catalogParams}"))
+    //val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i.replace("OBPv", "v"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}${catalogParams}"))
+
+    val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i.replace("OBPv", "v"), s"?version=${i}&list-all-banks=${listAllBanks}${resetCatalogParams}"))
+
+
 
     // Create a list of (version, url) used to populate the versions whilst preserving the other parameters except catalog
     // Includes hack for Berlin Group
