@@ -579,6 +579,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     logger.debug(s"filteredResources1 count is ${filteredResources1.length}")
     logger.debug(s"filteredResources2 count is ${filteredResources2.length}")
     logger.debug(s"filteredResources3 count is ${filteredResources3.length}")
+    logger.debug(s"filteredResources4 count is ${filteredResources4.length}")
     logger.debug(s"resourcesToUse count is ${resourcesToUse.length}")
 
 
