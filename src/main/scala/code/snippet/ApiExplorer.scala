@@ -209,12 +209,18 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   logger.info(s"showOBWG is $showOBWGParam")
 
-  val implementedHereParam: Option[Boolean] = for {
-    x <- S.param("implemented_here")
+  /** native is a query parameter to filter endpoints by implementedBy
+    * Used to list newly implemented or updated functionality
+    * native = true means only show endpoints that are implemented in the version we are calling.
+    * native = false means only show endpoints that are not implemented in the version we are calling
+    * native = None means ignore this filter, show everything in the version.
+  */
+  val nativeParam: Option[Boolean] = for {
+    x <- S.param("native")
     y <- stringToOptBoolean(x)
   } yield y
 
-  logger.info(s"implementedHereParam is $implementedHereParam")
+  logger.info(s"nativeParam is $nativeParam")
 
   val rawTagsParam = S.param("tags")
 
@@ -240,7 +246,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     case _ => ""
   }
 
-  val implementedHereHeadline : String = implementedHereParam match {
+  val implementedHereHeadline : String = nativeParam match {
     case Some(true) => "(those added or modified in this version)"
     case Some(false) => "(those inherited from previous versions)"
     case _ => ""
@@ -544,7 +550,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
 
-    val filteredResources5: List[ResourceDocPlus] = implementedHereParam match {
+    val filteredResources5: List[ResourceDocPlus] = nativeParam match {
       case Some(true) => {
         for {
           r <- filteredResources4
