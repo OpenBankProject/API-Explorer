@@ -253,6 +253,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   }
 
 
+  // TODO We should remove this if we remove defaultCatalog
   // This parameter stops the default catalog kicking in
   val ignoreDefaultCatalog: Option[Boolean] = for {
     x <- S.param("ignoredefcat")
@@ -264,6 +265,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
+  // TODO Probably we should remove this as its not often used.
   // If there is a main purpose of the sandbox, then know that.
   val defaultCatalog = Props.get("defaultCatalog", "")
 
@@ -396,6 +398,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val apiVersion: String = {
       if (obpVersionsSupported.contains(apiVersionRequested)) {
         // Prefix with v (for OBP versions because they come just with number from API Explorer)
+        // Note: We want to get rid of this "v" prefix ASAP.
         s"v$apiVersionRequested"
       } else
       if (otherVersionsSupported.contains(apiVersionRequested)) {
@@ -420,11 +423,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Use to show the developer the current base version url
     val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}"
 
-    // Link to the API endpoint for the resource docs json
-    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/$apiVersion/obp?$pureCatalogParams"
+    // Link to the API endpoint for the resource docs json TODO change apiVersion so it doesn't have a "v" prefix
+    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?$pureCatalogParams"
 
     // Link to the API endpoint for the swagger json
-    val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/$apiVersion/swagger?$pureCatalogParams"
+    val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?$pureCatalogParams"
 
 
 
