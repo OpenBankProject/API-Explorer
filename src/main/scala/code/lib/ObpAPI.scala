@@ -175,10 +175,18 @@ object OBPRequest extends MdcLoggable {
     val statusAndBody = tryo {
       val credentials = OAuthClient.getAuthorizedCredential
       val apiUrl = OAuthClient.currentApiBaseUrl
-      val convertedApiPath = apiPath.replaceAll("UKv2.0", "v2.0").replaceAll("BGv1", "v1").replaceAll("OBPv", "")
+
+      val convertedApiPath = apiPath
+        .replaceAll("UKv2.0", "v2.0")
+        .replaceAll("UKv3.1", "v3.1")
+        .replaceAll("BGv1.3", "v1.3")
+        .replaceAll("BGv1", "v1")
+        .replaceAll("OBPv", "")
+
       val url = apiUrl + convertedApiPath
 
       logger.info(s"OBP Server Request URL: ${apiUrl}${convertedApiPath}")
+
       //bleh
       val request = SSLHelper.getConnection(url) //blagh!
       request.setDoOutput(true)
@@ -858,7 +866,8 @@ object ObpJson {
                              tags : List[String],
                              roles: List[RoleJson],
                              is_featured: Boolean,
-                             special_instructions: String
+                             special_instructions: String,
+                             specified_url: String // This is the URL that we want people to call.
                             )
 
   case class ResourceDocsJson (resource_docs : List[ResourceDocJson])

@@ -1139,6 +1139,7 @@ a.end-point-anchor {
   margin-right: 5px;
   padding-top: 10px;
   float: right;
+  visibility: hidden;
 }
 
 #site-title-text{
@@ -1176,4 +1177,33 @@ a.end-point-anchor {
 }
 
  .grid-header {grid-area: header}
+ 
+ 
+@media only screen and (max-width: 700px) {
+  #left_side {visibility: collapse;}
+  .content-box__info-box {max-width: 550px;}
+  .content-box__input-box {max-width: 550px;}
+  .container {margin-left: 0px;}
+  .option-section {display: none;}
+  #logo-left {visibility: hidden;}
+  #logo-right {visibility: visible;}
+} 
+@media only screen and (max-width: 600px) {
+  #left_side {visibility: collapse;}
+  .content-box__info-box {max-width: 450px;}
+  .content-box__input-box {max-width: 450px;}
+  .container {margin-left: 0px;}
+  .option-section {display: none;}
+  #logo-left {visibility: hidden;}
+  #logo-right {visibility: visible;}
+} 
+@media only screen and (max-width: 500px) {
+  #left_side {visibility: collapse;}
+  .content-box__info-box {max-width: 350px;}
+  .content-box__input-box {max-width: 350px;}
+  .container {margin-left: 0px;}
+  .option-section {display: none;}
+  #logo-left {visibility: hidden;}
+  #logo-right {visibility: visible;}
+}
 
