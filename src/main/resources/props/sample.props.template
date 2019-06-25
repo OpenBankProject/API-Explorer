@@ -76,3 +76,8 @@ dev.port=8082
 # does not exist, the DNS name or IP address of the server.
 oauth_1.hostname=FILL_ME_IN
 ######################################
+
+## certificate authorization ##
+# activate certificate authorization, default is false
+#obp_certificate_auth_activate=true
+#obp_certificate_file_path=
