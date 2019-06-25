@@ -224,6 +224,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   val rawTagsParam = S.param("tags")
 
+  logger.info(s"rawTagsParam is $rawTagsParam")
+
+
   val tagsParam: Option[List[String]] = rawTagsParam match {
     // if tags= is supplied in the url we want to ignore it
     case Full("") => None
@@ -702,10 +705,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Do we want to show the Request Entitlement button.
     // Should also consider if User has submitted an entitlment request or already has the role.
     val displayRequestEntitlementButton = if (isLoggedIn) {
-      logger.info("show Request Entitlemnt button")
+      logger.info("show Request Entitlement button")
       "block"
     } else {
-      logger.info("not show Request Entitlemnt button")
+      logger.info("not show Request Entitlement button")
       "none"
     }
 
@@ -953,7 +956,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
 
-    val url = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${catalogParams}"
+    val tagsParamString = "&tags=" + rawTagsParam.mkString(",")
+
+
+    val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${catalogParams}${tagsParamString}"
 
 
     // Create a list of (version, url) used to populate the versions whilst preserving the other parameters
@@ -966,13 +972,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Create a list of (version, url) used to populate the versions whilst preserving the other parameters except catalog
     // Includes hack for Berlin Group
     val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i
-      .replace("b1", "API Builder") 
+      .replace("b1", "API Builder")
       .replace("BGv1.3", "Berlin Group 1.3")
       .replace("BGv1", "Berlin Group")
       .replace("UKv2.0", "UK 2.0")
-      .replace("UKv3.1", "UK 3.1") 
+      .replace("UKv3.1", "UK 3.1")
       .replace("STETv1.4", "STET 1.4")
-      .replace("PAPIv2.1.1.1", "Polish API 2.1.1.1"), 
+      .replace("PAPIv2.1.1.1", "Polish API 2.1.1.1"),
       s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
 
@@ -1019,27 +1025,27 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     def onBankChange (v: Any) = {
       logger.info("bank changed to " + v.toString)
-      S.redirectTo(s"$url&bank_id=${v}")
+      S.redirectTo(s"$thisApplicationUrl&bank_id=${v}")
     }
 
     def onAccountChange (v: Any) = {
       logger.info("account changed to " + v.toString)
-      S.redirectTo(s"$url&bank_id=${presetBankId}&account_id=${v}")
+      S.redirectTo(s"$thisApplicationUrl&bank_id=${presetBankId}&account_id=${v}")
     }
 
     def onViewChange (v: Any) = {
       logger.info("view changed to " + v.toString)
-      S.redirectTo(s"$url&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${v}")
+      S.redirectTo(s"$thisApplicationUrl&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${v}")
     }
 
     def onCounterpartyChange (v: Any) = {
       logger.info("counterparty changed to " + v.toString)
-      S.redirectTo(s"$url&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${v}")
+      S.redirectTo(s"$thisApplicationUrl&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${v}")
     }
 
     def onTransactionChange (v: Any) = {
       logger.info("transaction changed to " + v.toString)
-      S.redirectTo(s"$url&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${v}")
+      S.redirectTo(s"$thisApplicationUrl&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${v}")
     }
 
 
