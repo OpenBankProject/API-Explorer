@@ -3,9 +3,9 @@ package code.lib
 import java.io.FileInputStream
 import java.net.{HttpURLConnection, URL}
 import java.security.{KeyStore, SecureRandom}
-import java.security.cert.{CertificateFactory, X509Certificate}
 
 import javax.net.ssl.{TrustManagerFactory, _}
+import net.liftweb.common.Loggable
 import net.liftweb.util.Props
 
 object SSLHelper {
@@ -13,7 +13,6 @@ object SSLHelper {
 
   private lazy val sSLSocketFactory = {
     val keystoreFile: String = Props.get("ssl_keystore_location").openOrThrowException("props value of ssl_keystore_location is missing")
-    println("XXXXX" + keystoreFile)
     val keystorePassword = Props.get("ssl_keystore_password", "")
     val truststoreFile = Props.get("ssl_truststore_location","")
     val truststorePassword = Props.get("ssl_truststore_password", "")
@@ -27,7 +26,6 @@ object SSLHelper {
     val inputStream = new FileInputStream(keystoreFile)
     try {
       keystore.load(inputStream, keystorePassword.toCharArray)
-      println("keystore loaded")
     } finally {
       inputStream.close()
     }
