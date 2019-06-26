@@ -468,6 +468,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         apiVersion
           .replaceAll("UKv2.0", "v2.0")
           .replaceAll("UKv3.1", "v3.1")
+          .replaceAll("BGv1.3.3", "v1.3.3")
           .replaceAll("BGv1", "v1")
           .replaceAll("BGv1.3", "v1.3")
           .replaceAll("PAPIv2.1.1.1", "v2.1.1.1")
@@ -636,6 +637,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // All
       case List(None, None, None) => isObpVersion match {
         case true => ("OBP", "Open Bank Project")
+        case false if apiVersionRequested == ("BGv1.3.3") => ("Berlin Group", "Berlin Group")
         case false if apiVersionRequested == ("BGv1") => ("Berlin Group", "Berlin Group")
         case false if apiVersionRequested == ("BGv1.3") => ("Berlin Group", "Berlin Group")
         case false if apiVersionRequested == ("UKv3.1") => ("UK", "UK")
@@ -828,6 +830,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       logger.info(s"urlWithVersion is: " + urlWithVersion
         .replaceAll("UKv2.0", "v2.0")
         .replaceAll("UKv3.1", "v3.1")
+        .replaceAll("BGv1.3.3", "v1.3.3")
         .replaceAll("BGv1", "v1")
         .replaceAll("BGv1.3", "v1.3")
         .replaceAll("OBPv", "")
@@ -837,6 +840,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val fullPath = new URL(apiUrl + urlWithVersion
         .replaceAll("UKv2.0", "v2.0")
         .replaceAll("UKv3.1", "v3.1")
+        .replaceAll("BGv1.3.3", "v1.3.3")
         .replaceAll("BGv1.3", "v1.3")
         .replaceAll("BGv1", "v1")
         .replaceAll("OBPv", ""))
@@ -973,6 +977,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Includes hack for Berlin Group
     val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i
       .replace("b1", "API Builder")
+      .replace("BGv1.3.3", "Berlin Group 1.3.3")
       .replace("BGv1.3", "Berlin Group 1.3")
       .replace("BGv1", "Berlin Group")
       .replace("UKv2.0", "UK 2.0")
