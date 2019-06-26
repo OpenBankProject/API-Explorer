@@ -12,7 +12,8 @@ object SSLHelper {
 
 
   private lazy val sSLSocketFactory = {
-    val keystoreFile = Props.get("ssl_keystore_location").openOrThrowException("props value of ssl_keystore_location is missing")
+    val keystoreFile: String = Props.get("ssl_keystore_location").openOrThrowException("props value of ssl_keystore_location is missing")
+    println("XXXXX" + keystoreFile)
     val keystorePassword = Props.get("ssl_keystore_password", "")
     val truststoreFile = Props.get("ssl_truststore_location","")
     val truststorePassword = Props.get("ssl_truststore_password", "")
@@ -25,7 +26,8 @@ object SSLHelper {
     val keystore = KeyStore.getInstance(KeyStore.getDefaultType)
     val inputStream = new FileInputStream(keystoreFile)
     try {
-      keystore.load(inputStream, keyPassword.toCharArray)
+      keystore.load(inputStream, keystorePassword.toCharArray)
+      println("keystore loaded")
     } finally {
       inputStream.close()
     }
@@ -41,6 +43,7 @@ object SSLHelper {
 
 
     tmf.init(truststore)
+ 
     
 
     val sslContext = SSLContext.getInstance("TLS")
@@ -56,7 +59,7 @@ object SSLHelper {
   }
 
   def getConnection(url: String): HttpURLConnection = {
-    Props.get("obp_certificate_auth_activate", "false") match {
+    Props.get("ssl_client_auth", "false") match {
       case "true" => {
         val httpsUrl = if (url.startsWith("https://")) url else url.replaceFirst("^http://", "https://")
 
