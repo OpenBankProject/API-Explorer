@@ -188,7 +188,12 @@ object OBPRequest extends MdcLoggable {
       logger.info(s"OBP Server Request URL: ${apiUrl}${convertedApiPath}")
 
       //bleh
-      val request = SSLHelper.getConnection(url) //blagh!
+      val request = if (Props.get("ssl_client_auth", "false") == "true"){
+        SSLHelper.getConnection(url) //blagh!
+      } else {
+        val newUrl = new URL(url)
+          newUrl.openConnection().asInstanceOf[HttpURLConnection]
+      }
       request.setDoOutput(true)
       request.setRequestMethod(method)
       request.setRequestProperty("Content-Type", "application/json; charset=UTF-8")

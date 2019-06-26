@@ -12,26 +12,39 @@ object SSLHelper {
 
 
   private lazy val sSLSocketFactory = {
-    val keystoreFile = Props.get("obp_certificate_file_path").openOrThrowException("props value of obp_certificate_file_path is missing")
+    val keystoreFile = Props.get("ssl_keystore_location").openOrThrowException("props value of ssl_keystore_location is missing")
+    val keystorePassword = Props.get("ssl_keystore_password", "")
+    val truststoreFile = Props.get("ssl_truststore_location","")
+    val truststorePassword = Props.get("ssl_truststore_password", "")
+    val keyPassword = Props.get("ssl_key_password", "")
 
-    val cf = CertificateFactory.getInstance("X.509")
+    
+
+    val tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm)
+    val keyManager = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm)
+    val keystore = KeyStore.getInstance(KeyStore.getDefaultType)
     val inputStream = new FileInputStream(keystoreFile)
-    val caCert: X509Certificate = try {
-      cf.generateCertificate(inputStream).asInstanceOf[X509Certificate]
+    try {
+      keystore.load(inputStream, keyPassword.toCharArray)
     } finally {
       inputStream.close()
     }
+    keyManager.init(keystore,keyPassword.toCharArray)
+    
+    val truststore = KeyStore.getInstance(KeyStore.getDefaultType)
+    val trustInputStream = new FileInputStream(truststoreFile)
+    try {
+      truststore.load(trustInputStream, truststorePassword.toCharArray)
+    } finally {
+      trustInputStream.close()
+    }
 
-    val tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm)
-    val ks = KeyStore.getInstance(KeyStore.getDefaultType)
-    ks.load(null) // You don't need the KeyStore instance to come from a file.
 
-    ks.setCertificateEntry("caCert", caCert)
-
-    tmf.init(ks)
+    tmf.init(truststore)
+    
 
     val sslContext = SSLContext.getInstance("TLS")
-    sslContext.init(null, tmf.getTrustManagers, new SecureRandom())
+    sslContext.init(keyManager.getKeyManagers, tmf.getTrustManagers, new SecureRandom())
 
     val hostnameVerifier: HostnameVerifier = new HostnameVerifier {
       override def verify(host: String, sslSession: SSLSession): Boolean = true
