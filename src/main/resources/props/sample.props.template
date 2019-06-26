@@ -79,5 +79,11 @@ oauth_1.hostname=FILL_ME_IN
 
 ## certificate authorization ##
 # activate certificate authorization, default is false
-#obp_certificate_auth_activate=true
-#obp_certificate_file_path=
+
+### SSL ##############################
+ssl_client_auth=true
+ssl_truststore_location=/var/private/ssl/truststore.jks
+ssl_truststore_password=test1234
+ssl_keystore_location=/var/private/ssl/keystore.jks
+ssl_keystore_password=test1234
+ssl_key_password=test1234
