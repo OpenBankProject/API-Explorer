@@ -154,6 +154,7 @@ class Boot extends MdcLoggable{
       Menu.i("Home") / "index",
       Menu.i("Glossary") / "glossary",
       Menu.i("Message Docs") / "message-docs",
+      Menu.i("More") / "more",
       Menu.i("OAuth Callback") / "oauthcallback" >> EarlyResponse(() => {
         OAuthClient.handleCallback()
       })
