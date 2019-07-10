@@ -76,3 +76,14 @@ dev.port=8082
 # does not exist, the DNS name or IP address of the server.
 oauth_1.hostname=FILL_ME_IN
 ######################################
+
+## certificate authorization ##
+# activate certificate authorization, default is false
+
+### SSL ##############################
+ssl_client_auth=true
+ssl_truststore_location=/var/private/ssl/truststore.jks
+ssl_truststore_password=test1234
+ssl_keystore_location=/var/private/ssl/keystore.jks
+ssl_keystore_password=test1234
+ssl_key_password=test1234
