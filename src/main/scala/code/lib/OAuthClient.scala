@@ -165,7 +165,25 @@ object OAuthClient extends MdcLoggable {
     mostRecentLoginAttemptProvider.set(Full(provider))
     val credential = setNewCredential(provider)
 
-    val authUrl = provider.oAuthProvider.retrieveRequestToken(credential.consumer, Props.get("base_url", S.hostName) + "/oauthcallback")
+    val oauthcallbackUrl = Props.get("base_url", S.hostName) + "/oauthcallback"
+    val authUrl = provider.oAuthProvider.retrieveRequestToken(credential.consumer, oauthcallbackUrl)
+    //eg: authUrl = http://127.0.0.1:8080/oauth/authorize?oauth_token=LK5N1WBQZGXHMQXJT35KDHAJXUP1EMQCGBQFQQNG
+    //This step is will call `provider.authorizeUrl = baseUrl + "/oauth/authorize"` endpoint, and get the request token back.
+    logger.debug("oauth.provider.name            = " + provider.name           )        
+    logger.debug("oauth.provider.apiBaseUrl      = " + provider.apiBaseUrl     )        
+    logger.debug("oauth.provider.requestTokenUrl = " + provider.requestTokenUrl)        
+    logger.debug("oauth.provider.accessTokenUrl  = " + provider.accessTokenUrl )        
+    logger.debug("oauth.provider.authorizeUrl    = " + provider.authorizeUrl   )        
+    logger.debug("oauth.provider.signupUrl       = " + provider.signupUrl      )        
+    logger.debug("oauth.provider.oAuthProvider.getRequestTokenEndpointUrl   = " + provider.oAuthProvider.getRequestTokenEndpointUrl  )     //http://127.0.0.1:8080/oauth/initiate    
+    logger.debug("oauth.provider.oAuthProvider.getAccessTokenEndpointUrl   = " + provider.oAuthProvider.getAccessTokenEndpointUrl  )     //http://127.0.0.1:8080/oauth/token    
+    logger.debug("oauth.provider.oAuthProvider.getAuthorizationWebsiteUrl   = " + provider.oAuthProvider.getAuthorizationWebsiteUrl  )    //http://127.0.0.1:8080/oauth/authorize     
+    logger.debug("oauth.provider.consumerKey     = " + provider.consumerKey    )        
+    logger.debug("oauth.provider.consumerSecret  = " + provider.consumerSecret )        
+    logger.debug("oauth.credential.getConsumerKey = " + credential.consumer.getConsumerKey)      
+    logger.debug("oauth.credential.getConsumerSecret = " + credential.consumer.getConsumerSecret)      
+    logger.debug("oauth.oauthcallbackUrl = " + oauthcallbackUrl)
+    
     S.redirectTo(authUrl)
   }
 
