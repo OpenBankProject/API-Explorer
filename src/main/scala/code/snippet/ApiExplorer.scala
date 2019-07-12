@@ -387,7 +387,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Possible OBP Versions
     //val obpVersionsSupported = List("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0")
     // Save some space:
-    val obpVersionsSupported = List("OBPv2.2.0", "OBPv3.0.0", "OBPv3.1.0")
+    val obpVersionsSupported = List("OBPv2.2.0", "OBPv3.0.0", "OBPv3.1.0", "OBPv4.0.0")
 
     // Save some more space:
     //val obpVersionsSupported = List("OBPv3.1.0")
