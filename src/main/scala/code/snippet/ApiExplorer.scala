@@ -1238,7 +1238,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
       "@obp_version *" #> s" ${i._1} " &
       "@obp_version [href]" #> s"${i._2}"
     } &
-      "@other_versions" #> otherVersionUrls.map { i =>
+      "@other_versions" #> otherVersionUrls
+        .filterNot(isVersionHidden)
+        .map { i =>
         "@other_version *" #> s" ${i._1} " &
           "@other_version [href]" #> s"${i._2}"
       } &
@@ -1417,6 +1419,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".description *" #> stringToNodeSeq((i.description))
     }
       }
+
+  private val isVersionHidden = {
+    val excludedVersionNames = Props.get("excluded.versions").map(_.trim.split("""\s*,\s*""")).map(_.toSet).openOr(Set.empty)
+    val func = (versionName: String, versionUrl: String) => excludedVersionNames.contains(versionName.trim)
+
+    func.tupled
+  }
 }
 
 
