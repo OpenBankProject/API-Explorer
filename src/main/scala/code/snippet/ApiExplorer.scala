@@ -1234,7 +1234,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Show the version to the user.
     // Append to the content child of id="version" e.g. the fixed text "Version:" is replacedWith "Version: 1.2.3"
     "#version *+" #> apiVersion &
-    "@obp_versions" #> obpVersionUrls.map { i =>
+    "@obp_versions" #> obpVersionUrls
+      .filterNot(isVersionHidden)
+      .map { i =>
       "@obp_version *" #> s" ${i._1} " &
       "@obp_version [href]" #> s"${i._2}"
     } &
