@@ -532,8 +532,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
     val filteredResources2: List[ResourceDocPlus] = showPSD2 match {
-      case Some(true) => filteredResources1.filter(x => x.isPSD2 == true)
-      case Some(false) => filteredResources1.filter(x => x.isPSD2 == false)
+      case Some(true) => filteredResources1
+        .filter(_.isPSD2)
+        .map(resourceDocPlus => resourceDocPlus.copy(tags = resourceDocPlus.tags.tail)) // exclude head tag
+      case Some(false) => filteredResources1.filterNot(_.isPSD2)
       case _ => filteredResources1
     }
 
