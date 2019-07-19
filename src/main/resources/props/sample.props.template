@@ -88,5 +88,5 @@ ssl_keystore_location=/var/private/ssl/keystore.jks
 ssl_keystore_password=test1234
 ssl_key_password=test1234
 
-# a list of version names those not shown, split with ,
-#excluded.versions= Berlin Group 1.3, STET 1.4,UK 3.1
+# a list of version names those not shown in the main page, split with ,
+#excluded.versions=Glossary, OBP 3.1.0,OBP 4.0.0

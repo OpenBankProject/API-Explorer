@@ -5,12 +5,11 @@ import java.net.URL
 import code.lib.ObpJson._
 import code.lib._
 import code.util.Helper.MdcLoggable
-import net.liftweb.util.Props
+import net.liftweb.util.{CssSel, Props}
 
 import scala.collection.immutable.{List, Nil}
 
 //import code.snippet.CallUrlForm._
-import net.liftweb._
 import net.liftweb.http.{S, SHtml}
 import net.liftweb.json.JsonAST.{JObject, JValue}
 import net.liftweb.json.{Extraction, JsonParser}
@@ -1235,16 +1234,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
     //
     // Show the version to the user.
     // Append to the content child of id="version" e.g. the fixed text "Version:" is replacedWith "Version: 1.2.3"
+    hideVersions() &
     "#version *+" #> apiVersion &
-    "@obp_versions" #> obpVersionUrls
-      .filterNot(isVersionHidden)
-      .map { i =>
+    "@obp_versions" #> obpVersionUrls.map { i =>
       "@obp_version *" #> s" ${i._1} " &
       "@obp_version [href]" #> s"${i._2}"
     } &
-      "@other_versions" #> otherVersionUrls
-        .filterNot(isVersionHidden)
-        .map { i =>
+      "@other_versions" #> otherVersionUrls.map { i =>
         "@other_version *" #> s" ${i._1} " &
           "@other_version [href]" #> s"${i._2}"
       } &
@@ -1424,12 +1420,21 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
       }
 
-  private val isVersionHidden = {
-    val excludedVersionNames = Props.get("excluded.versions").map(_.trim.split("""\s*,\s*""")).map(_.toSet).openOr(Set.empty)
-    val func = (versionName: String, versionUrl: String) => excludedVersionNames.contains(versionName.trim)
+  private lazy val excludedVersionNames: Set[String] = Props.get("excluded.versions")
+    .map(_.trim.split("""\s*,\s*"""))
+    .map(_.toSet)
+    .openOr(Set.empty)
+    .filterNot(_.isEmpty)
+    .map(_.replaceAll("\\s+", "_"))
 
-    func.tupled
+  private def hideVersions(): CssSel = {
+    val requestUrl = S.uri.replaceFirst("""/?\?.*""", "") // remove request param part: /?param=.. or ?param=...
+    requestUrl match {
+      case "/" => excludedVersionNames.map(id => s"#$id" #> "").reduce( _ & _)
+      case _ => "#notExists_this_is_just_do_nothing" #> "" // a placeholder of do nothing
+    }
   }
+
 }
 
 
