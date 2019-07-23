@@ -1430,8 +1430,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
   private def hideVersions(): CssSel = {
     val requestUrl = S.uri.replaceFirst("""/?\?.*""", "") // remove request param part: /?param=.. or ?param=...
     requestUrl match {
-      case "/" => excludedVersionNames.map(id => s"#$id" #> "").reduce( _ & _)
-      case _ => "#notExists_this_is_just_do_nothing" #> "" // a placeholder of do nothing
+      case "/" if(excludedVersionNames.nonEmpty)=> excludedVersionNames.map(id => s"#$id" #> "").reduce( _ & _)
+      case _  => "#notExists_this_is_just_do_nothing" #> "" // a placeholder of do nothing
     }
   }
 
