@@ -1420,17 +1420,25 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
       }
 
-  private lazy val shownVersionNamesInMainPage: Set[String] = Props.get("main.included.links")
-    .map(_.trim.split("""\s*,\s*"""))
-    .map(_.toSet)
-    .openOr(Set.empty)
-    .filterNot(_.isEmpty)
-    .map(_.replaceAll("\\s+", "_"))
+  private lazy val shownVersionNamesInMainPage: Set[String] = {
+    val shownLinks =  Props.get("main.included.links") match {
+      case Full(v) if(v.trim.size > 0) => v.trim
+      case _ => "OBP_PSD2, OBP_3.1.0"
+    }
+
+    shownLinks.split("""\s*,\s*""")
+      .map(_.replaceAll("\\s+", "_"))
+      .filterNot(_.isEmpty)
+      .toSet
+  }
+
+
 
   private def shownVersions(): CssSel = {
     val requestUrl = S.uri.replaceFirst("""/?\?.*""", "") // remove request param part: /?param=.. or ?param=...
     requestUrl match {
-      case "/" if(shownVersionNamesInMainPage.nonEmpty)=> shownVersionNamesInMainPage.map(id => s"#$id [style]" #> "").reduce( _ & _)
+      case "/" if(shownVersionNamesInMainPage.nonEmpty)=> shownVersionNamesInMainPage
+        .map(id => s"#$id [style]" #> "").reduce( _ & _)
       case _  => "#notExists_this_is_just_do_nothing" #> "" // a placeholder of do nothing
     }
   }
