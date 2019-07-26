@@ -88,5 +88,5 @@ ssl_keystore_location=/var/private/ssl/keystore.jks
 ssl_keystore_password=test1234
 ssl_key_password=test1234
 
-# a list of version names those not shown in the main page, split with ,
-#excluded.versions=Glossary, OBP 3.1.0,OBP 4.0.0
+# a list of version names those are shown in the main page, split with ,
+#main.included.links= v3.1.0, OBP PSD2

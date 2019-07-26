@@ -1234,7 +1234,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     //
     // Show the version to the user.
     // Append to the content child of id="version" e.g. the fixed text "Version:" is replacedWith "Version: 1.2.3"
-    hideVersions() &
+    shownVersions() &
     "#version *+" #> apiVersion &
     "@obp_versions" #> obpVersionUrls.map { i =>
       "@obp_version *" #> s" ${i._1} " &
@@ -1420,17 +1420,17 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
       }
 
-  private lazy val excludedVersionNames: Set[String] = Props.get("excluded.versions")
+  private lazy val shownVersionNamesInMainPage: Set[String] = Props.get("main.included.links")
     .map(_.trim.split("""\s*,\s*"""))
     .map(_.toSet)
     .openOr(Set.empty)
     .filterNot(_.isEmpty)
     .map(_.replaceAll("\\s+", "_"))
 
-  private def hideVersions(): CssSel = {
+  private def shownVersions(): CssSel = {
     val requestUrl = S.uri.replaceFirst("""/?\?.*""", "") // remove request param part: /?param=.. or ?param=...
     requestUrl match {
-      case "/" if(excludedVersionNames.nonEmpty)=> excludedVersionNames.map(id => s"#$id" #> "").reduce( _ & _)
+      case "/" if(shownVersionNamesInMainPage.nonEmpty)=> shownVersionNamesInMainPage.map(id => s"#$id [style]" #> "").reduce( _ & _)
       case _  => "#notExists_this_is_just_do_nothing" #> "" // a placeholder of do nothing
     }
   }
