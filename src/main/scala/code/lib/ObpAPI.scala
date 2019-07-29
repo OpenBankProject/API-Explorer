@@ -8,7 +8,7 @@ import java.util.Date
 import code.lib.ObpJson._
 import code.util.Helper.MdcLoggable
 import net.liftweb.common.{Box, Failure, Full, _}
-import net.liftweb.http.RequestVar
+import net.liftweb.http.{RequestVar, S}
 import net.liftweb.json.JsonAST.{JBool, JValue}
 import net.liftweb.json.JsonDSL._
 import net.liftweb.json._
@@ -150,7 +150,14 @@ object ObpAPI extends Loggable {
 
   // Returns Json containing Resource Docs
   def getResourceDocsJson(apiVersion : String) : Box[ResourceDocsJson] = {
-    ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp").flatMap(_.extractOpt[ResourceDocsJson])
+    val requestParams = List("core", "psd2", "obwg", "tags")
+        .map(paramName => (paramName, S.param(paramName)))
+        .collect{
+          case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
+        }
+        .mkString("?", "&", "")
+
+    ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams").flatMap(_.extractOpt[ResourceDocsJson])
   }
 
 
