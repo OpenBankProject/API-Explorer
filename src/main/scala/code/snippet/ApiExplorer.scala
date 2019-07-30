@@ -1394,7 +1394,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   private def shownVersions(): CssSel = {
     val requestUrl = S.uri.replaceFirst("""/?\?.*""", "") // remove request param part: /?param=.. or ?param=...
     requestUrl match {
-      case "/" if(shownVersionNamesInMainPage.nonEmpty)=> shownVersionNamesInMainPage
+      case "/"| "/index" if(shownVersionNamesInMainPage.nonEmpty)=> shownVersionNamesInMainPage
         .map(id => s"#$id [style]" #> "").reduce( _ & _)
       case _  => "#notExists_this_is_just_do_nothing" #> "" // a placeholder of do nothing
     }
