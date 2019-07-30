@@ -5,12 +5,11 @@ import java.net.URL
 import code.lib.ObpJson._
 import code.lib._
 import code.util.Helper.MdcLoggable
-import net.liftweb.util.Props
+import net.liftweb.util.{CssSel, Props}
 
 import scala.collection.immutable.{List, Nil}
 
 //import code.snippet.CallUrlForm._
-import net.liftweb._
 import net.liftweb.http.{S, SHtml}
 import net.liftweb.json.JsonAST.{JObject, JValue}
 import net.liftweb.json.{Extraction, JsonParser}
@@ -225,8 +224,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val rawTagsParam = S.param("tags")
 
   logger.info(s"rawTagsParam is $rawTagsParam")
+  
+  val tagsParamString = "&tags=" + rawTagsParam.mkString(",")
 
-
+  logger.info(s"tagsParamString is $rawTagsParam")
+  
   val tagsParam: Option[List[String]] = rawTagsParam match {
     // if tags= is supplied in the url we want to ignore it
     case Full("") => None
@@ -387,7 +389,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Possible OBP Versions
     //val obpVersionsSupported = List("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0")
     // Save some space:
-    val obpVersionsSupported = List("OBPv2.2.0", "OBPv3.0.0", "OBPv3.1.0")
+    val obpVersionsSupported = List("OBPv2.2.0", "OBPv3.0.0", "OBPv3.1.0", "OBPv4.0.0")
 
     // Save some more space:
     //val obpVersionsSupported = List("OBPv3.1.0")
@@ -431,10 +433,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}"
 
     // Link to the API endpoint for the resource docs json TODO change apiVersion so it doesn't have a "v" prefix
-    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?$pureCatalogParams"
+    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?$pureCatalogParams${tagsParamString}"
 
     // Link to the API endpoint for the swagger json
-    val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?$pureCatalogParams"
+    val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?$pureCatalogParams${tagsParamString}"
 
 
 
@@ -532,8 +534,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
     val filteredResources2: List[ResourceDocPlus] = showPSD2 match {
-      case Some(true) => filteredResources1.filter(x => x.isPSD2 == true)
-      case Some(false) => filteredResources1.filter(x => x.isPSD2 == false)
+      case Some(true) => filteredResources1
+        .filter(_.isPSD2)
+        .map(resourceDocPlus => resourceDocPlus.copy(tags = resourceDocPlus.tags.tail)) // exclude head tag
+      case Some(false) => filteredResources1.filterNot(_.isPSD2)
       case _ => filteredResources1
     }
 
@@ -960,9 +964,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
 
-    val tagsParamString = "&tags=" + rawTagsParam.mkString(",")
-
-
     val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${catalogParams}${tagsParamString}"
 
 
@@ -1233,6 +1234,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     //
     // Show the version to the user.
     // Append to the content child of id="version" e.g. the fixed text "Version:" is replacedWith "Version: 1.2.3"
+    shownVersions() &
     "#version *+" #> apiVersion &
     "@obp_versions" #> obpVersionUrls.map { i =>
       "@obp_version *" #> s" ${i._1} " &
@@ -1417,6 +1419,30 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".description *" #> stringToNodeSeq((i.description))
     }
       }
+
+  private lazy val shownVersionNamesInMainPage: Set[String] = {
+    val shownLinks =  Props.get("main.included.links") match {
+      case Full(v) if(v.trim.size > 0) => v.trim
+      case _ => "OBP_PSD2, OBP_3.1.0"
+    }
+
+    shownLinks.split("""\s*,\s*""")
+      .map(_.replaceAll("\\s+", "_"))
+      .filterNot(_.isEmpty)
+      .toSet
+  }
+
+
+
+  private def shownVersions(): CssSel = {
+    val requestUrl = S.uri.replaceFirst("""/?\?.*""", "") // remove request param part: /?param=.. or ?param=...
+    requestUrl match {
+      case "/" if(shownVersionNamesInMainPage.nonEmpty)=> shownVersionNamesInMainPage
+        .map(id => s"#$id [style]" #> "").reduce( _ & _)
+      case _  => "#notExists_this_is_just_do_nothing" #> "" // a placeholder of do nothing
+    }
+  }
+
 }
 
 
