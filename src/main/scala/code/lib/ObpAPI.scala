@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 import code.lib.ObpJson._
+import code.util.Helper
 import code.util.Helper.MdcLoggable
 import net.liftweb.common.{Box, Failure, Full, _}
 import net.liftweb.http.{RequestVar, S}
@@ -31,7 +32,7 @@ object ObpAPI extends Loggable {
   implicit val formats = DefaultFormats
   val dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
   
-  val defaultProvider = Props.get("defaultAuthProvider").getOrElse("")
+  val defaultProvider = Helper.getPropsValue("defaultAuthProvider").getOrElse("")
   
   val userNotFoundError = "user (\\S+) at provider (\\S+) not found".r
   

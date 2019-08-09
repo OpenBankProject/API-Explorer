@@ -17,12 +17,12 @@ object MyExceptionLogger extends MdcLoggable{
     val currentTime = now.toString
     val stackTrace = new String(outputStream.toByteArray)
     val error = currentTime + ": " + stackTrace
-    val host = Props.get("base_url", "unknown host")
+    val host = Helper.getPropsValue("base_url", "unknown host")
 
     val mailSent = for {
-      from <- Props.get("mail.exception.sender.address") ?~ "Could not send mail: Missing props param for 'from'"
+      from <- Helper.getPropsValue("mail.exception.sender.address") ?~ "Could not send mail: Missing props param for 'from'"
       // no spaces, comma separated e.g. mail.api.consumer.registered.notification.addresses=notify@example.com,notify2@example.com,notify3@example.com
-      toAddressesString <- Props.get("mail.exception.registered.notification.addresses") ?~ "Could not send mail: Missing props param for 'to'"
+      toAddressesString <- Helper.getPropsValue("mail.exception.registered.notification.addresses") ?~ "Could not send mail: Missing props param for 'to'"
     } yield {
 
       //technically doesn't work for all valid email addresses so this will mess up if someone tries to send emails to "foo,bar"@example.com

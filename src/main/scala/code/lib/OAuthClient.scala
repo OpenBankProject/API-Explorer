@@ -32,6 +32,7 @@ Berlin 13359, Germany
 
 package code.lib
 
+import code.util.Helper
 import net.liftweb.http.SessionVar
 import net.liftweb.common.Box
 import net.liftweb.common.Empty
@@ -42,7 +43,7 @@ import net.liftweb.http.S
 import oauth.signpost.OAuthConsumer
 import oauth.signpost.basic.DefaultOAuthConsumer
 import net.liftweb.mapper.By
-import net.liftweb.common.{Full, Failure}
+import net.liftweb.common.{Failure, Full}
 import net.liftweb.util.Helpers
 import net.liftweb.http.LiftResponse
 import code.util.Helper.MdcLoggable
@@ -69,13 +70,13 @@ sealed trait Provider {
 trait DefaultProvider extends Provider with MdcLoggable {
   val name = "The Open Bank Project Demo"
   
-  // val baseUrl = Props.get("oauth_1.hostname").getOrElse(Props.get("api_hostname", S.hostName))
-  val baseUrl = Props.get("oauth_1.hostname") match {
+  // val baseUrl = Helper.getPropsValue("oauth_1.hostname").getOrElse(Helper.getPropsValue("api_hostname", S.hostName))
+  val baseUrl = Helper.getPropsValue("oauth_1.hostname") match {
     case Full(v) =>
       v
     case _ =>
       logger.warn("==========>> THERE IS NO THE VALUE FOR PROPS oauth_1.hostname <<====================")
-      Props.get("api_hostname") match {
+      Helper.getPropsValue("api_hostname") match {
       case Full(v) => 
         v
       case _ =>
@@ -92,8 +93,8 @@ trait DefaultProvider extends Provider with MdcLoggable {
 
   lazy val oAuthProvider : OAuthProvider = new DefaultOAuthProvider(requestTokenUrl, accessTokenUrl, authorizeUrl)
 
-  val consumerKey = Props.get("obp_consumer_key", "")
-  val consumerSecret = Props.get("obp_secret_key", "")
+  val consumerKey = Helper.getPropsValue("obp_consumer_key", "")
+  val consumerSecret = Helper.getPropsValue("obp_secret_key", "")
 }
 
 object OBPDemo extends DefaultProvider
@@ -165,6 +166,7 @@ object OAuthClient extends MdcLoggable {
     mostRecentLoginAttemptProvider.set(Full(provider))
     val credential = setNewCredential(provider)
 
+    val authUrl = provider.oAuthProvider.retrieveRequestToken(credential.consumer, Helper.getPropsValue("base_url", S.hostName) + "/oauthcallback")
     val oauthcallbackUrl = Props.get("base_url", S.hostName) + "/oauthcallback"
     val authUrl = provider.oAuthProvider.retrieveRequestToken(credential.consumer, oauthcallbackUrl)
     //eg: authUrl = http://127.0.0.1:8080/oauth/authorize?oauth_token=LK5N1WBQZGXHMQXJT35KDHAJXUP1EMQCGBQFQQNG

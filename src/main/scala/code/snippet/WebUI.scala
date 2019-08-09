@@ -32,8 +32,7 @@ import net.liftweb.http.{S, SessionVar}
 import net.liftweb.util.Helpers._
 import net.liftweb.util.{CssSel, Props, _}
 
-import code.util.Branding._
-
+import code.util.Helper._
 
 
 
@@ -73,23 +72,23 @@ class WebUI extends MdcLoggable {
   /*
 
   def footer2LogoLeft = {
-    "img [src]" #> Props.get("webui_footer2_logo_left_url", "")
+    "img [src]" #> Helper.getPropsValue("webui_footer2_logo_left_url", "")
   }
 
   def footer2MiddleText: CssSel = {
-    "#footer2-middle-text *" #> scala.xml.Unparsed(Props.get("webui_footer2_middle_text", ""))
+    "#footer2-middle-text *" #> scala.xml.Unparsed(Helper.getPropsValue("webui_footer2_middle_text", ""))
   }
 
   def aboutBackground: CssSel = {
-    "#main-about [style]" #> ("background-image: url(" + Props.get("webui_index_page_about_section_background_image_url", "") + ");")
+    "#main-about [style]" #> ("background-image: url(" + Helper.getPropsValue("webui_index_page_about_section_background_image_url", "") + ");")
   }
 
   def aboutText: CssSel = {
-    "#main-about-text *" #> scala.xml.Unparsed(Props.get("webui_index_page_about_section_text", ""))
+    "#main-about-text *" #> scala.xml.Unparsed(Helper.getPropsValue("webui_index_page_about_section_text", ""))
   }
 
   def topText: CssSel = {
-    "#top-text *" #> scala.xml.Unparsed(Props.get("webui_top_text", ""))
+    "#top-text *" #> scala.xml.Unparsed(Helper.getPropsValue("webui_top_text", ""))
   }
 
 */

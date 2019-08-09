@@ -4,6 +4,7 @@ import java.net.URL
 
 import code.lib.ObpJson._
 import code.lib._
+import code.util.Helper
 import code.util.Helper.MdcLoggable
 import net.liftweb.util.{CssSel, Props}
 
@@ -272,7 +273,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   // TODO Probably we should remove this as its not often used.
   // If there is a main purpose of the sandbox, then know that.
-  val defaultCatalog = Props.get("defaultCatalog", "")
+  val defaultCatalog = Helper.getPropsValue("defaultCatalog", "")
 
 
   val showCore = showCoreParam
@@ -426,7 +427,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     // To link to API home page (this is duplicated in OAuthClient)
-    val baseUrl = Props.get("api_hostname", S.hostName)
+    val baseUrl = Helper.getPropsValue("api_hostname", S.hostName)
 
 
     // Use to show the developer the current base version url
@@ -947,7 +948,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
     // Filter out empty string items
-    val featuredBankIds = Props.get("featuredBankIds", "").split(",").toList.filter(i => i.length > 0)
+    val featuredBankIds = Helper.getPropsValue("featuredBankIds", "").split(",").toList.filter(i => i.length > 0)
 
 
 
