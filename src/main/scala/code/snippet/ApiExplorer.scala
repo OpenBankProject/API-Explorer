@@ -1379,7 +1379,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       }
 
   private lazy val shownVersionNamesInMainPage: Set[String] = {
-    val shownLinks =  Props.get("main.included.links") match {
+    val shownLinks =  Helper.getPropsValue("main.included.links") match {
       case Full(v) if(v.trim.size > 0) => v.trim
       case _ => "OBP_PSD2, OBP_3.1.0, OBP_4.0.0"
     }

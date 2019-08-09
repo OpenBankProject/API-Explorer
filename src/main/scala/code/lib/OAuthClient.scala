@@ -166,8 +166,7 @@ object OAuthClient extends MdcLoggable {
     mostRecentLoginAttemptProvider.set(Full(provider))
     val credential = setNewCredential(provider)
 
-    val authUrl = provider.oAuthProvider.retrieveRequestToken(credential.consumer, Helper.getPropsValue("base_url", S.hostName) + "/oauthcallback")
-    val oauthcallbackUrl = Props.get("base_url", S.hostName) + "/oauthcallback"
+    val oauthcallbackUrl = Helper.getPropsValue("base_url", S.hostName) + "/oauthcallback"
     val authUrl = provider.oAuthProvider.retrieveRequestToken(credential.consumer, oauthcallbackUrl)
     //eg: authUrl = http://127.0.0.1:8080/oauth/authorize?oauth_token=LK5N1WBQZGXHMQXJT35KDHAJXUP1EMQCGBQFQQNG
     //This step is will call `provider.authorizeUrl = baseUrl + "/oauth/authorize"` endpoint, and get the request token back.
