@@ -387,21 +387,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     // Possible OBP Versions
-    //val obpVersionsSupported = List("1.2.1", "1.3.0", "1.4.0", "2.0.0", "2.1.0", "2.2.0", "3.0.0")
-    // Save some space:
     val obpVersionsSupported = List("OBPv2.2.0", "OBPv3.0.0", "OBPv3.1.0", "OBPv4.0.0")
 
-    // Save some more space:
-    //val obpVersionsSupported = List("OBPv3.1.0")
-
-    // Possible other APIs like STET, UK, Berlin Group etc.
-    // val otherVersionsSupported = List("BGv1.3", "BGv1","UKv3.1", "UKv2.0","STETv1.4","PAPIv2.1.1.1", "b1")
-    //val otherVersionsSupported = List("BGv1.3","UKv3.1","STETv1.4","PAPIv2.1.1.1","b1")
-
-    // temp
-    // don't put params in here
-    val otherVersionsSupported = List("BGv1.3", "UKv3.1", "STETv1.4")
-
+    val otherVersionsSupported = List("BGv1.3", "UKv3.1", "UKv2.0", "STETv1.4", "PAPIv2.1.1.1", "b1")
 
     // Set the version to use.
     val apiVersion: String = {
@@ -526,49 +514,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     )
 
 
-    // Filter
-    val filteredResources1: List[ResourceDocPlus] = showCore match {
-      case Some(true) => allResources.filter(x => x.isCore == true)
-      case Some(false) => allResources.filter(x => x.isCore == false)
-      case _ => allResources
-    }
-
-    val filteredResources2: List[ResourceDocPlus] = showPSD2 match {
-      case Some(true) => filteredResources1
-        .filter(_.isPSD2)
-        .map(resourceDocPlus => resourceDocPlus.copy(tags = resourceDocPlus.tags.tail)) // exclude head tag
-      case Some(false) => filteredResources1.filterNot(_.isPSD2)
-      case _ => filteredResources1
-    }
-
-    val filteredResources3: List[ResourceDocPlus] = showOBWG match {
-      case Some(true) => filteredResources2.filter(x => x.isOBWG == true)
-      case Some(false) => filteredResources2.filter(x => x.isOBWG == false)
-      case _ => filteredResources2
-    }
-
-    // Check if we have tags, and if so filter by them
-    val filteredResources4: List[ResourceDocPlus] = tagsParam match {
-      // We have tags
-      case Some(tags) => {
-       // This can create duplicates to use toSet below
-        for {
-          r <- filteredResources3
-          t <- tags
-          if r.tags.contains(t.trim)
-        } yield {
-          r
-        }
-      }
-      // tags param was not mentioned in url, return all
-      case None => filteredResources3
-    }
-
-
     val filteredResources5: List[ResourceDocPlus] = nativeParam match {
       case Some(true) => {
         for {
-          r <- filteredResources4
+          r <- allResources
           // apiVersion currently has an extra v which should be removed.
           if (r.implementedBy.version == apiVersion.stripPrefix("v")) // only show endpoints which have been implemented in this version.
         } yield {
@@ -577,28 +526,24 @@ WIP to add comments on resource docs. This code copied from Sofit.
       }
        case Some(false) => {
           for {
-            r <- filteredResources4
+            r <- allResources
             // TODO apiVersion for OBP currently has an extra v which should be removed.
             if (r.implementedBy.version != apiVersion.stripPrefix("v")) // the opposite case
           } yield {
             r
           }
       }
-      case _ => filteredResources4 // No preference (default) just return everything.
+      case _ => allResources // No preference (default) just return everything.
     }
 
 
     val resourcesToUse = filteredResources5.toSet.toList
 
     logger.debug(s"allResources count is ${allResources.length}")
-    logger.debug(s"filteredResources1 count is ${filteredResources1.length}")
-    logger.debug(s"filteredResources2 count is ${filteredResources2.length}")
-    logger.debug(s"filteredResources3 count is ${filteredResources3.length}")
-    logger.debug(s"filteredResources4 count is ${filteredResources4.length}")
     logger.debug(s"resourcesToUse count is ${resourcesToUse.length}")
 
 
-    if (filteredResources4.length > 0 && resourcesToUse.length == 0) {
+    if (allResources.length > 0 && resourcesToUse.length == 0) {
       logger.info("tags filter reduced the list of resource docs to zero")
     }
 
@@ -1423,7 +1368,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   private lazy val shownVersionNamesInMainPage: Set[String] = {
     val shownLinks =  Props.get("main.included.links") match {
       case Full(v) if(v.trim.size > 0) => v.trim
-      case _ => "OBP_PSD2, OBP_3.1.0"
+      case _ => "OBP_PSD2, OBP_3.1.0, OBP_4.0.0"
     }
 
     shownLinks.split("""\s*,\s*""")
@@ -1437,7 +1382,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   private def shownVersions(): CssSel = {
     val requestUrl = S.uri.replaceFirst("""/?\?.*""", "") // remove request param part: /?param=.. or ?param=...
     requestUrl match {
-      case "/" if(shownVersionNamesInMainPage.nonEmpty)=> shownVersionNamesInMainPage
+      case "/"| "/index" if(shownVersionNamesInMainPage.nonEmpty)=> shownVersionNamesInMainPage
         .map(id => s"#$id [style]" #> "").reduce( _ & _)
       case _  => "#notExists_this_is_just_do_nothing" #> "" // a placeholder of do nothing
     }

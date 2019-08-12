@@ -89,4 +89,4 @@ ssl_keystore_password=test1234
 ssl_key_password=test1234
 
 # a list of version names those are shown in the main page, split with ,
-#main.included.links=OBP_PSD2, OBP_3.1.0
+#main.included.links=OBP_PSD2, OBP_3.1.0, OBP_4.0.0
