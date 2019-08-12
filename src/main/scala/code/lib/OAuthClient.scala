@@ -70,7 +70,7 @@ trait DefaultProvider extends Provider with MdcLoggable {
   val name = "The Open Bank Project Demo"
   
   // val baseUrl = Props.get("oauth_1.hostname").getOrElse(Props.get("api_hostname", S.hostName))
-  val baseUrl = Props.get("oauth_1.hostname") match {
+  val oauthBaseUrl = Props.get("oauth_1.hostname") match {
     case Full(v) =>
       v
     case _ =>
@@ -84,11 +84,13 @@ trait DefaultProvider extends Provider with MdcLoggable {
         S.hostName
     }
   }
+  // To link to API home page (this is duplicated in OAuthClient)
+  val baseUrl = Props.get("api_hostname", S.hostName)
   val apiBaseUrl = baseUrl + "" // Was "/obp"
-  val requestTokenUrl = baseUrl + "/oauth/initiate"
-  val accessTokenUrl = baseUrl + "/oauth/token"
-  val authorizeUrl = baseUrl + "/oauth/authorize"
-  val signupUrl = Some(baseUrl + "/user_mgt/sign_up")
+  val requestTokenUrl = oauthBaseUrl + "/oauth/initiate"
+  val accessTokenUrl = oauthBaseUrl + "/oauth/token"
+  val authorizeUrl = oauthBaseUrl + "/oauth/authorize"
+  val signupUrl = Some(oauthBaseUrl + "/user_mgt/sign_up")
 
   lazy val oAuthProvider : OAuthProvider = new DefaultOAuthProvider(requestTokenUrl, accessTokenUrl, authorizeUrl)
 
@@ -103,9 +105,9 @@ object AddBankAccountProvider extends DefaultProvider {
 
   //The "login" prefix before /oauth means that we will use the oauth flow that will ask the user
   //to connect a bank account
-  override val requestTokenUrl = baseUrl + "/login/oauth/initiate"
-  override val accessTokenUrl = baseUrl + "/login/oauth/token"
-  override val authorizeUrl = baseUrl + "/login/oauth/authorize"
+  override val requestTokenUrl = oauthBaseUrl + "/login/oauth/initiate"
+  override val accessTokenUrl = oauthBaseUrl + "/login/oauth/token"
+  override val authorizeUrl = oauthBaseUrl + "/login/oauth/authorize"
 }
 
 case class Consumer(consumerKey : String, consumerSecret : String) {
