@@ -124,7 +124,7 @@ class Boot extends MdcLoggable{
       firstChoicePropsDir.toList.flatten ::: secondChoicePropsDir.toList.flatten
     }
 
-    if(Props.get("defaultAuthProvider").isEmpty) {
+    if(Helper.getPropsValue("defaultAuthProvider").isEmpty) {
       throw new Exception("defaultAuthProvider must be specified in the props file!")
     }
 
