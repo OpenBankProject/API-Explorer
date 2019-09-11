@@ -1284,13 +1284,13 @@ a.end-point-anchor {
   #logo-left {visibility: hidden;}
   #logo-right {visibility: visible;}
 }
- 
-@media only screen and (max-width: 450px) {
+/*iPhone 6/7/8 Plus*/
+@media only screen and (max-width: 414px) {
   #left_side {visibility: collapse;}
-  .content-box__info-box {max-width: 400px;}
-  .content-box__input-box {max-width: 400px;}
-  .content-box__right-box {max-width: 400px;}
-  .content-box__text-box {max-width: 400px;}
+  .content-box__info-box {max-width: 390px;}
+  .content-box__input-box {max-width: 390px;}
+  .content-box__right-box {max-width: 390px;}
+  .content-box__text-box {max-width: 390px;}
   .container {margin-left: 0px;}
   .option-section {display: none;}
   .default-button {left: 75%;}
@@ -1300,7 +1300,7 @@ a.end-point-anchor {
   #logo-left {visibility: hidden;}
   #logo-right {visibility: visible;}
 } 
-
+/*iPhone 6/7/8*/
 @media only screen and (max-width: 375px) {
   #left_side {visibility: collapse;}
   .content-box__info-box {max-width: 350px;}
