@@ -98,7 +98,7 @@ trait DefaultProvider extends Provider with MdcLoggable {
   val consumerSecret = Helper.getPropsValue("obp_secret_key", "")
 }
 
-object OBPDemo extends DefaultProvider
+object OBPProvider extends DefaultProvider
 
 object AddBankAccountProvider extends DefaultProvider {
   override val name = "The Open Bank Project Demo - Add Bank Account"
@@ -126,7 +126,7 @@ object OAuthClient extends MdcLoggable {
   }
 
   def currentApiBaseUrl : String = {
-    getAuthorizedCredential().map(_.provider.apiBaseUrl).getOrElse(OBPDemo.apiBaseUrl)
+    getAuthorizedCredential().map(_.provider.apiBaseUrl).getOrElse(OBPProvider.apiBaseUrl)
   }
 
   def setNewCredential(provider : Provider) : Credential = {
@@ -160,7 +160,7 @@ object OAuthClient extends MdcLoggable {
   }
 
   def redirectToOauthLogin() = {
-    redirect(OBPDemo)
+    redirect(OBPProvider)
   }
 
   private def redirect(provider : Provider) = {

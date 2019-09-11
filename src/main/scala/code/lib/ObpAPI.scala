@@ -260,7 +260,7 @@ object OBPInternalRequest extends MdcLoggable {
   def apply(apiPath : String, jsonBody : Option[JValue], method : String, headers : List[Header]) : Box[(Int, String)] = {
     val statusAndBody = tryo {
       val credentials = OAuthClient.getAuthorizedCredential
-      val apiUrl = OBPDemo.oauthBaseUrl
+      val apiUrl = OBPProvider.oauthBaseUrl
       val url = new URL(apiUrl + apiPath)
       //bleh
       val request = url.openConnection().asInstanceOf[HttpURLConnection] //blagh!
