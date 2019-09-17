@@ -41,6 +41,7 @@ a img {
 
 .header .logo-box {
   float: left;
+  padding: 7px 0 8px 0px;
 }
 .header .logo-box__link {
   display: block;
@@ -1224,8 +1225,8 @@ a.end-point-anchor {
   .default-input {max-width: 75%;}
   .version_path {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
-  #logo-left {visibility: hidden;}
-  #logo-right {visibility: visible;}
+  #logo-left {visibility: visible;}
+  #logo-right {visibility: hidden;}
 } 
 @media only screen and (max-width: 800px) {
   #left_side {visibility: collapse;}
@@ -1239,8 +1240,8 @@ a.end-point-anchor {
   .default-input {max-width: 75%;}
   .version_path {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
-  #logo-left {visibility: hidden;}
-  #logo-right {visibility: visible;}
+  #logo-left {visibility: visible;}
+  #logo-right {visibility: hidden;}
 }  
 @media only screen and (max-width: 700px) {
   #left_side {visibility: collapse;}
@@ -1254,8 +1255,8 @@ a.end-point-anchor {
   .default-input {max-width: 75%;}
   .version_path {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
-  #logo-left {visibility: hidden;}
-  #logo-right {visibility: visible;}
+  #logo-left {visibility: visible;}
+  #logo-right {visibility: hidden;}
 } 
 @media only screen and (max-width: 600px) {
   #left_side {visibility: collapse;}
@@ -1269,8 +1270,9 @@ a.end-point-anchor {
   .default-input {max-width: 70%;}
   .version_path {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
-  #logo-left {visibility: hidden;}
-  #logo-right {visibility: visible;}
+  .header .site-title-box__text {visibility: hidden;}
+  #logo-left {visibility: visible;}
+  #logo-right {visibility: hidden;}
 } 
 @media only screen and (max-width: 500px) {
   #left_side {visibility: collapse;}
@@ -1284,8 +1286,9 @@ a.end-point-anchor {
   .default-input {max-width: 65%;}
   .version_path {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
-  #logo-left {visibility: hidden;}
-  #logo-right {visibility: visible;}
+  .header .site-title-box__text {visibility: hidden;}
+  #logo-left {visibility: visible;}
+  #logo-right {visibility: hidden;}
 }
 /*iPhone 6/7/8 Plus*/
 @media only screen and (max-width: 414px) {
@@ -1300,8 +1303,9 @@ a.end-point-anchor {
   .default-input {max-width: 63%;}
   .version_path {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
-  #logo-left {visibility: hidden;}
-  #logo-right {visibility: visible;}
+  .header .site-title-box__text {visibility: hidden;}
+  #logo-left {visibility: visible;}
+  #logo-right {visibility: hidden;}
 } 
 /*iPhone 6/7/8*/
 @media only screen and (max-width: 375px) {
@@ -1316,7 +1320,8 @@ a.end-point-anchor {
   .default-input {max-width: 57%;}
   .version_path {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
-  #logo-left {visibility: hidden;}
-  #logo-right {visibility: visible;}
+  .header .site-title-box__text {visibility: hidden;}
+  #logo-left {visibility: visible;}
+  #logo-right {visibility: hidden;}
 }
 /*========================================================================== END*/
