@@ -11,7 +11,7 @@
     <name>API Explorer</name>
     <inceptionYear>2015</inceptionYear>
     <properties>
-        <scala.compiler>2.11.8</scala.compiler>
+        <scala.compiler>2.11.12</scala.compiler>
         <scala.version>2.11</scala.version>
         <lift.version>2.6.3</lift.version>
         <!-- Common plugin settings -->
