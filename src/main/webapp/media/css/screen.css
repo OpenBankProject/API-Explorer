@@ -11,8 +11,8 @@
   .default-input {max-width: 82%;}
   .version_path {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
-  #logo-left {visibility: hidden;}
-  #logo-right {visibility: visible;}
+  #logo-left {visibility: visible;}
+  #logo-right {visibility: hidden;}
 }  
 @media only screen and (max-width: 1000px) {
   #left_side {visibility: collapse;}
@@ -26,8 +26,8 @@
   .default-input {max-width: 75%;}
   .version_path {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
-  #logo-left {visibility: hidden;}
-  #logo-right {visibility: visible;}
+  #logo-left {visibility: visible;}
+  #logo-right {visibility: hidden;}
 } 
 @media only screen and (max-width: 900px) {
   #left_side {visibility: collapse;}
