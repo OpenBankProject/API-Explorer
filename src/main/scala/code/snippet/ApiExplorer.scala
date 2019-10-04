@@ -312,7 +312,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   def stringToNodeSeq(html : String) : NodeSeq = {
     Html5.parse(html) match {
-      case Full(html) => html
+      case Full(parsedHtml) =>
+        parsedHtml
+      case _ => 
+        logger.error("Cannot parse HTML:")
+        logger.error(html)
+        NodeSeq.Empty
     }
   }
 
