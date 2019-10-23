@@ -6,7 +6,7 @@ import code.lib.ObpJson._
 import code.lib._
 import code.util.Helper
 import code.util.Helper.MdcLoggable
-import net.liftweb.util.{CssSel, Props}
+import net.liftweb.util.{CssSel, Html5, Props}
 
 import scala.collection.immutable.{List, Nil}
 
@@ -311,7 +311,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
   def stringToNodeSeq(html : String) : NodeSeq = {
-    scala.xml.XML.loadString("<div>" + html + "</div>")
+    Html5.parse(html) match {
+      case Full(parsedHtml) =>
+        parsedHtml
+      case _ => 
+        logger.error("Cannot parse HTML:")
+        logger.error(html)
+        NodeSeq.Empty
+    }
   }
 
 

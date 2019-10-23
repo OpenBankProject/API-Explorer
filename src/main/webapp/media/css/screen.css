@@ -10,6 +10,7 @@
   .default-button {left: 88%;}
   .default-input {max-width: 82%;}
   .version_path {visibility: hidden;}
+  .api_list {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
   #logo-left {visibility: visible;}
   #logo-right {visibility: hidden;}
@@ -25,6 +26,7 @@
   .default-button {left: 85%;}
   .default-input {max-width: 75%;}
   .version_path {visibility: hidden;}
+  .api_list {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
   #logo-left {visibility: visible;}
   #logo-right {visibility: hidden;}
@@ -40,6 +42,7 @@
   .default-button {left: 85%;}
   .default-input {max-width: 75%;}
   .version_path {visibility: hidden;}
+  .api_list {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
   #logo-left {visibility: visible;}
   #logo-right {visibility: hidden;}
@@ -55,6 +58,7 @@
   .default-button {left: 83%;}
   .default-input {max-width: 75%;}
   .version_path {visibility: hidden;}
+  .api_list {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
   #logo-left {visibility: visible;}
   #logo-right {visibility: hidden;}
@@ -70,6 +74,7 @@
   .default-button {left: 83%;}
   .default-input {max-width: 75%;}
   .version_path {visibility: hidden;}
+  .api_list {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
   #logo-left {visibility: visible;}
   #logo-right {visibility: hidden;}
@@ -85,6 +90,7 @@
   .default-button {left: 80%;}
   .default-input {max-width: 70%;}
   .version_path {visibility: hidden;}
+  .api_list {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
   .header .site-title-box__text {visibility: hidden;}
   #logo-left {visibility: visible;}
@@ -101,6 +107,7 @@
   .default-button {left: 75%;}
   .default-input {max-width: 65%;}
   .version_path {visibility: hidden;}
+  .api_list {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
   .header .site-title-box__text {visibility: hidden;}
   #logo-left {visibility: visible;}
@@ -118,6 +125,7 @@
   .default-button {left: 75%;}
   .default-input {max-width: 63%;}
   .version_path {visibility: hidden;}
+  .api_list {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
   .header .site-title-box__text {visibility: hidden;}
   #logo-left {visibility: visible;}
@@ -135,6 +143,7 @@
   .default-button {left: 70%;}
   .default-input {max-width: 57%;}
   .version_path {visibility: hidden;}
+  .api_list {visibility: hidden;}
   .content-box__headline {padding: 50px 0 0 0;}
   .header .site-title-box__text {visibility: hidden;}
   #logo-left {visibility: visible;}
