@@ -311,7 +311,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
   def stringToNodeSeq(html : String) : NodeSeq = {
-    Html5.parse(html) match {
+    val newHtmlString =scala.xml.XML.loadString("<div>" + html + "</div>").toString()
+
+    //Note: `parse` method: We much enclose the div, otherwise only the first element is returned. 
+    Html5.parse(newHtmlString) match {
       case Full(parsedHtml) =>
         parsedHtml
       case _ => 
