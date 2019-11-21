@@ -426,6 +426,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // To link to API home page (this is duplicated in OAuthClient)
     val baseUrl = Helper.getPropsValue("api_hostname", S.hostName)
+    //
+    val apiPortalHostname = Helper.getPropsValue("api_portal_hostname", baseUrl)
 
 
     // Use to show the developer the current base version url
@@ -1205,7 +1207,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "@version_path [href]" #> s"$baseVersionUrl" &
     "@resource_docs_path [href]" #> s"$resourceDocsPath" &
     "@swagger_path [href]" #> s"$swaggerPath" &
-    "#api_home_link [href]" #> s"$baseUrl" &
+    "#api_home_link [href]" #> s"$apiPortalHostname" &
     "@views_box [style]" #> s"display: $displayViews;" &
     "@catalog_description *" #> s"$catalogDescription" &
     // Show / hide featured
