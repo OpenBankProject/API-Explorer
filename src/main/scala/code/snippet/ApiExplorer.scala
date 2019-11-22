@@ -942,7 +942,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       .replace("UKv2.0", "UK 2.0")
       .replace("UKv3.1", "UK 3.1")
       .replace("STETv1.4", "STET 1.4")
-      .replace("PAPIv2.1.1.1", "Polish API 2.1.1.1"),
+      .replace("PAPIv2.1.1.1", "Polish API 2.1.1.1")
+      .replace("AUv1.0.0", "AU CDR v1.0.0"),
       s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
 
