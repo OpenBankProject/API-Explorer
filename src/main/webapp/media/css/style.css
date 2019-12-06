@@ -424,8 +424,9 @@ a img {
 .content-box__text-box {
   float: left;
   left: 0;
-  width: 75%;
+  width: 100%;
   padding: 5px;
+  max-width: 1000px;
 }
 .content-box__text-box p:first-child {
   margin-top: 0;
