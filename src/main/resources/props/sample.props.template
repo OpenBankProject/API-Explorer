@@ -90,3 +90,11 @@ ssl_key_password=test1234
 
 # a list of version names those are shown in the main page, split with ,
 #main.included.links=OBP_PSD2, OBP_3.1.0, OBP_4.0.0
+
+
+### OBP-API mode ############################## 
+# If OBP-API split to two instances, eg: apis,portal
+# Then API_Explorer need to set two api hosts: api_hostname and this api_portal_hostname, for all Rest Apis will call api_hostname
+# but for all the portal home page link, we need to use this props. If do not set this, it will use api_hostname value instead.
+# api_portal_hostname=http://127.0.0.1:8080
+# --------------------------------------------
