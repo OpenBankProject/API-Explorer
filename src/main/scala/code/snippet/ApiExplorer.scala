@@ -438,6 +438,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Link to the API endpoint for the swagger json
     val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?$pureCatalogParams${tagsParamString}"
+    
+    val chineseVersionPath = "?tags=Chinese-Version"
 
 
 
@@ -1208,6 +1210,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "@version_path [href]" #> s"$baseVersionUrl" &
     "@resource_docs_path [href]" #> s"$resourceDocsPath" &
     "@swagger_path [href]" #> s"$swaggerPath" &
+    "@chinese_version_path [href]" #> s"$chineseVersionPath" &
     "#api_home_link [href]" #> s"$apiPortalHostname" &
     "@views_box [style]" #> s"display: $displayViews;" &
     "@catalog_description *" #> s"$catalogDescription" &
