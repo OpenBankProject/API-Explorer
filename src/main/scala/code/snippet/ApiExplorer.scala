@@ -711,8 +711,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     var entitlementRequestRoleName = ""
 
+    def disabledBtn(name: String): JsCmd =  Run (s"setTimeout(function(){jQuery('input[name=$name]').prop('disabled', true);}, 0)")
 
-    def process(): JsCmd = {
+    def process(name: String): JsCmd = {
 
 
       // The DIVS in the DOM have underscores in their names.
@@ -735,6 +736,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val boxTarget = "result_box_" + resourceId
       // This will highlight the json. Replace the $ sign after we've constructed the string
       val jsCommandHighlightResult : String =  s"DOLLAR_SIGN('#$boxTarget').fadeIn();DOLLAR_SIGN('#$resultTarget').each(function(i, block) { hljs.highlightBlock(block);});".replace("DOLLAR_SIGN","$")
+
+      val jsEnabledSubmitBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
 
       val rolesTarget = "roles_" + resourceId
       val rolesboxTarget = "roles_box_" + resourceId
@@ -819,12 +822,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
       Run (jsCommandHideTypicalSuccessResponseBox) &
       Run (jsCommandShowFullPath) &
       Run (jsCommandShowFullHeaders) &
+      Run (jsEnabledSubmitBtn) &
       SetHtml(fullPathTarget, Text(fullPath.toString)) &
       SetHtml(fullHeadersTarget, Text(headers))
     }
 
 
-    def processEntitlementRequest(): JsCmd = {
+    def processEntitlementRequest(name: String): JsCmd = {
       logger.debug(s"processEntitlementRequest entitlementRequestStatus is $entitlementRequestStatus rolesBankId is $rolesBankId")
 
       logger.debug(s"processEntitlementRequest  says resourceId is $resourceId")
@@ -866,7 +870,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // call url and put the response into the appropriate result div
       // SetHtml accepts an id and value
       SetHtml(entitlementRequestResponseStatusId, Text(result))
-
+      // enable button
+      val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
+      Run (jsEnabledBtn)
     }
 
 
@@ -1303,7 +1309,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         "@roles__bank_id_input" #> SHtml.text({if (r.requiresBankId) rolesBankId else ""}, rolesBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") &
         "@roles__role_input" #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
         "@roles__resource_id_input" #> text(i.id.toString, s => RolesResourceId = s, "type" -> "hidden", "id" -> s"roles__resource_id_input_${i.id}") &
-        "@roles__request_entitlement_button" #> ajaxSubmit("Request", processEntitlementRequest) &
+        "@roles__request_entitlement_button" #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
         "@roles__entitlement_request_response [id]" #> s"roles__entitlement_request_response_${i.id}_${r.role}" &
         "@roles__entitlement_request_button_box [style]" #> { if (! isLoggedIn || r.userHasEntitlement || r.userHasEntitlementRequest)
             s"display: none"
@@ -1317,7 +1323,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // Replace the type=submit with Javascript that makes the ajax call.
        "@success_response_body [id]" #> s"success_response_body_${i.id}" &
       // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
-      "@call_button" #> ajaxSubmit(i.verb, process) &
+        "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
       ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}"
     }
   }
