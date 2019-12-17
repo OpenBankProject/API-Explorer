@@ -2,11 +2,16 @@ package code.util
 
 import code.lib.ObpAPI._
 import code.lib.ObpJson.AccountJson
-import code.util.Branding.{activeBrand}
+import code.util.Branding.activeBrand
 import net.liftweb.common._
-import net.liftweb.http.S
+import net.liftweb.http.SHtml.ElemAttr
+import net.liftweb.http.S.addFunctionMap
+import net.liftweb.http.js.JsCmd
 import net.liftweb.util.Helpers.{asLong, toBoolean, toInt, tryo}
-import net.liftweb.util.Props
+import net.liftweb.util.{Helpers, Props}
+
+import scala.xml.{Elem, MetaData, Null, Text, UnprefixedAttribute}
+import net.liftweb.util.Helpers.pairToUnprefixed
 
 
 object Helper {
@@ -121,5 +126,25 @@ Returns a string which can be used for the title of the account
     getPropsAsLongValue(nameOfProperty) openOr(defaultValue)
   }
 
-  
+  /**
+   * Constructs an Ajax submit button that can be used inside ajax forms.
+   * Multiple buttons can be used in the same form.
+   * Note:
+   * This is enhancement of method net.liftweb.http.SHtml#ajaxSubmit
+   *
+   * @param value - the button text
+   * @param before - the function to be called before ajax function, single String param is name of input
+   * @param func - the ajax function to be called, single String param is name of input
+   * @param attrs - button attributes
+   *
+   */
+  def ajaxSubmit(value: String, before: String => JsCmd, func: String => JsCmd, attrs: ElemAttr*): Elem = {
+    val funcName = "z" + Helpers.nextFuncName
+
+    addFunctionMap(funcName, ()=>func(funcName))
+    (attrs.foldLeft(<input type="submit" name={funcName}/>)(_ % _)) %
+      new UnprefixedAttribute("value", Text(value), Null) %
+      ("onclick" -> (s"${before(funcName).toJsCmd}; liftAjax.lift_uriSuffix = '$funcName=_'; return true;"))
+
+  }
 }
