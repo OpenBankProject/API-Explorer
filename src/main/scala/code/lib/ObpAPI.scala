@@ -875,7 +875,8 @@ object ObpJson {
                              roles: List[RoleJson],
                              is_featured: Boolean,
                              special_instructions: String,
-                             specified_url: String // This is the URL that we want people to call.
+                             specified_url: String, // This is the URL that we want people to call.
+                             connector_methods: List[String]
                             )
 
   case class ResourceDocsJson (resource_docs : List[ResourceDocJson])
@@ -928,7 +929,9 @@ object ObpJson {
                              tags: List[String],
                              roleInfos: List[RoleInfo],
                              isFeatured: Boolean,
-                             specialInstructions: NodeSeq)
+                             specialInstructions: NodeSeq,
+                             connector_methods: List[String]
+  )
 
 
   case class ResourceDocs (resourceDocs : List[ResourceDocPlus])

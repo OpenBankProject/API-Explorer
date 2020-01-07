@@ -499,6 +499,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       example_request_body = r.example_request_body,
       success_response_body = r.success_response_body,
       error_response_bodies = r.error_response_bodies,
+      connector_methods = r.connector_methods,
       implementedBy = ImplementedBy(r.implemented_by.version, r.implemented_by.function),
       isCore = r.is_core,
       isPSD2 = r.is_psd2,
@@ -780,10 +781,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // The id of the possible error responses box we want to hide after calling the API
       val possibleErrorResponsesBoxTarget = "possible_error_responses_box_" + resourceId
 
+      // The id of the possible error responses box we want to hide after calling the API
+      val connectorMethodsBoxTarget = "connector_methods_box_" + resourceId
+
       // The id of the roles responses box we want to hide after calling the API
       val requestRolesResponsesBoxTarget = "required_roles_response_box_" + resourceId
       // The javascript to hide it.
       val jsCommandHidePossibleErrorResponsesBox : String =  s"DOLLAR_SIGN('#$possibleErrorResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
+      val jsCommandHideConnectorMethodsBoxTarget : String =  s"DOLLAR_SIGN('#$connectorMethodsBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
 
       val jsCommandHideRequestRolesResponsesBox : String =  s"DOLLAR_SIGN('#$requestRolesResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
 
@@ -849,6 +854,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       Run (jsCommandHighlightResult) &
       //Run (jsCommandHighlightRolesResult) &
       Run (jsCommandHidePossibleErrorResponsesBox) &
+      Run (jsCommandHideConnectorMethodsBoxTarget) &
       Run (jsCommandHideRequestRolesResponsesBox) &
       Run (jsCommandHideTypicalSuccessResponseBox) &
       Run (jsCommandShowFullPath) &
@@ -1317,6 +1323,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // This class gets a list of several possible error reponse items
       ".possible_error_item" #> i.error_response_bodies.map { i =>
           ".possible_error_item *" #> i
+      } &
+      "@connector_methods_box [id]" #> s"connector_methods_box_${i.id}" &
+      // This class gets a list of connector methods
+      ".connector_method_item" #> i.connector_methods.map { i =>
+        ".connector_method_item *" #> i
       } &
       //required roles and related user information
       "@roles_box [id]" #> s"roles_box_${i.id}" &

@@ -615,6 +615,10 @@ a img {
 .possible_error_item {
 	max-width: 800px; /* ugly hack */
 }
+
+.connector_method_item {
+  max-width: 800px; /* ugly hack */
+}
 /*
 .content-box__info-box span:nth-child(n+2) {
   padding-left: 10px;
