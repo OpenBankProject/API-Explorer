@@ -499,7 +499,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       example_request_body = r.example_request_body,
       success_response_body = r.success_response_body,
       error_response_bodies = r.error_response_bodies,
-      connector_methods = r.connector_methods,
+      connector_methods = List("obp.getBank","obp.getBanks") ,
       implementedBy = ImplementedBy(r.implemented_by.version, r.implemented_by.function),
       isCore = r.is_core,
       isPSD2 = r.is_psd2,

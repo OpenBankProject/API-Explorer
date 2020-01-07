@@ -876,7 +876,7 @@ object ObpJson {
                              is_featured: Boolean,
                              special_instructions: String,
                              specified_url: String, // This is the URL that we want people to call.
-                             connector_methods: List[String]
+                             connector_methods: List[String] = List("obp.getBank","obp.getBanks")
                             )
 
   case class ResourceDocsJson (resource_docs : List[ResourceDocJson])
