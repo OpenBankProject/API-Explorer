@@ -1326,8 +1326,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
       } &
       "@connector_methods_box [id]" #> s"connector_methods_box_${i.id}" &
       // This class gets a list of connector methods
-      ".connector_method_item" #> i.connector_methods.map { i =>
-        ".connector_method_item *" #> i
+      ".connector_method_item" #> i.connector_methods.map { i=>
+        // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
+        ".connector_method_item_link [href]" #> s"message-docs?connector=rest_vMar2019#${urlEncode(i.replaceAll(" ", "-"))}" &
+          ".connector_method_item_link *" #> i
       } &
       //required roles and related user information
       "@roles_box [id]" #> s"roles_box_${i.id}" &
