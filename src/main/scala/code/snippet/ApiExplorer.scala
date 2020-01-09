@@ -226,15 +226,15 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   logger.info(s"rawTagsParam is $rawTagsParam")
 
-  val ramLanguageParam = S.param("language")
+  val rawLanguageParam = S.param("language")
 
-  logger.info(s"ramLanguageParam is $ramLanguageParam")
+  logger.info(s"rawLanguageParam is $rawLanguageParam")
   
   val tagsParamString = "&tags=" + rawTagsParam.mkString(",")
 
   logger.info(s"tagsParamString is $rawTagsParam")
 
-  val languagesParamString = "&language=" + ramLanguageParam.mkString(",")
+  val languagesParamString = "&language=" + rawLanguageParam.mkString(",")
 
   logger.info(s"languagesParamString is $languagesParamString")
   
@@ -260,7 +260,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     case _ => ""
   }
 
-  val languageHeadline : String = ramLanguageParam match {
+  val languageHeadline : String = rawLanguageParam match {
     case Full(x) => x
     case _ => ""
   }
@@ -500,12 +500,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
       success_response_body = r.success_response_body,
       error_response_bodies = r.error_response_bodies,
       connector_methods = r.connector_methods,
-      implementedBy = ImplementedBy(r.implemented_by.version, r.implemented_by.function),
-      isCore = r.is_core,
-      isPSD2 = r.is_psd2,
-      isOBWG = r.is_obwg,
+      implemented_by = ImplementedBy(r.implemented_by.version, r.implemented_by.function),
+      is_core = r.is_core,
+      is_psd2 = r.is_psd2,
+      is_obwg = r.is_obwg,
       tags = r.tags,
-      roleInfos = r.roles.map(i => RoleInfo(role = i.role,
+      role_infos = r.roles.map(i => RoleInfo(role = i.role,
                                             requiresBankId = i.requires_bank_id,
                                             userHasEntitlement = {
                                               val result: Boolean = isLoggedIn match {
@@ -538,8 +538,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
                                               result
                                             }
                                               )),
-    isFeatured = r.is_featured,
-    specialInstructions = stringToNodeSeq(r.special_instructions)
+    is_featured = r.is_featured,
+    special_instructions = stringToNodeSeq(r.special_instructions)
     )
 
 
@@ -548,7 +548,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         for {
           r <- allResources
           // apiVersion currently has an extra v which should be removed.
-          if (r.implementedBy.version == apiVersion.stripPrefix("v")) // only show endpoints which have been implemented in this version.
+          if (r.implemented_by.version == apiVersion.stripPrefix("v")) // only show endpoints which have been implemented in this version.
         } yield {
           r
         }
@@ -557,7 +557,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           for {
             r <- allResources
             // TODO apiVersion for OBP currently has an extra v which should be removed.
-            if (r.implementedBy.version != apiVersion.stripPrefix("v")) // the opposite case
+            if (r.implemented_by.version != apiVersion.stripPrefix("v")) // the opposite case
           } yield {
             r
           }
@@ -589,7 +589,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     // Featured /////
-    val featuredResources = resources.filter(r => r.isFeatured == true)
+    val featuredResources = resources.filter(r => r.is_featured == true)
     // Group resources by the first tag
     val unsortedFeaturedGroupedResources: Map[String, List[ResourceDocPlus]] = featuredResources.groupBy(_.tags.headOr("ToTag"))
     // Sort the groups by the Tag. Note in the rendering we sort the resources by summary.
@@ -597,7 +597,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     /////////////////
 
     // The list generated here might be used by an administrator as a white or black list of API calls for the API itself.
-    val commaSeparatedListOfResources = resources.map(_.implementedBy.function).mkString("[", ", ", "]")
+    val commaSeparatedListOfResources = resources.map(_.implemented_by.function).mkString("[", ", ", "]")
 
 
     // Headline and Description of the search
@@ -1295,7 +1295,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       ".content-box__headline [id]" #> i.id & // id for the anchor to find
       // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
       "@description *" #> i.description &
-      "@special_instructions *" #> i.specialInstructions &
+      "@special_instructions *" #> i.special_instructions &
       "@resource_description [id]" #> s"description_${i.id}" &
       ".url_caller [id]" #> s"url_caller_${i.id}" &
       "@result [id]" #> s"result_${i.id}" &
@@ -1333,13 +1333,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
       } &
       //required roles and related user information
       "@roles_box [id]" #> s"roles_box_${i.id}" &
-      "@roles_box [style]" #> { if (i.roleInfos.isEmpty)
+      "@roles_box [style]" #> { if (i.role_infos.isEmpty)
           s"display: none"
         else
           s"display: block"
         } &
       // We generate mulutiple .role_items from roleInfos (including the form defined in index.html)
-      ".role_item" #> i.roleInfos.map { r =>
+      ".role_item" #> i.role_infos.map { r =>
         "@roles__status" #> {if (! isLoggedIn)
                               s" - Please login to request this Role"
                             else if  (r.userHasEntitlement)
@@ -1369,7 +1369,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
        "@success_response_body [id]" #> s"success_response_body_${i.id}" &
       // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
         "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
-      ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}"
+      ".content-box__available-since *" #> s"Implemented in ${i.implemented_by.version} by ${i.implemented_by.function}"
     }
   }
 

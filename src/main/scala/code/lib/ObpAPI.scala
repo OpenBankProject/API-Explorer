@@ -922,14 +922,14 @@ object ObpJson {
                              example_request_body: JValue,
                              success_response_body: JValue,
                              error_response_bodies: List[String],
-                             implementedBy: ImplementedBy,
-                             isCore: Boolean,
-                             isPSD2: Boolean,
-                             isOBWG: Boolean,
+                             implemented_by: ImplementedBy,
+                             is_core: Boolean,
+                             is_psd2: Boolean,
+                             is_obwg: Boolean,
                              tags: List[String],
-                             roleInfos: List[RoleInfo],
-                             isFeatured: Boolean,
-                             specialInstructions: NodeSeq,
+                             role_infos: List[RoleInfo],
+                             is_featured: Boolean,
+                             special_instructions: NodeSeq,
                              connector_methods: List[String]
   )
 
