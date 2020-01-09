@@ -711,7 +711,23 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     var entitlementRequestRoleName = ""
 
-    def disabledBtn(name: String): JsCmd =  Run (s"setTimeout(function(){jQuery('input[name=$name]').prop('disabled', true);}, 0)")
+    // disabled button
+    // enabled button if no response after 28 seconds, http2 protocol ideal timeout is 30 seconds
+    def disabledBtn(name: String): JsCmd =  {
+      val jsCode = s"""
+                     |var timestamp = new Date().getTime();
+                     |var btn = jQuery('input[name=$name]');
+                     |setTimeout(function(){
+                     |        btn.prop('lastClickTime', timestamp).prop('disabled', true);
+                     |}, 0);
+                     |setTimeout(function() {
+                     |    if(btn.prop('lastClickTime') === timestamp){
+                     |        btn.removeAttr('disabled');
+                     |    }
+                     |}, 28*1000)
+                     |""".stripMargin.replaceAll("""[\r\n\s]+""", " ")
+      Run (jsCode)
+    }
 
     def process(name: String): JsCmd = {
 
