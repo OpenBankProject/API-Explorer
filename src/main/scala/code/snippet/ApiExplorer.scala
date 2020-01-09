@@ -225,10 +225,18 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val rawTagsParam = S.param("tags")
 
   logger.info(s"rawTagsParam is $rawTagsParam")
+
+  val ramLanguageParam = S.param("language")
+
+  logger.info(s"ramLanguageParam is $ramLanguageParam")
   
   val tagsParamString = "&tags=" + rawTagsParam.mkString(",")
 
   logger.info(s"tagsParamString is $rawTagsParam")
+
+  val languagesParamString = "&language=" + ramLanguageParam.mkString(",")
+
+  logger.info(s"languagesParamString is $languagesParamString")
   
   val tagsParam: Option[List[String]] = rawTagsParam match {
     // if tags= is supplied in the url we want to ignore it
@@ -249,6 +257,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   val tagsHeadline : String = tagsParam match {
     case Some(x) => "filtered by tag: " + x.mkString(", ")
+    case _ => ""
+  }
+
+  val languageHeadline : String = ramLanguageParam match {
+    case Full(x) => x
     case _ => ""
   }
 
@@ -434,10 +447,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}"
 
     // Link to the API endpoint for the resource docs json TODO change apiVersion so it doesn't have a "v" prefix
-    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?$pureCatalogParams${tagsParamString}"
+    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?$pureCatalogParams${tagsParamString}${languagesParamString}"
 
     // Link to the API endpoint for the swagger json
-    val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?$pureCatalogParams${tagsParamString}"
+    val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?$pureCatalogParams${tagsParamString}${languagesParamString}"
+    
+    val chineseVersionPath = "?language=zh"
 
 
 
@@ -484,6 +499,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       example_request_body = r.example_request_body,
       success_response_body = r.success_response_body,
       error_response_bodies = r.error_response_bodies,
+      connector_methods = r.connector_methods,
       implementedBy = ImplementedBy(r.implemented_by.version, r.implemented_by.function),
       isCore = r.is_core,
       isPSD2 = r.is_psd2,
@@ -634,7 +650,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val headline : String = s"""
       $catalogHeadline
       ${apiVersionRequested.stripPrefix("OBP").stripPrefix("BG").stripPrefix("STET").stripPrefix("UK")}
-      $tagsHeadline $implementedHereHeadline (${resources.length} APIs)
+      $tagsHeadline $languageHeadline $implementedHereHeadline (${resources.length} APIs)
       """.trim()
 
 
@@ -765,10 +781,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // The id of the possible error responses box we want to hide after calling the API
       val possibleErrorResponsesBoxTarget = "possible_error_responses_box_" + resourceId
 
+      // The id of the possible error responses box we want to hide after calling the API
+      val connectorMethodsBoxTarget = "connector_methods_box_" + resourceId
+
       // The id of the roles responses box we want to hide after calling the API
       val requestRolesResponsesBoxTarget = "required_roles_response_box_" + resourceId
       // The javascript to hide it.
       val jsCommandHidePossibleErrorResponsesBox : String =  s"DOLLAR_SIGN('#$possibleErrorResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
+      val jsCommandHideConnectorMethodsBoxTarget : String =  s"DOLLAR_SIGN('#$connectorMethodsBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
 
       val jsCommandHideRequestRolesResponsesBox : String =  s"DOLLAR_SIGN('#$requestRolesResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
 
@@ -834,6 +854,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       Run (jsCommandHighlightResult) &
       //Run (jsCommandHighlightRolesResult) &
       Run (jsCommandHidePossibleErrorResponsesBox) &
+      Run (jsCommandHideConnectorMethodsBoxTarget) &
       Run (jsCommandHideRequestRolesResponsesBox) &
       Run (jsCommandHideTypicalSuccessResponseBox) &
       Run (jsCommandShowFullPath) &
@@ -944,7 +965,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
 
-    val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${catalogParams}${tagsParamString}"
+    val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${catalogParams}${tagsParamString}${languagesParamString}"
 
 
     // Create a list of (version, url) used to populate the versions whilst preserving the other parameters
@@ -1230,6 +1251,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "@version_path [href]" #> s"$baseVersionUrl" &
     "@resource_docs_path [href]" #> s"$resourceDocsPath" &
     "@swagger_path [href]" #> s"$swaggerPath" &
+    "@chinese_version_path [href]" #> s"$chineseVersionPath" &
     "#api_home_link [href]" #> s"$apiPortalHostname" &
     "@views_box [style]" #> s"display: $displayViews;" &
     "@catalog_description *" #> s"$catalogDescription" &
@@ -1301,6 +1323,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // This class gets a list of several possible error reponse items
       ".possible_error_item" #> i.error_response_bodies.map { i =>
           ".possible_error_item *" #> i
+      } &
+      "@connector_methods_box [id]" #> s"connector_methods_box_${i.id}" &
+      // This class gets a list of connector methods
+      ".connector_method_item" #> i.connector_methods.map { i=>
+        // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
+        ".connector_method_item_link [href]" #> s"message-docs?connector=rest_vMar2019#${urlEncode(i.replaceAll(" ", "-"))}" &
+          ".connector_method_item_link *" #> i
       } &
       //required roles and related user information
       "@roles_box [id]" #> s"roles_box_${i.id}" &

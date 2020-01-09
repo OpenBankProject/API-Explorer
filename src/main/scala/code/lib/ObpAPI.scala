@@ -151,7 +151,7 @@ object ObpAPI extends Loggable {
 
   // Returns Json containing Resource Docs
   def getResourceDocsJson(apiVersion : String) : Box[ResourceDocsJson] = {
-    val requestParams = List("core", "psd2", "obwg", "tags")
+    val requestParams = List("core", "psd2", "obwg", "tags", "language")
         .map(paramName => (paramName, S.param(paramName)))
         .collect{
           case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -875,7 +875,8 @@ object ObpJson {
                              roles: List[RoleJson],
                              is_featured: Boolean,
                              special_instructions: String,
-                             specified_url: String // This is the URL that we want people to call.
+                             specified_url: String, // This is the URL that we want people to call.
+                             connector_methods: List[String]
                             )
 
   case class ResourceDocsJson (resource_docs : List[ResourceDocJson])
@@ -928,7 +929,9 @@ object ObpJson {
                              tags: List[String],
                              roleInfos: List[RoleInfo],
                              isFeatured: Boolean,
-                             specialInstructions: NodeSeq)
+                             specialInstructions: NodeSeq,
+                             connector_methods: List[String]
+  )
 
 
   case class ResourceDocs (resourceDocs : List[ResourceDocPlus])
