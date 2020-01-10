@@ -919,18 +919,18 @@ object ObpJson {
                              url: String,
                              summary: String,
                              description: NodeSeq,
-                             example_request_body: JValue,
-                             success_response_body: JValue,
-                             error_response_bodies: List[String],
-                             implemented_by: ImplementedBy,
-                             is_core: Boolean,
-                             is_psd2: Boolean,
-                             is_obwg: Boolean,
+                             exampleRequestBody: JValue,
+                             successResponseBody: JValue,
+                             errorResponseBodies: List[String],
+                             implementedBy: ImplementedBy,
+                             isCore: Boolean,
+                             isPSD2: Boolean,
+                             isOBWG: Boolean,
                              tags: List[String],
-                             role_infos: List[RoleInfo],
-                             is_featured: Boolean,
-                             special_instructions: NodeSeq,
-                             connector_methods: List[String]
+                             roleInfos: List[RoleInfo],
+                             isFeatured: Boolean,
+                             specialInstructions: NodeSeq,
+                             connectorMethods: List[String]
   )
 
 
