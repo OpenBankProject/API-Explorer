@@ -962,7 +962,8 @@ case class MessageDocJsonV220(
                            example_inbound_message: JValue,
                            outboundAvroSchema: Option[JValue] = None,
                            inboundAvroSchema: Option[JValue] = None,
-                           adapter_implementation : AdapterImplementationJson220
+                           adapter_implementation : AdapterImplementationJson220,
+                           requiredFieldInfo: Option[JValue] = None
                          )
 
 case class MessageDocsJsonV220 (message_docs: List[MessageDocJsonV220])

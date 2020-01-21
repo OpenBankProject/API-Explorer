@@ -1444,7 +1444,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".inbound-topic *" #> stringToNodeSeq(i.inbound_topic.getOrElse("")) &
         ".outbound-message *" #> stringToNodeSeq(pretty(render(i.example_outbound_message))) &
         ".inbound-message *" #> stringToNodeSeq(pretty(render(i.example_inbound_message))) &
-        ".description *" #> stringToNodeSeq((i.description))
+        ".description *" #> stringToNodeSeq((i.description)) &
+        ".inbound-required-fields *" #> stringToNodeSeq(pretty(render(i.requiredFieldInfo.getOrElse(JNothing))))
     }
       }
 
