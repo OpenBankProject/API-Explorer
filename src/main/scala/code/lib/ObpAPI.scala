@@ -380,8 +380,13 @@ object ObpDeleteWithHeader {
 
 object ObpGet {
   def apply(apiPath: String, headers : List[Header] = Nil): Box[JValue] = {
-    OBPRequest(apiPath, None, "GET", headers).flatMap {
-      case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+    // the bankId is blank
+    if(apiPath.contains("/banks//")) {
+      Empty
+    } else {
+      OBPRequest(apiPath, None, "GET", headers).flatMap {
+        case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+      }
     }
   }
 }
