@@ -458,6 +458,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     val entitlementsForCurrentUser = getEntitlementsForCurrentUser
     logger.info(s"there are ${entitlementsForCurrentUser.length} entitlementsForCurrentUser(s)")
+    
+    val hasTheCanReadResourceDocRole = entitlementsForCurrentUser.map(_.roleName).contains("CanReadResourceDoc")
 
 
     val userEntitlementRequests = getUserEntitlementRequests
@@ -1288,88 +1290,104 @@ WIP to add comments on resource docs. This code copied from Sofit.
     ".comma_separated_api_call_list *" #> commaSeparatedListOfResources &
       // replace the node identified by the class "resource" with the following
       // This creates the list of resources in the DOM
-    ".resource" #> resources.map { i =>
-      // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-      ".end-point-anchor [href]" #> s"#${i.id}" &
-      ".content-box__headline *" #> i.summary &
-      ".content-box__headline [id]" #> i.id & // id for the anchor to find
-      // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
-      "@description *" #> i.description &
-      "@special_instructions *" #> i.specialInstructions &
-      "@resource_description [id]" #> s"description_${i.id}" &
-      ".url_caller [id]" #> s"url_caller_${i.id}" &
-      "@result [id]" #> s"result_${i.id}" &
-      "@result_box [id]" #> s"result_box_${i.id}" &
-      "@example_request_body [id]" #> s"example_request_body_${i.id}" &
-      "@example_request_body [style]" #> s"display: ${displayRequestBody(i.verb)};" &
-      //////
-      // The form field (on the left) is bound to the variable (requestUrl)
-      // (However, updating the var here does not seem to update the form field value)
-      // We provide a default value (i.url) and bind the user input to requestUrl. requestURL is available in the function process
-      // text creates a text box and we can capture its input in requestUrl
-      "@request_url_input" #> text(i.url, s => requestUrl = s, "maxlength" -> "512", "size" -> "100", "id" -> s"request_url_input_${i.id}") &
-      "@full_path [id]" #> s"full_path_${i.id}" &
-      "@full_headers [id]" #> s"full_headers_${i.id}" &
-      // Extraction.decompose creates json representation of JObject.
-      "@example_request_body_input" #> text(pretty(render(i.exampleRequestBody)), s => requestBody = s, "maxlength" -> "100000", "size" -> "100", "type" -> "text") &
-      //"@request_body_input" #> textarea((""), s => requestBody = s, "cols" -> "1000", "rows" -> "10","style"->"border:none") &
-      //
-      // Typical Success Response
-      "@typical_success_response_box [id]" #> s"typical_success_response_box_${i.id}" &
-      //"@typical_success_response [id]" #> s"typical_success_response_${i.id}" &
-      "@typical_success_response *" #> pretty(render(i.successResponseBody)) &
-      // Possible Errors
-      "@possible_error_responses_box [id]" #> s"possible_error_responses_box_${i.id}" &
-      // This class gets a list of several possible error reponse items
-      ".possible_error_item" #> i.errorResponseBodies.map { i =>
-          ".possible_error_item *" #> i
-      } &
-      "@connector_methods_box [id]" #> s"connector_methods_box_${i.id}" &
-      // This class gets a list of connector methods
-      ".connector_method_item" #> i.connectorMethods.map { i=>
-        // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-        ".connector_method_item_link [href]" #> s"message-docs?connector=rest_vMar2019#${urlEncode(i.replaceAll(" ", "-"))}" &
-          ".connector_method_item_link *" #> i
-      } &
-      //required roles and related user information
-      "@roles_box [id]" #> s"roles_box_${i.id}" &
-      "@roles_box [style]" #> { if (i.roleInfos.isEmpty)
-          s"display: none"
-        else
-          s"display: block"
-        } &
-      // We generate mulutiple .role_items from roleInfos (including the form defined in index.html)
-      ".role_item" #> i.roleInfos.map { r =>
-        "@roles__status" #> {if (! isLoggedIn)
-                              s" - Please login to request this Role"
-                            else if  (r.userHasEntitlement)
-                              s" - You have this Role."
-                            else if (r.userHasEntitlementRequest)
-                              s" - You have requested this Role."
-                            else
-                              s" - You can request this Role."} &
-        "@roles__role_name" #> s"${r.role}" &
-        // ajaxSubmit will submit the form.
-        // The value of rolesBankId is given to bank_id_input field and the value of bank_id_input entered by user is given back to rolesBankId
-        "@roles__bank_id_input" #> SHtml.text({if (r.requiresBankId) rolesBankId else ""}, rolesBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") &
-        "@roles__role_input" #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
-        "@roles__resource_id_input" #> text(i.id.toString, s => RolesResourceId = s, "type" -> "hidden", "id" -> s"roles__resource_id_input_${i.id}") &
-        "@roles__request_entitlement_button" #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
-        "@roles__entitlement_request_response [id]" #> s"roles__entitlement_request_response_${i.id}_${r.role}" &
-        "@roles__entitlement_request_button_box [style]" #> { if (! isLoggedIn || r.userHasEntitlement || r.userHasEntitlementRequest)
-            s"display: none"
-          else
-            s"display: block"
+    {
+      if(resources.length==0) {
+      ".resource [style]" #> s"display: none" &
+        ".resource-error [style]" #> s"display: block" &
+        ".content-box__headline *" #> {
+          if(!isLoggedIn)//If no resources, first check the login, 
+            "OBP-20001: User not logged in. Authentication is required!"
+          else if(isLoggedIn && !hasTheCanReadResourceDocRole) //Then check the missing role
+            "OBP-20006: User is missing one or more roles: CanReadResourceDoc"     
+          else // all other cases throw the gernal error.
+            "There are no resource docs in the current Sandbox for this request!"
         }
-      } &
-      //
-      "@request_verb_input" #> text(i.verb, s => requestVerb = s, "type" -> "hidden", "id" -> s"request_verb_input_${i.id}") &
-      "@resource_id_input" #> text(i.id.toString, s => resourceId = s, "type" -> "hidden", "id" -> s"resource_id_input_${i.id}") &
-      // Replace the type=submit with Javascript that makes the ajax call.
-       "@success_response_body [id]" #> s"success_response_body_${i.id}" &
-      // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
-        "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
-      ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}"
+      }
+      else {
+        ".resource" #> resources.map { i =>
+          // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
+          ".end-point-anchor [href]" #> s"#${i.id}" &
+          ".content-box__headline *" #> i.summary &
+          ".content-box__headline [id]" #> i.id & // id for the anchor to find
+          // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
+          "@description *" #> i.description &
+          "@special_instructions *" #> i.specialInstructions &
+          "@resource_description [id]" #> s"description_${i.id}" &
+          ".url_caller [id]" #> s"url_caller_${i.id}" &
+          "@result [id]" #> s"result_${i.id}" &
+          "@result_box [id]" #> s"result_box_${i.id}" &
+          "@example_request_body [id]" #> s"example_request_body_${i.id}" &
+          "@example_request_body [style]" #> s"display: ${displayRequestBody(i.verb)};" &
+          //////
+          // The form field (on the left) is bound to the variable (requestUrl)
+          // (However, updating the var here does not seem to update the form field value)
+          // We provide a default value (i.url) and bind the user input to requestUrl. requestURL is available in the function process
+          // text creates a text box and we can capture its input in requestUrl
+          "@request_url_input" #> text(i.url, s => requestUrl = s, "maxlength" -> "512", "size" -> "100", "id" -> s"request_url_input_${i.id}") &
+          "@full_path [id]" #> s"full_path_${i.id}" &
+          "@full_headers [id]" #> s"full_headers_${i.id}" &
+          // Extraction.decompose creates json representation of JObject.
+          "@example_request_body_input" #> text(pretty(render(i.exampleRequestBody)), s => requestBody = s, "maxlength" -> "100000", "size" -> "100", "type" -> "text") &
+          //"@request_body_input" #> textarea((""), s => requestBody = s, "cols" -> "1000", "rows" -> "10","style"->"border:none") &
+          //
+          // Typical Success Response
+          "@typical_success_response_box [id]" #> s"typical_success_response_box_${i.id}" &
+          //"@typical_success_response [id]" #> s"typical_success_response_${i.id}" &
+          "@typical_success_response *" #> pretty(render(i.successResponseBody)) &
+          // Possible Errors
+          "@possible_error_responses_box [id]" #> s"possible_error_responses_box_${i.id}" &
+          // This class gets a list of several possible error reponse items
+          ".possible_error_item" #> i.errorResponseBodies.map { i =>
+              ".possible_error_item *" #> i
+          } &
+          "@connector_methods_box [id]" #> s"connector_methods_box_${i.id}" &
+          // This class gets a list of connector methods
+          ".connector_method_item" #> i.connectorMethods.map { i=>
+            // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
+            ".connector_method_item_link [href]" #> s"message-docs?connector=rest_vMar2019#${urlEncode(i.replaceAll(" ", "-"))}" &
+              ".connector_method_item_link *" #> i
+          } &
+          //required roles and related user information
+          "@roles_box [id]" #> s"roles_box_${i.id}" &
+          "@roles_box [style]" #> { if (i.roleInfos.isEmpty)
+              s"display: none"
+            else
+              s"display: block"
+            } &
+          // We generate mulutiple .role_items from roleInfos (including the form defined in index.html)
+          ".role_item" #> i.roleInfos.map { r =>
+            "@roles__status" #> {if (! isLoggedIn)
+                                  s" - Please login to request this Role"
+                                else if  (r.userHasEntitlement)
+                                  s" - You have this Role."
+                                else if (r.userHasEntitlementRequest)
+                                  s" - You have requested this Role."
+                                else
+                                  s" - You can request this Role."} &
+            "@roles__role_name" #> s"${r.role}" &
+            // ajaxSubmit will submit the form.
+            // The value of rolesBankId is given to bank_id_input field and the value of bank_id_input entered by user is given back to rolesBankId
+            "@roles__bank_id_input" #> SHtml.text({if (r.requiresBankId) rolesBankId else ""}, rolesBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") &
+            "@roles__role_input" #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
+            "@roles__resource_id_input" #> text(i.id.toString, s => RolesResourceId = s, "type" -> "hidden", "id" -> s"roles__resource_id_input_${i.id}") &
+            "@roles__request_entitlement_button" #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
+            "@roles__entitlement_request_response [id]" #> s"roles__entitlement_request_response_${i.id}_${r.role}" &
+            "@roles__entitlement_request_button_box [style]" #> { if (! isLoggedIn || r.userHasEntitlement || r.userHasEntitlementRequest)
+                s"display: none"
+              else
+                s"display: block"
+            }
+          } &
+          //
+          "@request_verb_input" #> text(i.verb, s => requestVerb = s, "type" -> "hidden", "id" -> s"request_verb_input_${i.id}") &
+          "@resource_id_input" #> text(i.id.toString, s => resourceId = s, "type" -> "hidden", "id" -> s"resource_id_input_${i.id}") &
+          // Replace the type=submit with Javascript that makes the ajax call.
+           "@success_response_body [id]" #> s"success_response_body_${i.id}" &
+          // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
+            "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
+          ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}"
+        }
+      }   
     }
   }
 
