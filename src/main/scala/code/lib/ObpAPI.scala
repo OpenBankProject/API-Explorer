@@ -380,8 +380,13 @@ object ObpDeleteWithHeader {
 
 object ObpGet {
   def apply(apiPath: String, headers : List[Header] = Nil): Box[JValue] = {
-    OBPRequest(apiPath, None, "GET", headers).flatMap {
-      case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+    // the bankId is blank
+    if(apiPath.contains("/banks//")) {
+      Empty
+    } else {
+      OBPRequest(apiPath, None, "GET", headers).flatMap {
+        case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+      }
     }
   }
 }
@@ -919,9 +924,9 @@ object ObpJson {
                              url: String,
                              summary: String,
                              description: NodeSeq,
-                             example_request_body: JValue,
-                             success_response_body: JValue,
-                             error_response_bodies: List[String],
+                             exampleRequestBody: JValue,
+                             successResponseBody: JValue,
+                             errorResponseBodies: List[String],
                              implementedBy: ImplementedBy,
                              isCore: Boolean,
                              isPSD2: Boolean,
@@ -930,7 +935,7 @@ object ObpJson {
                              roleInfos: List[RoleInfo],
                              isFeatured: Boolean,
                              specialInstructions: NodeSeq,
-                             connector_methods: List[String]
+                             connectorMethods: List[String]
   )
 
 
