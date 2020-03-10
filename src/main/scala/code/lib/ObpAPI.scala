@@ -252,69 +252,6 @@ object OBPRequest extends MdcLoggable {
   }
 }
 
-//Ugly duplicate of above to be able to get rid of /obp prefix.
-//Should be done without it
-object OBPInternalRequest extends MdcLoggable {
-  implicit val formats = DefaultFormats
-  //returns a tuple of the status code and response body as a string
-  def apply(apiPath : String, jsonBody : Option[JValue], method : String, headers : List[Header]) : Box[(Int, String)] = {
-    val statusAndBody = tryo {
-      val credentials = OAuthClient.getAuthorizedCredential
-      val apiUrl = OBPProvider.oauthBaseUrl
-      val url = new URL(apiUrl + apiPath)
-      //bleh
-      val request = url.openConnection().asInstanceOf[HttpURLConnection] //blagh!
-      request.setDoOutput(true)
-      request.setRequestMethod(method)
-      request.setRequestProperty("Content-Type", "application/json")
-      request.setRequestProperty("Accept", "application/json")
-
-      headers.foreach(header => request.setRequestProperty(header.key, header.value))
-
-      //sign the request if we have some credentials to sign it with
-      credentials.foreach(c => c.consumer.sign(request))
-
-      //Set the request body
-      if(jsonBody.isDefined) {
-        val output = request.getOutputStream()
-        val body = compact(render(jsonBody.get)).getBytes()
-        output.write(body)
-        output.flush()
-        output.close()
-      }
-      request.connect()
-
-      val status = request.getResponseCode()
-
-      //bleh
-      val inputStream = if(status >= 400) request.getErrorStream() else request.getInputStream()
-      val reader = new BufferedReader(new InputStreamReader(inputStream))
-      val builder = new StringBuilder()
-      var line = ""
-      def readLines() {
-        line = reader.readLine()
-        if (line != null) {
-          builder.append(line + "\n")
-          readLines()
-        }
-      }
-      readLines()
-      reader.close();
-      (status, builder.toString())
-    }
-
-    statusAndBody pass {
-      case Failure(msg, ex, _) => {
-        val sw = new StringWriter()
-        val writer = new PrintWriter(sw)
-        ex.foreach(_.printStackTrace(writer))
-        logger.debug("Error making api call: " + msg + ", stack trace: " + sw.toString)
-      }
-      case _ => Unit
-    }
-  }
-}
-
 object ObpPut {
   def apply(apiPath: String, json : JValue): Box[JValue] = {
     OBPRequest(apiPath, Some(json), "PUT", Nil).flatMap {
@@ -395,18 +332,6 @@ object ObpGetWithHeader {
     OBPRequest(apiPath, None, "GET", headers) match {
       case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
     }
-  }
-}
-
-object ObpInternalDelete {
-  /**
-   * @return True if the delete worked
-   */
-  def apply(apiPath: String): Boolean = {
-    val worked = OBPInternalRequest(apiPath, None, "DELETE", Nil).map {
-      case(status, result) => APIUtils.apiResponseWorked(status, result)
-    }
-    worked.getOrElse(false)
   }
 }
 
