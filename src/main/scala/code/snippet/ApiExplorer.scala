@@ -581,13 +581,22 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Sort by the first and second tags (if any) then the summary.
     // In order to help sorting, the first tag in a call should be most general, then more specific etc.
-    val resources = resourcesToUse.sortBy(r => (r.tags.take(0).toString(), r.tags.take(1).toString(), r.summary.toString))
+    val resources = resourcesToUse.sortBy(r => {
+
+      val firstTag = r.tags.headOption.getOrElse("")
+      val secondTag = r.tags.take(1).toString()
+      (firstTag, secondTag, r.summary.toString)
+    })
 
     // Group resources by the first tag
     val unsortedGroupedResources: Map[String, List[ResourceDocPlus]] = resources.groupBy(_.tags.headOr("ToTag"))
 
     // Sort the groups by the Tag. Note in the rendering we sort the resources by summary.
-    val groupedResources  = unsortedGroupedResources.toSeq.sortBy(_._1)
+    val groupedResources  = unsortedGroupedResources.toSeq.sortBy{ kv =>
+      val tagName = kv._1
+      // if tag name starts with blank character, replace blank with _, to let it order to the tail.
+      tagName.replaceFirst("^\\s", "_")
+    }
 
 
     // Featured /////
@@ -1444,7 +1453,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".inbound-topic *" #> stringToNodeSeq(i.inbound_topic.getOrElse("")) &
         ".outbound-message *" #> stringToNodeSeq(pretty(render(i.example_outbound_message))) &
         ".inbound-message *" #> stringToNodeSeq(pretty(render(i.example_inbound_message))) &
-        ".description *" #> stringToNodeSeq((i.description))
+        ".description *" #> stringToNodeSeq((i.description)) &
+        ".inbound-required-fields *" #> stringToNodeSeq(pretty(render(i.requiredFieldInfo.getOrElse(JNothing))))
     }
       }
 

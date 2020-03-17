@@ -158,10 +158,28 @@ object ObpAPI extends Loggable {
         }
         .mkString("?", "&", "")
 
-    ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams").flatMap(_.extractOpt[ResourceDocsJson])
+    ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams").map(extractResourceDocsJson)
   }
 
-
+  /**
+   * extract ResourceDocsJson and output details of error if extract json to case class fail
+   * @param jValue
+   * @return extracted ResourceDocsJson from JValue
+   */
+  private def extractResourceDocsJson(jValue: JValue): ResourceDocsJson = {
+    val arr = (jValue \ "resource_docs").asInstanceOf[JArray].arr
+    val resourceDocJsons = arr.map { it =>
+      try {
+        it.extract[ResourceDocJson]
+      } catch {
+        case e: Throwable =>
+          import net.liftweb.json
+          logger.error(s"parse json to ResourceDocJson fail, json: ${json.compactRender(it)}", e)
+          throw e
+      }
+    }
+    ResourceDocsJson(resourceDocJsons)
+  }
 
 
   def getGlossaryItemsJson : Box[GlossaryItemsJsonV300] = {
@@ -962,7 +980,8 @@ case class MessageDocJsonV220(
                            example_inbound_message: JValue,
                            outboundAvroSchema: Option[JValue] = None,
                            inboundAvroSchema: Option[JValue] = None,
-                           adapter_implementation : AdapterImplementationJson220
+                           adapter_implementation : AdapterImplementationJson220,
+                           requiredFieldInfo: Option[JValue] = None
                          )
 
 case class MessageDocsJsonV220 (message_docs: List[MessageDocJsonV220])
