@@ -14,7 +14,7 @@ import scala.xml.{Elem, MetaData, Null, Text, UnprefixedAttribute}
 import net.liftweb.util.Helpers.pairToUnprefixed
 
 
-object Helper {
+object Helper extends Loggable {
 
 
 
@@ -100,7 +100,9 @@ Returns a string which can be used for the title of the account
     val sysEnvironmentPropertyName = brandSpecificPropertyName.replace('.', '_').toUpperCase()
     val sysEnvironmentPropertyValue: Box[String] = tryo{sys.env(sysEnvironmentPropertyName)}
     sysEnvironmentPropertyValue match {
-      case Full(_) => sysEnvironmentPropertyValue
+      case Full(_) => 
+        logger.info("System environment property value found for: " + sysEnvironmentPropertyName)
+        sysEnvironmentPropertyValue
       case _  => Props.get(brandSpecificPropertyName)
     }
   } 
