@@ -101,7 +101,7 @@ Returns a string which can be used for the title of the account
     val sysEnvironmentPropertyValue: Box[String] = tryo{sys.env(sysEnvironmentPropertyName)}
     sysEnvironmentPropertyValue match {
       case Full(_) => 
-        logger.info("System environment property value found for: " + sysEnvironmentPropertyName)
+        logger.debug("System environment property value found for: " + sysEnvironmentPropertyName)
         sysEnvironmentPropertyValue
       case _  => Props.get(brandSpecificPropertyName)
     }
