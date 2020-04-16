@@ -528,9 +528,6 @@ a img {
 
 .default-input {
   padding: 13px 20px 9px 20px;
-  -moz-border-radius: 20px;
-  -webkit-border-radius: 20px;
-  border-radius: 20px;
   border: 0;
   background-color: #f2f2f2;
   font-size: 18px;
@@ -540,7 +537,22 @@ a img {
   -moz-appearance: none;
   -webkit-appearance: none;
   margin-top: 5px;
-  max-width:70%;
+  margin-right: 15px;
+}
+.rest-call-button {
+  padding: 13px 20px 9px 20px;
+  border: 0;
+  background-color: #fff;
+  font-size: 18px;
+  line-height: 22px;
+  color: #504854;
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  margin-top: 5px;
+  margin-right: 15px;
+  float: right;
+  border: 1px solid #000000
 }
 
 .default-button {
@@ -556,9 +568,6 @@ a img {
   color: #fff;
   width: 102px;
   padding: 4px 0 4px 0;
-  position: relative;
-  top: -35px;
-  left: 83%;
 }
 
 .bg--white {
@@ -583,10 +592,14 @@ a img {
 
 .content-box__info-box {
   max-width:80em;
-  background-color: #eaf8fa;
+  background-color: #333333;
+  color: #fff;
   margin-top: 20px;
   padding: 14px 19px 44px 19px;
   overflow-x: auto;
+}
+.roles__bank_id_input {
+  color: #000000;
 }
 
 .content-box__info-box span {
@@ -1131,7 +1144,7 @@ a.end-point-anchor {
     line-height: 22px;
     color: #24bc65;
     letter-spacing: 0.2px;
-    margin: -25px 0 0 5px;
+    margin: 0 0 0 5px;
 }
 
 .clearfloat {
