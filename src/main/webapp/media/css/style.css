@@ -48,6 +48,11 @@ a img {
   float: left;
   padding: 7px 0 8px 0px;
 }
+
+#logo-right{
+  display:none
+}
+
 .header .logo-box__link {
   display: block;
   margin: 13px 0 8px 3px;
@@ -94,17 +99,18 @@ a img {
 
 .logout-link:hover {
     text-decoration: underline;
-    color: #fff
+    color: #000
 }
 
 
 .sign-box__text {
   font-size: 12px;
   line-height: 16px;
-  color: #fff;
+  color: #000;
   display: block;
-  padding: 0 0 0 0;
+  padding: 5px 15px 5px 15px;
   margin: 0;
+  border: 2px solid #a5a5a5
 }
 
 
@@ -1178,13 +1184,15 @@ a.end-point-anchor {
 }
 
 .username {
-  color: #fff;
+  color: #000;
   font-size: 12px;
 }
 
 .logout-link {
-  color: #fff;
+  color: #000;
   font-size: 12px;
+  padding: 5px 15px 5px 15px;
+  border: 2px solid #a5a5a5
 }
 
 .grid-container {
