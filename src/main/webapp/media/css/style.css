@@ -9,7 +9,7 @@ body {
   margin: 0;
   padding: 0;
   min-width: 320px;
-  background-color: #f2f2f2;
+  background-color: #fff;
   font-family: "arialregular", serif;
 }
 
@@ -25,6 +25,11 @@ a img {
   content: '';
   display: table;
   clear: both;
+}
+
+.option-section .container {
+  border-bottom: 1px solid #dbdbdb;
+  background-color: #fff;
 }
 
 .header {
@@ -302,7 +307,7 @@ a img {
   left: 0;
   width: 100%;
   height: 70px;
-  background-color: #f2f2f2;
+  background-color: #fff;
   z-index: 5;
 }
 .option-section h4 {
@@ -312,14 +317,16 @@ a img {
 }
 .option-section select {
   font-size: 12px;
-  height: 19px;
+  height: 30px;
   padding: 0 0 0 7px;
-  background: url(../images/select-arrow.png) no-repeat right 6px top 8px;
-  background-color: #333333;
+  background: url(../images/downArrow.png) no-repeat right 6px top 8px;
+  background-color: #fff;
+  border: 2px solid #a5a5a5
 }
 .option-section .option-box {
+  height: 50px;
   float: left;
-  background-color: #39b54a;
+  background-color: #fff;
   width: 170px;
   padding: 0 8px 10px 8px;
   margin: 10px 8px 10px 8px;
@@ -336,7 +343,7 @@ a img {
 .option-box__headline {
   margin: 0;
   padding: 1px 0 6px 2px;
-  color: #fff;
+  color: #000;
   font-size: 24px;
   line-height: 28px;
   font-weight: 400;
@@ -372,6 +379,7 @@ a img {
   width: 100%;
   height: 38px;
   font-size: 14px;
+  color: #000;
   overflow: hidden;
   background: url(../images/select-arrow.png) no-repeat right 12px top 16px;
   background-color: #333333;
@@ -552,7 +560,7 @@ a img {
   margin-top: 5px;
   margin-right: 15px;
   float: right;
-  border: 1px solid #000000
+  border: 2px solid #a5a5a5
 }
 
 .default-button {
