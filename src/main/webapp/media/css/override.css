@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:700');
+@font-face {
+    font-family: 'arialregular';
+    src: url("../fonts/arial_regular-webfont.eot");
+    /* IE9 Compat Modes */
+    src: url("../fonts/arial_regular-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/arial_regular-webfont.woff2") format("woff2"), url("../fonts/arial_regular-webfont.woff") format("woff"), url("../fonts/arial_regular-webfont.ttf") format("truetype"), url("../fonts/arial_regular-webfont.svg#arialregular") format("svg");
+    /* Legacy iOS */
+}
+
+/* old: 76, 159, 209   new: 227, 92, 85
+ */
+
+.api-info-section {
+    background-color: #777;
+}
+
+.api-info-about {
+    background-color: #777;
+}
