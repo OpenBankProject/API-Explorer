@@ -294,7 +294,11 @@ object ObpPost {
 }
 object ObpPostWithHeader {
   def apply(apiPath: String, json : JValue): (Box[JValue], List[String]) = {
-    OBPRequest(apiPath, Some(json), "POST", Nil) match {
+    val requestBody = json match {
+      case JNothing | JNull => None
+      case v => Option(v)
+    }
+    OBPRequest(apiPath, requestBody, "POST", Nil) match {
       case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
     }
   }
