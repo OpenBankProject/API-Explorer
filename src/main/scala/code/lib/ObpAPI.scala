@@ -362,7 +362,7 @@ object APIUtils extends MdcLoggable {
       case _ => {
         val failMsg = "Bad response code (" + responseCode + ") from OBP API server: " + body
         logger.warn(failMsg)
-        Failure(pretty(render(parse(body))))
+        Failure(Helper.renderJson(parse(body)))
       }
     }
   }
@@ -372,7 +372,7 @@ object APIUtils extends MdcLoggable {
         Full(JBool(true))
       case _ => val failMsg = "Bad response code (" + responseCode + ") from OBP API server: " + result
         logger.warn(failMsg)
-        Failure(pretty(render(parse(result))))
+        Failure(Helper.renderJson(parse(result)))
     }
   }
   def apiResponseWorked(responseCode : Int, result : String) : Boolean = {
