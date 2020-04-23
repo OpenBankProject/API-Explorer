@@ -770,8 +770,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
       // Create json object from input string
-      val jsonObject = JsonParser.parse(requestBody).asInstanceOf[JObject]
-      val jsonResponseObject = JsonParser.parse(responseBody).asInstanceOf[JObject]
+      val jsonObject = JsonParser.parse(requestBody)
+      val jsonResponseObject = JsonParser.parse(responseBody)
       val jsonErrorResponse = errorResponseBodies
 
       // the id of the element we want to populate and format.
