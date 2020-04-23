@@ -1336,13 +1336,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
           "@full_path [id]" #> s"full_path_${i.id}" &
           "@full_headers [id]" #> s"full_headers_${i.id}" &
           // Extraction.decompose creates json representation of JObject.
-          "@example_request_body_input" #> text(pretty(render(i.exampleRequestBody)), s => requestBody = s, "maxlength" -> "100000", "size" -> "100", "type" -> "text") &
+          "@example_request_body_input" #> text(Helper.renderJson(i.exampleRequestBody), s => requestBody = s, "maxlength" -> "100000", "size" -> "100", "type" -> "text") &
           //"@request_body_input" #> textarea((""), s => requestBody = s, "cols" -> "1000", "rows" -> "10","style"->"border:none") &
           //
           // Typical Success Response
           "@typical_success_response_box [id]" #> s"typical_success_response_box_${i.id}" &
           //"@typical_success_response [id]" #> s"typical_success_response_${i.id}" &
-          "@typical_success_response *" #> pretty(render(i.successResponseBody)) &
+          "@typical_success_response *" #> Helper.renderJson(i.successResponseBody) &
           // Possible Errors
           "@possible_error_responses_box [id]" #> s"possible_error_responses_box_${i.id}" &
           // This class gets a list of several possible error reponse items
@@ -1451,10 +1451,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".content-box__headline [id]" #> i.process.replaceAll(" ", "-") & // id for the anchor to find
         ".outbound-topic *" #> stringToNodeSeq(i.outbound_topic.getOrElse("")) &
         ".inbound-topic *" #> stringToNodeSeq(i.inbound_topic.getOrElse("")) &
-        ".outbound-message *" #> stringToNodeSeq(pretty(render(i.example_outbound_message))) &
-        ".inbound-message *" #> stringToNodeSeq(pretty(render(i.example_inbound_message))) &
+        ".outbound-message *" #> stringToNodeSeq(Helper.renderJson(i.example_outbound_message)) &
+        ".inbound-message *" #> stringToNodeSeq(Helper.renderJson(i.example_inbound_message)) &
         ".description *" #> stringToNodeSeq((i.description)) &
-        ".inbound-required-fields *" #> stringToNodeSeq(pretty(render(i.requiredFieldInfo.getOrElse(JNothing))))
+        ".inbound-required-fields *" #> stringToNodeSeq(Helper.renderJson(i.requiredFieldInfo.getOrElse(JNothing)))
     }
       }
 

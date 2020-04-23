@@ -7,6 +7,8 @@ import net.liftweb.common._
 import net.liftweb.http.SHtml.ElemAttr
 import net.liftweb.http.S.addFunctionMap
 import net.liftweb.http.js.JsCmd
+import net.liftweb.json.JsonAST.JNothing
+import net.liftweb.json.{JValue, pretty, render}
 import net.liftweb.util.Helpers.{asLong, toBoolean, toInt, tryo}
 import net.liftweb.util.{Helpers, Props}
 
@@ -148,5 +150,10 @@ Returns a string which can be used for the title of the account
       new UnprefixedAttribute("value", Text(value), Null) %
       ("onclick" -> (s"${before(funcName).toJsCmd}; liftAjax.lift_uriSuffix = '$funcName=_'; return true;"))
 
+  }
+
+  def renderJson(jValue: JValue): String = jValue match {
+    case JNothing => ""
+    case v => pretty(render(v))
   }
 }
