@@ -294,7 +294,11 @@ object ObpPost {
 }
 object ObpPostWithHeader {
   def apply(apiPath: String, json : JValue): (Box[JValue], List[String]) = {
-    OBPRequest(apiPath, Some(json), "POST", Nil) match {
+    val requestBody = json match {
+      case JNothing | JNull => None
+      case v => Option(v)
+    }
+    OBPRequest(apiPath, requestBody, "POST", Nil) match {
       case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
     }
   }
@@ -362,7 +366,7 @@ object APIUtils extends MdcLoggable {
       case _ => {
         val failMsg = "Bad response code (" + responseCode + ") from OBP API server: " + body
         logger.warn(failMsg)
-        Failure(pretty(render(parse(body))))
+        Failure(Helper.renderJson(parse(body)))
       }
     }
   }
@@ -372,7 +376,7 @@ object APIUtils extends MdcLoggable {
         Full(JBool(true))
       case _ => val failMsg = "Bad response code (" + responseCode + ") from OBP API server: " + result
         logger.warn(failMsg)
-        Failure(pretty(render(parse(result))))
+        Failure(Helper.renderJson(parse(result)))
     }
   }
   def apiResponseWorked(responseCode : Int, result : String) : Boolean = {
