@@ -263,6 +263,7 @@ a img {
 
 .api-info-about .info-box {
   padding:12px 0 12px;
+  margin-left: 16px;
 }
 .info-box {
   padding: 0 0 0 0;
@@ -533,7 +534,7 @@ a img {
 }
 
 .api_group_item {
-  margin: 0 0 25px 0px;
+  margin: 0 0 24px 0px;
   list-style-type: none;
   list-style-image: none;
 }
@@ -565,9 +566,9 @@ a img {
   text-decoration: none;
   color: #000;
   font-family: UniversNextforHSBC-Regular;
-  font-size: 12px;
+  font-size: 10px;
   color: #333333;
-  line-height: 2px;
+  line-height: 4px;
 }
 .api_list_item a:hover {
   color: #333333;
