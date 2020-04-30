@@ -537,7 +537,10 @@ a img {
 }
 .api_group_item a {
   text-decoration: none;
-  color: #000;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 16px;
+  color: #333333;
+  line-height: 24px;
 }
 .api_group_item a:hover {
   color: #24bc65;
@@ -557,6 +560,10 @@ a img {
 .api_list_item a {
   text-decoration: none;
   color: #000;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 12px;
+  color: #333333;
+  line-height: 2px;
 }
 .api_list_item a:hover {
   color: #24bc65;
