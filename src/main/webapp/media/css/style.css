@@ -533,7 +533,9 @@ a img {
 }
 
 .api_group_item {
-  margin: 0 0 25px -20px;
+  margin: 0 0 25px 0px;
+  list-style-type: none;
+  list-style-image: none;
 }
 .api_group_item a {
   text-decoration: none;
@@ -543,16 +545,18 @@ a img {
   line-height: 24px;
 }
 .api_group_item a:hover {
-  color: #24bc65;
+  color: #333333;
 }
 
 
-
+.api_list ul{
+  padding-left:16px;
+}
 
 .api_list_item {
-  margin: 0 0 5px -40px;
-  font-size: 10px;
-  color: #24bc65;
+  margin: 0 0 0px 0px;
+  font-size: 12px;
+  color: #333333;
   font-weight: 400;
   padding: 0 0 0 0;
   letter-spacing: 0.8px;
@@ -566,9 +570,12 @@ a img {
   line-height: 2px;
 }
 .api_list_item a:hover {
-  color: #24bc65;
+  color: #333333;
 }
 
+ul {
+  list-style-image: url('/media/images/ico-list-bullet.png');
+}
 
 .default-input {
   padding: 13px 20px 9px 20px;
