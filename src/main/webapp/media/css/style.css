@@ -167,13 +167,13 @@ a img {
   display: inline-block;
   float: right;
   padding: 0;
-  margin: -30px 10px 0 0;
-  font-family: Arial, sans-serif;
-  font-size: 12px;
-  line-height: 16px;
-  color: #fff;
+  margin: 26px 25px 22px 0;
   letter-spacing: 0.2px;
-  text-decoration: none;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 14px;
+  color: #FFFFFF;
+  letter-spacing: 0;
+  line-height: 20px;
 }
 
 /*.breadcrumb-section .version_path {
@@ -239,6 +239,9 @@ a img {
   z-index: 5;
   background-color: #31b8cd;
 }
+.api-info-section .container {
+  position: relative;
+}
 
 .api-info-about {
   padding: 12px 0 12px 16px;
@@ -247,7 +250,8 @@ a img {
 }
 
 .info-box {
-  padding: 0 5px 0 0;
+  padding: 0 0 0 0;
+  float: left;
 }
 .info-box:after {
   content: '';
@@ -1143,11 +1147,7 @@ th {
 
 
 a.version {
-  font-size: 12px;
-  line-height: 22px;
   color: #fff;
-  margin: 0 0 0 0;
-  letter-spacing: 0.2px;
   text-decoration: none;
 }
 
