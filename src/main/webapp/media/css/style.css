@@ -526,6 +526,8 @@ a img {
   position: relative;
   color: #504854;
   font-size: 8px;
+  margin-left: 25px;
+  margin-top: 13px;
 }
 
 
@@ -673,7 +675,7 @@ a img {
   max-width:80em;
   background-color: #333333;
   color: #fff;
-  margin-top: 20px;
+  margin-top: 13px;
   padding: 14px 19px 44px 19px;
   overflow-x: auto;
   font-family: UniversNextforHSBC-Regular;
@@ -1225,6 +1227,7 @@ a.end-point-anchor {
     color: #24bc65;
     letter-spacing: 0.2px;
     margin: 0 0 0 5px;
+    clear: both;
 }
 
 .clearfloat {
