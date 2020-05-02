@@ -452,20 +452,26 @@ a img {
 
 .content-box__headline {
   margin: 0 0 26px 0;
-  font-size: 29px;
-  line-height: 33px;
-  color: #333333;
   font-weight: 400;
-  padding: 360px 0 0 0;
-  letter-spacing: 0.8px;
+  padding: 332px 0 0 0;
+  font-family: UniversNextforHSBC-Light;
+  font-size: 22px;
+  color: #333333;
+  letter-spacing: 0;
+  line-height: 31px;
 }
 
 .content-box__text-box {
   float: left;
   left: 0;
   width: 100%;
-  padding: 5px;
+  /*padding: 5px;*/
   max-width: 1000px;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 16px;[
+  color: #333333;]
+  line-height: 24px;
+  margin-bottom: 4px;
 }
 
 .sign-box__text:hover {
@@ -507,6 +513,13 @@ a img {
 .content-box__input-box {
 }
 
+.content-box__input-box form > .default-input{
+  width: 50%;
+  float: left;
+  margin-right: 20px;
+  margin-top: 0;
+  margin-bottom: 13px;
+}
 
 .content-box__available-since {
   float: left;
@@ -599,23 +612,25 @@ a img {
   appearance: none;
   -moz-appearance: none;
   -webkit-appearance: none;
-  margin-top: 5px;
-  margin-right: 15px;
+  margin-top: 0px;
+  width: 96%;
+  /*margin-right: 20px;*/
 }
 .rest-call-button {
-  padding: 13px 20px 9px 20px;
+  padding: 9px 20px 11px;
   border: 0;
   background-color: #fff;
-  font-size: 18px;
-  line-height: 22px;
-  color: #504854;
   appearance: none;
   -moz-appearance: none;
   -webkit-appearance: none;
-  margin-top: 5px;
-  margin-right: 15px;
-  float: right;
-  border: 2px solid #a5a5a5
+  margin-left: 0 ;
+  float: left;
+  border: 1px solid #333333;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 16px;
+  color: #333333;
+  text-align: center;
+  line-height: 24px;
 }
 
 .default-button {
@@ -635,6 +650,7 @@ a img {
 
 .bg--white {
   background-color: #fff;
+  margin-left: 25px;
 }
 
 .accounts {
@@ -660,6 +676,11 @@ a img {
   margin-top: 20px;
   padding: 14px 19px 44px 19px;
   overflow-x: auto;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 16px;
+  color: #FFFFFF;
+  line-height: 24px;
+  clear: left;
 }
 .roles__bank_id_input {
   color: #000000;
