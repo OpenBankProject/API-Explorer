@@ -347,8 +347,8 @@ a img {
   line-height: 24px;
   height: 44px;
   padding: 9px 0 11px 12px;
-  background: url(../images/chevron_down_thick.svg) no-repeat right 14px top 16px;
-  background-size: 16px 9.7px;
+  background: url(../images/dropdown-icon.jpg) no-repeat right 8px top 5px;
+  background-size: 44px 32px;
   background-color: #fff;
   border: 1px solid #767676;
   top:28px;
@@ -359,7 +359,7 @@ a img {
   height: 50px;
   float: left;
   background-color: #fff;
-  width: 170px;
+  width: 187px;
   padding: 0 8px 10px 0;
   margin: 12px 8px 10px 8px;
 
