@@ -128,16 +128,19 @@ a img {
   float: right;
   margin-right: 2px;
 }
+.settings-imgs .logged-in {
+  margin-top: 10px;
+}
 
 .settings-imgs__link {
   display: block;
   margin: 1px 0 0 0;
-  float: left;
+  float: right;
 }
 .settings-imgs__link:first-child {
-  border-right: 1px solid #cccccc;
-  margin: -1px 7px 0 0;
-  padding: 2px 8px 0 0;
+  border-left: 1px solid #cccccc;
+  margin: -1px 7px 0 -1px;
+  padding: 2px 8px 0 8px;
 }
 
 .settings-imgs__icon {
@@ -1254,16 +1257,28 @@ a.end-point-anchor {
 
 .username {
   color: #000;
-  font-size: 12px;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 16px;
+  color: #333333;
+  line-height: 24px;
 }
 
 .logout-link {
   color: #000;
   font-size: 12px;
-  padding: 5px 15px 5px 15px;
-  border: 2px solid #a5a5a5
+  padding: 9px 20px 11px;
+  border: 1px solid #333333;
+  font-size: 16px;
+  color: #333333;
+  text-align: center;
+  line-height: 24px;
+  margin-right: 20px;
+  margin-left: 20px;
 }
 
+.logout-link:hover{
+  text-decoration: none; 
+}
 .grid-container {
   display: grid;
   grid-template-columns: 10% 45% 45%;
