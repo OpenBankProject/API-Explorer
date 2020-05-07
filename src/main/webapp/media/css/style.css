@@ -362,7 +362,7 @@ a img {
   background-color: #fff;
   width: 187px;
   padding: 0 8px 10px 0;
-  margin: 12px 8px 10px 8px;
+  margin: 12px 9px 0px 8px;
 
   position: relative;
 }
@@ -1290,6 +1290,7 @@ a.end-point-anchor {
   border: 1px solid #767676;
   background: url(../images/dropdown-icon.jpg) no-repeat right 8px top 5px;
   background-size: 44px 32px;
+  width: 187px;
 }
 
 .select2-container--open .select2-selection--single {
