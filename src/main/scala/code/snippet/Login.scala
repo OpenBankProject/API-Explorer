@@ -42,7 +42,7 @@ import net.liftweb.http.js.JsCmds.Noop
 
 class Login {
   private def loggedIn = {
-    def getUsername(): Box[String] = {
+    def getDisplayNameOfUser(): Box[String] = {
       ObpAPI.currentUser.map {
         u =>
           u.provider.toLowerCase() match {
@@ -52,7 +52,7 @@ class Login {
       }
     }
     ".logged-out *" #> "" &
-    ".username *" #> getUsername() &
+    ".username *" #> getDisplayNameOfUser() &
     "#logout [onclick+]" #> SHtml.onEvent(s => {
       OAuthClient.logoutAll()
       Noop
