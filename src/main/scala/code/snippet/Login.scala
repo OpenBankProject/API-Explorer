@@ -47,6 +47,7 @@ class Login {
         u =>
           u.provider.toLowerCase() match {
             case provider if provider.contains("google") => u.email
+            case provider if provider.contains("yahoo")  => u.email
             case _                                       => u.username
           }
       }
