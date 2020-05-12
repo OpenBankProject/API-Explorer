@@ -594,12 +594,15 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val unsortedGroupedResources: Map[String, List[ResourceDocPlus]] = resources.groupBy(_.tags.headOr("ToTag"))
 
     // Sort the groups by the Tag. Note in the rendering we sort the resources by summary.
-    val groupedResources  = unsortedGroupedResources.toSeq.sortBy{ kv =>
+    val groupedResources1  = unsortedGroupedResources.toSeq.sortBy{ kv =>
       val tagName = kv._1
       // if tag name starts with blank character, replace blank with _, to let it order to the tail.
       tagName.replaceFirst("^\\s", "_")
-    }
+    }.distinct
 
+    val currentTagResource = groupedResources1.filter(_._1 == currentTag)
+    
+    val groupedResources  = (currentTagResource++groupedResources1).distinct
 
     // Featured /////
     val featuredResources = resources.filter(r => r.isFeatured == true)
