@@ -36,13 +36,24 @@ import net.liftweb.http.js.JsCmd
 import net.liftweb.util.Helpers
 import Helpers._
 import net.liftweb.http.SHtml
-import code.lib.{ObpAPI, OAuthClient}
+import code.lib.{OAuthClient, ObpAPI}
+import net.liftweb.common.Box
 import net.liftweb.http.js.JsCmds.Noop
 
 class Login {
   private def loggedIn = {
+    def getDisplayNameOfUser(): Box[String] = {
+      ObpAPI.currentUser.map {
+        u =>
+          u.provider.toLowerCase() match {
+            case provider if provider.contains("google") => u.email
+            case provider if provider.contains("yahoo")  => u.email
+            case _                                       => u.username
+          }
+      }
+    }
     ".logged-out *" #> "" &
-      ".username *" #> ObpAPI.currentUser.map(u => u.username) &
+    ".username *" #> getDisplayNameOfUser() &
     "#logout [onclick+]" #> SHtml.onEvent(s => {
       OAuthClient.logoutAll()
       Noop
