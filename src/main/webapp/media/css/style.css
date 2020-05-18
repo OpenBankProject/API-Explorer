@@ -223,11 +223,12 @@ a img {
   padding: 0;
   display: inline-block;
   margin: 0 0 0 0;
-  font-size: 12px;
-  line-height: 16px;
-  color: #fff;
-  letter-spacing: 0.2px;
   text-decoration: none;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 14px;
+  color: #FFFFFF;
+  letter-spacing: 0;
+  line-height: 20px;
 }
 
 
