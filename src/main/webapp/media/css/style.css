@@ -903,6 +903,12 @@ a {
   color: white;
 }
 
+p a {
+  background-color: transparent;
+  color: black;
+}
+
+
 /**
  * Improve readability of focused elements when they are also in an
  * active/hover state.
