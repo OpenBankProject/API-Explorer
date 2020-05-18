@@ -1252,7 +1252,10 @@ a.end-point-anchor {
 }
 
 #site-title-text{
-  margin: 29px 0 28px 303px;
+  margin-top: 29px ;
+  margin-right: 0px ;
+  margin-bottom: 28px ;
+  margin-left: 30%;
 }
 
 .username {
