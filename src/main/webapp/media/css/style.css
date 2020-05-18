@@ -909,10 +909,11 @@ a {
 a:active,
 a:hover {
   outline: 0;
+  text-decoration:underline
 }
 
 /* Text-level semantics
-   ========================================================================== */
+========================================================================== */
 /**
  * Address styling not present in IE 8/9/10/11, Safari, and Chrome.
  */
@@ -1217,6 +1218,10 @@ th {
 a.version {
   color: #fff;
   text-decoration: none;
+}
+
+a.version:hover {
+  text-decoration: underline;
 }
 
 
