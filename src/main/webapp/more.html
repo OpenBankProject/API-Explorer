@@ -1,5 +1,3 @@
-<!-- !!!! more is a copy of index 27 june 2019 !!!! TODO INCLUDE content instead or create cut down links page-->
-
 <div data-lift="surround?with=default&at=content">
 
     <div data-lift="ApiExplorer.showResources">
@@ -88,40 +86,7 @@
 
                                 </ul>
 
-                                <div class="settings-box" data-lift="Login.login">
-                                    <div class="sign-box">
-
-                                        <div class="logged-out">
-
-                                            <a id="start-login" class="sign-box__text signed"  href="#">Login</a>
-
-                                        </div>
-                                        <div class="logged-in">
-                                            <!--
-                                            <p class="sign-box__text">SIGNED IN AS</p>
-                                            <span class="sign-box__text signed">Tom</span>
-                                            <span class="logout">Logout</span>
-                                            -->
-                                        </div>
-
-                                    </div>
-                                    <div class="settings-imgs">
-                                        <div class="logged-in">
-                                            <a class="settings-imgs__link" id="logout" href="#">
-                                                <span class="logout-link">Logout</span>
-                                            </a>
-                                            <span class="username"></span>
-                                            <!--
-                                            <a href="#" class="settings-imgs__link">
-                                                <img src="./media/images/settings-icon.png" alt="Settings icon" class="settings-imgs__icon">
-                                            </a>
-                                            -->
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                                <div style="clear: both"></div>
+                                
 
 
                             </div>
@@ -151,7 +116,7 @@
                                     <span class="count-box__number">0</span>
                                 </div>
                                 -->
-                                <select id="bank_selector" name="Bank" class="option-box__select">
+                                <select id="bank_selector" name="Bank" class="option-box__select js-example-basic-single">
                                     <option value="Choose from..." class="option-box__option">Choose from...</option>
                                     <option value="Choose from..." class="option-box__option">Placeholder</option>
                                     <option value="Choose from..." class="option-box__option">Placeholder</option>
@@ -164,7 +129,7 @@
                                     <span class="count-box__number">0</span>
                                 </div>
                                 -->
-                                <select id="account_selector" name="Accounts" class="option-box__select">
+                                <select id="account_selector" name="Accounts" class="option-box__select js-example-basic-single">
                                     <option value="Choose from..." class="option-box__option">Choose from...</option>
                                     <option value="Choose from..." class="option-box__option">Placeholder</option>
                                     <option value="Choose from..." class="option-box__option">Placeholder</option>
@@ -177,7 +142,7 @@
                                     <span class="count-box__number">0</span>
                                 </div>
                                 -->
-                                <select id="view_selector" name="Views" class="option-box__select">
+                                <select id="view_selector" name="Views" class="option-box__select js-example-basic-single">
                                     <option value="Choose from..." class="option-box__option">Choose from...</option>
                                     <option value="Choose from..." class="option-box__option">Placeholder</option>
                                     <option value="Choose from..." class="option-box__option">Placeholder</option>
@@ -190,7 +155,7 @@
                                     <span class="count-box__number">0</span>
                                 </div>
                                 -->
-                                <select id="counterparty_selector" name="Counterparties" class="option-box__select">
+                                <select id="counterparty_selector" name="Counterparties" class="option-box__select js-example-basic-single">
                                     <option value="Choose from..." class="option-box__option">Choose from...</option>
                                     <option value="Choose from..." class="option-box__option">placeholder</option>
                                     <option value="Choose from..." class="option-box__option">placeholder</option>
@@ -203,7 +168,7 @@
                                     <span class="count-box__number">0</span>
                                 </div>
                                 -->
-                                <select id="transaction_selector" name="Transactions" class="option-box__select">
+                                <select id="transaction_selector" name="Transactions" class="option-box__select js-example-basic-single">
                                     <option value="Choose from..." class="option-box__option">Choose from...</option>
                                     <option value="Choose from..." class="option-box__option">Placeholder</option>
                                     <option value="Choose from..." class="option-box__option">Placeholder</option>
@@ -213,7 +178,7 @@
                     </section>
 
 
-                    <div class="resource">
+                    <div class="resource" style="display: block;">
 
                         <section class="content-section">
                             <div class="container">
@@ -242,12 +207,13 @@
                                                 <input type="hidden" name="request_verb_input" placeholder="GET, POST, PUT etc.">
                                                 <!-- The url_to_call is populated at render (but it can be edited manually) -->
                                                 <input type="text" name="request_url_input" class="default-input" placeholder="OBP URL to call">
+                                                <button name="call_button" class="rest-call-button">POST</button>
 
                                                 <div name="example_request_body" id="example_request_body" style="display: block;">
                                                     <input name="example_request_body_input" class="default-input" placeholder="JSON body to POST or PUT">
                                                 </div>
 
-                                                <button name="call_button" class="default-button">POST</button>
+                                                
                                             </form>
                                         </div>
 
@@ -300,7 +266,7 @@
                                                         <form class="lift:form.ajax" id="formInList">
                                                             <!-- Attributes for these fields are replaced -->
                                                             <input type="hidden" name="roles__resource_id_input">
-                                                            <input type="text" name="roles__bank_id_input" placeholder="Bank Id">
+                                                            <input type="text" name="roles__bank_id_input" placeholder="Bank Id" class="roles__bank_id_input">
                                                             <input type="hidden" name="roles__role_input">
                                                             <div name="roles__entitlement_request_button_box">
                                                                 <button name="roles__request_entitlement_button" class="default-button">REQUEST</button>
@@ -369,7 +335,15 @@
 
                         <!-- End of Resources loop (one for each API call -->
                     </div>
-
+                    <div class="resource-error" style="display: none;">
+                        <section class="content-section">
+                            <div class="container">
+                                <div class="content-box bg--white">
+                                    <h2 class="content-box__headline"></h2>
+                                </div>
+                            </div>
+                        </section>        
+                    </div>
 
                     <!-- Footer of this page. Note we reuse footer css from default.html -->
                     <footer class="footer">
@@ -400,6 +374,13 @@
                                     <p class="footer-box__paragraph">This list can be used as a basis to limit the available endpoints by editing the API Props:</p>
                                     <div class="comma_separated_api_call_list"></div>
                                 </div>
+
+                                <div class="footer-box">
+                                    <p class="footer-box__paragraph">Note: You can list just the APIs that are implemented in a certain version by appending &native=true to the index URL.</p>
+
+                                </div>
+
+
                             </div>
 
                         </div>
