@@ -9,4 +9,9 @@
 // In your Javascript (external .js resource or <script> tag)
 $(document).ready(function() {
     $('.js-example-basic-single').select2();
+    // scroll to leftside tag if url contains hash.
+    if(window.top.location.hash){
+        let hashValue = window.top.location.hash;
+        $(`a[href$=${hashValue}]`)[0].scrollIntoView()
+    }
 });
