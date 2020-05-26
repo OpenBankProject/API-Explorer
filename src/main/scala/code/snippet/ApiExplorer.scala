@@ -160,7 +160,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val listAllBanks = S.param("list-all-banks").getOrElse("false").toBoolean
   logger.info(s"all_banks in url param is $listAllBanks")
 
-  val currentTag = S.param("CurrentTag").getOrElse("Account")
+  val currentOperationId = S.param("operation_id").getOrElse("OBPv3_1_0-config")
   
 
   val presetBankId = S.param("bank_id").getOrElse("")
@@ -1291,8 +1291,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
             // Within each group (first tag), list the resources
             "@api_list_item" #> i._2.sortBy(_.summary.toString()).map { i =>
               // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-                "@api_list_item_link [href]" #> s"?CurrentTag=${i.tags.head}#${i.id}" &
-                "@api_list_item_link [href]" #> s"?CurrentTag=${i.tags.head}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}" &
+                "@api_list_item_link [href]" #>
+                  (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty) //If the tags are in the URL, we just need to show the anchor, no need the parameters. 
+                    s"#${i.id}" 
+                  else if (resources.find(_.id == currentOperationId).map(_.tags.head).getOrElse("API")==resources.find(_.id == i.id).map(_.tags.head).getOrElse("API")) //If the Tag is the current Tag.We do not need parameters.
+                    s"#${i.id}" 
+                  else
+                    s"?operation_id=${i.id}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
                   "@api_list_item_link *" #> i.summary &
                   "@api_list_item_link [id]" #> s"index_of_${i.id}"
                   // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
@@ -1316,7 +1321,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
         }
       }
       else {
-        ".resource" #> resources.filter(_.tags.head==currentTag).map { i =>
+        val currentTag = resources.find(_.id == currentOperationId).map(_.tags.head).getOrElse("API")
+        val currentTagResouces = resources.filter(_.tags.head==currentTag)
+        ".resource" #> (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty)  resources else (resources.filter(_.tags.head==currentTag))).map { i =>
           // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
           ".end-point-anchor [href]" #> s"#${i.id}" &
           ".content-box__headline *" #> i.summary &
