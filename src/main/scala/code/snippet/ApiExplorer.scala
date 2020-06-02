@@ -801,8 +801,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val requestRolesResponsesBoxTarget = "required_roles_response_box_" + resourceId
       // The javascript to hide it.
       val jsCommandHidePossibleErrorResponsesBox : String =  s"DOLLAR_SIGN('#$possibleErrorResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
-      val jsCommandHideConnectorMethodsBoxTarget : String =  s"DOLLAR_SIGN('#$connectorMethodsBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
-
+      val jsCommandHideConnectorMethodsBoxTarget : String =  s"DOLLAR_SIGN('#$connectorMethodsBoxTarget').show();".replace("DOLLAR_SIGN","$")
       val jsCommandHideRequestRolesResponsesBox : String =  s"DOLLAR_SIGN('#$requestRolesResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
 
       // The id of the possible error responses box we want to hide after calling the API
@@ -812,11 +811,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
       // The id of the full path
       val fullPathTarget = "full_path_" + resourceId
+      val fullHeadersBox= "full_headers_box_"+resourceId
       val fullHeadersTarget = "full_headers_" + resourceId
       // The javascript to show it
-
       val jsCommandShowFullPath : String =  s"DOLLAR_SIGN('#$fullPathTarget').fadeIn();".replace("DOLLAR_SIGN","$")
-      val jsCommandShowFullHeaders : String =  s"DOLLAR_SIGN('#$fullHeadersTarget').fadeIn();".replace("DOLLAR_SIGN","$")
+      val jsCommandShowFullHeaders : String =
+        s"DOLLAR_SIGN('#$fullHeadersBox').show();".replace("DOLLAR_SIGN","$") ++s"DOLLAR_SIGN('#$fullHeadersTarget').fadeIn();".replace("DOLLAR_SIGN","$") 
 
       // alert('$fullPathTarget');
       //logger.info(s"jsCommand is $jsCommand")
@@ -1344,6 +1344,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           // text creates a text box and we can capture its input in requestUrl
           "@request_url_input" #> text(i.url, s => requestUrl = s, "maxlength" -> "512", "size" -> "100", "id" -> s"request_url_input_${i.id}") &
           "@full_path [id]" #> s"full_path_${i.id}" &
+          "#full_headers_box [id]" #> s"full_headers_box_${i.id}" &
           "@full_headers [id]" #> s"full_headers_${i.id}" &
           // Extraction.decompose creates json representation of JObject.
           "@example_request_body_input" #> text(Helper.renderJson(i.exampleRequestBody), s => requestBody = s, "maxlength" -> "100000", "size" -> "100", "type" -> "text") &
@@ -1359,7 +1360,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           ".possible_error_item" #> i.errorResponseBodies.map { i =>
               ".possible_error_item *" #> i
           } &
-          "@connector_methods_box [id]" #> s"connector_methods_box_${i.id}" &
+          "#connector_methods_box [id]" #> s"connector_methods_box_${i.id}" &
           // This class gets a list of connector methods
           ".connector_method_item" #> i.connectorMethods.map { i=>
             // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
