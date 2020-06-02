@@ -1291,6 +1291,17 @@ a.end-point-anchor {
 
 #resouce-footer .container p{
   margin-left: 25px;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 16px;
+  color: #333333;
+  line-height: 24px;
+}
+#button-show,
+#button-hide{
+  border-radius:0px;
+  width:60px;
+  height:24px;
+  border: 1px solid #000000;
 }
 /*all the footer*/
 footer .footer_link {
