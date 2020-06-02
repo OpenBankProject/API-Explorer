@@ -14,4 +14,15 @@ $(document).ready(function() {
         const hashValue = window.top.location.hash;
         $("a[href$="+hashValue+"]")[0].scrollIntoView();
     };
+
+    $("#button-show").click(function(){
+        $(".comma_separated_api_call_list").show();
+        $("#button-hide").show();
+        $("#button-show").hide();
+    });
+    $("#button-hide").click(function(){
+        $(".comma_separated_api_call_list").hide();
+        $("#button-hide").hide();
+        $("#button-show").show();
+    });
 });
