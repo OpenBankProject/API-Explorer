@@ -554,6 +554,9 @@ a img {
     width: 365px;
     height: 100%;
     background-color: white;
+    display:block;           
+    word-break:keep-all;     
+    white-space:nowrap;      
 }
 
 .comma_separated_api_call_list {
