@@ -12,7 +12,7 @@ $(document).ready(function() {
     // scroll to leftside tag if url contains hash.
     if(window.top.location.hash){
         const hashValue = window.top.location.hash;
-        $("a[href$="+hashValue+"]")[0].scrollIntoView();
+        $("a[href$="+hashValue+"]").parents('.api_group_item')[0].scrollIntoView();
     };
 
     $("#button-show").click(function(){
