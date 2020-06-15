@@ -855,14 +855,16 @@ template {
  */
 a {
   background-color: transparent;
-  color: white;
+  color: #333333;
 }
 
 p a {
   background-color: transparent;
-  color: black;
+  color: #333333;
 }
-
+.connector_method_item a {
+  color: #ffffff;
+}
 
 /**
  * Improve readability of focused elements when they are also in an
