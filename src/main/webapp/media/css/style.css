@@ -180,7 +180,7 @@ a img {
   float: right;
   padding: 0;
   margin: 26px 25px 22px 0;
-  letter-spacing: 0.2px;
+  letter-spacing: 0;
   font-family: UniversNextforHSBC-Regular;
   font-size: 14px;
   color: #FFFFFF;
@@ -198,7 +198,7 @@ a img {
   font-size: 12px;
   line-height: 16px;
   color: #fff;
-  letter-spacing: 0.2px;
+  letter-spacing: 0;
   text-decoration: none;
 }*/
 
@@ -237,7 +237,7 @@ a img {
   font-size: 12px;
   line-height: 16px;
   color: #fff;
-  letter-spacing: 0.2px;
+  letter-spacing: 0;
   text-decoration: none;
 }
 
@@ -305,7 +305,7 @@ a img {
   line-height: 22px;
   color: #fff;
   margin: 0 0 0 0;
-  letter-spacing: 0.2px;
+  letter-spacing: 0;
 }
 .text-wrapper:nth-child(3) {
   text-align: center;
@@ -320,7 +320,7 @@ a img {
   display: block;
   color: #fff;
   margin: 0 0 0 0;
-  letter-spacing: 0.2px;
+  letter-spacing: 0;
   text-decoration: none;
 }
 
@@ -381,7 +381,7 @@ a img {
   font-size: 24px;
   line-height: 28px;
   font-weight: 400;
-  letter-spacing: 0.3px;
+  letter-spacing: 0;
   overflow: hidden;
 }
 
@@ -507,7 +507,7 @@ a img {
   font-size: 14px;
   line-height: 18px;
   color: #333333;
-  letter-spacing: 0.3px;
+  letter-spacing: 0;
 }
 
 
@@ -610,11 +610,10 @@ a img {
   color: #333333;
   font-weight: 400;
   padding: 0 0 0 0;
-  letter-spacing: 0.8px;
+  /*letter-spacing: 0.8px;*/
 }
 .api_list_item a {
   text-decoration: none;
-  color: #000;
   font-family: UniversNextforHSBC-Regular;
   font-size: 12px;
   color: #333333;
@@ -696,7 +695,7 @@ a img {
   color: #333333;
   margin: -3px 0 0 0;
   padding: 0 22px 15px 0;
-  letter-spacing: 0.25px;
+  letter-spacing: 0;
 }
 .content-box__text:last-child {
   padding: 0 22px 44px 0;
@@ -1231,7 +1230,7 @@ a.end-point-anchor {
 .full_path {
     line-height: 22px;
     color: #24bc65;
-    letter-spacing: 0.2px;
+    letter-spacing: 0;
     margin: 0 0 0 5px;
     clear: both;
     font-family: UniversNextforHSBC-Regular;
