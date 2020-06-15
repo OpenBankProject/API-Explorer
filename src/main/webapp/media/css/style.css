@@ -88,8 +88,8 @@ a img {
   float: right;
   margin: 0 0 0 0;
 }
-
-.sign-box a {
+.sign-box a,
+.sign-box a:hover {
   text-decoration: none;
 }
 
