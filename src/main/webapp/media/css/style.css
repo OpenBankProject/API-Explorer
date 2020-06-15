@@ -479,10 +479,13 @@ a img {
 
 .sign-box__text:hover {
   background: #AF000D;
+  text-decoration:none;    
 }
 
 .sign-box__text:active {
   background: #83000A;
+  text-decoration:none;
+
 }
 
 
@@ -513,7 +516,16 @@ a img {
    left: 0;
 }
 
-.content-box__input-box {
+.content-box__input-box .default-button:hover  {
+  background-color: #AF000D;
+  border-radius: 0;
+  outline: 0;
+}
+
+.content-box__input-box .default-button:active {
+  background-color: #83000A;
+  border-radius: 0;
+  outline: 0;
 }
 
 .content-box__input-box form > .default-input{
@@ -647,12 +659,15 @@ a img {
   font-size: 18px;
   line-height: 18px;
   text-transform: uppercase;
-  background-color: #50b165;
+  background-color: #DB0011;
   -moz-border-radius: 15px;
   -webkit-border-radius: 15px;
-  border-radius: 15px;
+  border-radius: 0px;
+  padding-top: 9px;
+  padding-bottom: 11px;
+  padding-left: 20px;
+  padding-right: 20px;
   color: #fff;
-  width: 102px;
   padding: 4px 0 4px 0;
 }
 
@@ -1019,9 +1034,46 @@ html input[type="button"],
 input[type="reset"],
 input[type="submit"] {
   -webkit-appearance: button;
-  /* 2 */
   cursor: pointer;
-  /* 3 */
+  border-radius: 0;
+  outline: 0;
+  padding-top: 9px;
+  padding-bottom: 11px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+button:hover,
+html input[type="button"]:hover,
+input[type="reset"]:hover,
+input[type="submit"]:hover {
+  outline: 0;
+  background: #F3F3F3;
+  border: 1px solid #333333;
+  outline: 0;  
+  border-radius: 0px;
+}
+
+button:active,
+html input[type="button"]:active,
+input[type="reset"]:active,
+input[type="submit"]:active {
+  outline: 0;
+  background: #EDEDED;
+  border: 1px solid #333333;
+  border-radius: 0px;
+}
+
+.input.focus,
+.input:focus,
+.input.active.focus,
+.input.active:focus,
+.input.active:hover,
+.input:active.focus,
+.input:active:focus,
+.input:active:hover{
+  border-radius: 0;
+  outline: 0;
+  border-radius: 0px;
 }
 
 /**
@@ -1216,10 +1268,17 @@ a.end-point-anchor {
   line-height: 24px;
   margin-right: 20px;
   margin-left: 20px;
+  text-decoration: none;
 }
 
 .logout-link:hover{
-  text-decoration: none; 
+  background-color: #F3F3F3;
+  text-decoration: none;
+}
+
+.logout-link:active{
+ background-color: #EDEDED;
+  text-decoration: none;
 }
 .grid-container {
   display: grid;
@@ -1248,6 +1307,7 @@ a.end-point-anchor {
   background: url(../images/dropdown-icon.jpg) no-repeat right 8px top 5px;
   background-size: 44px 32px;
   width: 187px;
+  outline: 0;
 }
 
 .select2-container--open .select2-selection--single {
@@ -1307,8 +1367,6 @@ a.end-point-anchor {
 #button-show,
 #button-hide{
   border-radius:0px;
-  width:60px;
-  height:24px;
   border: 1px solid #000000;
 }
 /*all the footer*/
