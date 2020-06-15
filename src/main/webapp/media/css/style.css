@@ -605,11 +605,14 @@ a img {
 }
 
 .api_list_item {
-  margin: 0 0 0px 0px;
+  margin: 0 0 0px -16px;
   font-size: 12px;
   color: #333333;
   font-weight: 400;
-  padding: 0 0 0 0;
+  padding: 0 0 0 26px;
+  background: url('/media/images/ico-list-bullet.png') no-repeat;
+  background-position-x: 4px ;
+  background-position-y: 2px;
   /*letter-spacing: 0.8px;*/
 }
 .api_list_item a {
@@ -624,7 +627,8 @@ a img {
 }
 
 .api_group_item  ul {
-  list-style-image: url('/media/images/ico-list-bullet.png');
+  /*margin-inline-start: 4px;*/
+  list-style: none;
 }
 
 .default-input {
