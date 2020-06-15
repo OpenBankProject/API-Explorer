@@ -15,14 +15,14 @@ $(document).ready(function() {
         $("a[href$="+hashValue+"]").parents('.api_group_item')[0].scrollIntoView();
     };
 
-    $("#button-show").click(function(){
-        $(".comma_separated_api_call_list").show();
-        $("#button-hide").show();
-        $("#button-show").hide();
-    });
-    $("#button-hide").click(function(){
-        $(".comma_separated_api_call_list").hide();
-        $("#button-hide").hide();
-        $("#button-show").show();
-    });
+    // $("#button-show").click(function(){
+    //     $(".comma_separated_api_call_list").show();
+    //     $("#button-hide").show();
+    //     $("#button-show").hide();
+    // });
+    // $("#button-hide").click(function(){
+    //     $(".comma_separated_api_call_list").hide();
+    //     $("#button-hide").hide();
+    //     $("#button-show").show();
+    // });
 });
