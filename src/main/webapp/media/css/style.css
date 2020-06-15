@@ -534,15 +534,21 @@ a img {
   margin-right: 20px;
   margin-top: 0;
   margin-bottom: 13px;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 16px;
+  color: #333333;
+  line-height: 24px;
 }
 
 .content-box__available-since {
   float: left;
   position: relative;
-  color: #504854;
   font-size: 8px;
   margin-left: 25px;
   margin-top: 13px;
+  font-family: UniversNextforHSBC-Regular;
+  color: #333333;
+  line-height: 24px;
 }
 
 
@@ -634,6 +640,10 @@ a img {
   -webkit-appearance: none;
   margin-top: 0px;
   width: 96%;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 16px;
+  color: #333333;
+  line-height: 24px;
   /*margin-right: 20px;*/
 }
 .rest-call-button {
@@ -975,8 +985,10 @@ code,
 kbd,
 pre,
 samp {
-  font-family: monospace, monospace;
-  font-size: 1em;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 16px;
+  color: #FFFFFF;
+  line-height: 24px;
 }
 
 /* Forms
@@ -1217,12 +1229,14 @@ a.end-point-anchor {
 
 
 .full_path {
-    font-size: 12px;
     line-height: 22px;
     color: #24bc65;
     letter-spacing: 0.2px;
     margin: 0 0 0 5px;
     clear: both;
+    font-family: UniversNextforHSBC-Regular;
+    font-size: 12px;
+    line-height: 24px;
 }
 
 .clearfloat {
@@ -1426,6 +1440,12 @@ footer .footer-box__paragraph {
 }
 footer .footer-box__paragraph2 {
   margin-bottom: 0px;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 14px;
+  color: #FFFFFF;
+  letter-spacing: 0;
+  line-height: 20px;
+  
 }
 
 footer .footer-box__paragraph2 a:hover  {
