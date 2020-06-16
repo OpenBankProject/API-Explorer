@@ -93,16 +93,18 @@ a img {
   text-decoration: none;
 }
 
-.logged-in a {
+.logged-in a,
+.logged-in a:hover,
+.logged-in a:active
+{
     text-decoration: none;
 }
 
 
-.logout-link:hover {
-    text-decoration: underline;
-    color: #000
+.logout-link:hover,
+.logout-link:active{
+    text-decoration: none;
 }
-
 
 .sign-box__text {
   font-family: UniversNextforHSBC-Regular;
@@ -541,12 +543,14 @@ a img {
   background-color: #AF000D;
   border-radius: 0;
   outline: 0;
+  border: 0;
 }
 
 .content-box__input-box .default-button:active {
   background-color: #83000A;
   border-radius: 0;
   outline: 0;
+  border: 0;
 }
 
 .content-box__input-box form > .default-input{
@@ -741,6 +745,13 @@ a img {
 }
 .roles__bank_id_input {
   color: #000000;
+  float: left;
+  margin-right: 20px;
+  margin-top: 5px;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 16px;
+  color: #333333;
+  line-height: 24px;
 }
 
 .content-box__info-box span {
@@ -1089,6 +1100,7 @@ input[type="submit"] {
   padding-bottom: 11px;
   padding-left: 20px;
   padding-right: 20px;
+  text-transform:capitalize;
 }
 button:hover,
 html input[type="button"]:hover,
@@ -1149,6 +1161,7 @@ input::-moz-focus-inner {
  */
 input {
   line-height: normal;
+  outline: 0;
 }
 
 /**
