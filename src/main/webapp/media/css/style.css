@@ -454,15 +454,36 @@ a img {
 }
 
 .content-box__headline {
-  margin: 0 0 26px 0;
+  margin: -332px 0 32px 0;
   font-weight: 400;
   padding: 332px 0 0 0;
   font-family: UniversNextforHSBC-Light;
-  font-size: 22px;
+  font-size: 28px;
   color: #333333;
   letter-spacing: 0;
   line-height: 31px;
 }
+#right_side .resource:nth-child(4) .content-box__headline{
+  margin: 0 0 32px 0;
+  padding: 332px 0 0 0;
+}
+
+
+.glossary .content-box__headline {
+  margin: -222px 0 32px 0;
+  font-weight: 400;
+  padding: 222px 0 0 0;
+  font-family: UniversNextforHSBC-Light;
+  font-size: 28px;
+  color: #333333;
+  letter-spacing: 0;
+  line-height: 31px;
+}
+#glossary-resources .glossary:nth-child(4) .content-box__headline{
+  margin: 0 0 32px 0;
+  padding: 222px 0 0 0;
+}
+
 
 .content-box__text-box {
   /*float: left;*/
@@ -993,6 +1014,16 @@ samp {
   font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #FFFFFF;
+  line-height: 24px;
+}
+
+.glossary code,
+.glossary kbd,
+.glossary pre,
+.glossary samp {
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 16px;
+  color: #333333;
   line-height: 24px;
 }
 
