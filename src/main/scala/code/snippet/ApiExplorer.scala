@@ -160,8 +160,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val listAllBanks = S.param("list-all-banks").getOrElse("false").toBoolean
   logger.info(s"all_banks in url param is $listAllBanks")
 
-  val currentTag = S.param("CurrentTag").getOrElse("Account")
-  
 
   val presetBankId = S.param("bank_id").getOrElse("")
   logger.info(s"bank_id in url param is $presetBankId")
@@ -1291,7 +1289,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
             // Within each group (first tag), list the resources
             "@api_list_item" #> i._2.sortBy(_.summary.toString()).map { i =>
               // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-                "@api_list_item_link [href]" #> s"?CurrentTag=${i.tags.head}#${i.id}" &
+                "@api_list_item_link [href]" #> s"#${i.id}" &
                   "@api_list_item_link *" #> i.summary &
                   "@api_list_item_link [id]" #> s"index_of_${i.id}"
                   // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
@@ -1315,7 +1313,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         }
       }
       else {
-        ".resource" #> resources.filter(_.tags.head==currentTag).map { i =>
+        ".resource" #> resources.map { i =>
           // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
           ".end-point-anchor [href]" #> s"#${i.id}" &
           ".content-box__headline *" #> i.summary &
