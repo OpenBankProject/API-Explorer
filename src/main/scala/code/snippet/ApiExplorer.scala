@@ -1362,7 +1362,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           // This class gets a list of connector methods
           ".connector_method_item" #> i.connectorMethods.map { i=>
             // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-            ".connector_method_item_link [href]" #> s"message-docs?connector=rest_vMar2019#${urlEncode(i.replaceAll(" ", "-"))}" &
+            ".connector_method_item_link [href]" #> s"message-docs?connector=stored_procedure_vDec2019#${urlEncode(i.replaceAll(" ", "-"))}" &
               ".connector_method_item_link *" #> i
           } &
           //required roles and related user information
