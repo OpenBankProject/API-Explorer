@@ -69,6 +69,12 @@ class WebUI extends MdcLoggable {
     "img [src]" #> getPropsValue("webui_header_logo_right_url", "https://static.openbankproject.com/images/obp_logo_stacked.png")
   }
 
+  def currentYearText: CssSel = {
+    import java.util.Calendar
+    val year = Calendar.getInstance.get(Calendar.YEAR).toString
+    "#copyright-year *" #> scala.xml.Unparsed(year)
+  }
+
   /*
 
   def footer2LogoLeft = {

@@ -5,3 +5,7 @@
 //    "default_topic_url": "http://polarize.it/polarize/socialfinanceapp_55868373368"
 //  });
 //});
+
+// In your Javascript (external .js resource or <script> tag)
+$(document).ready(function() {
+});

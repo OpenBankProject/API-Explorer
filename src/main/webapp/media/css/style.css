@@ -489,11 +489,11 @@ a img {
     background-color: white;
 }
 
-.comma_separated_api_call_list {
-    background-color: white;
-    font-size: 10px;
-    text-decoration: none;
-}
+/*.comma_separated_api_call_list {*/
+/*    background-color: white;*/
+/*    font-size: 10px;*/
+/*    text-decoration: none;*/
+/*}*/
 
 .api_group_item {
   margin: 0 0 25px -20px;

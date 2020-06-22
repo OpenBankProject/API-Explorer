@@ -400,61 +400,73 @@ WIP to add comments on resource docs. This code copied from Sofit.
       bankId <- barebonesAccountJson.bank_id
     } yield BankId(bankId)
 
+  val defaultVersion: String = "OBPv4.0.0"
+
+  // Get the requested version from the url parameter and default if none
+  val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
+
+
+
+  // Possible OBP Versions
+  val obpVersionsSupported = List("OBPv2.2.0", "OBPv3.0.0", "OBPv3.1.0", "OBPv4.0.0")
+
+  val otherVersionsSupported = List("BGv1.3", "UKv3.1", "UKv2.0", "STETv1.4", "PAPIv2.1.1.1", "b1", "AUv1.0.0")
+
+  // Set the version to use.
+  val apiVersion: String = {
+    if (obpVersionsSupported.contains(apiVersionRequested)) {
+      // Prefix with v (for OBP versions because they come just with number from API Explorer)
+      // Note: We want to get rid of this "v" prefix ASAP.
+      s"v$apiVersionRequested"
+    } else
+    if (otherVersionsSupported.contains(apiVersionRequested)) {
+      s"$apiVersionRequested"
+    } else {
+      S.notice(s"Note: Requested version $apiVersionRequested is not currently supported. Set to v$defaultVersion")
+      s"v$defaultVersion"
+    }
+  }
+
+  val isObpVersion: Boolean = {
+    obpVersionsSupported.contains(apiVersionRequested)
+  }
+
+  logger.info(s"apiVersion is: $apiVersion")
+
+
+  // To link to API home page (this is duplicated in OAuthClient)
+  val baseUrl = Helper.getPropsValue("api_hostname", S.hostName)
+  //
+  val apiPortalHostname = Helper.getPropsValue("api_portal_hostname", baseUrl)
+
+
+  // Use to show the developer the current base version url
+  val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}"
+  // Link to the API endpoint for the resource docs json TODO change apiVersion so it doesn't have a "v" prefix
+  val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?$pureCatalogParams${tagsParamString}${languagesParamString}"
+
+  // Link to the API endpoint for the swagger json
+  val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?$pureCatalogParams${tagsParamString}${languagesParamString}"
+
+  val chineseVersionPath = "?language=zh"
+  val allPartialFunctions = "/partial-functions.html"
+  
+  def showPartialFunctions =  {
+    // Get a list of resource docs from the API server
+    // This will throw an exception if resource_docs key is not populated
+    // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
+    // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
+    val allResources: List[ResourceDocJson] = for {
+      rs <- getResourceDocsJson(apiVersion).toList
+      r <- rs.resource_docs
+    } yield r
+    // The list generated here might be used by an administrator as a white or black list of API calls for the API itself.
+    val commaSeparatedListOfResources = allResources.map(_.implemented_by.function).mkString("[", ", ", "]")
+
+    "#all-partial-functions" #> commaSeparatedListOfResources 
+  }
 
   def showResources = {
-
-    val defaultVersion: String = "OBPv4.0.0"
-
-    // Get the requested version from the url parameter and default if none
-    val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
-
-
-
-    // Possible OBP Versions
-    val obpVersionsSupported = List("OBPv2.2.0", "OBPv3.0.0", "OBPv3.1.0", "OBPv4.0.0")
-
-    val otherVersionsSupported = List("BGv1.3", "UKv3.1", "UKv2.0", "STETv1.4", "PAPIv2.1.1.1", "b1", "AUv1.0.0")
-
-    // Set the version to use.
-    val apiVersion: String = {
-      if (obpVersionsSupported.contains(apiVersionRequested)) {
-        // Prefix with v (for OBP versions because they come just with number from API Explorer)
-        // Note: We want to get rid of this "v" prefix ASAP.
-        s"v$apiVersionRequested"
-      } else
-      if (otherVersionsSupported.contains(apiVersionRequested)) {
-          s"$apiVersionRequested"
-        } else {
-        S.notice(s"Note: Requested version $apiVersionRequested is not currently supported. Set to v$defaultVersion")
-        s"v$defaultVersion"
-      }
-    }
-
-    val isObpVersion: Boolean = {
-      obpVersionsSupported.contains(apiVersionRequested)
-    }
-
-    logger.info(s"apiVersion is: $apiVersion")
-
-
-    // To link to API home page (this is duplicated in OAuthClient)
-    val baseUrl = Helper.getPropsValue("api_hostname", S.hostName)
-    //
-    val apiPortalHostname = Helper.getPropsValue("api_portal_hostname", baseUrl)
-
-
-    // Use to show the developer the current base version url
-    val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}"
-
-    // Link to the API endpoint for the resource docs json TODO change apiVersion so it doesn't have a "v" prefix
-    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?$pureCatalogParams${tagsParamString}${languagesParamString}"
-
-    // Link to the API endpoint for the swagger json
-    val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?$pureCatalogParams${tagsParamString}${languagesParamString}"
-    
-    val chineseVersionPath = "?language=zh"
-
-
 
     val entitlementsForCurrentUser = getEntitlementsForCurrentUser
     logger.info(s"there are ${entitlementsForCurrentUser.length} entitlementsForCurrentUser(s)")
@@ -606,10 +618,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Sort the groups by the Tag. Note in the rendering we sort the resources by summary.
     val groupedFeaturedResources  = unsortedFeaturedGroupedResources.toSeq.sortBy(_._1)
     /////////////////
-
-    // The list generated here might be used by an administrator as a white or black list of API calls for the API itself.
-    val commaSeparatedListOfResources = resources.map(_.implementedBy.function).mkString("[", ", ", "]")
-
 
     // Headline and Description of the search
     val (catalogHeadline, catalogDescription) = List(showCore, showOBWG, showPSD2)  match {
@@ -1263,6 +1271,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "@resource_docs_path [href]" #> s"$resourceDocsPath" &
     "@swagger_path [href]" #> s"$swaggerPath" &
     "@chinese_version_path [href]" #> s"$chineseVersionPath" &
+    "@all_partial_functions [href]" #> s"$allPartialFunctions" &
     "#api_home_link [href]" #> s"$apiPortalHostname" &
     "@views_box [style]" #> s"display: $displayViews;" &
     "@catalog_description *" #> s"$catalogDescription" &
@@ -1296,7 +1305,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         }
       } &
     // This is used by API administrators who want to create white or black lists of API calls to use in Props for the API.
-    ".comma_separated_api_call_list *" #> commaSeparatedListOfResources &
+//    ".comma_separated_api_call_list *" #> commaSeparatedListOfResources &
       // replace the node identified by the class "resource" with the following
       // This creates the list of resources in the DOM
     {
