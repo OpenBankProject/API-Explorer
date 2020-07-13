@@ -1463,9 +1463,15 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".outbound-message *" #> stringToNodeSeq(Helper.renderJson(i.example_outbound_message)) &
         ".inbound-message *" #> stringToNodeSeq(Helper.renderJson(i.example_inbound_message)) &
         ".description *" #> stringToNodeSeq((i.description)) &
-        ".inbound-required-fields *" #> stringToNodeSeq(Helper.renderJson(i.requiredFieldInfo.getOrElse(JNothing)))
+        ".inbound-required-fields *" #> stringToNodeSeq(Helper.renderJson(i.requiredFieldInfo.getOrElse(JNothing))) &
+          ".dependent-endpoints *" #>
+              <ul>{i.dependent_endpoints.map { endpointInfo =>
+                    val link = s"/?version=${endpointInfo.version}&list-all-banks=false#${endpointInfo.version.replace('.', '_')}-${endpointInfo.name}"
+                    <li>{endpointInfo.version}: <a style="color: white;" href={link}>{endpointInfo.name}</a></li>
+                  }
+                }</ul>
     }
-      }
+  }
 
   private lazy val shownVersionNamesInMainPage: Set[String] = {
     val shownLinks =  Helper.getPropsValue("main.included.links") match {
