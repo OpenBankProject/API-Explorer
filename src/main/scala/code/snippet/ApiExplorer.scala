@@ -1293,7 +1293,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
       } &
     // List the resources grouped by the first tag
       "@api_group_item" #> groupedResources.map { i =>
-          "@api_group_name *" #> s"${i._1.replace("-"," ")}" &
+          "@api_group_item [data-target]" #> s"#group-collapse-${i._1}" & 
+          "@api_group_name *" #> s"${i._1.replace("-"," ")}" & 
+            "@api_group_name_collapse [id]" #> s"group-collapse-${i._1}" &
             // Set an anchor (href and id) for a group
             "@api_group_name [href]" #> s"#group-${i._1}" &
             "@api_group_name [id]" #> s"group-${i._1}" &

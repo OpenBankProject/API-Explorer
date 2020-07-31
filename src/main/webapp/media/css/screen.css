@@ -1,26 +1,26 @@
+/*reset the default boostrap design:*/
+.container {
+  width: auto;
+  padding:0;
+  margin:0;
+  margin-left: 365px;
+}
+pre{
+  border: 0; 
+  background-color: #333333;
+}
+
+hr {
+  border: 0;
+  margin: 0;
+  border-top: 1px solid #D7D8D6 ;
+}
+
 @media only screen and (max-width: 1420px) {
   #transaction_selector-option-box {visibility: hidden;}
-  
-}
-@media only screen and (max-width: 1220px) {
-  #counterparty_selector-option-box {visibility: hidden;}
 }
 
-@media only screen and (min-width: 601px) and (max-width: 1558px) {
-  #breadcrumb-section-more-page {height: 58px;}
-  #api-info-section-more-page{top: 145px;}
-  #option-section-more-page{top: 212px;}
-}
-
-@media only screen and (max-width: 600px) {
-  #breadcrumb-section-more-page {height: 80px;}
-  #api-info-section-more-page{top: 165px;}
-  #option-section-more-page{top: 260px;}
-}
-
-
-@media only screen and (max-width: 1081px) {
-  #left_side {visibility: collapse;}
+@media only screen and (min-width: 760px) and (max-width: 1279px) {
   .content-box__info-box {max-width: 1000px;}
   .content-box__input-box {max-width: 1000px;}
   .content-box__right-box {max-width: 1000px;}
@@ -30,64 +30,38 @@
   .default-button {left: 88%;}
   .default-input {max-width: 82%;}
   .version_path {visibility: hidden;}
-  .api_list {visibility: hidden;}
+  .api_list {
+    display: none;
+    width: 100%;
+    top:88px
+  }
   .content-box__headline {padding: 320px 0 0 0;}
-  #logo-left {visibility: visible;}
+  #logo-left {
+    visibility: visible;
+    display: inline-block;
+    float: none;
+  }
   #logo-right {visibility: hidden;}
   #right_side .resource:nth-child(4) .content-box__headline{
     margin: 0 0 32px 0;
     padding: 220px 0 0 0;
   }
-}  
-@media only screen and (max-width: 1000px) {
-  #left_side {visibility: collapse;}
-  .content-box__info-box {max-width: 900px;}
-  .content-box__input-box {max-width: 900px;}
-  .content-box__right-box {max-width: 900px;}
-  .content-box__text-box {max-width: 900px;}
-  .container {margin-left: 0px;}
-  .option-section {display: none;}
-  .default-button {left: 85%;}
-  .default-input {max-width: 75%;}
-  .version_path {visibility: hidden;}
-  .api_list {visibility: hidden;}
-  .content-box__headline {padding: 320px 0 0 0;}
-  #logo-left {visibility: visible;}
-  #logo-right {visibility: hidden;}
-} 
-@media only screen and (max-width: 900px) {
-  #left_side {visibility: collapse;}
-  .content-box__info-box {max-width: 800px;}
-  .content-box__input-box {max-width: 800px;}
-  .content-box__right-box {max-width: 800px;}
-  .content-box__text-box {max-width: 800px;}
-  .container {margin-left: 0px;}
-  .option-section {display: none;}
-  .default-button {left: 85%;}
-  .default-input {max-width: 75%;}
-  .version_path {visibility: hidden;}
-  .api_list {visibility: hidden;}
-  .content-box__headline {padding: 320px 0 0 0;}
-  #logo-left {visibility: visible;}
-  #logo-right {visibility: hidden;}
-} 
-@media only screen and (max-width: 800px) {
-  #left_side {visibility: collapse;}
-  .content-box__info-box {max-width: 700px;}
-  .content-box__input-box {max-width: 700px;}
-  .content-box__right-box {max-width: 700px;}
-  .content-box__text-box {max-width: 700px;}
-  .container {margin-left: 0px;}
-  .option-section {display: none;}
-  .default-button {left: 83%;}
-  .default-input {max-width: 75%;}
-  .version_path {visibility: hidden;}
-  .api_list {visibility: hidden;}
-  .content-box__headline {padding: 320px 0 0 0;}
-  #logo-left {visibility: visible;}
-  #logo-right {visibility: hidden;}
-}  
-@media only screen and (max-width: 700px) {
+  #small-nav-collapse{
+    display: block;
+  }
+  #small-screen-navbar #small-nav-collapse {
+    display: block;
+  }
+  .header .container{
+    text-align: center;
+  }
+
+  .api_list_item {
+    background: none
+  }
+}
+
+@media only screen and (min-width: 320px) and (max-width: 759px) {
   #left_side {visibility: collapse;}
   .content-box__info-box {max-width: 600px;}
   .content-box__input-box {max-width: 600px;}
@@ -100,76 +74,6 @@
   .version_path {visibility: hidden;}
   .api_list {visibility: hidden;}
   .content-box__headline {padding: 320px 0 0 0;}
-  #logo-left {visibility: visible;}
-  #logo-right {visibility: hidden;}
-} 
-@media only screen and (max-width: 600px) {
-  #left_side {visibility: collapse;}
-  .content-box__info-box {max-width: 500px;}
-  .content-box__input-box {max-width: 500px;}
-  .content-box__right-box {max-width: 500px;}
-  .content-box__text-box {max-width: 500px;}
-  .container {margin-left: 0px;}
-  .option-section {display: none;}
-  .default-button {left: 80%;}
-  .default-input {max-width: 70%;}
-  .version_path {visibility: hidden;}
-  .api_list {visibility: hidden;}
-  .content-box__headline {padding: 320px 0 0 0;}
-  .header .site-title-box__text {visibility: hidden;}
-  #logo-left {visibility: visible;}
-  #logo-right {visibility: hidden;}
-} 
-@media only screen and (max-width: 500px) {
-  #left_side {visibility: collapse;}
-  .content-box__info-box {max-width: 450px;}
-  .content-box__input-box {max-width: 450px;}
-  .content-box__right-box {max-width: 450px;}
-  .content-box__text-box {max-width: 450px;}
-  .container {margin-left: 0px;}
-  .option-section {display: none;}
-  .default-button {left: 75%;}
-  .default-input {max-width: 65%;}
-  .version_path {visibility: hidden;}
-  .api_list {visibility: hidden;}
-  .content-box__headline {padding: 320px 0 0 0;}
-  .header .site-title-box__text {visibility: hidden;}
-  #logo-left {visibility: visible;}
-  #logo-right {visibility: hidden;}
-}
-/*iPhone 6/7/8 Plus*/
-@media only screen and (max-width: 414px) {
-  #left_side {visibility: collapse;}
-  .content-box__info-box {max-width: 390px;}
-  .content-box__input-box {max-width: 390px;}
-  .content-box__right-box {max-width: 390px;}
-  .content-box__text-box {max-width: 390px;}
-  .container {margin-left: 0px;}
-  .option-section {display: none;}
-  .default-button {left: 75%;}
-  .default-input {max-width: 63%;}
-  .version_path {visibility: hidden;}
-  .api_list {visibility: hidden;}
-  .content-box__headline {padding: 320px 0 0 0;}
-  .header .site-title-box__text {visibility: hidden;}
-  #logo-left {visibility: visible;}
-  #logo-right {visibility: hidden;}
-} 
-/*iPhone 6/7/8*/
-@media only screen and (max-width: 375px) {
-  #left_side {visibility: collapse;}
-  .content-box__info-box {max-width: 350px;}
-  .content-box__input-box {max-width: 350px;}
-  .content-box__right-box {max-width: 350px;}
-  .content-box__text-box {max-width: 350px;}
-  .container {margin-left: 0px;}
-  .option-section {display: none;}
-  .default-button {left: 70%;}
-  .default-input {max-width: 57%;}
-  .version_path {visibility: hidden;}
-  .api_list {visibility: hidden;}
-  .content-box__headline {padding: 320px 0 0 0;}
-  .header .site-title-box__text {visibility: hidden;}
   #logo-left {visibility: visible;}
   #logo-right {visibility: hidden;}
 }

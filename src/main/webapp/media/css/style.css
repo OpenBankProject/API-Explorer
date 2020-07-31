@@ -1508,3 +1508,83 @@ footer a:hover{
   letter-spacing: 0;
   line-height: 20px;
 }
+
+#left_side .api_group_item {
+  background-image: url('/media/images/chevron_up_thick.svg');
+  background-repeat:no-repeat;
+  background-position: top 0px right 9px;
+  background-size: 16px 9.7px;
+}
+
+#left_side .collapsed {
+  background-image: url('/media/images/chevron_down_thick.svg');
+  background-position: top 0px right 9px;
+  background-repeat:no-repeat ;
+  background-size: 16px 9.7px;
+}
+
+.sidebar {
+  height: 88px;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #ffffff;
+  overflow-x: hidden;
+  transition: 0.5s;
+}
+
+.sidebar a {
+  text-decoration: none;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 16px;
+  color: #333333;
+  line-height: 24px;
+}
+
+.sidebar #sideba-api-key-div a {
+  font-family: UniversNextforHSBC-Medium;
+}
+
+#small-screen-navbar{
+  text-align: center;
+}
+
+#small-screen-navbar #small-nav-collapse {
+  width: 22px;
+  height: 22px;
+  margin-top: 26px;
+  margin-bottom: 26px;
+  margin-left: 16px;
+  float: left;
+  background-image: url(/media/images/Path.png);
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+  display: none;
+}
+
+#small-nav-collapse {
+  width: 22px;
+  height: 22px;
+  margin-top: 33px;
+  margin-bottom: 33px;
+  margin-left: 25px;
+  float: left;
+  background-image: url(/media/images/Path.png);
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+  display: none;
+}
+
+#small-nav-cross {
+  width: 22px;
+  height: 22px;
+  margin-top: 33px;
+  margin-bottom: 33px;
+  margin-left: 25px;
+  float: left;
+  background-image: url(/media/images/Path.png);
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+}
