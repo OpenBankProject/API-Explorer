@@ -345,10 +345,14 @@ hr {
     line-height: 18px;
   }
   .breadcrumb-section {
-    top: 75px;
+    top: 70px;
   }
   .api-info-section {
-    top:115px
+    top:110px
+  }
+  .header .settings-box {
+    float: right;
+    margin: 19px 16px 19px 0;
   }
 }
 
