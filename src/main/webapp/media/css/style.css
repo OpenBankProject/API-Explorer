@@ -91,6 +91,7 @@ a img {
 .sign-box a,
 .sign-box a:hover {
   text-decoration: none;
+  color: #FFFFFF;
 }
 
 .logged-in a,
@@ -1509,82 +1510,43 @@ footer a:hover{
   line-height: 20px;
 }
 
-#left_side .api_group_item {
-  background-image: url('/media/images/chevron_up_thick.svg');
-  background-repeat:no-repeat;
-  background-position: top 0px right 9px;
-  background-size: 16px 9.7px;
+.api_group_item_small_screen {
+  margin: 20px 0 20px 0px;
+  list-style-type: none;
+  list-style-image: none;
 }
-
-#left_side .collapsed {
-  background-image: url('/media/images/chevron_down_thick.svg');
-  background-position: top 0px right 9px;
-  background-repeat:no-repeat ;
-  background-size: 16px 9.7px;
+.api_group_item_small_screen .api_group_name_small_screen:first-child {
+  margin-bottom: 20px;
 }
-
-.sidebar {
-  height: 88px;
-  width: 0;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  background-color: #ffffff;
-  overflow-x: hidden;
-  transition: 0.5s;
+.api_group_item_small_screen .api_list_item_small_screen:last-child {
+  margin-bottom: 12px;
 }
-
-.sidebar a {
+.api_group_item_small_screen a {
   text-decoration: none;
-  font-family: UniversNextforHSBC-Regular;
-  font-size: 16px;
+  font-family: UniversNextforHSBC-Light;
+  font-size: 19px;
   color: #333333;
-  line-height: 24px;
+  line-height: 27px;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+.api_group_item_small_screen a:hover {
+  color: #333333;
 }
 
-.sidebar #sideba-api-key-div a {
-  font-family: UniversNextforHSBC-Medium;
+.api_group_name_small_screen{
+  margin-bottom: 20px;
 }
-
-#small-screen-navbar{
-  text-align: center;
+.api_list_small_screen ul {
+  list-style-type: none;
+  padding-left: 0px;
 }
-
-#small-screen-navbar #small-nav-collapse {
-  width: 22px;
-  height: 22px;
-  margin-top: 26px;
-  margin-bottom: 26px;
-  margin-left: 16px;
-  float: left;
-  background-image: url(/media/images/Path.png);
-  background-repeat: no-repeat;
-  background-size: 18px 18px;
-  display: none;
+.api_list_small_screen{
+  margin-top: 113px;
+  margin-left: 28px;
+  margin-right: 28px;
 }
-
-#small-nav-collapse {
-  width: 22px;
-  height: 22px;
-  margin-top: 33px;
-  margin-bottom: 33px;
-  margin-left: 25px;
-  float: left;
-  background-image: url(/media/images/Path.png);
-  background-repeat: no-repeat;
-  background-size: 18px 18px;
-  display: none;
-}
-
-#small-nav-cross {
-  width: 22px;
-  height: 22px;
-  margin-top: 33px;
-  margin-bottom: 33px;
-  margin-left: 25px;
-  float: left;
-  background-image: url(/media/images/Path.png);
-  background-repeat: no-repeat;
-  background-size: 18px 18px;
+.api_list_item_small_screen img{
+  display: inline-block;
+  margin-bottom: 3px;
 }

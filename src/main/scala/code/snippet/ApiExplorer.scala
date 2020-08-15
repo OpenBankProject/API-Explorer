@@ -1293,9 +1293,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       } &
     // List the resources grouped by the first tag
       "@api_group_item" #> groupedResources.map { i =>
-          "@api_group_item [data-target]" #> s"#group-collapse-${i._1}" & 
-          "@api_group_name *" #> s"${i._1.replace("-"," ")}" & 
-            "@api_group_name_collapse [id]" #> s"group-collapse-${i._1}" &
+          "@api_group_name *" #> s"${i._1.replace("-"," ")}" &
             // Set an anchor (href and id) for a group
             "@api_group_name [href]" #> s"#group-${i._1}" &
             "@api_group_name [id]" #> s"group-${i._1}" &
@@ -1313,6 +1311,26 @@ WIP to add comments on resource docs. This code copied from Sofit.
                   "@api_list_item_link [id]" #> s"index_of_${i.id}"
                   // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
         }
+      } &
+      // The `api_group_item_small_screen` is all for the small screen, 
+      "@api_group_item_small_screen" #> groupedResources.map { i =>
+        "@api_group_item_small_screen [data-target]" #> s"#group-collapse_small_screen-${i._1}" &
+          "@api_group_name_small_screen *" #> s"${i._1.replace("-"," ")}" &
+          "@api_group_name_collapse_small_screen [id]" #> s"group-collapse_small_screen-${i._1}" &
+          // Set an anchor (href and id) for a group
+//          "@api_group_name_small_screen [href]" #> s"#group_small_screen-${i._1}" &
+          "@api_group_name_small_screen [id]" #> s"group_small_screen-${i._1}" &
+          // Within each group (first tag), list the resources
+          "@api_list_item_small_screen" #> i._2.sortBy(_.summary.toString()).map { i =>
+            // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
+            "@api_list_item_link_small_screen [href]" #>
+              (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty) //If the tags are in the URL, we just need to show the anchor, no need the parameters. 
+                s"#${i.id}"
+              else
+                s"?operation_id=${i.id}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
+              "@api_list_item_link_small_screen *" #> i.summary &
+              "@api_list_item_link_small_screen [id]" #> s"index_of__small_screen${i.id}"
+          }
       } &
     // This is used by API administrators who want to create white or black lists of API calls to use in Props for the API.
 //    ".comma_separated_api_call_list *" #> commaSeparatedListOfResources &

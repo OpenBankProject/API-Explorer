@@ -6,28 +6,39 @@
 //  });
 //});
 function openNav() {
-    $("#obp-sidebar").css("width","100%");
+    $("#left_side_small_screen").css("width","100%");
+    $("#left_side_small_screen").css("display","block");
     $(".breadcrumb-section").css("display","none");
     $(".api-info-section").css("display","none");
-    $(".api-info-about").css("display","none");
     $("#right_side").css("display","none");
     $("#small-nav-collapse").attr("onclick","closeNav()");
-    $(".api_list").css("display","block");
-    logOnButton = $("#small-nav-log-on-button").text().indexOf("Log on")
-    if (logOnButton < 0){
-        $("#register-link").css("display","none")
+    logOnButton = $("#start-login").text().indexOf("Log on");
+    if (logOnButton >= 0){
+        $("#left_side_small_screen .settings-box").css("display","none")
     }
 }
 
 function closeNav() {
-    $("#obp-sidebar").css("width","0");
+    $("#left_side_small_screen").css("width","0");
+    $("#left_side_small_screen").css("display","none");
     $(".breadcrumb-section").css("display","block");
     $(".api-info-section").css("display","block");
-    $(".api-info-about").css("display","block");
     $("#right_side").css("display","block");
     $("#small-nav-collapse").attr("onclick","openNav()");
-    $(".api_list").css("display","none");
 }
+
+//This function to make sure in the big screen, to close the left_side_small_screen div, then we can show the api_list 
+var flag = true;
+$(window).resize(function() {
+    if(screen.width < 1280 && !flag){
+        flag = true
+    }
+    if(screen.width >= 1280 && flag){
+        closeNav()
+        flag =false
+    }
+});
+
 
 // In your Javascript (external .js resource or <script> tag)
 $(document).ready(function() {
@@ -38,14 +49,13 @@ $(document).ready(function() {
         $("a[href$="+hashValue+"]").parents('.api_group_item')[0].scrollIntoView();
     };
 
-    // $("#button-show").click(function(){
-    //     $(".comma_separated_api_call_list").show();
-    //     $("#button-hide").show();
-    //     $("#button-show").hide();
-    // });
-    // $("#button-hide").click(function(){
-    //     $(".comma_separated_api_call_list").hide();
-    //     $("#button-hide").hide();
-    //     $("#button-show").show();
-    // });
+    //this will show which endpoint is slected, when you click the endpoints in the left_side_small_screen div
+    $("#small-nav-collapse").on('click keydown', (e) => {
+        if(e.keyCode && e.keyCode == 13 || e.type == "click" ){
+            var hasValue = window.location.hash.substr(1);
+            var smallSceenEndpointId="index_of__small_screen"+hasValue;
+            $("#"+smallSceenEndpointId).parent().parent().css('height', '').attr("class","collapse in").attr("aria-expanded","true")
+            $("#"+smallSceenEndpointId).css("font-family","UniversNextforHSBC-Medium")
+        }
+    });
 });
