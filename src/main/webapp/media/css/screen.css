@@ -176,6 +176,9 @@ hr {
 }
 
 @media only screen and (max-width: 759px)  {
+  li[name="other_versions"] {
+    display: none;
+  }
   #logo-left {
     margin: 25px 0 25px 25px;
     height: 20px;
@@ -348,3 +351,8 @@ hr {
     top:115px
   }
 }
+
+@media only screen and (max-width: 535px) {
+  #More {visibility: hidden;}
+}
+

@@ -39,8 +39,7 @@
                         <a name="api_group_name" class="api_group_name" href="./#groupanchor">API group</a>
                         <ul>
                             <li name="api_list_item" class="api_list_item">
-                                <a name="api_list_item_link" class="api_list_item_link" href="./#anchor">API call
-                                    title</a>
+                                <a name="api_list_item_link" class="api_list_item_link" href="./#anchor">API call title</a>
                             </li>
                         </ul>
 
@@ -48,6 +47,27 @@
                 </ul>
             </div>
         </div>
+        <div id="left_side_small_screen">
+            <div class="api_list_small_screen">
+                <ul>
+                    <li name="api_group_item_small_screen" class="api_group_item_small_screen collapsed" data-target="#group-collapse-item_small_screen" data-toggle="collapse" aria-expanded="false">
+                        <a name="api_group_name_small_screen" class="api_group_name_small_screen" >API group</a>
+                        <ul name="api_group_name_collapse_small_screen" class="collapse" id="group-collapse-item_small_screen" aria-expanded="false" style="height: 0px;">
+                            <li name="api_list_item_small_screen" class="api_list_item_small_screen">
+                                <a name="api_list_item_link_small_screen" class="api_list_item_link_small_screen" href="./#anchor">API call title</a>  <img width="7" height="10" src="media/images/chevron_right_thick_DB0011.svg">
+                            </li>
+                        </ul>
+                        <hr>
+                    </li>
+                </ul>
+            </div>
+            <div class="settings-box" data-lift="Login.login">
+                <a id="logout" href="#">
+                    <div class="logout-link">Log off</div>
+                </a>
+            </div>
+        </div>
+        <div id="right_side">
         <section id="breadcrumb-section-more-page" class="breadcrumb-section">
             <div class="container">
                 <div class="breadcrumbs">
@@ -56,7 +76,7 @@
 
 
                         <li class="breadcrumbs__list">
-                            <a id="index_link" href="./" class="breadcrumbs__link">Index</a>
+                            <a id="index_link" href="./" class="breadcrumbs__link">API Explorer</a>
                         </li>
 
 
@@ -318,66 +338,66 @@
                             </div>
 
 
-                            <!-- Very WIP Add comments to resource docs
-                                                    <div name="comments_box" class="content-box__info-box">
-                                                        Comments:
-                                                        <ul>
-                                                            <li class="comment_item">
-                                                                Comment Item
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                            -->
+                                <!-- Very WIP Add comments to resource docs
+                                                        <div name="comments_box" class="content-box__info-box">
+                                                            Comments:
+                                                            <ul>
+                                                                <li class="comment_item">
+                                                                    Comment Item
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                -->
+                            </div>
+
                         </div>
-
+                        <div class="clearfloat"></div>
+                        <div class="content-box__available-since"></div>
                     </div>
-                    <div class="clearfloat"></div>
-                    <div class="content-box__available-since"></div>
-                </div>
-            </section>
+                </section>
 
 
-            <!-- End of Resources loop (one for each API call -->
-        </div>
-        <div class="resource-error" style="display: none;">
-            <section class="content-section">
-                <div class="container">
-                    <div class="content-box bg--white">
-                        <h2 class="content-box__headline"></h2>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <div id="resouce-footer">
-            <div class="container">
-                <p>Get documentation about the selected endpoints as: </p>
-                <p>
-                    <a name="resource_docs_path" href="">Resource Docs JSON</a>
-                </p>
-                <p>
-                    <a name="swagger_path" href="">Swagger 2 JSON</a></p>
-                <p>
-                    <a name="chinese_version_path" href="">中文版本</a>
-                </p>
-                <p>
-                    <a name="all_partial_functions" href="">Partial Functions</a>
-                </p>
-<!--                <p>This list can be used as a basis to limit the available-->
-<!--                    endpoints by editing the API Props:-->
-<!--                    <input id="button-show" type="button" value="Show"/>-->
-<!--                    <input id="button-hide" type="button" value="Hide" style="display: none"/></p>-->
-<!--                <div class="comma_separated_api_call_list" style="display: none;"></div>-->
-
-                <p>Note: You can list just the APIs that are implemented in a
-                    certain version by appending &native=true to the index URL.</p>
-
+                <!-- End of Resources loop (one for each API call -->
             </div>
+            <div class="resource-error" style="display: none;">
+                <section class="content-section">
+                    <div class="container">
+                        <div class="content-box bg--white">
+                            <h2 class="content-box__headline"></h2>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="resouce-footer">
+                <div class="container">
+                    <p>Get documentation about the selected endpoints as: </p>
+                    <p >
+                        <a name="resource_docs_path" href="">Resource Docs JSON</a>
+                    </p>
+                    <p >
+                        <a name="swagger_path" href="">Swagger 2 JSON</a></p>
+                    <p >
+                        <a name="chinese_version_path" href="">中文版本</a>
+                    </p>
+                    <p>
+                        <a name="all_partial_functions" href="">Partial Functions</a>
+                    </p>
+<!--                    <div class="comma_separated_api_call_list" style="display: none;"></div>-->
+<!--                    <p>This list can be used as a basis to limit the available-->
+<!--                        endpoints by editing the API Props:-->
+<!--                        <input id="button-show" type="button" value="Show"/>-->
+<!--                        <input id="button-hide" type="button" value="Hide" style="display: none"/></p>-->
+<!--                    <div class="comma_separated_api_call_list"></div>-->
+
+                    <p>Note: You can list just the APIs that are implemented in a
+                        certain version by appending &native=true to the index URL.</p>
+
+                </div>
+            </div>
+            
         </div>
-
+        
     </div>
-
-    <!-- End of Lift generated content -->
-</div>
 
 </div>

@@ -210,12 +210,9 @@ a img {
 .breadcrumbs__list {
   display: inline-block;
   padding: 0;
+  margin-right: 24px;
 }
-.breadcrumbs__list:after {
-  content: "\00a0/\00a0";
-  color: #fff;
-  font-size: 14px;
-}
+
 .breadcrumbs__list:last-child:after {
   content: "";
 }
@@ -234,9 +231,9 @@ a img {
 
 
 .extra_small_text {
-  padding: 5;
+  padding: 5px;
   display: inline-block;
-  margin: 10 10 10 10;
+  margin: 10px;
   font-size: 12px;
   line-height: 16px;
   color: #fff;
@@ -1549,4 +1546,15 @@ footer a:hover{
 .api_list_item_small_screen img{
   display: inline-block;
   margin-bottom: 3px;
+}
+
+#api-info-section-more-page{
+  top: 145px;
+}
+#breadcrumb-section-more-page{
+  top:85px;
+  height: 60px;
+}
+#option-section-more-page{
+  top: 213px;
 }
