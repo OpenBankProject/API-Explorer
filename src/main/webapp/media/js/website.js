@@ -50,12 +50,10 @@ $(document).ready(function() {
     };
 
     //this will show which endpoint is slected, when you click the endpoints in the left_side_small_screen div
-    $("#small-nav-collapse").on('click keydown', (e) => {
-        if(e.keyCode && e.keyCode == 13 || e.type == "click" ){
-            var hasValue = window.location.hash.substr(1);
-            var smallSceenEndpointId="index_of__small_screen"+hasValue;
-            $("#"+smallSceenEndpointId).parent().parent().css('height', '').attr("class","collapse in").attr("aria-expanded","true")
-            $("#"+smallSceenEndpointId).css("font-family","UniversNextforHSBC-Medium")
-        }
+    $("#small-nav-collapse").click(function(){
+        var hasValue = window.location.hash.substr(1);
+        var smallSceenEndpointId="index_of__small_screen"+hasValue;
+        $("#"+smallSceenEndpointId).parent().parent().css('height', '').attr("class","collapse in").attr("aria-expanded","true")
+        $("#"+smallSceenEndpointId).css("font-family","UniversNextforHSBC-Medium")
     });
 });
