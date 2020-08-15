@@ -9,7 +9,11 @@ pre{
   border: 0; 
   background-color: #333333;
 }
-
+pre code{
+  border: 0;
+  background-color: #333333;
+  color: #FFFFFF;
+}
 hr {
   border: 0;
   margin: 0;
