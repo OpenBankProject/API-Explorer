@@ -903,6 +903,7 @@ p a {
 a:active,
 a:hover {
   outline: 0;
+  color: #FFFFFF;
   text-decoration:underline
 }
 
