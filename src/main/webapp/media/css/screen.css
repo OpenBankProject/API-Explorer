@@ -1,9 +1,11 @@
 /*reset the default boostrap design:*/
-.container {
-  width: auto;
-  padding:0;
-  margin:0;
-  margin-left: 365px;
+@media (min-width: 0px) {
+  .container {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    margin-left: 365px;
+  }
 }
 pre{
   border: 0; 
@@ -372,4 +374,10 @@ hr {
 @media only screen and (max-width: 535px) {
   #More {visibility: hidden;}
 }
+@media only screen and (max-width: 455px) {
+  #Glossary {display: none}
+}
 
+@media only screen and (max-width: 372px) {
+  #OBP_PSD2 {display: none}
+}
