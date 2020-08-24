@@ -1,11 +1,9 @@
 /*reset the default boostrap design:*/
-@media (min-width: 0px) {
-  .container {
-    width: 100%;
-    padding: 0;
-    margin: 0;
-    margin-left: 365px;
-  }
+.container {
+  width: auto;
+  padding:0;
+  margin:0;
+  margin-left: 365px;
 }
 pre{
   border: 0; 
