@@ -40,6 +40,9 @@ hr {
 }
 
 @media only screen and (min-width: 760px) and (max-width: 1279px) {
+  .container .version_path{
+    display: none;
+  }
   .settings-imgs{
     display: none;
   }
@@ -189,6 +192,9 @@ hr {
 }
 
 @media only screen and (max-width: 759px)  {
+  .container .version_path{
+    display: none;
+  }
   #breadcrumb-section-more-page {
     top: 70px;
   }
