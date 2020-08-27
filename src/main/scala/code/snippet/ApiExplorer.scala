@@ -495,7 +495,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     } yield ResourceDocPlus(
        //in OBP-API, before it returned v3_1_0, but now, only return v3.1.0
       //But this filed will be used in JavaScript, so need clean the field.
-      id = r.operation_id.replace(".","_"),
+      id = r.operation_id.replace(".","_").replaceAll(" ","_"),
       verb = r.request_verb,
       url = modifiedRequestUrl(
         r.specified_url, // We used to use the request_url - but we want to use the specified url i.e. the later version.
@@ -1314,12 +1314,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
       } &
       // The `api_group_item_small_screen` is all for the small screen, 
       "@api_group_item_small_screen" #> groupedResources.map { i =>
-        "@api_group_item_small_screen [data-target]" #> s"#group-collapse_small_screen-${i._1}" &
+        "@api_group_item_small_screen [data-target]" #> s"#group-collapse_small_screen-${i._1.replaceAll(" ","_").replaceAll("""\(""","_").replaceAll("""\)""","")}" &
           "@api_group_name_small_screen *" #> s"${i._1.replace("-"," ")}" &
-          "@api_group_name_collapse_small_screen [id]" #> s"group-collapse_small_screen-${i._1}" &
+          "@api_group_name_collapse_small_screen [id]" #> s"group-collapse_small_screen-${i._1.replaceAll(" ","_").replaceAll("""\(""","_").replaceAll("""\)""","")}" &
           // Set an anchor (href and id) for a group
 //          "@api_group_name_small_screen [href]" #> s"#group_small_screen-${i._1}" &
-          "@api_group_name_small_screen [id]" #> s"group_small_screen-${i._1}" &
+          "@api_group_name_small_screen [id]" #> s"group_small_screen-${i._1.replaceAll(" ","_").replaceAll("""\(""","_").replaceAll("""\)""","")}" &
           // Within each group (first tag), list the resources
           "@api_list_item_small_screen" #> i._2.sortBy(_.summary.toString()).map { i =>
             // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
@@ -1350,8 +1350,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
         }
       }
       else {
-        val currentTag = resources.find(_.id == currentOperationId).map(_.tags.head).getOrElse("API")
-        val currentTagResouces = resources.filter(_.tags.head==currentTag)
+        //The default tag is the first tag of the resource, if it is empty, we use the API Tag.
+        val theResourcesFirstTag = resources.map(_.tags.headOption).flatten.headOption.getOrElse("API")
+        val currentTag = resources.find(_.id == currentOperationId).map(_.tags.head).getOrElse(theResourcesFirstTag)
         ".resource" #> (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty)  resources else (resources.filter(_.tags.head==currentTag))).map { i =>
           // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
           ".end-point-anchor [href]" #> s"#${i.id}" &
