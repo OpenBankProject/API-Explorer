@@ -400,7 +400,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
       bankId <- barebonesAccountJson.bank_id
     } yield BankId(bankId)
 
-  val defaultVersion: String = "OBPv4.0.0"
+  val defaultVersion: String = Helper.getPropsValue("default.version") match {
+    case Full(v)  => v
+    case _ => "OBPv4.0.0"
+  }
 
   // Get the requested version from the url parameter and default if none
   val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
