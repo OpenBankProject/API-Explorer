@@ -91,6 +91,9 @@ ssl_key_password=test1234
 # a list of version names those are shown in the main page, split with ,
 #main.included.links=OBP_PSD2, OBP_3.1.0, OBP_4.0.0
 
+# set the default version of API_Explorer Home Page
+# all support versions: OBPv2.2.0,OBPv3.0.0,OBPv3.1.0,OBPv4.0.0,BGv1.3,UKv3.1,UKv2.0,STETv1.4,PAPIv2.1.1.1,b1,AUv1.0.0
+#default.version=OBPv4.0.0
 
 ### OBP-API mode ############################## 
 # If OBP-API split to two instances, eg: apis,portal
