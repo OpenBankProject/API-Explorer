@@ -180,6 +180,9 @@ hr {
     padding: 220px 0 0 0;
   }
   #logo-left {
+    margin: 25px 0 25px 0px;
+  }
+  #logo-left {
     visibility: visible;
     display: inline-block;
     float: none;
@@ -191,6 +194,7 @@ hr {
   }
   #small-nav-collapse{
     display: block;
+    margin-right: 70px;
   }
   #small-screen-navbar #small-nav-collapse {
     display: block;
@@ -203,6 +207,9 @@ hr {
   }
   .api_group_name_small_screen a{
     margin-bottom: 100px;
+  }
+  .header .settings-box .logged-in{
+    margin-right: 74px;
   }
 }
 
@@ -223,7 +230,7 @@ hr {
     top: 130px;
   }
   #logo-left {
-    margin: 25px 0 25px 25px;
+    margin: 25px 0 25px 0px;
     height: 20px;
   }
   #logo-left a img {
@@ -362,6 +369,7 @@ hr {
   }
   #small-nav-collapse{
     display: block;
+    margin-right: 40px;
   }
   #small-screen-navbar #small-nav-collapse {
     display: block;
@@ -396,6 +404,9 @@ hr {
   .header .settings-box {
     float: right;
     margin: 19px 16px 19px 0;
+  }
+  .header .settings-box .logged-in{
+    margin-right: 74px;
   }
 }
 
