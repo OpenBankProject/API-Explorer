@@ -93,12 +93,12 @@ hr {
   #left_side_small_screen .api_group_item_small_screen {
     background-image: url('/media/images/chevron_up_thick.svg');
     background-repeat:no-repeat;
-    background-position: top 0px right 9px;
+    background-position: top 10px right 9px;
     background-size: 16px 9.7px;
   }
   #left_side_small_screen .collapsed {
     background-image: url('/media/images/chevron_down_thick.svg');
-    background-position: top 0px right 9px;
+    background-position: top 10px right 9px;
     background-repeat:no-repeat ;
     background-size: 16px 9.7px;
   }
@@ -271,12 +271,12 @@ hr {
   #left_side_small_screen .api_group_item_small_screen {
     background-image: url('/media/images/chevron_up_thick.svg');
     background-repeat:no-repeat;
-    background-position: top 0px right 9px;
+    background-position: top 10px right 9px;
     background-size: 16px 9.7px;
   }
   #left_side_small_screen .collapsed {
     background-image: url('/media/images/chevron_down_thick.svg');
-    background-position: top 0px right 9px;
+    background-position: top 10px right 9px;
     background-repeat:no-repeat ;
     background-size: 16px 9.7px;
   }
