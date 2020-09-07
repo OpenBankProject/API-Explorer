@@ -40,9 +40,21 @@ hr {
   #left_side_small_screen{
     display: none;
   }
+  #left-logo-small-screen{
+    display: none;
+  }
+  #left-logo{
+    display: block;
+  }
 }
 
 @media only screen and (min-width: 760px) and (max-width: 1279px) {
+  #left-logo-small-screen{
+    display: none;
+  }
+  #left-logo{
+    display: block;
+  }
   .container .version_path{
     display: none;
   }
@@ -195,6 +207,12 @@ hr {
 }
 
 @media only screen and (max-width: 759px)  {
+  #left-logo-small-screen{
+    display: block;
+  }
+  #left-logo{
+    display: none;
+  }
   .container .version_path{
     display: none;
   }
