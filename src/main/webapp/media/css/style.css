@@ -1547,6 +1547,7 @@ footer a:hover{
 .api_list_item_small_screen img{
   display: inline-block;
   margin-bottom: 3px;
+  margin-left: 5px;
 }
 
 #api-info-section-more-page{

@@ -1328,7 +1328,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
                 s"#${i.id}"
               else
                 s"?operation_id=${i.id}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
-              "@api_list_item_link_small_screen *" #> i.summary &
+              "@api_list_item_link_small_screen span" #> i.summary &
               "@api_list_item_link_small_screen [id]" #> s"index_of__small_screen${i.id}"
           }
       } &
