@@ -1428,6 +1428,31 @@ a.end-point-anchor {
   color: #333333;
   line-height: 24px;
 }
+
+#resouce-footer .container li,
+#resouce-footer .container ul {
+    margin: 0;
+    padding: 0;
+}
+{
+    list-style-type: none;
+}
+
+#resouce-footer .container li {
+    list-style-type: none;
+}
+
+#resouce-footer .container p a {
+  background-color: transparent;
+  color: #333333;
+  text-decoration: underline;
+}
+#resouce-footer .container  p a:hover,
+#resouce-footer .container p a:visited {
+  text-decoration: underline;
+  color: #333333;
+}
+
 #button-show,
 #button-hide{
   border-radius:0px;
