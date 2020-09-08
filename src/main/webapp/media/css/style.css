@@ -1484,6 +1484,16 @@ footer .footer-box__paragraph a {
 footer .footer-box__paragraph a:hover {
   text-decoration:underline;
 }
+footer .footer-box__paragraph, 
+footer .footer-box__paragraph li {
+    margin: 0;
+    padding: 0;
+}
+
+footer .footer-box__paragraph li {
+    display: inline-block;
+}
+
 footer .footer-box__paragraph {
   margin-bottom: 24px;
   margin-top: 0px;
