@@ -1372,7 +1372,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           // (However, updating the var here does not seem to update the form field value)
           // We provide a default value (i.url) and bind the user input to requestUrl. requestURL is available in the function process
           // text creates a text box and we can capture its input in requestUrl
-          "@request_url_input" #> text(i.url, s => requestUrl = s, "maxlength" -> "512", "size" -> "100", "id" -> s"request_url_input_${i.id}") &
+          "@request_url_input" #> text(i.url, s => requestUrl = s, "aria-label"->s"${i.summary}","maxlength" -> "512", "size" -> "100", "id" -> s"request_url_input_${i.id}") &
           "@full_path [id]" #> s"full_path_${i.id}" &
           "#full_headers_box [id]" #> s"full_headers_box_${i.id}" &
           "@full_headers [id]" #> s"full_headers_${i.id}" &
