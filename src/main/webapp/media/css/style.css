@@ -333,7 +333,7 @@ a img {
   background-color: #fff;
   z-index: 5;
 }
-.option-section h4 {
+.option-section .option-box__headline {
   padding-top: 0;
   padding-bottom: 8px;
   font-family: UniversNextforHSBC-Regular;
