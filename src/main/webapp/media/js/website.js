@@ -43,6 +43,11 @@ $(window).resize(function() {
 // In your Javascript (external .js resource or <script> tag)
 $(document).ready(function() {
     $('.js-example-basic-single').select2();
+    $("#select2-bank_selector-container").attr("aria-labelledby", "Banks-Dropdown")
+    $("#select2-account_selector-container").attr("aria-labelledby", "Accounts-Dropdown")
+    $("#select2-view_selector-container").attr("aria-labelledby", "Views-Dropdown")
+    $("#select2-counterparty_selector-container").attr("aria-labelledby", "Counterparties-Dropdown")
+    $("#select2-transaction_selector-container").attr("aria-labelledby", "Transactions-Dropdown")
     // scroll to leftside tag if url contains hash.
     if(window.top.location.hash){
         const hashValue = window.top.location.hash;
