@@ -381,6 +381,45 @@
                             <div class="container">
                                 <div class="content-box bg--white">
                                     <h2 class="content-box__headline"></h2>
+                                    <div name="roles_box" class="content-box__info-box">
+                                        <div>Required Roles:</div>
+
+                                        <ul name="roles_list">
+                                            <li class="role_item"> <!-- we generate multiple of these -->
+
+                                                <div name="roles__role_name">I will become the role name</div>
+                                                <div name="roles__status">status</div>
+
+
+                                                <div class="content-box__input-box">
+                                                    <form class="lift:form.ajax" id="formInList">
+                                                        <!-- Attributes for these fields are replaced -->
+                                                        <input type="hidden" name="roles__resource_id_input">
+                                                        <input type="text" name="roles__bank_id_input" placeholder="Bank Id">
+                                                        <input type="hidden" name="roles__role_input">
+                                                        <div name="roles__entitlement_request_button_box">
+                                                            <button name="roles__request_entitlement_button" class="default-button">REQUEST</button>
+                                                        </div>
+                                                        <div name="roles__entitlement_request_response"></div>
+                                                    </form>
+                                                </div>
+
+                                            </li>
+                                        </ul>
+
+
+                                        <div name="entitlement_request_box" class="content-box__info-box" style="display: none;">
+							<pre>
+								<code>
+                                    <div name="entitlement_request_result" ></div>
+                                </code>
+							</pre>
+                                        </div>
+
+
+
+
+                                    </div>
                                 </div>
                             </div>
                         </section>        
