@@ -1312,6 +1312,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // replace the node identified by the class "resource" with the following
       // This creates the list of resources in the DOM
     {
+      val canReadResourceDocRoleInfo = List(RoleInfo(
+        role ="CanReadResourceDoc",
+        requiresBankId = false,
+        userHasEntitlement = false,
+        userHasEntitlementRequest = false
+      ))
       if(resources.length==0) {
       ".resource [style]" #> s"display: none" &
         ".resource-error [style]" #> s"display: block" &
@@ -1322,6 +1328,38 @@ WIP to add comments on resource docs. This code copied from Sofit.
             "OBP-20006: User is missing one or more roles: CanReadResourceDoc"     
           else // all other cases throw the gernal error.
             "There are no resource docs in the current Sandbox for this request!"
+        }& {
+          if(isLoggedIn && !hasTheCanReadResourceDocRole){
+            //required roles and related user information
+            "@roles_box [id]" #> s"roles_box_canReadResourceDocRoleInfo" &
+              "@roles_box [style]" #> {s"display: block"} &
+              // We generate mulutiple .role_items from roleInfos (including the form defined in index.html)
+              ".role_item" #> canReadResourceDocRoleInfo.map { r =>
+                "@roles__status" #> {if (! isLoggedIn)
+                  s" - Please login to request this Role"
+                else if  (r.userHasEntitlement)
+                  s" - You have this Role."
+                else if (r.userHasEntitlementRequest)
+                  s" - You have requested this Role."
+                else
+                  s" - You can request this Role."} &
+                  "@roles__role_name" #> s"${r.role}" &
+                  // ajaxSubmit will submit the form.
+                  // The value of rolesBankId is given to bank_id_input field and the value of bank_id_input entered by user is given back to rolesBankId
+                  "@roles__bank_id_input" #> SHtml.text({if (r.requiresBankId) rolesBankId else ""}, rolesBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") &
+                  "@roles__role_input" #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
+                  "@roles__resource_id_input" #> text("canReadResourceDocRoleInfo", s => RolesResourceId = s, "type" -> "hidden", "id" -> s"roles__resource_id_input_${canReadResourceDocRoleInfo}") &
+                  "@roles__request_entitlement_button" #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
+                  "@roles__entitlement_request_response [id]" #> s"roles__entitlement_request_response_${canReadResourceDocRoleInfo}_${r.role}" &
+                  "@roles__entitlement_request_button_box [style]" #> { if (! isLoggedIn || r.userHasEntitlement || r.userHasEntitlementRequest)
+                    s"display: none"
+                  else
+                    s"display: block"
+                  }
+              }
+          }else{
+            "@roles_box [style]" #> s"display: none"
+            }
         }
       }
       else {
