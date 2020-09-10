@@ -474,11 +474,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val entitlementsForCurrentUser = getEntitlementsForCurrentUser
     logger.info(s"there are ${entitlementsForCurrentUser.length} entitlementsForCurrentUser(s)")
     
-    val hasTheCanReadResourceDocRole = entitlementsForCurrentUser.map(_.roleName).contains("CanReadResourceDoc")
-
+    val canReadResourceRole: Option[Entitlement] = entitlementsForCurrentUser.find(_.roleName=="CanReadResourceDoc")
 
     val userEntitlementRequests = getUserEntitlementRequests
 
+    val canReadResourceRequest = userEntitlementRequests.find(_.roleName=="CanReadResourceDoc")
 
 
     logger.info(s"there are ${userEntitlementRequests.length} userEntitlementRequests(s)")
@@ -1315,8 +1315,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val canReadResourceDocRoleInfo = List(RoleInfo(
         role ="CanReadResourceDoc",
         requiresBankId = false,
-        userHasEntitlement = false,
-        userHasEntitlementRequest = false
+        userHasEntitlement = canReadResourceRole.isDefined,
+        userHasEntitlementRequest = canReadResourceRequest.isDefined
       ))
       if(resources.length==0) {
       ".resource [style]" #> s"display: none" &
@@ -1324,12 +1324,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".content-box__headline *" #> {
           if(!isLoggedIn)//If no resources, first check the login, 
             "OBP-20001: User not logged in. Authentication is required!"
-          else if(isLoggedIn && !hasTheCanReadResourceDocRole) //Then check the missing role
+          else if(isLoggedIn && canReadResourceRole.isEmpty) //Then check the missing role
             "OBP-20006: User is missing one or more roles: CanReadResourceDoc"     
           else // all other cases throw the gernal error.
             "There are no resource docs in the current Sandbox for this request!"
-        }& {
-          if(isLoggedIn && !hasTheCanReadResourceDocRole){
+        }&{
+          if(isLoggedIn && canReadResourceRole.isEmpty){
             //required roles and related user information
             "@roles_box [id]" #> s"roles_box_canReadResourceDocRoleInfo" &
               "@roles_box [style]" #> {s"display: block"} &
@@ -1340,7 +1340,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
                 else if  (r.userHasEntitlement)
                   s" - You have this Role."
                 else if (r.userHasEntitlementRequest)
-                  s" - You have requested this Role."
+                  s" - You have requested this Role. Please contact Open Bank Project team to grant your this role."
                 else
                   s" - You can request this Role."} &
                   "@roles__role_name" #> s"${r.role}" &
@@ -1420,7 +1420,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
                                 else if  (r.userHasEntitlement)
                                   s" - You have this Role."
                                 else if (r.userHasEntitlementRequest)
-                                  s" - You have requested this Role."
+                                  s" - You have requested this Role. Please contact Open Bank Project team to grant your this role."
                                 else
                                   s" - You can request this Role."} &
             "@roles__role_name" #> s"${r.role}" &
