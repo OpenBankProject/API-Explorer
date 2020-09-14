@@ -898,6 +898,7 @@ case class GlossaryItemJsonV300 (title: String,
 
 case class GlossaryItemsJsonV300 (glossary_items: List[GlossaryItemJsonV300])
 
+case class EndpointInfo(name: String, version: String)
 
 case class MessageDocJsonV220(
                            process: String, // Should be unique
@@ -910,6 +911,7 @@ case class MessageDocJsonV220(
                            outboundAvroSchema: Option[JValue] = None,
                            inboundAvroSchema: Option[JValue] = None,
                            adapter_implementation : AdapterImplementationJson220,
+                           dependent_endpoints: List[EndpointInfo],
                            requiredFieldInfo: Option[JValue] = None
                          )
 

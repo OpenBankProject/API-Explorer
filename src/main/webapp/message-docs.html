@@ -50,6 +50,10 @@
                         <li class="breadcrumbs__list">
                             <a id="Rest_message_doc_link" href="./message-docs?connector=rest_vMar2019" class="breadcrumbs__link">Rest</a>
                         </li>
+
+                        <li class="breadcrumbs__list">
+                            <a id="Stored_procedure_message_doc_link" href="./message-docs?connector=stored_procedure_vDec2019" class="breadcrumbs__link">Stored Procedure</a>
+                        </li>
                         
                         Introduction to:
 
@@ -62,10 +66,45 @@
                             <a id="glossary_link_akka" href="./glossary#Adapter.Akka.Intro" class="breadcrumbs__link">Akka</a>
                         </li>
 
+                        <li class="breadcrumbs__list">
+                            <a id="glossary_link_stored_procedure" href="./glossary#Adapter.Stored_Procedure.Intro" class="breadcrumbs__link">Stored Procedure</a>
+                        </li>
+
 
                     </ul>
 
+                    <div class="settings-box" data-lift="Login.login">
+                        <div class="sign-box">
 
+                            <div class="logged-out">
+
+                                <a id="start-login" class="sign-box__text signed"  href="#">Login</a>
+
+                            </div>
+                            <div class="logged-in">
+                                <!--
+                                <p class="sign-box__text">SIGNED IN AS</p>
+                                <span class="sign-box__text signed">Tom</span>
+                                <span class="logout">Logout</span>
+                                -->
+                            </div>
+
+                        </div>
+                        <div class="settings-imgs">
+                            <div class="logged-in">
+                                <a class="settings-imgs__link" id="logout" href="#">
+                                    <span class="logout-link">Logout</span>
+                                </a>
+                                <span class="username"></span>
+                                <!--
+                                <a href="#" class="settings-imgs__link">
+                                    <img src="./media/images/settings-icon.png" alt="Settings icon" class="settings-imgs__icon">
+                                </a>
+                                -->
+                            </div>
+
+                        </div>
+                    </div>
                     <div style="clear: both"></div>
 
 
@@ -116,6 +155,14 @@
                                 <div class="box">Required <br/>Fields</div>
                                 <div class="box outbound-required-fields"></div>
                                 <div class="box inbound-required-fields">Inbound Required Fields</div>
+
+                                <div class="box">Dependent<br/>Endpoints</div>
+                                <div class="box dependent-endpoints">
+                                    <ul>
+                                        <li>OBPv4.0.0: <a style="color: white;" href="./#anchor">deleteProductCascade</a></li>
+                                    </ul>
+                                </div>
+                                <div class="box"></div>
                             </div>
                         </pre>
 

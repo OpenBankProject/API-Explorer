@@ -402,50 +402,54 @@ WIP to add comments on resource docs. This code copied from Sofit.
       bankId <- barebonesAccountJson.bank_id
     } yield BankId(bankId)
 
-  val defaultVersion: String = "OBPv4.0.0"
+  val defaultVersion: String = Helper.getPropsValue("default.version") match {
+    case Full(v)  => v
+    case _ => "OBPv4.0.0"
+  }
 
-  // Get the requested version from the url parameter and default if none
-  val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
+    // Get the requested version from the url parameter and default if none
+    val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
 
 
 
-  // Possible OBP Versions
-  val obpVersionsSupported = List("OBPv2.2.0", "OBPv3.0.0", "OBPv3.1.0", "OBPv4.0.0")
+    // Possible OBP Versions
+    val obpVersionsSupported = List("OBPv2.2.0", "OBPv3.0.0", "OBPv3.1.0", "OBPv4.0.0")
 
-  val otherVersionsSupported = List("BGv1.3", "UKv3.1", "UKv2.0", "STETv1.4", "PAPIv2.1.1.1", "b1", "AUv1.0.0")
+    val otherVersionsSupported = List("BGv1.3", "UKv3.1", "UKv2.0", "STETv1.4", "PAPIv2.1.1.1", "b1", "AUv1.0.0")
 
-  // Set the version to use.
-  val apiVersion: String = {
-    if (obpVersionsSupported.contains(apiVersionRequested)) {
-      // Prefix with v (for OBP versions because they come just with number from API Explorer)
-      // Note: We want to get rid of this "v" prefix ASAP.
-      s"v$apiVersionRequested"
-    } else
-    if (otherVersionsSupported.contains(apiVersionRequested)) {
-      s"$apiVersionRequested"
-    } else {
-      S.notice(s"Note: Requested version $apiVersionRequested is not currently supported. Set to v$defaultVersion")
-      s"v$defaultVersion"
+    // Set the version to use.
+    val apiVersion: String = {
+      if (obpVersionsSupported.contains(apiVersionRequested)) {
+        // Prefix with v (for OBP versions because they come just with number from API Explorer)
+        // Note: We want to get rid of this "v" prefix ASAP.
+        s"v$apiVersionRequested"
+      } else
+      if (otherVersionsSupported.contains(apiVersionRequested)) {
+          s"$apiVersionRequested"
+        } else {
+        S.notice(s"Note: Requested version $apiVersionRequested is not currently supported. Set to v$defaultVersion")
+        s"v$defaultVersion"
+      }
     }
-  }
 
-  val isObpVersion: Boolean = {
-    obpVersionsSupported.contains(apiVersionRequested)
-  }
+    val isObpVersion: Boolean = {
+      obpVersionsSupported.contains(apiVersionRequested)
+    }
 
-  logger.info(s"apiVersion is: $apiVersion")
-
-
-  // To link to API home page (this is duplicated in OAuthClient)
-  val baseUrl = Helper.getPropsValue("api_hostname", S.hostName)
-  //
-  val apiPortalHostname = Helper.getPropsValue("api_portal_hostname", baseUrl)
+    logger.info(s"apiVersion is: $apiVersion")
 
 
-  // Use to show the developer the current base version url
-  val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}"
-  // Link to the API endpoint for the resource docs json TODO change apiVersion so it doesn't have a "v" prefix
-  val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?$pureCatalogParams${tagsParamString}${languagesParamString}"
+    // To link to API home page (this is duplicated in OAuthClient)
+    val baseUrl = Helper.getPropsValue("api_hostname", S.hostName)
+    //
+    val apiPortalHostname = Helper.getPropsValue("api_portal_hostname", baseUrl)
+
+
+    // Use to show the developer the current base version url
+    val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}"
+
+    // Link to the API endpoint for the resource docs json TODO change apiVersion so it doesn't have a "v" prefix
+    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?$pureCatalogParams${tagsParamString}${languagesParamString}"
 
   // Link to the API endpoint for the swagger json
   val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?$pureCatalogParams${tagsParamString}${languagesParamString}"
@@ -468,23 +472,174 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "#all-partial-functions" #> commaSeparatedListOfResources 
   }
 
+  def getResponse (url : String, resourceVerb: String, json : JValue) : (String, String) = {
+
+    implicit val formats = net.liftweb.json.DefaultFormats
+
+    // version is now included in the url
+    val urlWithVersion = s"$url"
+
+    var headersOfCurrentCall: List[String] = Nil
+
+    val responseBodyBox = {
+      resourceVerb match {
+        case "GET" =>
+          val x = ObpGetWithHeader(urlWithVersion)
+          headersOfCurrentCall = x._2
+          x._1
+        case "DELETE" =>
+          val x = ObpDeleteWithHeader(urlWithVersion)
+          headersOfCurrentCall = x._2
+          x._1
+        case "POST" =>
+          val x = ObpPostWithHeader(urlWithVersion, json)
+          headersOfCurrentCall = x._2
+          x._1
+        case "PUT" =>
+          val x = ObpPutWithHeader(urlWithVersion, json)
+          headersOfCurrentCall = x._2
+          x._1
+        case _ => {
+          val failMsg = s"API Explorer says: Unsupported resourceVerb: $resourceVerb. Url requested was: $url"
+          logger.warn(failMsg)
+          Failure(failMsg)
+        }
+      }
+    }
+
+
+    logger.debug(s"responseBodyBox is ${responseBodyBox}")
+
+    // Handle the contents of the Box
+    val responseBody =
+      responseBodyBox match {
+        case Full(json) => writePretty(json)
+        case Empty => "Empty: API did not return anything"
+        case Failure(message, _, _) => message
+      }
+
+    logger.debug(s"responseBody is $responseBody")
+    (responseBody, headersOfCurrentCall.mkString("\n"))
+  }
+
+
+  // disabled button
+  // enabled button if no response after 28 seconds, http2 protocol ideal timeout is 30 seconds
+  def disabledBtn(name: String): JsCmd =  {
+    val jsCode = s"""
+                    |var timestamp = new Date().getTime();
+                    |var btn = jQuery('input[name=$name]');
+                    |setTimeout(function(){
+                    |        btn.prop('lastClickTime', timestamp).prop('disabled', true);
+                    |}, 0);
+                    |setTimeout(function() {
+                    |    if(btn.prop('lastClickTime') === timestamp){
+                    |        btn.removeAttr('disabled');
+                    |    }
+                    |}, 28*1000)
+                    |""".stripMargin.replaceAll("""[\r\n\s]+""", " ")
+    Run (jsCode)
+  }
+
+  
+  val entitlementsForCurrentUser = getEntitlementsForCurrentUser
+  logger.info(s"there are ${entitlementsForCurrentUser.length} entitlementsForCurrentUser(s)")
+
+  val canReadResourceRole: Option[Entitlement] = entitlementsForCurrentUser.find(_.roleName=="CanReadResourceDoc")
+  
+  val canReadGlossaryRole: Option[Entitlement] = entitlementsForCurrentUser.find(_.roleName=="CanReadGlossary")
+
+  val userEntitlementRequests = getUserEntitlementRequests
+
+  val canReadResourceRequest = userEntitlementRequests.find(_.roleName=="CanReadResourceDoc")
+  
+  val canReadGlossaryRequest = userEntitlementRequests.find(_.roleName=="CanReadGlossary")
+
+
+  logger.info(s"there are ${userEntitlementRequests.length} userEntitlementRequests(s)")
+  
+  val canReadResourceDocRoleInfo = List(RoleInfo(
+    role ="CanReadResourceDoc",
+    requiresBankId = false,
+    userHasEntitlement = canReadResourceRole.isDefined,
+    userHasEntitlementRequest = canReadResourceRequest.isDefined
+  ))
+
+  val canReadGlossaryRoleInfo = List(RoleInfo(
+    role ="CanReadGlossary",
+    requiresBankId = false,
+    userHasEntitlement = canReadGlossaryRole.isDefined,
+    userHasEntitlementRequest = canReadGlossaryRequest.isDefined
+  ))
+
+  var entitlementRequestStatus = ""
+
+  // This value is used to pre populate the form for Entitlement Request.
+  // It maybe be changed by the user in the form.
+  var rolesBankId = presetBankId
+
+  var RolesResourceId = ""
+
+  var entitlementRequestRoleName = ""
+
+  var resourceId = ""
+  var requestVerb = ""
+  var requestUrl = ""
+  var requestBody = "{}"
+  var responseBody = "{}"
+  var errorResponseBodies = List("")
+  
+  
+  def processEntitlementRequest(name: String): JsCmd = {
+    logger.debug(s"processEntitlementRequest entitlementRequestStatus is $entitlementRequestStatus rolesBankId is $rolesBankId")
+
+    logger.debug(s"processEntitlementRequest  says resourceId is $resourceId")
+
+    val entitlementRequestResponseStatusId = s"roles__entitlement_request_response_${RolesResourceId}_${entitlementRequestRoleName}"
+
+
+    logger.debug(s"id to set is: $entitlementRequestResponseStatusId")
+
+
+    val apiUrl = OAuthClient.currentApiBaseUrl
+
+    val entitlementRequestsUrl = "/obp/v3.0.0/entitlement-requests"
+
+    val createEntitlementRequest =  CreateEntitlementRequestJSON(bank_id = rolesBankId, role_name = entitlementRequestRoleName)
+
+    // Convert case class to JValue
+    implicit val formats = DefaultFormats
+    val entitlementRequestJValue: JValue  = Extraction.decompose(createEntitlementRequest)
+
+    // TODO: Put this in ObpAPI.scala
+    val response : String = getResponse(entitlementRequestsUrl, "POST", entitlementRequestJValue)._1
+
+    val result: String =
+      try {
+        // parse the string we get back from the API into a JValue
+        val json : JValue = parse(response)
+        // Convert to case class
+        val entitlementRequest: EntitlementRequestJson = json.extract[EntitlementRequestJson]
+        s"Entitlement Request with Id ${entitlementRequest.entitlement_request_id} was created. It will be reviewed shortly."
+      }
+      catch {
+        case _ => {
+          logger.info("")
+          s"The API Explorer could not create an Entitlement Request: $response"
+        }
+      }
+
+    // call url and put the response into the appropriate result div
+    // SetHtml accepts an id and value
+    SetHtml(entitlementRequestResponseStatusId, Text(result))
+    // enable button
+    val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
+    Run (jsEnabledBtn)
+  }
+
+  
   def showResources = {
-
-    val entitlementsForCurrentUser = getEntitlementsForCurrentUser
-    logger.info(s"there are ${entitlementsForCurrentUser.length} entitlementsForCurrentUser(s)")
     
-    val hasTheCanReadResourceDocRole = entitlementsForCurrentUser.map(_.roleName).contains("CanReadResourceDoc")
-
-
-    val userEntitlementRequests = getUserEntitlementRequests
-
-
-
-    logger.info(s"there are ${userEntitlementRequests.length} userEntitlementRequests(s)")
-
-
-
-
     // Get a list of resource docs from the API server
     // This will throw an exception if resource_docs key is not populated
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
@@ -726,45 +881,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
       }
     }
 
-    var resourceId = ""
-    var requestVerb = ""
-    var requestUrl = ""
-    var requestBody = "{}"
-    var responseBody = "{}"
-    var errorResponseBodies = List("")
 
 
 
 
 
-    var entitlementRequestStatus = ""
-
-    // This value is used to pre populate the form for Entitlement Request.
-    // It maybe be changed by the user in the form.
-    var rolesBankId = presetBankId
-
-    var RolesResourceId = ""
 
 
-    var entitlementRequestRoleName = ""
-
-    // disabled button
-    // enabled button if no response after 28 seconds, http2 protocol ideal timeout is 30 seconds
-    def disabledBtn(name: String): JsCmd =  {
-      val jsCode = s"""
-                     |var timestamp = new Date().getTime();
-                     |var btn = jQuery('input[name=$name]');
-                     |setTimeout(function(){
-                     |        btn.prop('lastClickTime', timestamp).prop('disabled', true);
-                     |}, 0);
-                     |setTimeout(function() {
-                     |    if(btn.prop('lastClickTime') === timestamp){
-                     |        btn.removeAttr('disabled');
-                     |    }
-                     |}, 28*1000)
-                     |""".stripMargin.replaceAll("""[\r\n\s]+""", " ")
-      Run (jsCode)
-    }
 
     def process(name: String): JsCmd = {
 
@@ -886,104 +1009,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
 
-    def processEntitlementRequest(name: String): JsCmd = {
-      logger.debug(s"processEntitlementRequest entitlementRequestStatus is $entitlementRequestStatus rolesBankId is $rolesBankId")
-
-      logger.debug(s"processEntitlementRequest  says resourceId is $resourceId")
-
-      val entitlementRequestResponseStatusId = s"roles__entitlement_request_response_${RolesResourceId}_${entitlementRequestRoleName}"
 
 
-      logger.debug(s"id to set is: $entitlementRequestResponseStatusId")
-
-
-      val apiUrl = OAuthClient.currentApiBaseUrl
-
-      val entitlementRequestsUrl = "/obp/v3.0.0/entitlement-requests"
-
-      val createEntitlementRequest =  CreateEntitlementRequestJSON(bank_id = rolesBankId, role_name = entitlementRequestRoleName)
-
-      // Convert case class to JValue
-      implicit val formats = DefaultFormats
-      val entitlementRequestJValue: JValue  = Extraction.decompose(createEntitlementRequest)
-
-      // TODO: Put this in ObpAPI.scala
-      val response : String = getResponse(entitlementRequestsUrl, "POST", entitlementRequestJValue)._1
-
-      val result: String =
-      try {
-        // parse the string we get back from the API into a JValue
-        val json : JValue = parse(response)
-        // Convert to case class
-        val entitlementRequest: EntitlementRequestJson = json.extract[EntitlementRequestJson]
-        s"Entitlement Request with Id ${entitlementRequest.entitlement_request_id} was created. It will be reviewed shortly."
-      }
-      catch {
-        case _ => {
-          logger.info("")
-          s"The API Explorer could not create an Entitlement Request: $response"
-        }
-      }
-
-      // call url and put the response into the appropriate result div
-      // SetHtml accepts an id and value
-      SetHtml(entitlementRequestResponseStatusId, Text(result))
-      // enable button
-      val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
-      Run (jsEnabledBtn)
-    }
-
-
-
-    def getResponse (url : String, resourceVerb: String, json : JValue) : (String, String) = {
-
-      implicit val formats = net.liftweb.json.DefaultFormats
-
-      // version is now included in the url
-      val urlWithVersion = s"$url"
-
-      var headersOfCurrentCall: List[String] = Nil
-
-      val responseBodyBox = {
-        resourceVerb match {
-          case "GET" =>
-            val x = ObpGetWithHeader(urlWithVersion)
-            headersOfCurrentCall = x._2
-            x._1
-          case "DELETE" =>
-            val x = ObpDeleteWithHeader(urlWithVersion)
-            headersOfCurrentCall = x._2
-            x._1
-          case "POST" =>
-            val x = ObpPostWithHeader(urlWithVersion, json)
-            headersOfCurrentCall = x._2
-            x._1
-          case "PUT" =>
-            val x = ObpPutWithHeader(urlWithVersion, json)
-            headersOfCurrentCall = x._2
-            x._1
-          case _ => {
-            val failMsg = s"API Explorer says: Unsupported resourceVerb: $resourceVerb. Url requested was: $url"
-            logger.warn(failMsg)
-            Failure(failMsg)
-          }
-        }
-      }
-
-
-      logger.debug(s"responseBodyBox is ${responseBodyBox}")
-
-      // Handle the contents of the Box
-      val responseBody =
-        responseBodyBox match {
-          case Full(json) => writePretty(json)
-          case Empty => "Empty: API did not return anything"
-          case Failure(message, _, _) => message
-        }
-
-      logger.debug(s"responseBody is $responseBody")
-      (responseBody, headersOfCurrentCall.mkString("\n"))
-    }
 
 
     val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${catalogParams}${tagsParamString}${languagesParamString}"
@@ -1343,10 +1370,42 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".content-box__headline *" #> {
           if(!isLoggedIn)//If no resources, first check the login, 
             "OBP-20001: User not logged in. Authentication is required!"
-          else if(isLoggedIn && !hasTheCanReadResourceDocRole) //Then check the missing role
+          else if(isLoggedIn && canReadResourceRole.isEmpty) //Then check the missing role
             "OBP-20006: User is missing one or more roles: CanReadResourceDoc"     
           else // all other cases throw the gernal error.
             "There are no resource docs in the current Sandbox for this request!"
+        }&{
+          if(isLoggedIn && canReadResourceRole.isEmpty){
+            //required roles and related user information
+            "@roles_box [id]" #> s"roles_box_canReadResourceDocRoleInfo" &
+              "@roles_box [style]" #> {s"display: block"} &
+              // We generate mulutiple .role_items from roleInfos (including the form defined in index.html)
+              ".role_item" #> canReadResourceDocRoleInfo.map { r =>
+                "@roles__status" #> {if (! isLoggedIn)
+                  s" - Please login to request this Role"
+                else if  (r.userHasEntitlement)
+                  s" - You have this Role."
+                else if (r.userHasEntitlementRequest)
+                  s" - You have requested this Role. Please contact Open Bank Project team to grant your this role."
+                else
+                  s" - You can request this Role."} &
+                  "@roles__role_name" #> s"${r.role}" &
+                  // ajaxSubmit will submit the form.
+                  // The value of rolesBankId is given to bank_id_input field and the value of bank_id_input entered by user is given back to rolesBankId
+                  "@roles__bank_id_input" #> SHtml.text({if (r.requiresBankId) rolesBankId else ""}, rolesBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") &
+                  "@roles__role_input" #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
+                  "@roles__resource_id_input" #> text("canReadResourceDocRoleInfo", s => RolesResourceId = s, "type" -> "hidden", "id" -> s"roles__resource_id_input_${canReadResourceDocRoleInfo}") &
+                  "@roles__request_entitlement_button" #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
+                  "@roles__entitlement_request_response [id]" #> s"roles__entitlement_request_response_${canReadResourceDocRoleInfo}_${r.role}" &
+                  "@roles__entitlement_request_button_box [style]" #> { if (! isLoggedIn || r.userHasEntitlement || r.userHasEntitlementRequest)
+                    s"display: none"
+                  else
+                    s"display: block"
+                  }
+              }
+          }else{
+            "@roles_box [style]" #> s"display: none"
+            }
         }
       }
       else {
@@ -1394,7 +1453,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           // This class gets a list of connector methods
           ".connector_method_item" #> i.connectorMethods.map { i=>
             // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-            ".connector_method_item_link [href]" #> s"message-docs?connector=rest_vMar2019#${urlEncode(i.replaceAll(" ", "-"))}" &
+            ".connector_method_item_link [href]" #> s"message-docs?connector=stored_procedure_vDec2019#${urlEncode(i.replaceAll(" ", "-"))}" &
               ".connector_method_item_link *" #> i
           } &
           //required roles and related user information
@@ -1411,7 +1470,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
                                 else if  (r.userHasEntitlement)
                                   s" - You have this Role."
                                 else if (r.userHasEntitlementRequest)
-                                  s" - You have requested this Role."
+                                  s" - You have requested this Role. Please contact Open Bank Project team to grant your this role."
                                 else
                                   s" - You can request this Role."} &
             "@roles__role_name" #> s"${r.role}" &
@@ -1448,7 +1507,49 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // TODO cache this.
     val glossaryItems = getGlossaryItemsJson.map(_.glossary_items).getOrElse(List())
 
-
+    if(glossaryItems.length==0) {
+      ".resource [style]" #> s"display: none" &
+        ".resource-error [style]" #> s"display: block" &
+        ".content-box__headline *" #> {
+          if(!isLoggedIn)//If no resources, first check the login, 
+            "OBP-20001: User not logged in. Authentication is required!"
+          else if(isLoggedIn && canReadGlossaryRole.isEmpty) //Then check the missing role
+            "OBP-20006: User is missing one or more roles: CanReadGlossary"
+          else // all other cases throw the gernal error.
+            "There are no resource docs in the current Sandbox for this request!"
+        }&{
+        if(isLoggedIn && canReadGlossaryRole.isEmpty){
+          //required roles and related user information
+          "@roles_box [id]" #> s"roles_box_CanReadGlossaryRoleInfo" &
+            "@roles_box [style]" #> {s"display: block"} &
+            // We generate mulutiple .role_items from roleInfos (including the form defined in index.html)
+            ".role_item" #> canReadGlossaryRoleInfo.map { r =>
+              "@roles__status" #> {if (! isLoggedIn)
+                s" - Please login to request this Role"
+              else if  (r.userHasEntitlement)
+                s" - You have this Role."
+              else if (r.userHasEntitlementRequest)
+                s" - You have requested this Role. Please contact Open Bank Project team to grant your this role."
+              else
+                s" - You can request this Role."} &
+                "@roles__role_name" #> s"${r.role}" &
+                // ajaxSubmit will submit the form.
+                // The value of rolesBankId is given to bank_id_input field and the value of bank_id_input entered by user is given back to rolesBankId
+                "@roles__bank_id_input" #> SHtml.text({if (r.requiresBankId) rolesBankId else ""}, rolesBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") &
+                "@roles__role_input" #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
+                "@roles__request_entitlement_button" #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
+                "@roles__entitlement_request_response [id]" #> s"roles__entitlement_request_response_${canReadGlossaryRoleInfo}_${r.role}" &
+                "@roles__entitlement_request_button_box [style]" #> { if (! isLoggedIn || r.userHasEntitlement || r.userHasEntitlementRequest)
+                  s"display: none"
+                else
+                  s"display: block"
+                }
+            }
+        }else{
+          "@roles_box [style]" #> s"display: none"
+        }
+      }
+    }else{
     ".glossary" #> glossaryItems.map  { i =>
       // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
       ".end-point-anchor [href]" #> s"#${urlEncode(i.title.replaceAll(" ", "-"))}" &
@@ -1463,6 +1564,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           ".api_list_item_link *" #> i.title &
           ".api_list_item_link [id]" #> s"index_of_${urlEncode(i.title.replaceAll(" ", "-"))}"
       }
+    }
   }
 
   def showMessageDocs = {
@@ -1495,14 +1597,20 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".outbound-message *" #> stringToNodeSeq(Helper.renderJson(i.example_outbound_message)) &
         ".inbound-message *" #> stringToNodeSeq(Helper.renderJson(i.example_inbound_message)) &
         ".description *" #> stringToNodeSeq((i.description)) &
-        ".inbound-required-fields *" #> stringToNodeSeq(Helper.renderJson(i.requiredFieldInfo.getOrElse(JNothing)))
+        ".inbound-required-fields *" #> stringToNodeSeq(Helper.renderJson(i.requiredFieldInfo.getOrElse(JNothing))) &
+          ".dependent-endpoints *" #>
+              <ul>{i.dependent_endpoints.map { endpointInfo =>
+                    val link = s"/?version=${endpointInfo.version}&list-all-banks=false#${endpointInfo.version.replace('.', '_')}-${endpointInfo.name}"
+                    <li>{endpointInfo.version}: <a style="color: white;" href={link}>{endpointInfo.name}</a></li>
+                  }
+                }</ul>
     }
-      }
+  }
 
   private lazy val shownVersionNamesInMainPage: Set[String] = {
     val shownLinks =  Helper.getPropsValue("main.included.links") match {
       case Full(v) if(v.trim.size > 0) => v.trim
-      case _ => "OBP_PSD2, OBP_3.1.0, OBP_4.0.0"
+      case _ => "OBP_PSD2, OBP_3.1.0, OBP_4.0.0, Glossary"
     }
 
     shownLinks.split("""\s*,\s*""")
