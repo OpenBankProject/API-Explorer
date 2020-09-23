@@ -406,31 +406,41 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "#all-partial-functions" #> commaSeparatedListOfResources 
   }
 
-  def getResponse (url : String, resourceVerb: String, json : JValue) : (String, String) = {
+  def getResponse (url : String, resourceVerb: String, json : JValue, customRequestHeader: String = "") : (String, String) = {
 
     implicit val formats = net.liftweb.json.DefaultFormats
 
     // version is now included in the url
     val urlWithVersion = s"$url"
-
+    val requestHeader = customRequestHeader.trim.isEmpty match {
+      case true => Nil
+      case false =>
+        customRequestHeader.split("::").map(_.trim).map {
+          i =>
+            val key = i.split(":").toList.head
+            val value = i.split(":").toList.reverse.head
+            Header(key, value)
+        }.toList
+    }
+    
     var headersOfCurrentCall: List[String] = Nil
 
     val responseBodyBox = {
       resourceVerb match {
         case "GET" =>
-          val x = ObpGetWithHeader(urlWithVersion)
+          val x = ObpGetWithHeader(urlWithVersion, requestHeader)
           headersOfCurrentCall = x._2
           x._1
         case "DELETE" =>
-          val x = ObpDeleteWithHeader(urlWithVersion)
+          val x = ObpDeleteWithHeader(urlWithVersion, requestHeader)
           headersOfCurrentCall = x._2
           x._1
         case "POST" =>
-          val x = ObpPostWithHeader(urlWithVersion, json)
+          val x = ObpPostWithHeader(urlWithVersion, json, requestHeader)
           headersOfCurrentCall = x._2
           x._1
         case "PUT" =>
-          val x = ObpPutWithHeader(urlWithVersion, json)
+          val x = ObpPutWithHeader(urlWithVersion, json, requestHeader)
           headersOfCurrentCall = x._2
           x._1
         case _ => {
@@ -519,6 +529,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   var resourceId = ""
   var requestVerb = ""
   var requestUrl = ""
+  var requestCustomHeader = ""
   var requestBody = "{}"
   var responseBody = "{}"
   var errorResponseBodies = List("")
@@ -771,6 +782,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       resourceId = resourceId.replace(".","_")
 
       logger.info(s"requestUrl is $requestUrl")
+      logger.info(s"requestCustomHeader is $requestCustomHeader")
       logger.info(s"resourceId is $resourceId")
       logger.debug(s"requestBody is $requestBody")
       logger.debug(s"responseBody is $responseBody")
@@ -866,7 +878,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         .replaceAll("OBPv", ""))
       //////////////
 
-      val (body, headers) = getResponse(requestUrl, requestVerb, jsonObject)
+      val (body, headers) = getResponse(requestUrl, requestVerb, jsonObject, customRequestHeader = requestCustomHeader)
       // Return the commands to call the url with optional body and put the response into the appropriate result div
       SetHtml(resultTarget, Text(body)) &
      // SetHtml(rolesTarget, Text(responseRoleString)) &
@@ -1303,6 +1315,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           // We provide a default value (i.url) and bind the user input to requestUrl. requestURL is available in the function process
           // text creates a text box and we can capture its input in requestUrl
           "@request_url_input" #> text(i.url, s => requestUrl = s, "aria-label"->s"${i.summary}","maxlength" -> "512", "size" -> "100", "id" -> s"request_url_input_${i.id}") &
+          "@request_header_input" #> text("", s => requestCustomHeader = s, "maxlength" -> "2048", "size" -> "100", "id" -> s"request_header_input${i.id}") &
           "@full_path [id]" #> s"full_path_${i.id}" &
           "#full_headers_box [id]" #> s"full_headers_box_${i.id}" &
           "@full_headers [id]" #> s"full_headers_${i.id}" &

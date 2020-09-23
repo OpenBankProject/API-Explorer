@@ -230,12 +230,13 @@
                                                placeholder="OBP URL to call">
                                         <button name="call_button" class="rest-call-button">POST</button>
 
-                                        <div name="example_request_body" id="example_request_body"
-                                             style="display: block;">
-                                            <input name="example_request_body_input" class="default-input"
-                                                   placeholder="JSON body to POST or PUT">
+                                        <div name="example_request_header" id="example_request_header" style="display: block;">
+                                            <!-- It is populated at render (but it can be edited manually) -->
+                                            <input type="text" name="request_header_input" class="default-input" placeholder="Request Header">
                                         </div>
-
+                                        <div name="example_request_body" id="example_request_body" style="display: block;">
+                                            <input name="example_request_body_input" class="default-input" placeholder="JSON body to POST or PUT">
+                                        </div>
 
                                     </form>
                                 </div>

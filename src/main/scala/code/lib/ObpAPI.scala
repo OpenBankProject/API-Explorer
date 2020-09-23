@@ -221,10 +221,10 @@ object OBPRequest extends MdcLoggable {
       request.setRequestProperty("Accept", "application/json")
       request.setRequestProperty("Accept-Charset", "UTF-8")
 
-      headers.foreach(header => request.setRequestProperty(header.key, header.value))
-
       //sign the request if we have some credentials to sign it with
       credentials.foreach(c => c.consumer.sign(request))
+
+      headers.foreach(header => request.setRequestProperty(header.key, header.value))
 
       //Set the request body
       if(jsonBody.isDefined) {
@@ -278,8 +278,8 @@ object ObpPut {
   }
 }
 object ObpPutWithHeader {
-  def apply(apiPath: String, json : JValue): (Box[JValue], List[String]) = {
-    OBPRequest(apiPath, Some(json), "PUT", Nil) match {
+  def apply(apiPath: String, json : JValue, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+    OBPRequest(apiPath, Some(json), "PUT", headers) match {
       case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
     }
   }
@@ -293,12 +293,12 @@ object ObpPost {
   }
 }
 object ObpPostWithHeader {
-  def apply(apiPath: String, json : JValue): (Box[JValue], List[String]) = {
+  def apply(apiPath: String, json : JValue, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
     val requestBody = json match {
       case JNothing | JNull => None
       case v => Option(v)
     }
-    OBPRequest(apiPath, requestBody, "POST", Nil) match {
+    OBPRequest(apiPath, requestBody, "POST", headers) match {
       case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
     }
   }
@@ -328,8 +328,8 @@ object ObpDelete {
   }
 }
 object ObpDeleteWithHeader {
-  def apply(apiPath: String): (Box[JValue], List[String]) = {
-    OBPRequest(apiPath, None, "DELETE", Nil) match {
+  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+    OBPRequest(apiPath, None, "DELETE", headers) match {
       case Full(value) => (APIUtils.deleteApiResponse(value._1, value._2), value._3)
     }
   }
