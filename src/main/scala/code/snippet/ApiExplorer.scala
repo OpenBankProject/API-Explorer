@@ -160,6 +160,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val listAllBanks = S.param("list-all-banks").getOrElse("false").toBoolean
   logger.info(s"all_banks in url param is $listAllBanks")
 
+  val currentOperationId = S.param("operation_id").getOrElse("OBPv3_1_0-config")
+  
 
   val presetBankId = S.param("bank_id").getOrElse("")
   logger.info(s"bank_id in url param is $presetBankId")
@@ -324,7 +326,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
   def stringToNodeSeq(html : String) : NodeSeq = {
-    val newHtmlString =scala.xml.XML.loadString("<div>" + html + "</div>").toString()
+    val newHtmlString = tryo {scala.xml.XML.loadString("<div>" + html + "</div>").toString()} match {
+      case Full(htmlString) =>
+        htmlString
+      case _ =>
+        logger.error(s"Cannot parse HTML to XML:" )
+        logger.error(html)
+        ""
+    }
 
     //Note: `parse` method: We much enclose the div, otherwise only the first element is returned. 
     Html5.parse(newHtmlString) match {
@@ -405,48 +414,49 @@ WIP to add comments on resource docs. This code copied from Sofit.
     case _ => "OBPv4.0.0"
   }
 
-  // Get the requested version from the url parameter and default if none
-  val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
+    // Get the requested version from the url parameter and default if none
+    val apiVersionRequested = S.param("version").getOrElse(defaultVersion)
 
 
 
-  // Possible OBP Versions
-  val obpVersionsSupported = List("OBPv2.2.0", "OBPv3.0.0", "OBPv3.1.0", "OBPv4.0.0")
+    // Possible OBP Versions
+    val obpVersionsSupported = List("OBPv2.2.0", "OBPv3.0.0", "OBPv3.1.0", "OBPv4.0.0")
 
-  val otherVersionsSupported = List("BGv1.3", "UKv3.1", "UKv2.0", "STETv1.4", "PAPIv2.1.1.1", "b1", "AUv1.0.0")
+    val otherVersionsSupported = List("BGv1.3", "UKv3.1", "UKv2.0", "STETv1.4", "PAPIv2.1.1.1", "b1", "AUv1.0.0")
 
-  // Set the version to use.
-  val apiVersion: String = {
-    if (obpVersionsSupported.contains(apiVersionRequested)) {
-      // Prefix with v (for OBP versions because they come just with number from API Explorer)
-      // Note: We want to get rid of this "v" prefix ASAP.
-      s"v$apiVersionRequested"
-    } else
-    if (otherVersionsSupported.contains(apiVersionRequested)) {
-      s"$apiVersionRequested"
-    } else {
-      S.notice(s"Note: Requested version $apiVersionRequested is not currently supported. Set to v$defaultVersion")
-      s"v$defaultVersion"
+    // Set the version to use.
+    val apiVersion: String = {
+      if (obpVersionsSupported.contains(apiVersionRequested)) {
+        // Prefix with v (for OBP versions because they come just with number from API Explorer)
+        // Note: We want to get rid of this "v" prefix ASAP.
+        s"v$apiVersionRequested"
+      } else
+      if (otherVersionsSupported.contains(apiVersionRequested)) {
+          s"$apiVersionRequested"
+        } else {
+        S.notice(s"Note: Requested version $apiVersionRequested is not currently supported. Set to v$defaultVersion")
+        s"v$defaultVersion"
+      }
     }
-  }
 
-  val isObpVersion: Boolean = {
-    obpVersionsSupported.contains(apiVersionRequested)
-  }
+    val isObpVersion: Boolean = {
+      obpVersionsSupported.contains(apiVersionRequested)
+    }
 
-  logger.info(s"apiVersion is: $apiVersion")
-
-
-  // To link to API home page (this is duplicated in OAuthClient)
-  val baseUrl = Helper.getPropsValue("api_hostname", S.hostName)
-  //
-  val apiPortalHostname = Helper.getPropsValue("api_portal_hostname", baseUrl)
+    logger.info(s"apiVersion is: $apiVersion")
 
 
-  // Use to show the developer the current base version url
-  val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}"
-  // Link to the API endpoint for the resource docs json TODO change apiVersion so it doesn't have a "v" prefix
-  val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?$pureCatalogParams${tagsParamString}${languagesParamString}"
+    // To link to API home page (this is duplicated in OAuthClient)
+    val baseUrl = Helper.getPropsValue("api_hostname", S.hostName)
+    //
+    val apiPortalHostname = Helper.getPropsValue("api_portal_hostname", baseUrl)
+
+
+    // Use to show the developer the current base version url
+    val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}"
+
+    // Link to the API endpoint for the resource docs json TODO change apiVersion so it doesn't have a "v" prefix
+    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?$pureCatalogParams${tagsParamString}${languagesParamString}"
 
   // Link to the API endpoint for the swagger json
   val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?$pureCatalogParams${tagsParamString}${languagesParamString}"
@@ -647,7 +657,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     } yield ResourceDocPlus(
        //in OBP-API, before it returned v3_1_0, but now, only return v3.1.0
       //But this filed will be used in JavaScript, so need clean the field.
-      id = r.operation_id.replace(".","_"),
+      id = r.operation_id.replace(".","_").replaceAll(" ","_"),
       verb = r.request_verb,
       url = modifiedRequestUrl(
         r.specified_url, // We used to use the request_url - but we want to use the specified url i.e. the later version.
@@ -929,8 +939,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val requestRolesResponsesBoxTarget = "required_roles_response_box_" + resourceId
       // The javascript to hide it.
       val jsCommandHidePossibleErrorResponsesBox : String =  s"DOLLAR_SIGN('#$possibleErrorResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
-      val jsCommandHideConnectorMethodsBoxTarget : String =  s"DOLLAR_SIGN('#$connectorMethodsBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
-
+      val jsCommandHideConnectorMethodsBoxTarget : String =  s"DOLLAR_SIGN('#$connectorMethodsBoxTarget').show();".replace("DOLLAR_SIGN","$")
       val jsCommandHideRequestRolesResponsesBox : String =  s"DOLLAR_SIGN('#$requestRolesResponsesBoxTarget').fadeOut();".replace("DOLLAR_SIGN","$")
 
       // The id of the possible error responses box we want to hide after calling the API
@@ -940,11 +949,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
       // The id of the full path
       val fullPathTarget = "full_path_" + resourceId
+      val fullHeadersBox= "full_headers_box_"+resourceId
       val fullHeadersTarget = "full_headers_" + resourceId
       // The javascript to show it
-
       val jsCommandShowFullPath : String =  s"DOLLAR_SIGN('#$fullPathTarget').fadeIn();".replace("DOLLAR_SIGN","$")
-      val jsCommandShowFullHeaders : String =  s"DOLLAR_SIGN('#$fullHeadersTarget').fadeIn();".replace("DOLLAR_SIGN","$")
+      val jsCommandShowFullHeaders : String =
+        s"DOLLAR_SIGN('#$fullHeadersBox').show();".replace("DOLLAR_SIGN","$") ++s"DOLLAR_SIGN('#$fullHeadersTarget').fadeIn();".replace("DOLLAR_SIGN","$") 
 
       // alert('$fullPathTarget');
       //logger.info(s"jsCommand is $jsCommand")
@@ -1324,11 +1334,37 @@ WIP to add comments on resource docs. This code copied from Sofit.
             // Within each group (first tag), list the resources
             "@api_list_item" #> i._2.sortBy(_.summary.toString()).map { i =>
               // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-                "@api_list_item_link [href]" #> s"#${i.id}" &
+                "@api_list_item_link [href]" #>
+                  (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty) //If the tags are in the URL, we just need to show the anchor, no need the parameters. 
+                    s"#${i.id}" 
+                  else if (resources.find(_.id == currentOperationId).map(_.tags.head).getOrElse("API")==resources.find(_.id == i.id).map(_.tags.head).getOrElse("API")) //If the Tag is the current Tag.We do not need parameters.
+                    s"#${i.id}" 
+                  else
+                    s"?operation_id=${i.id}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
                   "@api_list_item_link *" #> i.summary &
                   "@api_list_item_link [id]" #> s"index_of_${i.id}"
                   // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
         }
+      } &
+      // The `api_group_item_small_screen` is all for the small screen, 
+      "@api_group_item_small_screen" #> groupedResources.map { i =>
+        "@api_group_item_small_screen [data-target]" #> s"#group-collapse_small_screen-${i._1.replaceAll(" ","_").replaceAll("""\(""","_").replaceAll("""\)""","")}" &
+          "@api_group_name_small_screen *" #> s"${i._1.replace("-"," ")}" &
+          "@api_group_name_collapse_small_screen [id]" #> s"group-collapse_small_screen-${i._1.replaceAll(" ","_").replaceAll("""\(""","_").replaceAll("""\)""","")}" &
+          // Set an anchor (href and id) for a group
+//          "@api_group_name_small_screen [href]" #> s"#group_small_screen-${i._1}" &
+          "@api_group_name_small_screen [id]" #> s"group_small_screen-${i._1.replaceAll(" ","_").replaceAll("""\(""","_").replaceAll("""\)""","")}" &
+          // Within each group (first tag), list the resources
+          "@api_list_item_small_screen" #> i._2.sortBy(_.summary.toString()).map { i =>
+            // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
+            "@api_list_item_link_small_screen [href]" #>
+              (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty) //If the tags are in the URL, we just need to show the anchor, no need the parameters. 
+                s"#${i.id}"
+              else
+                s"?operation_id=${i.id}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
+              "@api_list_item_link_small_screen span" #> i.summary &
+              "@api_list_item_link_small_screen [id]" #> s"index_of__small_screen${i.id}"
+          }
       } &
     // This is used by API administrators who want to create white or black lists of API calls to use in Props for the API.
 //    ".comma_separated_api_call_list *" #> commaSeparatedListOfResources &
@@ -1380,7 +1416,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
         }
       }
       else {
-        ".resource" #> resources.map { i =>
+        //The default tag is the first tag of the resource, if it is empty, we use the API Tag.
+        val theResourcesFirstTag = resources.map(_.tags.headOption).flatten.headOption.getOrElse("API")
+        val currentTag = resources.find(_.id == currentOperationId).map(_.tags.head).getOrElse(theResourcesFirstTag)
+        ".resource" #> (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty)  resources else (resources.filter(_.tags.head==currentTag))).map { i =>
           // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
           ".end-point-anchor [href]" #> s"#${i.id}" &
           ".content-box__headline *" #> i.summary &
@@ -1399,8 +1438,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
           // (However, updating the var here does not seem to update the form field value)
           // We provide a default value (i.url) and bind the user input to requestUrl. requestURL is available in the function process
           // text creates a text box and we can capture its input in requestUrl
-          "@request_url_input" #> text(i.url, s => requestUrl = s, "maxlength" -> "512", "size" -> "100", "id" -> s"request_url_input_${i.id}") &
+          "@request_url_input" #> text(i.url, s => requestUrl = s, "aria-label"->s"${i.summary}","maxlength" -> "512", "size" -> "100", "id" -> s"request_url_input_${i.id}") &
           "@full_path [id]" #> s"full_path_${i.id}" &
+          "#full_headers_box [id]" #> s"full_headers_box_${i.id}" &
           "@full_headers [id]" #> s"full_headers_${i.id}" &
           // Extraction.decompose creates json representation of JObject.
           "@example_request_body_input" #> text(Helper.renderJson(i.exampleRequestBody), s => requestBody = s, "maxlength" -> "100000", "size" -> "100", "type" -> "text") &
@@ -1416,7 +1456,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           ".possible_error_item" #> i.errorResponseBodies.map { i =>
               ".possible_error_item *" #> i
           } &
-          "@connector_methods_box [id]" #> s"connector_methods_box_${i.id}" &
+          "#connector_methods_box [id]" #> s"connector_methods_box_${i.id}" &
           // This class gets a list of connector methods
           ".connector_method_item" #> i.connectorMethods.map { i=>
             // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
