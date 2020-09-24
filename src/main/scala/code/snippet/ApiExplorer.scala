@@ -190,27 +190,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
     case _ => Empty
   }
 
-  val showCoreParam: Option[Boolean] = for {
-    x <- S.param("core")
-    y <- stringToOptBoolean(x)
-  } yield y
-
-  logger.info(s"showCore is $showCoreParam")
-
-  val showPSD2Param: Option[Boolean] = for {
-    x <- S.param("psd2")
-    y <- stringToOptBoolean(x)
-  } yield y
-
-  logger.info(s"showPSD2 is $showPSD2Param")
-
-  val showOBWGParam: Option[Boolean] = for {
-    x <- S.param("obwg")
-    y <- stringToOptBoolean(x)
-  } yield y
-
-  logger.info(s"showOBWG is $showOBWGParam")
-
   /** native is a query parameter to filter endpoints by implementedBy
     * Used to list newly implemented or updated functionality
     * native = true means only show endpoints that are implemented in the version we are calling.
@@ -272,58 +251,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
     case Some(false) => "(those inherited from previous versions)"
     case _ => ""
   }
-
-
-  // TODO We should remove this if we remove defaultCatalog
-  // This parameter stops the default catalog kicking in
-  val ignoreDefaultCatalog: Option[Boolean] = for {
-    x <- S.param("ignoredefcat")
-    y <- stringToOptBoolean(x)
-  } yield y
-
-  logger.info(s"ignoreDefaultCatalog is $ignoreDefaultCatalog")
-
-
-
-
-  // TODO Probably we should remove this as its not often used.
-  // If there is a main purpose of the sandbox, then know that.
-  val defaultCatalog = Helper.getPropsValue("defaultCatalog", "")
-
-
-  val showCore = showCoreParam
-
-  // If no catalog preferences have been set and not asking for all and we are on an OBWG sandbox, set that preference
-  val showOBWG : Option[Boolean] =  if (showCoreParam == None && showPSD2Param == None && showOBWGParam == None && (defaultCatalog == "OBWG") && !ignoreDefaultCatalog.getOrElse(false)) {
-    Some(true)
-  } else {
-    showOBWGParam
-  }
-
-  val showPSD2 : Option[Boolean] =  if (showCoreParam == None && showPSD2Param == None && showOBWGParam == None && (defaultCatalog == "PSD2") && !ignoreDefaultCatalog.getOrElse(false)) {
-    Some(true)
-  } else {
-    showPSD2Param
-  }
-
-
-
-  val showString = showCore.map(i => s"core=$showCore&").toString + showPSD2.map(i => s"psd2=$showPSD2").toString
-
-  // Used for links to the Resource Docs / Swagger json (don't include default default catalog)
-  // Note: No leading &
-  val pureCatalogParams = s"core=${showCore.getOrElse("")}&psd2=${showPSD2.getOrElse("")}&obwg=${showOBWG.getOrElse("")}"
-
-
-  val resetCatalogParams = s"&core=&psd2=&obwg="
-
-
-  // Used for links in this web application
-  val catalogParams = s"&$pureCatalogParams&ignoredefcat=${ignoreDefaultCatalog.getOrElse("")}"
-
-  println(catalogParams)
-
-
 
   def stringToNodeSeq(html : String) : NodeSeq = {
     val newHtmlString = tryo {scala.xml.XML.loadString("<div>" + html + "</div>").toString()} match {
@@ -456,10 +383,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}"
 
     // Link to the API endpoint for the resource docs json TODO change apiVersion so it doesn't have a "v" prefix
-    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?$pureCatalogParams${tagsParamString}${languagesParamString}"
+    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?${tagsParamString}${languagesParamString}"
 
   // Link to the API endpoint for the swagger json
-  val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?$pureCatalogParams${tagsParamString}${languagesParamString}"
+  val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?${tagsParamString}${languagesParamString}"
 
   val chineseVersionPath = "?language=zh"
   val allPartialFunctions = "/partial-functions.html"
@@ -783,55 +710,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val groupedFeaturedResources  = unsortedFeaturedGroupedResources.toSeq.sortBy(_._1)
     /////////////////
 
-    // Headline and Description of the search
-    val (catalogHeadline, catalogDescription) = List(showCore, showOBWG, showPSD2)  match {
-
-      // Core / Minimal (basically same as PSD2)
-      case List(Some(true), None, None) => ("Core OBP",
-        "A core set of customer facing APIs built on core banking services.")
-
-      // Non Core (this query not used by API Explorer)
-      case List(Some(false), None, None) => ("Non-Core OBP",
-        "These APIs don't assume the owner of the account is accessing the account related resources (so they support accountant, auditor, public, admin access) " +
-          "Meta data, data sharing, data redaction and entitlements is included. ")
-
-      // All
-      case List(None, None, None) => isObpVersion match {
-        case true => ("OBP", "Open Bank Project")
-        case false if apiVersionRequested == ("BGv1.3.3") => ("Berlin Group", "Berlin Group")
-        case false if apiVersionRequested == ("BGv1") => ("Berlin Group", "Berlin Group")
-        case false if apiVersionRequested == ("BGv1.3") => ("Berlin Group", "Berlin Group")
-        case false if apiVersionRequested == ("UKv3.1") => ("UK", "UK")
-        case false if apiVersionRequested == ("UKv2.0") => ("UK", "UK")
-        case false if apiVersionRequested == ("STETv1.4") => ("STET", "STET")
-        case false if apiVersionRequested == ("PAPIv2.1.1.1") => ("Polish", "Polish")
-        case false if apiVersionRequested == ("b1") => ("Builder", "Builder")
-        case _  => ("", "")
-      }
-
-
-      // UK OBWG
-      case List(None, Some(true), None) => ("PSD2 + Open Data APIs", "PSD2 + Open Data: Access to Accounts, Payments and Open Data related to the Bank.")
-
-      // PSD2
-      case List(None,  None, Some(true)) => ("OBP PSD2 Catalog", "PSD2: AIS and PIS")
-
-      // Intersection
-      case List(Some(true), Some(true), Some(true)) => ("Intersection of all Catalogs",
-        "APIs common to Catalogs")
-
-      case _ => ("APIs", "")
-    }
-
-
-    logger.info (s"catalogHeadline is: $catalogHeadline")
-    logger.info (s"catalogDescription is: $catalogDescription")
-
 
 
     // Title / Headline we display including count of APIs
     val headline : String = s"""
-      $catalogHeadline
       ${apiVersionRequested.stripPrefix("OBP").stripPrefix("BG").stripPrefix("STET").stripPrefix("UK")}
       $tagsHeadline $languageHeadline $implementedHereHeadline (${resources.length} APIs)
       """.trim()
@@ -843,14 +725,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // Used to show / hide the Views selector
     // TODO disable instead of hiding
-    val displayViews = if (showCore.getOrElse(false) || showOBWG.getOrElse(false)) {
-      logger.info("not show views drop down")
-      "none"
-    } else {
-      logger.info("show views drop down")
-      "block"
-    }
-
+    val displayViews = "block"
 
     val displayFeatured = if (featuredResources.length > 0 ) {
       logger.info("show featured")
@@ -859,10 +734,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
       logger.info("not show featured")
       "none"
     }
-
-
-
-
 
 
     // Do we want to show the Request Entitlement button.
@@ -967,7 +838,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val apiUrl = OAuthClient.currentApiBaseUrl
       
       val urlWithVersion =      
-        if (showPSD2 == Some(true)) {
+        if (tagsParamString.equalsIgnoreCase("PSD2") == Some(true)) {
           s"$requestUrl".split("\\?").toList match {
             case url :: params :: Nil =>
               url + params + "&format=ISO20022"
@@ -1020,17 +891,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
-    val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${catalogParams}${tagsParamString}${languagesParamString}"
+    val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${tagsParamString}${languagesParamString}"
 
 
-    // Create a list of (version, url) used to populate the versions whilst preserving the other parameters
-    //val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i.replace("OBPv", "v"), s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}${catalogParams}"))
-
-    val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i.replace("OBPv", "v"), s"?version=${i}&list-all-banks=${listAllBanks}${resetCatalogParams}"))
+    val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i.replace("OBPv", "v"), s"?version=${i}&list-all-banks=${listAllBanks}"))
 
 
 
-    // Create a list of (version, url) used to populate the versions whilst preserving the other parameters except catalog
+    // Create a list of (version, url) used to populate the versions whilst preserving the other parameters 
     // Includes hack for Berlin Group
     val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i
       .replace("b1", "API Builder")
@@ -1310,7 +1178,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "@all_partial_functions [href]" #> s"$allPartialFunctions" &
     "#api_home_link [href]" #> s"$apiPortalHostname" &
     "@views_box [style]" #> s"display: $displayViews;" &
-    "@catalog_description *" #> s"$catalogDescription" &
     // Show / hide featured
     "@featured_box [style]" #> s"display: $displayFeatured;" &
       "@featured_list [style]" #> s"display: $displayFeatured;" &
