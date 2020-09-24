@@ -151,7 +151,7 @@ object ObpAPI extends Loggable {
 
   // Returns Json containing Resource Docs
   def getResourceDocsJson(apiVersion : String) : Box[ResourceDocsJson] = {
-    val requestParams = List("core", "psd2", "obwg", "tags", "language", "functions")
+    val requestParams = List("tags", "language", "functions")
         .map(paramName => (paramName, S.param(paramName)))
         .collect{
           case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -820,9 +820,6 @@ object ObpJson {
                              success_response_body: JValue, // Success response body
                              error_response_bodies: List[String],
                              implemented_by: ImplementedByJson,
-                             is_core : Boolean,
-                             is_psd2 : Boolean,
-                             is_obwg : Boolean, // This may be tracking isCore
                              tags : List[String],
                              roles: List[RoleJson],
                              is_featured: Boolean,
@@ -875,9 +872,6 @@ object ObpJson {
                              successResponseBody: JValue,
                              errorResponseBodies: List[String],
                              implementedBy: ImplementedBy,
-                             isCore: Boolean,
-                             isPSD2: Boolean,
-                             isOBWG: Boolean,
                              tags: List[String],
                              roleInfos: List[RoleInfo],
                              isFeatured: Boolean,
