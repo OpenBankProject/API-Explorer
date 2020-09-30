@@ -815,7 +815,7 @@ object ObpJson {
                              request_verb: String,
                              request_url: String,
                              summary: String, // Summary of call should be 120 characters max
-                             description: String,      // Description of call in markdown
+                             description: String,      // Description of call in html format
                              example_request_body: JValue,  // An example request body
                              success_response_body: JValue, // Success response body
                              error_response_bodies: List[String],
