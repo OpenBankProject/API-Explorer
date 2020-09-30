@@ -568,6 +568,17 @@ a img {
   line-height: 24px;
 }
 
+#example_request_header .default-input{
+  float: left;
+  margin-right: 20px;
+  margin-top: 0;
+  margin-bottom: 13px;
+  font-family: Roboto-Regular;
+  font-size: 16px;
+  color: #333333;
+  line-height: 24px;
+}
+
 .content-box__available-since {
   float: left;
   position: relative;
