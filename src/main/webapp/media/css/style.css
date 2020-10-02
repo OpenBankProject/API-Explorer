@@ -888,15 +888,15 @@ template {
 /**
  * Remove the gray background color from active links in IE 10.
  */
-a {
-  background-color: transparent;
-  color: #333333;
-}
+/*a {*/
+/*  background-color: transparent;*/
+/*  color: #333333;*/
+/*}*/
 
-p a {
-  background-color: transparent;
-  color: #333333;
-}
+/*p a {*/
+/*  background-color: transparent;*/
+/*  color: #333333;*/
+/*}*/
 .connector_method_item a {
   color: #ffffff;
 }
@@ -905,12 +905,12 @@ p a {
  * Improve readability of focused elements when they are also in an
  * active/hover state.
  */
-a:active,
-a:hover {
-  outline: 0;
-  color: #FFFFFF;
-  text-decoration:underline
-}
+/*a:active,*/
+/*a:hover {*/
+/*  outline: 0;*/
+/*  color: #FFFFFF;*/
+/*  text-decoration:underline*/
+/*}*/
 
 /* Text-level semantics
 ========================================================================== */
