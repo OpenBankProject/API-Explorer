@@ -892,6 +892,12 @@ p a {
   background-color: transparent;
   color: #333333;
 }
+p a:active,
+p a:hover {
+  outline: 0;
+  color: #333333;
+  text-decoration:underline
+}
 .connector_method_item a {
   color: #ffffff;
 }
@@ -1033,7 +1039,7 @@ samp {
 .glossary samp {
   font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
-  color: #333333;
+  color: #FFFFFF;
   line-height: 24px;
 }
 
