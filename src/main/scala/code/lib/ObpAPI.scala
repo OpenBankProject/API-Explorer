@@ -151,7 +151,7 @@ object ObpAPI extends Loggable {
 
   // Returns Json containing Resource Docs
   def getResourceDocsJson(apiVersion : String) : Box[ResourceDocsJson] = {
-    val requestParams = List("core", "psd2", "obwg", "tags", "language", "functions")
+    val requestParams = List("tags", "language", "functions")
         .map(paramName => (paramName, S.param(paramName)))
         .collect{
           case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -221,10 +221,10 @@ object OBPRequest extends MdcLoggable {
       request.setRequestProperty("Accept", "application/json")
       request.setRequestProperty("Accept-Charset", "UTF-8")
 
-      headers.foreach(header => request.setRequestProperty(header.key, header.value))
-
       //sign the request if we have some credentials to sign it with
       credentials.foreach(c => c.consumer.sign(request))
+
+      headers.foreach(header => request.setRequestProperty(header.key, header.value))
 
       //Set the request body
       if(jsonBody.isDefined) {
@@ -278,8 +278,8 @@ object ObpPut {
   }
 }
 object ObpPutWithHeader {
-  def apply(apiPath: String, json : JValue): (Box[JValue], List[String]) = {
-    OBPRequest(apiPath, Some(json), "PUT", Nil) match {
+  def apply(apiPath: String, json : JValue, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+    OBPRequest(apiPath, Some(json), "PUT", headers) match {
       case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
     }
   }
@@ -293,12 +293,12 @@ object ObpPost {
   }
 }
 object ObpPostWithHeader {
-  def apply(apiPath: String, json : JValue): (Box[JValue], List[String]) = {
+  def apply(apiPath: String, json : JValue, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
     val requestBody = json match {
       case JNothing | JNull => None
       case v => Option(v)
     }
-    OBPRequest(apiPath, requestBody, "POST", Nil) match {
+    OBPRequest(apiPath, requestBody, "POST", headers) match {
       case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
     }
   }
@@ -328,8 +328,8 @@ object ObpDelete {
   }
 }
 object ObpDeleteWithHeader {
-  def apply(apiPath: String): (Box[JValue], List[String]) = {
-    OBPRequest(apiPath, None, "DELETE", Nil) match {
+  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+    OBPRequest(apiPath, None, "DELETE", headers) match {
       case Full(value) => (APIUtils.deleteApiResponse(value._1, value._2), value._3)
     }
   }
@@ -815,14 +815,11 @@ object ObpJson {
                              request_verb: String,
                              request_url: String,
                              summary: String, // Summary of call should be 120 characters max
-                             description: String,      // Description of call in markdown
+                             description: String,      // Description of call in html format
                              example_request_body: JValue,  // An example request body
                              success_response_body: JValue, // Success response body
                              error_response_bodies: List[String],
                              implemented_by: ImplementedByJson,
-                             is_core : Boolean,
-                             is_psd2 : Boolean,
-                             is_obwg : Boolean, // This may be tracking isCore
                              tags : List[String],
                              roles: List[RoleJson],
                              is_featured: Boolean,
@@ -875,9 +872,6 @@ object ObpJson {
                              successResponseBody: JValue,
                              errorResponseBodies: List[String],
                              implementedBy: ImplementedBy,
-                             isCore: Boolean,
-                             isPSD2: Boolean,
-                             isOBWG: Boolean,
                              tags: List[String],
                              roleInfos: List[RoleInfo],
                              isFeatured: Boolean,

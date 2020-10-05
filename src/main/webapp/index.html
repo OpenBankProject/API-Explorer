@@ -78,14 +78,14 @@
                             <li class="breadcrumbs__list" id="API_Home">
                                 <a id="api_home_link" href="This href should be replaced" class="breadcrumbs__link">Home</a>
                             </li>
-<!--                            <li class="breadcrumbs__list" id="OBP_PSD2" style="display:none;">-->
-<!--                                <a class="version" href="./?psd2=true">OBP PSD2</a>-->
-<!--                            </li>-->
-                            <li class="breadcrumbs__list" id="OBP_4.0.0" style="display:none;">
-                                <a class="version" href="?version=OBPv4.0.0">OBP 4.0.0</a>
+                            <li class="breadcrumbs__list" id="OBP_PSD2" style="display:none;">
+                                <a class="version" href="./?tags=PSD2">OBP PSD2</a>
                             </li>
                             <li class="breadcrumbs__list" id="OBP_3.1.0" style="display:none;">
                                 <a class="version" href="?version=OBPv3.1.0" id="OBP 3.1.0">OBP 3.1.0</a>
+                            </li>
+                            <li class="breadcrumbs__list" id="OBP_4.0.0" style="display:none;">
+                                <a class="version" href="?version=OBPv4.0.0">OBP 4.0.0</a>
                             </li>
                             <li class="breadcrumbs__list" id="Berlin_Group" style="display:none;">
                                 <a class="version" href="?version=BGv1.3&tags=Berlin-Group-M">Berlin Group</a>
@@ -230,12 +230,13 @@
                                                placeholder="OBP URL to call">
                                         <button name="call_button" class="rest-call-button">POST</button>
 
-                                        <div name="example_request_body" id="example_request_body"
-                                             style="display: block;">
-                                            <input name="example_request_body_input" class="default-input"
-                                                   placeholder="JSON body to POST or PUT">
+                                        <div name="example_request_header" id="example_request_header" style="display: block;">
+                                            <!-- It is populated at render (but it can be edited manually) -->
+                                            <input type="text" name="request_header_input" class="default-input" placeholder="Request Header">
                                         </div>
-
+                                        <div name="example_request_body" id="example_request_body" style="display: block;">
+                                            <input name="example_request_body_input" class="default-input" placeholder="JSON body to POST or PUT">
+                                        </div>
 
                                     </form>
                                 </div>
