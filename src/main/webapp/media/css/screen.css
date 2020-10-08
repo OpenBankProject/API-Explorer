@@ -195,6 +195,8 @@ hr {
   #small-nav-collapse{
     display: block;
     margin-right: 70px;
+    border: 0;
+    background-color: #FFFFFF;
   }
   #small-screen-navbar #small-nav-collapse {
     display: block;

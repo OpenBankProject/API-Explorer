@@ -1601,3 +1601,7 @@ footer a:hover{
 #option-section-more-page{
   top: 213px;
 }
+#small-nav-collapse{
+  border: 0;
+  background-color: #FFFFFF;
+}
