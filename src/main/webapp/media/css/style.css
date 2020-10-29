@@ -483,6 +483,11 @@ a img {
   padding-top: 220px ;
 }
 
+.message-doc .content-box pre{
+  background-color: #FFFFFF;
+}
+
+
 
 .glossary .content-box__headline {
   margin: -222px 0 32px 0;
