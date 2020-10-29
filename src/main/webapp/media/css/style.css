@@ -1364,7 +1364,7 @@ a.end-point-anchor {
 }
 .grid-container {
   display: grid;
-  grid-template-columns: 10% 45% 45%;
+  grid-template-columns: 12% 44% 44%;
   grid-gap: 10px;
   background-color: #fff;
   color: #444;
