@@ -466,6 +466,18 @@ a img {
   padding: 332px 0 0 0;
 }
 
+#obp\.getAdapterInfo{
+    margin: 0 0 32px 0;
+    padding: 220px 0 0 0;
+}
+
+.message-doc .content-box__headline{
+    margin-top: -220px;
+    padding-top: 220px ;
+}
+.message-doc .content-box pre{
+    background-color: #FFFFFF;
+}
 
 .glossary .content-box__headline {
   margin: -222px 0 32px 0;
