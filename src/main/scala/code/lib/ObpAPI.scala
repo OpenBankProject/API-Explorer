@@ -187,8 +187,16 @@ object ObpAPI extends Loggable {
   }
 
 
+  //  this is one month
+  val getGlossaryItemsJsonTTL: FiniteDuration = 30 days
+  
   def getGlossaryItemsJson : Box[GlossaryItemsJsonV300] = {
-    ObpGet(s"$obpPrefix/v3.0.0/api/glossary").flatMap(_.extractOpt[GlossaryItemsJsonV300])
+    var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
+    CacheKeyFromArguments.buildCacheKey {
+      Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getGlossaryItemsJsonTTL) {
+        ObpGet(s"$obpPrefix/v3.0.0/api/glossary").flatMap(_.extractOpt[GlossaryItemsJsonV300])
+      }
+    }
   }
 
   //  this is one month
