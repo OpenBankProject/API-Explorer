@@ -44,7 +44,17 @@
         <id>jboss-public-repository-group</id>
         <name>JBoss Public Repository Group</name>
         <url>http://repository.jboss.org/nexus/content/groups/public</url>
-    </repository>
+     </repository>
+        
+        <repository>
+            <id>git-OpenBankProject</id>
+            <name>OpenBankProject Git based repo</name>
+            <url>https://raw.githubusercontent.com/OpenBankProject/OBP-M2-REPO/master/</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -117,6 +127,31 @@
             <groupId>oauth.signpost</groupId>
             <artifactId>signpost-commonshttp4</artifactId>
             <version>1.2.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.OpenBankProject</groupId>
+            <artifactId>scala-macros</artifactId>
+            <version>v1.0.0-alpha.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cb372</groupId>
+            <artifactId>scalacache-guava_${scala.version}</artifactId>
+            <version>0.9.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cb372</groupId>
+            <artifactId>scalacache-redis_${scala.version}</artifactId>
+            <version>0.9.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.twitter</groupId>
+            <artifactId>chill-akka_${scala.version}</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.twitter</groupId>
+            <artifactId>chill-bijection_${scala.version}</artifactId>
+            <version>0.9.1</version>
         </dependency>
     </dependencies>
 

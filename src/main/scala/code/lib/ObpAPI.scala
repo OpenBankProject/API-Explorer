@@ -8,16 +8,21 @@ import java.util.Date
 import code.lib.ObpJson._
 import code.util.Helper
 import code.util.Helper.MdcLoggable
+import code.util.cache.Caching
 import net.liftweb.common.{Box, Failure, Full, _}
 import net.liftweb.http.{RequestVar, S}
 import net.liftweb.json.JsonAST.{JBool, JValue}
 import net.liftweb.json.JsonDSL._
 import net.liftweb.json._
-import net.liftweb.util.Helpers._
-import net.liftweb.util.Props
-
-import scala.collection.immutable.List
+import net.liftweb.util.Helpers.{intToTimeSpanBuilder=>_,_} //This will break the cache days, so here we hide it in import
 import scala.xml.NodeSeq
+import com.tesobe.CacheKeyFromArguments
+import scala.collection.immutable.{List, Nil}
+import scala.concurrent.duration._
+import scala.language.postfixOps
+import java.util.UUID.randomUUID
+import net.liftweb.common._
+
 
 case class Header(key: String, value: String)
 
@@ -186,8 +191,17 @@ object ObpAPI extends Loggable {
     ObpGet(s"$obpPrefix/v3.0.0/api/glossary").flatMap(_.extractOpt[GlossaryItemsJsonV300])
   }
 
+  //  this is one month
+  val getMessageDocsJsonTTL: FiniteDuration = 30 days
+  
   def getMessageDocsJson(connector: String) : Box[MessageDocsJsonV220] = {
-    ObpGet(s"$obpPrefix/v2.2.0/message-docs/$connector").flatMap(_.extractOpt[MessageDocsJsonV220])
+    var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
+    CacheKeyFromArguments.buildCacheKey {
+      Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getMessageDocsJsonTTL) {
+  
+        ObpGet(s"$obpPrefix/v2.2.0/message-docs/$connector").flatMap(_.extractOpt[MessageDocsJsonV220])
+      }
+    }
   }
 
 }
