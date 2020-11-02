@@ -1453,7 +1453,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   def showMessageDocs = {
 
-    // TODO cache this.
     val messageDocs = getMessageDocsJson(presetConnector).map(_.message_docs).getOrElse(List()).sortBy(i => (i.adapter_implementation.group, i.adapter_implementation.suggested_order))
 
     // Group message docs by group in adapter implementation.
