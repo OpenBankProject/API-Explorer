@@ -229,7 +229,7 @@ object OBPRequest extends MdcLoggable {
         .replaceAll("UKv3.1", "v3.1")
         .replaceAll("BGv1.3", "v1.3")
         .replaceAll("BGv1", "v1")
-        .replaceAll("OBPv", "")
+        .replaceAll("OBPv", "v")
 
       val url = apiUrl + convertedApiPath
 
