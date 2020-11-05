@@ -54,15 +54,6 @@ object ObpAPI extends Loggable {
     }
   }
 
-  object privateAccountsVar extends RequestVar[Box[BarebonesAccountsJson]] (Empty)
-
-  def privateAccountsCache : Box[BarebonesAccountsJson]= {
-    privateAccountsVar.get match {
-      case Full(a) => Full(a)
-      case _ => privateAccounts // TODO use more recent API version
-    }
-  }
-
   def currentUser : Box[CurrentUserJson]= {
     ObpGet(s"$obpPrefix/v2.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
   }
