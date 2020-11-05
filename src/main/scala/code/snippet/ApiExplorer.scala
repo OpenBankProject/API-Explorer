@@ -331,7 +331,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   // Get a list of BankIds that are relevant to the logged in user i.e. banks where the user has at least one non public account
   val myBankIds: List[BankId] = for {
-      allAccountsJson <- ObpAPI.privateAccounts.toList
+      allAccountsJson <- if(isLoggedIn) ObpAPI.privateAccounts.toList else List() //No need call api for anonymous user.
       barebonesAccountJson <- allAccountsJson.accounts.toList.flatten
       bankId <- barebonesAccountJson.bank_id
     } yield BankId(bankId)
