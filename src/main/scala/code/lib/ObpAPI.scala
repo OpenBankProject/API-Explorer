@@ -10,11 +10,12 @@ import code.util.Helper
 import code.util.Helper.MdcLoggable
 import code.util.cache.Caching
 import net.liftweb.common.{Box, Failure, Full, _}
-import net.liftweb.http.{RequestVar, S}
+import net.liftweb.http.{RequestVar, S, SessionVar}
 import net.liftweb.json.JsonAST.{JBool, JValue}
 import net.liftweb.json.JsonDSL._
 import net.liftweb.json._
-import net.liftweb.util.Helpers.{intToTimeSpanBuilder=>_,_} //This will break the cache days, so here we hide it in import
+import net.liftweb.util.Helpers.{intToTimeSpanBuilder => _, _}
+
 import scala.xml.NodeSeq
 import com.tesobe.CacheKeyFromArguments
 import scala.collection.immutable.{List, Nil}
@@ -50,7 +51,8 @@ object ObpAPI extends Loggable {
   def allBanks : Box[BanksJson]= {
     allBanksVar.get match {
       case Full(a) => Full(a)
-      case _ => ObpGet(s"$obpPrefix/v3.1.0/banks").flatMap(_.extractOpt[BanksJson])
+      case _ => allBanksVar.set(ObpGet(s"$obpPrefix/v3.1.0/banks").flatMap(_.extractOpt[BanksJson]))
+        allBanksVar.get
     }
   }
 
@@ -145,6 +147,12 @@ object ObpAPI extends Loggable {
 
 
 
+  /**
+   * The request vars ensure that for one page load, the same API call isn't made multiple times
+   */
+  object allResoucesVar extends SessionVar[Box[ResourceDocsJson]] (Empty)
+  
+  
   // Returns Json containing Resource Docs
   def getResourceDocsJson(apiVersion : String) : Box[ResourceDocsJson] = {
     val requestParams = List("tags", "language", "functions")
@@ -153,8 +161,15 @@ object ObpAPI extends Loggable {
           case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
         }
         .mkString("?", "&", "")
+    val currentTag = S.param("currentTag").getOrElse("")
+    val resourceFromSession = allResoucesVar.map(_.resource_docs.filter(_.tags.head==currentTag))
+    val length = resourceFromSession.map(_.length).getOrElse(0)
+    if(length > 0){
+      resourceFromSession.map( ResourceDocsJson(_))
+    } else{
+      allResoucesVar.set(ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams").map(extractResourceDocsJson))
+    }
 
-    ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams").map(extractResourceDocsJson)
   }
 
   /**

@@ -403,6 +403,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val chineseVersionPath = "?language=zh"
   val allPartialFunctions = "/partial-functions.html"
   
+  //Note > this method is only for partial-functions.html .
   def showPartialFunctions =  {
     // Get a list of resource docs from the API server
     // This will throw an exception if resource_docs key is not populated
