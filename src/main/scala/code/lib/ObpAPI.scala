@@ -54,18 +54,9 @@ object ObpAPI extends Loggable {
     }
   }
 
-  object privateAccountsVar extends RequestVar[Box[BarebonesAccountsJson]] (Empty)
-
-  def privateAccountsCache : Box[BarebonesAccountsJson]= {
-    privateAccountsVar.get match {
-      case Full(a) => Full(a)
-      case _ => privateAccounts // TODO use more recent API version
-    }
-  }
-
-  def currentUser : Box[CurrentUserJson]= {
+  def currentUser : Box[CurrentUserJson]= if(isLoggedIn){
     ObpGet(s"$obpPrefix/v2.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
-  }
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
   // Wrapper for looking at OAuth headers.
   def isLoggedIn : Boolean = {
@@ -86,7 +77,7 @@ object ObpAPI extends Loggable {
     * @return Json for transactions of a particular bank account Uses 3.0.0 call and format.
     */
   def transactions300(bankId: String, accountId: String, viewId: String, limit: Option[Int],
-                      offset: Option[Int], fromDate: Option[Date], toDate: Option[Date], sortDirection: Option[SortDirection]) : Box[TransactionsJsonV300]= {
+                      offset: Option[Int], fromDate: Option[Date], toDate: Option[Date], sortDirection: Option[SortDirection]) : Box[TransactionsJsonV300]= if(isLoggedIn){
 
     val headers : List[Header] = limit.map(l => Header("obp_limit", l.toString)).toList ::: offset.map(o => Header("obp_offset", o.toString)).toList :::
       fromDate.map(f => Header("obp_from_date", dateFormat.format(f))).toList ::: toDate.map(t => Header("obp_to_date", dateFormat.format(t))).toList :::
@@ -94,7 +85,7 @@ object ObpAPI extends Loggable {
 
     ObpGet(s"$obpPrefix/v3.0.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) +
       "/transactions", headers).flatMap(x => x.extractOpt[TransactionsJsonV300])
-  }
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
 
 
@@ -110,47 +101,47 @@ object ObpAPI extends Loggable {
     ObpGet(s"$obpPrefix/v3.1.0/accounts/public").flatMap(_.extractOpt[BarebonesAccountsJson])
   }
 
-  def privateAccounts(bankId : String) : Box[BarebonesAccountsJson] = {
+  def privateAccounts(bankId : String) : Box[BarebonesAccountsJson] = if(isLoggedIn){
     ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/private").flatMap(_.extractOpt[BarebonesAccountsJson])
-  }
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
-  def privateAccounts : Box[BarebonesAccountsJson] = {
+  def privateAccounts : Box[BarebonesAccountsJson] = if(isLoggedIn){
     ObpGet(s"$obpPrefix/v1.2.1/accounts/private").flatMap(_.extractOpt[BarebonesAccountsJson])
-  }
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
   
   @deprecated("This method will mix public and private, not clear for Apps.","2018-02-18")
-  def allAccountsAtOneBank(bankId : String) : Box[BarebonesAccountsJson] = {
+  def allAccountsAtOneBank(bankId : String) : Box[BarebonesAccountsJson] = if(isLoggedIn){
     ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts").flatMap(_.extractOpt[BarebonesAccountsJson])
-  }
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
   // Similar to getViews below
-  def getViewsForBankAccount(bankId: String, accountId: String) = {
+  def getViewsForBankAccount(bankId: String, accountId: String) = if(isLoggedIn){
     ObpGet(s"$obpPrefix/v3.1.0/banks/" + bankId + "/accounts/" + accountId + "/views").flatMap(_.extractOpt[ViewsJson])
-  }
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
-  def getAccount(bankId: String, accountId: String, viewId: String) : Box[AccountJson] = {
+  def getAccount(bankId: String, accountId: String, viewId: String) : Box[AccountJson] = if(isLoggedIn) {
     ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/account").flatMap(x => x.extractOpt[AccountJson])
-  }
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
-  def getCounterparties(bankId: String, accountId: String, viewId: String): Box[DirectOtherAccountsJson] = {
+  def getCounterparties(bankId: String, accountId: String, viewId: String): Box[DirectOtherAccountsJson] = if(isLoggedIn) {
     val counterparties  = ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/other_accounts").flatMap(x => x.extractOpt[DirectOtherAccountsJson])
     counterparties
-  }
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
-  def getExplictCounterparties(bankId: String, accountId: String, viewId: String): Box[ExplictCounterpartiesJson] = {
+  def getExplictCounterparties(bankId: String, accountId: String, viewId: String): Box[ExplictCounterpartiesJson] = if(isLoggedIn){
      ObpGet(s"$obpPrefix/v2.2.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/counterparties").flatMap(x => x.extractOpt[ExplictCounterpartiesJson])
-  }
+  }else Failure("OBP-20001: User not logged in. Authentication is required!")
 
-  def getEntitlementsV300 : Box[EntitlementsJson] = {
-    ObpGet(s"$obpPrefix/v3.0.0/my/entitlements").flatMap(_.extractOpt[EntitlementsJson])
-  }
+  def getEntitlementsV300 : Box[EntitlementsJson] = if(isLoggedIn){
+    ObpGet(s"$obpPrefix/v3.0.0/my/entitlements").flatMap(_.extractOpt[EntitlementsJson]) 
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
 
-  def getEntitlementRequestsV300 : Box[EntitlementRequestsJson] = {
+  def getEntitlementRequestsV300 : Box[EntitlementRequestsJson] = if(isLoggedIn){
     val result = ObpGet(s"$obpPrefix/v3.0.0/my/entitlement-requests").flatMap(_.extractOpt[EntitlementRequestsJson])
     logger.debug(s"We got this result for EntitlementRequestsJson: ${result}")
     result
-  }
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
 
 
@@ -229,7 +220,7 @@ object OBPRequest extends MdcLoggable {
         .replaceAll("UKv3.1", "v3.1")
         .replaceAll("BGv1.3", "v1.3")
         .replaceAll("BGv1", "v1")
-        .replaceAll("OBPv", "")
+        .replaceAll("OBPv", "v")
 
       val url = apiUrl + convertedApiPath
 

@@ -20,17 +20,17 @@ hr {
   border-top: 1px solid #D7D8D6 ;
 }
 
-@media only screen and (min-width: 1716px) {
-  #breadcrumb-section-more-page {
-    height: 40px;
-  }
-  #api-info-section-more-page {
-    top: 125px;
-  }
-  #option-section-more-page{
-      top: 193px;
-  }
-}
+/*@media only screen and (min-width: 1716px) {*/
+/*  #breadcrumb-section-more-page {*/
+/*    height: 52px;*/
+/*  }*/
+/*  #api-info-section-more-page {*/
+/*    top: 125px;*/
+/*  }*/
+/*  #option-section-more-page{*/
+/*      top: 193px;*/
+/*  }*/
+/*}*/
 
 @media only screen and (max-width: 1420px) {
   #transaction_selector-option-box {visibility: hidden;}

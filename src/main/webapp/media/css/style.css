@@ -1619,12 +1619,23 @@ footer a:hover{
 }
 
 #api-info-section-more-page{
-  top: 145px;
+  top: 137px;
+  z-index: 1;
 }
 #breadcrumb-section-more-page{
   top:85px;
-  height: 60px;
+  height: 52px;
 }
 #option-section-more-page{
-  top: 213px;
+  top: 204px;
+  z-index: 1;
+}
+.dropdown-menu>li>a:focus, 
+.dropdown-menu>li>a:hover {
+  background-color: #53C4EF;
+}
+
+.breadcrumbs__list .dropdown .dropdown-menu {
+  padding-top: 0px;
+  padding-bottom: 0px;
 }

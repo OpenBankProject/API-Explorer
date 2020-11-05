@@ -331,7 +331,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   // Get a list of BankIds that are relevant to the logged in user i.e. banks where the user has at least one non public account
   val myBankIds: List[BankId] = for {
-      allAccountsJson <- ObpAPI.privateAccounts.toList
+      allAccountsJson <- if(isLoggedIn) ObpAPI.privateAccounts.toList else List() //No need call api for anonymous user.
       barebonesAccountJson <- allAccountsJson.accounts.toList.flatten
       bankId <- barebonesAccountJson.bank_id
     } yield BankId(bankId)
@@ -347,20 +347,32 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     // Possible OBP Versions
-    val obpVersionsSupported = List("OBPv2.2.0", "OBPv3.0.0", "OBPv3.1.0", "OBPv4.0.0")
+    val obpVersionsSupported = List("OBPv3.1.0", "OBPv4.0.0")
 
-    val otherVersionsSupported = List("BGv1.3", "UKv3.1", "UKv2.0", "STETv1.4", "PAPIv2.1.1.1", "b1", "AUv1.0.0")
+    val otherVersionsSupported = List("BGv1.3", "UKv3.1")
+    
+    val otherVersionsSupportedInDropdownMenu = List(
+      "OBPv1.2.1", 
+      "OBPv1.3.0", 
+      "OBPv1.4.0", 
+      "OBPv2.0.0", 
+      "OBPv2.1.0", 
+      "OBPv2.2.0", 
+      "OBPv3.0.0", 
+      "UKv2.0", 
+      "STETv1.4", 
+      "PAPIv2.1.1.1", 
+      "AUv1.0.0",
+      "b1")
 
     // Set the version to use.
     val apiVersion: String = {
-      if (obpVersionsSupported.contains(apiVersionRequested)) {
-        // Prefix with v (for OBP versions because they come just with number from API Explorer)
-        // Note: We want to get rid of this "v" prefix ASAP.
-        s"v$apiVersionRequested"
-      } else
-      if (otherVersionsSupported.contains(apiVersionRequested)) {
-          s"$apiVersionRequested"
-        } else {
+      if (obpVersionsSupported.contains(apiVersionRequested) 
+        || otherVersionsSupported.contains(apiVersionRequested) 
+        || otherVersionsSupportedInDropdownMenu.contains(apiVersionRequested)) {        // Prefix with v (for OBP versions because they come just with number from API Explorer)
+        // Note: We want to get rid of this "v" prefix ASAP.s
+        s"$apiVersionRequested"
+      } else {
         S.notice(s"Note: Requested version $apiVersionRequested is not currently supported. Set to v$defaultVersion")
         s"v$defaultVersion"
       }
@@ -921,6 +933,19 @@ WIP to add comments on resource docs. This code copied from Sofit.
       .replace("AUv1.0.0", "AU CDR v1.0.0"),
       s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
+    //TODO this need to be a method,
+    val otherVersionsSupportedInDropdownMenuUrls: List[(String, String)] = otherVersionsSupportedInDropdownMenu.map(i => (i
+      .replace("b1", "API Builder")
+      .replace("BGv1.3.3", "Berlin Group 1.3.3")
+      .replace("BGv1.3", "Berlin Group 1.3")
+      .replace("BGv1", "Berlin Group")
+      .replace("UKv2.0", "UK 2.0")
+      .replace("UKv3.1", "UK 3.1")
+      .replace("STETv1.4", "STET 1.4")
+      .replace("PAPIv2.1.1.1", "Polish API 2.1.1.1")
+      .replace("AUv1.0.0", "AU CDR v1.0.0"),
+      s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
+
 
     // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
     // Filter out empty string items
@@ -1171,12 +1196,16 @@ WIP to add comments on resource docs. This code copied from Sofit.
     shownVersions() &
     "#version *+" #> apiVersion &
     "@obp_versions" #> obpVersionUrls.map { i =>
-      "@obp_version *" #> s" ${i._1} " &
+      "@obp_version *" #> s"OBP ${i._1} " &
       "@obp_version [href]" #> s"${i._2}"
     } &
       "@other_versions" #> otherVersionUrls.map { i =>
         "@other_version *" #> s" ${i._1} " &
           "@other_version [href]" #> s"${i._2}"
+      } &
+      "@dropdown_versions" #> otherVersionsSupportedInDropdownMenuUrls.map { i =>
+        ".dropdown-item *" #> s" ${i._1} " &
+          ".dropdown-item [href]" #> s"${i._2}"
       } &
     ".info-box__headline *" #> s"$headline"  &
     "@version_path *" #> s"$baseVersionUrl" &
