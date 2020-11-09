@@ -218,6 +218,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val languagesParamString = "&language=" + rawLanguageParam.mkString(",")
 
   logger.info(s"languagesParamString is $languagesParamString")
+
+  val rawContentParam = S.param("content")
+
+  logger.info(s"contentParam is $rawContentParam")
+
+  val contentParamString = "&content=" + rawContentParam.mkString(",")
+
+  logger.info(s"contentParamString is $contentParamString")
   
   val tagsParam: Option[List[String]] = rawTagsParam match {
     // if tags= is supplied in the url we want to ignore it
@@ -242,6 +250,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
   }
 
   val languageHeadline : String = rawLanguageParam match {
+    case Full(x) => x
+    case _ => ""
+  }
+
+  val contentHeadline : String = rawContentParam match {
     case Full(x) => x
     case _ => ""
   }
@@ -395,10 +408,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}"
 
     // Link to the API endpoint for the resource docs json TODO change apiVersion so it doesn't have a "v" prefix
-    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?${tagsParamString}${languagesParamString}"
+    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?${tagsParamString}${languagesParamString}${contentParamString}"
 
   // Link to the API endpoint for the swagger json
-  val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?${tagsParamString}${languagesParamString}"
+  val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?${tagsParamString}${languagesParamString}${contentParamString}"
 
   val chineseVersionPath = "?language=zh"
   val allPartialFunctions = "/partial-functions.html"
@@ -410,9 +423,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
     // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
     val allResources: List[ResourceDocJson] = for {
-      rs <- getResourceDocsJson(apiVersion).toList
-      r <- rs.resource_docs
-    } yield r
+      rs <- getResourceDocsJson(apiVersion)
+    } yield rs
     // The list generated here might be used by an administrator as a white or black list of API calls for the API itself.
     val commaSeparatedListOfResources = allResources.map(_.implemented_by.function).mkString("[", ", ", "]")
 
@@ -597,14 +609,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   
   def showResources = {
-    
+    logger.debug("before showResources:")
     // Get a list of resource docs from the API server
     // This will throw an exception if resource_docs key is not populated
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
     // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
     val allResources = for {
-      rs <- getResourceDocsJson(apiVersion).toList
-      r <- rs.resource_docs
+      r <- getResourceDocsJson(apiVersion)
     } yield ResourceDocPlus(
        //in OBP-API, before it returned v3_1_0, but now, only return v3.1.0
       //But this filed will be used in JavaScript, so need clean the field.
@@ -736,7 +747,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Title / Headline we display including count of APIs
     val headline : String = s"""
       ${apiVersionRequested.stripPrefix("OBP").stripPrefix("BG").stripPrefix("STET").stripPrefix("UK")}
-      $tagsHeadline $languageHeadline $implementedHereHeadline (${resources.length} APIs)
+      $tagsHeadline $languageHeadline $contentHeadline $implementedHereHeadline (${resources.length} APIs)
       """.trim()
 
 
@@ -913,7 +924,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
-    val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${tagsParamString}${languagesParamString}"
+    val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${tagsParamString}${languagesParamString}${contentParamString}"
 
 
     val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i.replace("OBPv", "v"), s"?version=${i}&list-all-banks=${listAllBanks}"))
@@ -1170,8 +1181,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // In case we use Extraction.decompose
     implicit val formats = net.liftweb.json.DefaultFormats
-
-    "#login_status_message" #> loggedInStatusMessage &
+    val cssResult = "#login_status_message" #> loggedInStatusMessage &
     "#bank_selector" #> doBankSelect _ &
     "#account_selector" #> doAccountSelect _ &
     "#view_selector" #> doViewSelect _ &
@@ -1246,7 +1256,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
                   else if (resources.find(_.id == currentOperationId).map(_.tags.head).getOrElse("API")==resources.find(_.id == i.id).map(_.tags.head).getOrElse("API")) //If the Tag is the current Tag.We do not need parameters.
                     s"#${i.id}" 
                   else
-                    s"?version=$apiVersionRequested&operation_id=${i.id}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
+                    s"?version=$apiVersionRequested&operation_id=${i.id}&currentTag=${i.tags.head}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
                   "@api_list_item_link *" #> i.summary &
                   "@api_list_item_link [id]" #> s"index_of_${i.id}"
                   // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
@@ -1412,6 +1422,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
         }
       }   
     }
+    logger.debug("after showResources:")
+    cssResult
   }
 
   def showGlossary = {

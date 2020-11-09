@@ -154,23 +154,43 @@ object ObpAPI extends Loggable {
   
   
   // Returns Json containing Resource Docs
-  def getResourceDocsJson(apiVersion : String) : Box[ResourceDocsJson] = {
-    val requestParams = List("tags", "language", "functions")
+  def getResourceDocsJson(apiVersion : String) : List[ResourceDocJson] = {
+
+    //Note: ?content=true&content=false
+    // if there are two content parameters there, only the first one is valid for the api call. 
+    // so requestParams have the high priority 
+    val requestParams = List("tags", "language", "functions", "content")
         .map(paramName => (paramName, S.param(paramName)))
         .collect{
           case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
         }
         .mkString("?", "&", "")
-    val currentTag = S.param("currentTag").getOrElse("")
-    val resourceFromSession = allResoucesVar.map(_.resource_docs.filter(_.tags.head==currentTag))
-    val length = resourceFromSession.map(_.length).getOrElse(0)
-    if(length > 0){
-      resourceFromSession.map( ResourceDocsJson(_))
-    } else{
-      allResoucesVar.set(ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams").map(extractResourceDocsJson))
-    }
 
+    val staticResourcesDocs= getStaticResourceDocs(apiVersion,requestParams) 
+    
+    if(requestParams.contains("content=static")) {
+      staticResourcesDocs
+    } else if (requestParams.contains("content=dynamic")){
+      getDynamicResourceDocs(apiVersion,requestParams)
+    } else{
+      val dynamicResourcesDocs= getDynamicResourceDocs(apiVersion,requestParams)
+      staticResourcesDocs ++ dynamicResourcesDocs 
+    }
   }
+  
+  //  static resourceDocs can be cached for a long time, only be changed when new deployment.
+  val getStaticResourceDocsJsonTTL: FiniteDuration = 365 days
+  def getStaticResourceDocs(apiVersion : String, requestParams: String): List[ResourceDocJson] =  {
+    var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
+    CacheKeyFromArguments.buildCacheKey {
+      Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
+        ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=static").map(extractResourceDocsJson).map(_.resource_docs).head
+      }
+    }
+  }
+  
+  def getDynamicResourceDocs(apiVersion : String, requestParams: String) =  
+    ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=dynamic").map(extractResourceDocsJson).map(_.resource_docs).head
 
   /**
    * extract ResourceDocsJson and output details of error if extract json to case class fail
@@ -226,6 +246,7 @@ object OBPRequest extends MdcLoggable {
   implicit val formats = DefaultFormats
   //returns a tuple of the status code,  response body and list of headers
   def apply(apiPath : String, jsonBody : Option[JValue], method : String, headers : List[Header]) : Box[(Int, String, List[String])] = {
+    logger.debug(s"before $apiPath call:")
     val statusAndBody = tryo {
       val credentials = OAuthClient.getAuthorizedCredential
       val apiUrl = OAuthClient.currentApiBaseUrl
@@ -286,7 +307,7 @@ object OBPRequest extends MdcLoggable {
       (status, builder.toString(), adjustedResponseHeaders)
     }
 
-    statusAndBody pass {
+    val result = statusAndBody pass {
       case Failure(msg, ex, _) => {
         val sw = new StringWriter()
         val writer = new PrintWriter(sw)
@@ -295,6 +316,8 @@ object OBPRequest extends MdcLoggable {
       }
       case _ => Unit
     }
+    logger.debug(s"after $apiPath call:")
+    result
   }
 }
 
@@ -390,7 +413,11 @@ object APIUtils extends MdcLoggable {
 
   def getAPIResponseBody(responseCode : Int, body : String) : Box[JValue] = {
     responseCode match {
-      case 200 | 201 | 202 |204 => tryo{parse(body)}
+      case 200 | 201 | 202 |204 => 
+        logger.debug("Before getAPIResponseBody(String ->JValue): ")
+        val jvalue = tryo{parse(body)}
+        logger.debug("After getAPIResponseBody(String -> JValue): ")
+        jvalue
       case _ => {
         val failMsg = "Bad response code (" + responseCode + ") from OBP API server: " + body
         logger.warn(failMsg)
