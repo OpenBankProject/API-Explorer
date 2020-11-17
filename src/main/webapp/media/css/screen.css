@@ -46,6 +46,11 @@ hr {
   #left-logo{
     display: block;
   }
+  #manual-redirect{
+    margin: 120px;
+    margin-left: 363px;
+    display: none;
+  }
 }
 
 @media only screen and (min-width: 760px) and (max-width: 1279px) {

@@ -1639,3 +1639,23 @@ footer a:hover{
   padding-top: 0px;
   padding-bottom: 0px;
 }
+
+#manual-redirect{
+  margin: 120px;
+  margin-left: 16px;
+  display: none;
+}
+
+#redirect-link{
+  background-color: #53C4EF;
+  border-color: #53C4EF;
+}
+
+
+#redirect-link:hover{
+  background: #1f97ef;
+}
+
+#redirect-link:active{
+  background: #0b3aef;;
+}
