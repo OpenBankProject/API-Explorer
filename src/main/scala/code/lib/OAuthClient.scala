@@ -38,15 +38,14 @@ import net.liftweb.common.Box
 import net.liftweb.common.Empty
 import oauth.signpost.OAuthProvider
 import oauth.signpost.basic.DefaultOAuthProvider
-import net.liftweb.util.Props
 import net.liftweb.http.S
 import oauth.signpost.OAuthConsumer
 import oauth.signpost.basic.DefaultOAuthConsumer
 import net.liftweb.mapper.By
 import net.liftweb.common.{Failure, Full}
-import net.liftweb.util.Helpers
 import net.liftweb.http.LiftResponse
 import code.util.Helper.MdcLoggable
+import net.liftweb.util.Helpers.tryo
 
 sealed trait Provider {
   val name : String
@@ -143,24 +142,24 @@ object OAuthClient extends MdcLoggable {
       verifier <- S.param("oauth_verifier") ?~ "No oauth verifier found"
       provider <- mostRecentLoginAttemptProvider.get ?~ "No provider found for callback"
       consumer <- Box(credentials.map(_.consumer)) ?~ "No consumer found for callback"
-    } yield {
       //eg: authUrl = http://127.0.0.1:8080/oauth/authorize?oauth_token=LK5N1WBQZGXHMQXJT35KDHAJXUP1EMQCGBQFQQNG
       //This step is will call `provider.authorizeUrl = baseUrl + "/oauth/authorize"` endpoint, and get the request token back.
-      logger.debug("oauth.provider.name            = " + provider.name           )
-      logger.debug("oauth.provider.apiBaseUrl      = " + provider.apiBaseUrl     )
-      logger.debug("oauth.provider.requestTokenUrl = " + provider.requestTokenUrl)
-      logger.debug("oauth.provider.accessTokenUrl  = " + provider.accessTokenUrl )
-      logger.debug("oauth.provider.authorizeUrl    = " + provider.authorizeUrl   )
-      logger.debug("oauth.provider.signupUrl       = " + provider.signupUrl      )
-      logger.debug("oauth.provider.oAuthProvider.getRequestTokenEndpointUrl   = " + provider.oAuthProvider.getRequestTokenEndpointUrl  )     //http://127.0.0.1:8080/oauth/initiate    
-      logger.debug("oauth.provider.oAuthProvider.getAccessTokenEndpointUrl   = " + provider.oAuthProvider.getAccessTokenEndpointUrl  )     //http://127.0.0.1:8080/oauth/token    
-      logger.debug("oauth.provider.oAuthProvider.getAuthorizationWebsiteUrl   = " + provider.oAuthProvider.getAuthorizationWebsiteUrl  )    //http://127.0.0.1:8080/oauth/authorize     
-      logger.debug("oauth.provider.consumerKey     = " + provider.consumerKey    )
-      logger.debug("oauth.provider.consumerSecret  = " + provider.consumerSecret )
-      logger.debug("oauth.consumer.getToken(request) = " + consumer.getToken)
-      logger.debug("oauth.consumer.getTokenSecret(request)  = " + consumer.getTokenSecret)
+      _<-Full(logger.debug("oauth.provider.name            = " + provider.name           ))
+      _<-Full(logger.debug("oauth.provider.apiBaseUrl      = " + provider.apiBaseUrl     ))
+      _<-Full(logger.debug("oauth.provider.requestTokenUrl = " + provider.requestTokenUrl))
+      _<-Full(logger.debug("oauth.provider.accessTokenUrl  = " + provider.accessTokenUrl ))
+      _<-Full(logger.debug("oauth.provider.authorizeUrl    = " + provider.authorizeUrl   ))
+      _<-Full(logger.debug("oauth.provider.signupUrl       = " + provider.signupUrl      ))
+      _<-Full(logger.debug("oauth.provider.oAuthProvider.getRequestTokenEndpointUrl   = " + provider.oAuthProvider.getRequestTokenEndpointUrl  ))     //http://127.0.0.1:8080/oauth/initiate    
+      _<-Full(logger.debug("oauth.provider.oAuthProvider.getAccessTokenEndpointUrl   = " + provider.oAuthProvider.getAccessTokenEndpointUrl  ))     //http://127.0.0.1:8080/oauth/token    
+      _<-Full(logger.debug("oauth.provider.oAuthProvider.getAuthorizationWebsiteUrl   = " + provider.oAuthProvider.getAuthorizationWebsiteUrl  ))    //http://127.0.0.1:8080/oauth/authorize     
+      _<-Full(logger.debug("oauth.provider.consumerKey     = " + provider.consumerKey    ))
+      _<-Full(logger.debug("oauth.provider.consumerSecret  = " + provider.consumerSecret ))
+      _<-Full(logger.debug("oauth.consumer.getToken(request) = " + consumer.getToken))
+      _<-Full(logger.debug("oauth.consumer.getTokenSecret(request)  = " + consumer.getTokenSecret))
       //after this, consumer is ready to sign requests
-      provider.oAuthProvider.retrieveAccessToken(consumer, verifier)
+      _ <- tryo{provider.oAuthProvider.retrieveAccessToken(consumer, verifier)} 
+    } yield {
       //update the session credentials
       val newCredential = Credential(provider, consumer, true)
       val updateCredential = credentials.set(Some(newCredential))
@@ -171,7 +170,10 @@ object OAuthClient extends MdcLoggable {
 
     success match {
       case Full(_) => S.redirectTo("/") //TODO: Allow this redirect to be customised
-      case Failure(msg, _, _) => logger.warn(msg)
+      case Failure(msg, exception, failure) => {
+        S.notice("redirect-link","Go To Home Page")
+        logger.warn(s"Oauth1.0 Failure: $msg, ${failure}, ${exception}")
+      } 
       case _ => logger.warn("Something went wrong in an oauth callback and there was no error message set for it")
     }
     Empty

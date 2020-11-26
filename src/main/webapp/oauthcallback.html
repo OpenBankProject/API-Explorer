@@ -30,7 +30,15 @@ Berlin 13359, Germany
   Tim Kleinschmidt: tim@tesobe.com
 -->
 <div id="main" class="lift:surround?with=default;at=content">
+    <div id="messages-container" data-lift="Msgs"></div>
+    <div id="manual-redirect">
+        <a class="btn btn-primary" id="redirect-link" href="/"><span data-lift="Msg?id=redirect-link"/></a>
+    </div>
 
-Sorry! There was an error logging in.
+    <script class="redirect-script" type="text/javascript">
+        if(!($("#redirect-link").text() === "") ){
+            $('#manual-redirect').show();
+        }
+    </script>
 
 </div>
