@@ -3,7 +3,7 @@ FROM maven:3-jdk-8 as maven
 WORKDIR /usr/src
 COPY pom.xml .
 COPY src src
-# .Copy default props file
+# Copy default props file
 COPY src/main/resources/props/sample.props.template src/main/resources/props/default.props
 COPY src/main/resources/container.logback.xml.example src/main/resources/default.logback.xml
 RUN mvn -e -B dependency:resolve
