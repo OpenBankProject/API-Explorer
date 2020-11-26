@@ -81,12 +81,12 @@ oauth_1.hostname=FILL_ME_IN
 # activate certificate authorization, default is false
 
 ### SSL ##############################
-ssl_client_auth=true
-ssl_truststore_location=/var/private/ssl/truststore.jks
-ssl_truststore_password=test1234
-ssl_keystore_location=/var/private/ssl/keystore.jks
-ssl_keystore_password=test1234
-ssl_key_password=test1234
+#ssl_client_auth=true
+#ssl_truststore_location=/var/private/ssl/truststore.jks
+#ssl_truststore_password=test1234
+#ssl_keystore_location=/var/private/ssl/keystore.jks
+#ssl_keystore_password=test1234
+#ssl_key_password=test1234
 
 # a list of version names those are shown in the main page, split with
 # all support links:OBP_PSD2,OBP_3.1.0,OBP_4.0.0,BGv1.3,UKv3.1 
