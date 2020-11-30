@@ -256,7 +256,7 @@ object OBPRequest extends MdcLoggable {
         .replaceAll("UKv3.1", "v3.1")
         .replaceAll("BGv1.3", "v1.3")
         .replaceAll("BGv1", "v1")
-        .replaceAll("OBPv", "v")
+        .replaceAll("(?<!/validations/)OBPv", "v") //replace OBPv to v, but if the OBPv is part of operationId, don't replace, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
 
       val url = apiUrl + convertedApiPath
 
@@ -919,6 +919,7 @@ object ObpJson {
 
 
   case class ResourceDocPlus(id: String,
+                             operationId: String,
                              verb: String,
                              url: String,
                              summary: String,

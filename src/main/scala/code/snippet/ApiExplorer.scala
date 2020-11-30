@@ -620,6 +620,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
        //in OBP-API, before it returned v3_1_0, but now, only return v3.1.0
       //But this filed will be used in JavaScript, so need clean the field.
       id = r.operation_id.replace(".","_").replaceAll(" ","_"),
+      operationId = r.operation_id,
       verb = r.request_verb,
       url = modifiedRequestUrl(
         r.specified_url, // We used to use the request_url - but we want to use the specified url i.e. the later version.
@@ -889,7 +890,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         .replaceAll("BGv1.3.3", "v1.3.3")
         .replaceAll("BGv1", "v1")
         .replaceAll("BGv1.3", "v1.3")
-        .replaceAll("OBPv", "")
+        .replaceAll("(?<!/validations/)OBPv", "") //delete OBPv, but if the OBPv is part of operationId, not to do delete, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
       )
 
       //val urlWithVersion = s"/$apiVersion$requestUrl"
@@ -899,7 +900,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         .replaceAll("BGv1.3.3", "v1.3.3")
         .replaceAll("BGv1.3", "v1.3")
         .replaceAll("BGv1", "v1")
-        .replaceAll("OBPv", ""))
+        .replaceAll("(?<!/validations/)OBPv", "")) //delete OBPv, but if the OBPv is part of operationId, not to do delete, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
       //////////////
 
       val (body, headers) = getResponse(requestUrl, requestVerb, jsonObject, customRequestHeader = requestCustomHeader)
@@ -1418,7 +1419,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
            "@success_response_body [id]" #> s"success_response_body_${i.id}" &
           // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
             "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
-          ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}"
+          ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}, operation_id: ${i.operationId}"
         }
       }   
     }
