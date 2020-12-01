@@ -1226,6 +1226,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "@version_path [href]" #> s"$baseVersionUrl" &
     "@resource_docs_path [href]" #> s"$resourceDocsPath" &
     "@swagger_path [href]" #> s"$swaggerPath" &
+    "@git_commit [href]" #> s"https://github.com/OpenBankProject/API-Explorer/commit/$currentGitCommit" &
     "@chinese_version_path [href]" #> s"$chineseVersionPath" &
     "@all_partial_functions [href]" #> s"$allPartialFunctions" &
     "#api_home_link [href]" #> s"$apiPortalHostname" &
@@ -1437,8 +1438,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val glossaryItems = getGlossaryItemsJson.map(_.glossary_items).getOrElse(List())
 
     if(glossaryItems.length==0) {
-      "@git_commit *" #> s"$currentGitCommit" & 
-      "@git_commit [href]" #> s"https://github.com/OpenBankProject/API-Explorer/commit/$currentGitCommit" &
       ".resource [style]" #> s"display: none" &
         ".resource-error [style]" #> s"display: block" &
         ".content-box__headline *" #> {
@@ -1481,8 +1480,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
         }
       }
     }else{
-      "@git_commit *" #> s"$currentGitCommit" &
-      "@git_commit [href]" #> s"https://github.com/OpenBankProject/API-Explorer/commit/$currentGitCommit" &
       ".glossary" #> glossaryItems.map  { i =>
       // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
       ".end-point-anchor [href]" #> s"#${urlEncode(i.title.replaceAll(" ", "-"))}" &
