@@ -160,6 +160,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val listAllBanks = S.param("list-all-banks").getOrElse("false").toBoolean
   logger.info(s"all_banks in url param is $listAllBanks")
 
+  val currentGitCommit = gitCommit
+  logger.info(s"currentGitCommit $currentGitCommit")
+  
   val currentOperationId = S.param("operation_id").getOrElse("OBPv3_1_0-config")
   
 
@@ -1435,6 +1438,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val glossaryItems = getGlossaryItemsJson.map(_.glossary_items).getOrElse(List())
 
     if(glossaryItems.length==0) {
+      "@git_commit *" #> s"$currentGitCommit" & 
+      "@git_commit [href]" #> s"https://github.com/OpenBankProject/API-Explorer/commit/$currentGitCommit" &
       ".resource [style]" #> s"display: none" &
         ".resource-error [style]" #> s"display: block" &
         ".content-box__headline *" #> {
@@ -1477,7 +1482,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
         }
       }
     }else{
-    ".glossary" #> glossaryItems.map  { i =>
+      "@git_commit *" #> s"$currentGitCommit" &
+      "@git_commit [href]" #> s"https://github.com/OpenBankProject/API-Explorer/commit/$currentGitCommit" &
+      ".glossary" #> glossaryItems.map  { i =>
       // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
       ".end-point-anchor [href]" #> s"#${urlEncode(i.title.replaceAll(" ", "-"))}" &
         ".content-box__headline *" #> i.title &
@@ -1491,7 +1498,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           ".api_list_item_link *" #> i.title &
           ".api_list_item_link [id]" #> s"index_of_${urlEncode(i.title.replaceAll(" ", "-"))}"
       }
-    }
+    } 
   }
 
   def showMessageDocs = {
@@ -1554,6 +1561,26 @@ WIP to add comments on resource docs. This code copied from Sofit.
         .map(id => s"#$id [style]" #> "").reduce( _ & _)
       case _  => "#notExists_this_is_just_do_nothing" #> "" // a placeholder of do nothing
     }
+  }
+
+  /*
+    Return the git commit. If we can't for some reason (not a git root etc) then log and return ""
+   */
+  def gitCommit : String = {
+    val commit = try {
+      val properties = new java.util.Properties()
+      logger.debug("Before getResourceAsStream git.properties")
+      properties.load(getClass().getClassLoader().getResourceAsStream("git.properties"))
+      logger.debug("Before get Property git.commit.id")
+      properties.getProperty("git.commit.id", "")
+    } catch {
+      case e : Throwable => {
+        logger.warn("gitCommit says: Could not return git commit. Does resources/git.properties exist?")
+        logger.error(s"Exception in gitCommit: $e")
+        "" // Return empty string
+      }
+    }
+    commit
   }
 
 }
