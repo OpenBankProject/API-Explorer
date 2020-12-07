@@ -6,6 +6,7 @@ import code.lib.ObpJson._
 import code.lib._
 import code.util.Helper
 import code.util.Helper.MdcLoggable
+import net.liftweb.http.js.JsCmds
 import net.liftweb.util.{CssSel, Html5, Props}
 
 import scala.collection.immutable.{List, Nil}
@@ -561,8 +562,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
   var requestBody = "{}"
   var responseBody = "{}"
   var errorResponseBodies = List("")
-  
-  
+  var isFavourates = "false"
+
+
   def processEntitlementRequest(name: String): JsCmd = {
     logger.debug(s"processEntitlementRequest entitlementRequestStatus is $entitlementRequestStatus rolesBankId is $rolesBankId")
 
@@ -921,7 +923,60 @@ WIP to add comments on resource docs. This code copied from Sofit.
       SetHtml(fullPathTarget, Text(fullPath.toString)) &
       SetHtml(fullHeadersTarget, Text(headers))
     }
+    
+    def processFavourates(name: String): JsCmd = {
 
+      logger.debug(s"hahahha, I used the Ajax here!!!!!")
+      val revertFavorates = if(isFavourates.contains("false")) "true" else "false"
+                               
+//      val entitlementRequestResponseStatusId = s"roles__entitlement_request_response_${RolesResourceId}_${entitlementRequestRoleName}"
+//
+//
+//      logger.debug(s"id to set is: $entitlementRequestResponseStatusId")
+//
+//
+//      val apiUrl = OAuthClient.currentApiBaseUrl
+//
+//      val entitlementRequestsUrl = "/obp/v3.0.0/entitlement-requests"
+//
+//      val createEntitlementRequest =  CreateEntitlementRequestJSON(bank_id = rolesBankId, role_name = entitlementRequestRoleName)
+//
+//      // Convert case class to JValue
+//      implicit val formats = DefaultFormats
+//      val entitlementRequestJValue: JValue  = Extraction.decompose(createEntitlementRequest)
+//
+//      // TODO: Put this in ObpAPI.scala
+//      val response : String = getResponse(entitlementRequestsUrl, "POST", entitlementRequestJValue)._1
+//
+//      val result: String =
+//        try {
+//          // parse the string we get back from the API into a JValue
+//          val json : JValue = parse(response)
+//          // Convert to case class
+//          val entitlementRequest: EntitlementRequestJson = json.extract[EntitlementRequestJson]
+//          s"Entitlement Request with Id ${entitlementRequest.entitlement_request_id} was created. It will be reviewed shortly."
+//        }
+//        catch {
+//          case _ => {
+//            logger.info("")
+//            s"The API Explorer could not create an Entitlement Request: $response"
+//          }
+//        }
+//
+//      // call url and put the response into the appropriate result div
+//      // SetHtml accepts an id and value
+//      SetHtml(entitlementRequestResponseStatusId, Text(result))
+      // enable button
+      val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
+      val colort = if (revertFavorates.contains("true"))
+        s"jQuery('#favourates_id_button').css('background-color','yellow')" 
+      else
+        s"jQuery('#favourates_id_button').css('background-color','white')"
+      
+      Run (jsEnabledBtn) &
+      Run (colort) &
+        JsCmds.SetValById("favourates_id_input",revertFavorates) 
+    }
 
 
 
@@ -1342,6 +1397,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".resource" #> (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty)  resources else (resources.filter(_.tags.head==currentTag))).map { i =>
           // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
           ".end-point-anchor [href]" #> s"#${i.id}" &
+//          ".content-box__headline *" #> <div> {i.summary} <button class="like-button"></button></div> &
           ".content-box__headline *" #> i.summary &
           ".content-box__headline [id]" #> i.id & // id for the anchor to find
           // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
@@ -1422,6 +1478,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
            "@success_response_body [id]" #> s"success_response_body_${i.id}" &
           // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
             "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
+            "#favourates_id_input" #> text(isFavourates,   s => isFavourates = s,  "type" -> "hidden","id" -> "favourates_id_input") &
+          "@favourates_button" #> Helper.ajaxSubmit("Favorates", disabledBtn, processFavourates) &
           ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}"
         }
       }   
