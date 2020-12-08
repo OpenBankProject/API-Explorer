@@ -573,8 +573,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
   var requestBody = "{}"
   var responseBody = "{}"
   var errorResponseBodies = List("")
-  var isFavourates = "false"
-  var favouratesOperationId = ""
+  var isFavourites = "false"
+  var favouritesOperationId = ""
 
 
   def processEntitlementRequest(name: String): JsCmd = {
@@ -936,7 +936,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       SetHtml(fullHeadersTarget, Text(headers))
     }
     
-    def processFavourates(name: String): JsCmd = {
+    def processFavourites(name: String): JsCmd = {
 
       //TODO first hard code this ID here
       val createSelectionEndpointUrl = "/obp/v4.0.0/selections/9ca92939-e3a8-4c52-8ab2-017958e1a40d/selection-endpoints"
@@ -947,23 +947,23 @@ WIP to add comments on resource docs. This code copied from Sofit.
       implicit val formats = DefaultFormats
       val postSelectionEndpointJValue: JValue  = Extraction.decompose(postSelectionEndpointJson)
 
-      val favouratesOperationId2 = favouratesOperationId
+      val favouritesOperationId2 = favouritesOperationId
       val response = ObpPost.apply(createSelectionEndpointUrl, postSelectionEndpointJValue)
       val selectionEndpointJson400 = response.map(_.extract[SelectionEndpointJson400])
 
-      val revertFavorates = if(isFavourates.contains("false")) "true" else "false"
+      val revertFavourites = if(isFavourites.contains("false")) "true" else "false"
       
       
       // enable button
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
-      val colort = if (revertFavorates.contains("true"))
-        s"jQuery('#favourates_button_${favouratesOperationId}').css('background-color','yellow')" 
+      val colort = if (revertFavourites.contains("true"))
+        s"jQuery('#favourites_button_${favouritesOperationId}').css('background-color','yellow')" 
       else
-        s"jQuery('#favourates_button_${favouratesOperationId}').css('background-color','white')"
+        s"jQuery('#favourites_button_${favouritesOperationId}').css('background-color','white')"
       
       Run (jsEnabledBtn) &
       Run (colort) &
-        JsCmds.SetValById(s"favourates_id_input_${favouratesOperationId}",revertFavorates) 
+        JsCmds.SetValById(s"favourites_id_input_${favouritesOperationId}",revertFavourites) 
     }
 
 
@@ -1464,9 +1464,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
            "@success_response_body [id]" #> s"success_response_body_${i.id}" &
           // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
             "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
-            ".favourates_id_input" #> text(isFavourates,   s => isFavourates = s,  "type" -> "hidden", "id" -> s"favourates_id_input_${i.id.toString}") &
-            ".favourates_operatino_id" #> text(i.id.toString, s => favouratesOperationId = s,  "type" -> "hidden","class" -> "favourates_operatino_id") &
-            ".favourates_button" #> Helper.ajaxSubmit("Favorates", disabledBtn, processFavourates, "id" -> s"favourates_button_${i.id.toString}") &
+            ".favourites_id_input" #> text(isFavourites,   s => isFavourites = s,  "type" -> "hidden", "id" -> s"favourites_id_input_${i.id.toString}") &
+            ".favourites_operatino_id" #> text(i.id.toString, s => favouritesOperationId = s,  "type" -> "hidden","class" -> "favourites_operatino_id") &
+            ".favourites_button" #> Helper.ajaxSubmit("Favourites", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.id.toString}") &
           ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}"
         }
       }   
