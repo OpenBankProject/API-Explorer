@@ -46,6 +46,17 @@ case class Bank(
 
 case class CreateEntitlementRequestJSON(bank_id: String, role_name: String)
 
+case class PostSelectionEndpointJson400(
+  operation_id: String
+)
+
+case class SelectionEndpointJson400 (
+  selection_endpoint_id: String,
+  selection_id: String,
+  operation_id: String
+)
+
+
 
 case class UserEntitlementRequests(entitlementRequestId: String,
                                    roleName: String,
@@ -131,6 +142,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 */
 
 
+  // In case we use Extraction.decompose
+  implicit val formats = net.liftweb.json.DefaultFormats
   // Get entitlements for the logged in user
 
   def getEntitlementsForCurrentUser: List[Entitlement] = getEntitlementsV300 match {
@@ -437,8 +450,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   def getResponse (url : String, resourceVerb: String, json : JValue, customRequestHeader: String = "") : (String, String) = {
 
-    implicit val formats = net.liftweb.json.DefaultFormats
-
     // version is now included in the url
     val urlWithVersion = s"$url"
     val requestHeader = customRequestHeader.trim.isEmpty match {
@@ -563,6 +574,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   var responseBody = "{}"
   var errorResponseBodies = List("")
   var isFavourates = "false"
+  var favouratesOperationId = ""
 
 
   def processEntitlementRequest(name: String): JsCmd = {
@@ -926,56 +938,32 @@ WIP to add comments on resource docs. This code copied from Sofit.
     
     def processFavourates(name: String): JsCmd = {
 
-      logger.debug(s"hahahha, I used the Ajax here!!!!!")
+      //TODO first hard code this ID here
+      val createSelectionEndpointUrl = "/obp/v4.0.0/selections/9ca92939-e3a8-4c52-8ab2-017958e1a40d/selection-endpoints"
+
+      val postSelectionEndpointJson =  PostSelectionEndpointJson400("OBPv4.0.0-getBanks")
+
+      // Convert case class to JValue
+      implicit val formats = DefaultFormats
+      val postSelectionEndpointJValue: JValue  = Extraction.decompose(postSelectionEndpointJson)
+
+      val favouratesOperationId2 = favouratesOperationId
+      val response = ObpPost.apply(createSelectionEndpointUrl, postSelectionEndpointJValue)
+      val selectionEndpointJson400 = response.map(_.extract[SelectionEndpointJson400])
+
       val revertFavorates = if(isFavourates.contains("false")) "true" else "false"
-                               
-//      val entitlementRequestResponseStatusId = s"roles__entitlement_request_response_${RolesResourceId}_${entitlementRequestRoleName}"
-//
-//
-//      logger.debug(s"id to set is: $entitlementRequestResponseStatusId")
-//
-//
-//      val apiUrl = OAuthClient.currentApiBaseUrl
-//
-//      val entitlementRequestsUrl = "/obp/v3.0.0/entitlement-requests"
-//
-//      val createEntitlementRequest =  CreateEntitlementRequestJSON(bank_id = rolesBankId, role_name = entitlementRequestRoleName)
-//
-//      // Convert case class to JValue
-//      implicit val formats = DefaultFormats
-//      val entitlementRequestJValue: JValue  = Extraction.decompose(createEntitlementRequest)
-//
-//      // TODO: Put this in ObpAPI.scala
-//      val response : String = getResponse(entitlementRequestsUrl, "POST", entitlementRequestJValue)._1
-//
-//      val result: String =
-//        try {
-//          // parse the string we get back from the API into a JValue
-//          val json : JValue = parse(response)
-//          // Convert to case class
-//          val entitlementRequest: EntitlementRequestJson = json.extract[EntitlementRequestJson]
-//          s"Entitlement Request with Id ${entitlementRequest.entitlement_request_id} was created. It will be reviewed shortly."
-//        }
-//        catch {
-//          case _ => {
-//            logger.info("")
-//            s"The API Explorer could not create an Entitlement Request: $response"
-//          }
-//        }
-//
-//      // call url and put the response into the appropriate result div
-//      // SetHtml accepts an id and value
-//      SetHtml(entitlementRequestResponseStatusId, Text(result))
+      
+      
       // enable button
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
       val colort = if (revertFavorates.contains("true"))
-        s"jQuery('#favourates_id_button').css('background-color','yellow')" 
+        s"jQuery('#favourates_button_${favouratesOperationId}').css('background-color','yellow')" 
       else
-        s"jQuery('#favourates_id_button').css('background-color','white')"
+        s"jQuery('#favourates_button_${favouratesOperationId}').css('background-color','white')"
       
       Run (jsEnabledBtn) &
       Run (colort) &
-        JsCmds.SetValById("favourates_id_input",revertFavorates) 
+        JsCmds.SetValById(s"favourates_id_input_${favouratesOperationId}",revertFavorates) 
     }
 
 
@@ -1237,8 +1225,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
 
-    // In case we use Extraction.decompose
-    implicit val formats = net.liftweb.json.DefaultFormats
     val cssResult = "#login_status_message" #> loggedInStatusMessage &
     "#bank_selector" #> doBankSelect _ &
     "#account_selector" #> doAccountSelect _ &
@@ -1478,8 +1464,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
            "@success_response_body [id]" #> s"success_response_body_${i.id}" &
           // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
             "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
-            "#favourates_id_input" #> text(isFavourates,   s => isFavourates = s,  "type" -> "hidden","id" -> "favourates_id_input") &
-          "@favourates_button" #> Helper.ajaxSubmit("Favorates", disabledBtn, processFavourates) &
+            ".favourates_id_input" #> text(isFavourates,   s => isFavourates = s,  "type" -> "hidden", "id" -> s"favourates_id_input_${i.id.toString}") &
+            ".favourates_operatino_id" #> text(i.id.toString, s => favouratesOperationId = s,  "type" -> "hidden","class" -> "favourates_operatino_id") &
+            ".favourates_button" #> Helper.ajaxSubmit("Favorates", disabledBtn, processFavourates, "id" -> s"favourates_button_${i.id.toString}") &
           ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}"
         }
       }   
