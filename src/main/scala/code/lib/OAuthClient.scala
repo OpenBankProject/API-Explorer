@@ -206,6 +206,6 @@ object OAuthClient extends MdcLoggable {
 
   def logoutAll() = {
     credentials.set(None)
-    S.redirectTo("http://127.0.0.1:8080/user_mgt/logout")
+    S.redirectTo(s"http://127.0.0.1:8080/user_mgt/logout?redirect=${Helper.getPropsValue("base_url", S.hostName)}")
   }
 }
