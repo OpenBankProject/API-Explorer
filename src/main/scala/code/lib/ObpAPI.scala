@@ -145,7 +145,9 @@ object ObpAPI extends Loggable {
     result
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
-
+  def getApiCollections : Box[ApiCollectionEndpointsJson400] = if(isLoggedIn){
+    ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/Favourites/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
   /**
    * The request vars ensure that for one page load, the same API call isn't made multiple times
@@ -251,16 +253,17 @@ object OBPRequest extends MdcLoggable {
       val credentials = OAuthClient.getAuthorizedCredential
       val apiUrl = OAuthClient.currentApiBaseUrl
 
-      val convertedApiPath = apiPath
-        .replaceAll("UKv2.0", "v2.0")
-        .replaceAll("UKv3.1", "v3.1")
-        .replaceAll("BGv1.3", "v1.3")
-        .replaceAll("BGv1", "v1")
-        .replaceAll("OBPv", "v")
+      //TODO this need to be checked again.
+//      val convertedApiPath = apiPath
+//        .replaceAll("UKv2.0", "v2.0")
+//        .replaceAll("UKv3.1", "v3.1")
+//        .replaceAll("BGv1.3", "v1.3")
+//        .replaceAll("BGv1", "v1")
+//        .replaceAll("OBPv", "v")
 
-      val url = apiUrl + convertedApiPath
+      val url = apiUrl + apiPath
 
-      logger.info(s"OBP Server Request URL: ${apiUrl}${convertedApiPath}")
+//      logger.info(s"OBP Server Request URL: ${apiUrl}${convertedApiPath}")
 
       //bleh
       val request = SSLHelper.getConnection(url) //blagh!
@@ -823,6 +826,16 @@ object ObpJson {
 
 
   case class EntitlementsJson (list : List[EntitlementJson])
+  
+  case class ApiCollectionEndpointJson400 (
+    api_collection_endpoint_id: String,
+    api_collection_id: String,
+    operation_id: String
+  )
+  
+  case class ApiCollectionEndpointsJson400(
+    api_collection_endpoints: List[ApiCollectionEndpointJson400]
+  )
 
   case class UserJsonV200(
                            user_id: String,

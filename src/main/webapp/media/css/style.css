@@ -459,6 +459,10 @@ a img {
   letter-spacing: 0;
   line-height: 31px;
 }
+.resource .content-box__headline{
+  margin-right:20px ;
+  float: left ;
+}
 
 .resource-error .content-box__headline {
   margin: 0px 0 32px 0;
@@ -469,10 +473,14 @@ a img {
   background-color: #333333;
 }
 #right_side .resource:nth-child(4) .content-box__headline{
-  margin: 0 0 32px 0;
+  margin: 0 20px 32px 0;
   padding: 332px 0 0 0;
 }
 
+#right_side .resource:nth-child(4) .content-box .end-point-anchor form{
+  padding: 332px 0 0 0;
+}
+ 
 #obp\.getAdapterInfo{
   margin: 0 0 32px 0;
   padding: 220px 0 0 0;
@@ -1658,4 +1666,11 @@ footer a:hover{
 
 #redirect-link:active{
   background: #0b3aef;;
+}
+
+.favourites_button{
+  padding: 4px 20px 6px;
+  border: 1px solid #333333;
+  font-size: 16px;
+  margin-bottom: 20px;
 }

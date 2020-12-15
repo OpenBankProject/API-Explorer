@@ -167,10 +167,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
     result
   }
 
+  def getApiCollectionsForCurrentUser = ObpAPI.getApiCollections
 
-
-
-
+  val allOperationIds = if (getApiCollectionsForCurrentUser.isDefined) getApiCollectionsForCurrentUser.map(_.api_collection_endpoints.map(_.operation_id)).head else List()
   val listAllBanks = S.param("list-all-banks").getOrElse("false").toBoolean
   logger.info(s"all_banks in url param is $listAllBanks")
 
@@ -935,32 +934,30 @@ WIP to add comments on resource docs. This code copied from Sofit.
       SetHtml(fullPathTarget, Text(fullPath.toString)) &
       SetHtml(fullHeadersTarget, Text(headers))
     }
-    
+
     def processFavourites(name: String): JsCmd = {
+      val revertFavourites = if(isFavourites.contains("false")) {
+        //TODO first hard code this ID here
+        val createSelectionEndpointUrl = "/obp/v4.0.0/my/api-collections/Favourites/api-collection-endpoints"
 
-      //TODO first hard code this ID here
-      val createSelectionEndpointUrl = "/obp/v4.0.0/selections/9ca92939-e3a8-4c52-8ab2-017958e1a40d/selection-endpoints"
+        val postSelectionEndpointJson =  PostSelectionEndpointJson400(favouritesOperationId)
+        val response = ObpPost.apply(createSelectionEndpointUrl, Extraction.decompose(postSelectionEndpointJson))
+        "true"
+      } else {
+        //TODO first hard code this ID here
+        val deleteSelectionEndpointUrl = s"/obp/v4.0.0/my/api-collections/Favourites/api-collection-endpoints/${favouritesOperationId}"
+        val response = ObpDeleteBoolean.apply(deleteSelectionEndpointUrl)
+        "false"
+      }
 
-      val postSelectionEndpointJson =  PostSelectionEndpointJson400("OBPv4.0.0-getBanks")
-
-      // Convert case class to JValue
-      implicit val formats = DefaultFormats
-      val postSelectionEndpointJValue: JValue  = Extraction.decompose(postSelectionEndpointJson)
-
-      val favouritesOperationId2 = favouritesOperationId
-      val response = ObpPost.apply(createSelectionEndpointUrl, postSelectionEndpointJValue)
-      val selectionEndpointJson400 = response.map(_.extract[SelectionEndpointJson400])
-
-      val revertFavourites = if(isFavourites.contains("false")) "true" else "false"
-      
-      
+      val allOperationIds = getApiCollectionsForCurrentUser.map(_.api_collection_endpoints.map(_.operation_id)).head
       // enable button
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
-      val colort = if (revertFavourites.contains("true"))
+//      val colort = if (revertFavourites.contains("true"))
+      val colort = if (allOperationIds.contains(favouritesOperationId))
         s"jQuery('#favourites_button_${favouritesOperationId}').css('background-color','yellow')" 
       else
         s"jQuery('#favourites_button_${favouritesOperationId}').css('background-color','white')"
-      
       Run (jsEnabledBtn) &
       Run (colort) &
         JsCmds.SetValById(s"favourites_id_input_${favouritesOperationId}",revertFavourites) 
@@ -1466,7 +1463,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
             "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
             ".favourites_id_input" #> text(isFavourites,   s => isFavourites = s,  "type" -> "hidden", "id" -> s"favourites_id_input_${i.id.toString}") &
             ".favourites_operatino_id" #> text(i.id.toString, s => favouritesOperationId = s,  "type" -> "hidden","class" -> "favourites_operatino_id") &
-            ".favourites_button" #> Helper.ajaxSubmit("Favourites", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.id.toString}") &
+            ".favourites_button" #> Helper.ajaxSubmit("Favourites", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.id.toString}",  
+              if(allOperationIds.contains(i.id.toString)) {"style" -> "background-color:yellow"} 
+              else {"style" -> "background-color:white"}
+            ) &
           ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}"
         }
       }   
