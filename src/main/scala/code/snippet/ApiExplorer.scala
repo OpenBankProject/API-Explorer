@@ -167,9 +167,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
     result
   }
 
-  def getApiCollectionsForCurrentUser = ObpAPI.getApiCollections
+  def getApiCollectionsForCurrentUser: Box[ApiCollectionEndpointsJson400] = ObpAPI.getApiCollections
+  
+  //this can be empty list, if there is no operationIds there.
+  def allOperationIdsCurrentUserHave = getApiCollectionsForCurrentUser.map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
 
-  val allOperationIds = if (getApiCollectionsForCurrentUser.isDefined) getApiCollectionsForCurrentUser.map(_.api_collection_endpoints.map(_.operation_id)).head else List()
   val listAllBanks = S.param("list-all-banks").getOrElse("false").toBoolean
   logger.info(s"all_banks in url param is $listAllBanks")
 
@@ -949,18 +951,20 @@ WIP to add comments on resource docs. This code copied from Sofit.
         val response = ObpDeleteBoolean.apply(deleteSelectionEndpointUrl)
         "false"
       }
-
-      val allOperationIds = getApiCollectionsForCurrentUser.map(_.api_collection_endpoints.map(_.operation_id)).head
       // enable button
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
-//      val colort = if (revertFavourites.contains("true"))
-      val colort = if (allOperationIds.contains(favouritesOperationId))
+      val favouritesBtnColour = if (allOperationIdsCurrentUserHave.contains(favouritesOperationId))
         s"jQuery('#favourites_button_${favouritesOperationId}').css('background-color','yellow')" 
       else
         s"jQuery('#favourites_button_${favouritesOperationId}').css('background-color','white')"
+      
+      val apiCollectionsForCurrentUser = getApiCollectionsForCurrentUser
+      val errorMessage = if(apiCollectionsForCurrentUser.isInstanceOf[Failure]) apiCollectionsForCurrentUser.asInstanceOf[Failure].messageChain else ""
+      
+      SetHtml(s"favourites_error_message_${favouritesOperationId}", Text(errorMessage)) &
       Run (jsEnabledBtn) &
-      Run (colort) &
-        JsCmds.SetValById(s"favourites_id_input_${favouritesOperationId}",revertFavourites) 
+      Run (favouritesBtnColour) &
+      JsCmds.SetValById(s"favourites_id_input_${favouritesOperationId}",revertFavourites) 
     }
 
 
@@ -1464,9 +1468,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
             ".favourites_id_input" #> text(isFavourites,   s => isFavourites = s,  "type" -> "hidden", "id" -> s"favourites_id_input_${i.id.toString}") &
             ".favourites_operatino_id" #> text(i.id.toString, s => favouritesOperationId = s,  "type" -> "hidden","class" -> "favourites_operatino_id") &
             ".favourites_button" #> Helper.ajaxSubmit("Favourites", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.id.toString}",  
-              if(allOperationIds.contains(i.id.toString)) {"style" -> "background-color:yellow"} 
+              if(allOperationIdsCurrentUserHave.contains(i.id.toString)) {"style" -> "background-color:yellow"} 
               else {"style" -> "background-color:white"}
             ) &
+            ".favourites_error_message [id]" #> s"favourites_error_message_${i.id}" &
           ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}"
         }
       }   

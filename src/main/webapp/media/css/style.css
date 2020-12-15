@@ -1674,3 +1674,6 @@ footer a:hover{
   font-size: 16px;
   margin-bottom: 20px;
 }
+.favourites_error_message{
+  color: red;
+}
