@@ -22,7 +22,7 @@ import scala.collection.immutable.{List, Nil}
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import java.util.UUID.randomUUID
-import code.snippet.PostSelectionEndpointJson400
+import code.snippet.{PostApiCollectionJson400, PostSelectionEndpointJson400}
 import net.liftweb.common._
 
 
@@ -146,10 +146,21 @@ object ObpAPI extends Loggable {
     result
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
-  def getApiCollections : Box[ApiCollectionEndpointsJson400] = if(isLoggedIn){
-    ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/Favourites/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+  def getApiCollections(apiCollectionName: String) : Box[ApiCollectionEndpointsJson400] = if(isLoggedIn){
+    val response = ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+    if (response.toString.contains("OBP-30079:ApiCollection not found.  Please specify a valid value for API_COLLECTION_NAME.")) {
+      createMyApiCollection("Favourites",true)
+      ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+    } else{
+      response
+    }
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
+  def createMyApiCollection (apiCollectionName: String, is_sharable:Boolean) = if(isLoggedIn){
+    val postSelectionEndpointJson =  PostApiCollectionJson400(apiCollectionName, is_sharable)
+    ObpPost(s"$obpPrefix/v4.0.0/my/api-collections", Extraction.decompose(postSelectionEndpointJson))
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  
   def createMyApiCollectionEndpoint (apiCollectionName: String, operationId: String) = if(isLoggedIn){
     val postSelectionEndpointJson =  PostSelectionEndpointJson400(operationId)
     ObpPost(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints", Extraction.decompose(postSelectionEndpointJson))
@@ -196,13 +207,13 @@ object ObpAPI extends Loggable {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
-        ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=static").map(extractResourceDocsJson).map(_.resource_docs).head
+        ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=static").map(extractResourceDocsJson).map(_.resource_docs).getOrElse(List.empty[ResourceDocJson])
       }
     }
   }
   
   def getDynamicResourceDocs(apiVersion : String, requestParams: String) =  
-    ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=dynamic").map(extractResourceDocsJson).map(_.resource_docs).head
+    ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=dynamic").map(extractResourceDocsJson).map(_.resource_docs).getOrElse(List.empty[ResourceDocJson])
 
   /**
    * extract ResourceDocsJson and output details of error if extract json to case class fail

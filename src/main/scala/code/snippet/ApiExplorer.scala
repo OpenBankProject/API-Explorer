@@ -46,6 +46,11 @@ case class Bank(
 
 case class CreateEntitlementRequestJSON(bank_id: String, role_name: String)
 
+case class PostApiCollectionJson400(
+  api_collection_name: String,
+  is_sharable: Boolean
+)
+
 case class PostSelectionEndpointJson400(
   operation_id: String
 )
@@ -167,10 +172,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     result
   }
 
-  def getApiCollectionsForCurrentUser: Box[ApiCollectionEndpointsJson400] = ObpAPI.getApiCollections
-  
   //this can be empty list, if there is no operationIds there.
-  def allOperationIdsCurrentUserHave = getApiCollectionsForCurrentUser.map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
+  def getAllOperationIdsCurrentUserHave = ObpAPI.getApiCollections("Favourites").map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
 
   val listAllBanks = S.param("list-all-banks").getOrElse("false").toBoolean
   logger.info(s"all_banks in url param is $listAllBanks")
@@ -942,7 +945,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
       if(isLoggedIn){ // If the user is not logged in, we do not need call any apis calls. (performance enhancement)
         //prepare the js for the button color changing.
-        val favouritesBtnColour = if (allOperationIdsCurrentUserHave.contains(favouritesOperationId)) {
+        val favouritesBtnColour = if (getAllOperationIdsCurrentUserHave.contains(favouritesOperationId)) {
           ObpAPI.deleteMyApiCollectionEndpoint("Favourites",favouritesOperationId)
           s"jQuery('#favourites_button_${favouritesOperationId}').css('background-color','white')"
         } else {
@@ -951,7 +954,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         }
     
         //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delelet the record there.
-        val apiCollectionsForCurrentUser = getApiCollectionsForCurrentUser
+        val apiCollectionsForCurrentUser = ObpAPI.getApiCollections("Favourites")
         val errorMessage = if(apiCollectionsForCurrentUser.isInstanceOf[Failure]) apiCollectionsForCurrentUser.asInstanceOf[Failure].messageChain else ""
     
         if(errorMessage.equals("")){ //If there is no error, we changed the button
@@ -1466,7 +1469,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
             "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
             ".favourites_operatino_id" #> text(i.id.toString, s => favouritesOperationId = s,  "type" -> "hidden","class" -> "favourites_operatino_id") &
             ".favourites_button" #> Helper.ajaxSubmit("Favourites", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.id.toString}",  
-              if(allOperationIdsCurrentUserHave.contains(i.id.toString)) {"style" -> "background-color:yellow"} 
+              if(getAllOperationIdsCurrentUserHave.contains(i.id.toString)) {"style" -> "background-color:yellow"} 
               else {"style" -> "background-color:white"}
             ) &
             ".favourites_error_message [id]" #> s"favourites_error_message_${i.id}" &
