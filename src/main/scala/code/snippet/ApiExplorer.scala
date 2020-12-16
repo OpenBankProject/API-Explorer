@@ -948,10 +948,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
         //prepare the js for the button color changing.
         val favouritesBtnColour = if (getAllOperationIdsCurrentUserHave.contains(favouritesOperationId)) {
           ObpAPI.deleteMyApiCollectionEndpoint("Favourites",favouritesOperationId)
-          s"jQuery('#favourites_button_${favouritesOperationId}').css('background-color','white')"
+          s"jQuery('#favourites_button_${favouritesOperationId}').css('color','#8590a6')"
         } else {
           ObpAPI.createMyApiCollectionEndpoint("Favourites",favouritesOperationId)
-          s"jQuery('#favourites_button_${favouritesOperationId}').css('background-color','yellow')"
+          s"jQuery('#favourites_button_${favouritesOperationId}').css('color','yellow')"
         }
     
         //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delelet the record there.
@@ -1472,9 +1472,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
           // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
             "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
             ".favourites_operatino_id" #> text(i.id.toString, s => favouritesOperationId = s,  "type" -> "hidden","class" -> "favourites_operatino_id") &
-            ".favourites_button" #> Helper.ajaxSubmit("Favourites", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.id.toString}",  
-              if(getAllOperationIdsCurrentUserHave.contains(i.id.toString)) {"style" -> "background-color:yellow"} 
-              else {"style" -> "background-color:white"}
+            ".favourites_button" #> Helper.ajaxSubmit("★", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.id.toString}",  
+              if(getAllOperationIdsCurrentUserHave.contains(i.id.toString)) {"style" -> "color:yellow"} 
+              else {"style" -> "color:#8590a6"}
             ) &
             ".favourites_error_message [id]" #> s"favourites_error_message_${i.id}" &
           ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}"

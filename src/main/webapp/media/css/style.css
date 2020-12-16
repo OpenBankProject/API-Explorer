@@ -1668,11 +1668,14 @@ footer a:hover{
   background: #0b3aef;;
 }
 
-.favourites_button{
-  padding: 4px 20px 6px;
-  border: 1px solid #333333;
-  font-size: 16px;
+.content-box form .favourites_button{
+  padding:0;
+  margin:0;
   margin-bottom: 20px;
+  margin-top: -15px;
+  border: 0;
+  font-size: 40px;
+  background-color: white;
 }
 .favourites_error_message{
   color: red;
