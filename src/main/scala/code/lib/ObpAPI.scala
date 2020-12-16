@@ -1,7 +1,6 @@
 package code.lib
 
 import java.io._
-import java.net.{HttpURLConnection, URL}
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -177,9 +176,10 @@ object ObpAPI extends Loggable {
       staticResourcesDocs ++ dynamicResourcesDocs 
     }
   }
-  
+
+  private val DAYS_365 = 31536000
   //  static resourceDocs can be cached for a long time, only be changed when new deployment.
-  val getStaticResourceDocsJsonTTL: FiniteDuration = 365 days
+  val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("resourceDocsJson.cache.ttl.seconds", DAYS_365) seconds
   def getStaticResourceDocs(apiVersion : String, requestParams: String): List[ResourceDocJson] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
@@ -213,8 +213,9 @@ object ObpAPI extends Loggable {
   }
 
 
+  private val DAYS_30 = 2592000
   //  this is one month
-  val getGlossaryItemsJsonTTL: FiniteDuration = 30 days
+  val getGlossaryItemsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("glossaryItemsJson.cache.ttl.seconds", DAYS_30) seconds
   
   def getGlossaryItemsJson : Box[GlossaryItemsJsonV300] = {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
@@ -226,7 +227,7 @@ object ObpAPI extends Loggable {
   }
 
   //  this is one month
-  val getMessageDocsJsonTTL: FiniteDuration = 30 days
+  val getMessageDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("messageDocsJson.cache.ttl.seconds", DAYS_30) seconds
   
   def getMessageDocsJson(connector: String) : Box[MessageDocsJsonV220] = {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
@@ -256,7 +257,7 @@ object OBPRequest extends MdcLoggable {
         .replaceAll("UKv3.1", "v3.1")
         .replaceAll("BGv1.3", "v1.3")
         .replaceAll("BGv1", "v1")
-        .replaceAll("(?<!/validations/)OBPv", "v") //replace OBPv to v, but if the OBPv is part of operationId, don't replace, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
+        .replaceAll("(?<![Vv]alidations/)OBPv", "v") //replace OBPv to v, but if the OBPv is part of operationId, don't replace, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
 
       val url = apiUrl + convertedApiPath
 

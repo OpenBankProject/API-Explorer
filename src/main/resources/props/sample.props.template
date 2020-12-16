@@ -102,3 +102,12 @@ oauth_1.hostname=FILL_ME_IN
 # but for all the portal home page link, we need to use this props. If do not set this, it will use api_hostname value instead.
 # api_portal_hostname=http://127.0.0.1:8080
 # --------------------------------------------
+
+### api call response cache start ##################
+#default value is 31536000, 365 days
+resourceDocsJson.cache.ttl.seconds=31536000
+#default value is 2592000, 30 days
+glossaryItemsJson.cache.ttl.seconds=2592000
+#default value is 2592000, 30 days
+messageDocsJson.cache.ttl.seconds=2592000
+### api call response cache end ##################
