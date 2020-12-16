@@ -207,13 +207,13 @@ object ObpAPI extends Loggable {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
-        ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=static").map(extractResourceDocsJson).map(_.resource_docs).getOrElse(List.empty[ResourceDocJson])
+        ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=static").map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
       }
     }
   }
   
   def getDynamicResourceDocs(apiVersion : String, requestParams: String) =  
-    ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=dynamic").map(extractResourceDocsJson).map(_.resource_docs).getOrElse(List.empty[ResourceDocJson])
+    ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=dynamic").map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
 
   /**
    * extract ResourceDocsJson and output details of error if extract json to case class fail
