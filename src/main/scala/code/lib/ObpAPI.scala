@@ -22,6 +22,7 @@ import scala.collection.immutable.{List, Nil}
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import java.util.UUID.randomUUID
+import code.snippet.PostSelectionEndpointJson400
 import net.liftweb.common._
 
 
@@ -147,6 +148,15 @@ object ObpAPI extends Loggable {
 
   def getApiCollections : Box[ApiCollectionEndpointsJson400] = if(isLoggedIn){
     ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/Favourites/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+
+  def createMyApiCollectionEndpoint (apiCollectionName: String, operationId: String) = if(isLoggedIn){
+    val postSelectionEndpointJson =  PostSelectionEndpointJson400(operationId)
+    ObpPost(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints", Extraction.decompose(postSelectionEndpointJson))
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+
+  def deleteMyApiCollectionEndpoint (apiCollectionName: String, operationId: String)  = if(isLoggedIn){
+    ObpDelete(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints/$operationId")
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
   /**

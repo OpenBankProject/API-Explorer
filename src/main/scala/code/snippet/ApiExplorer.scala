@@ -938,35 +938,34 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
     def processFavourites(name: String): JsCmd = {
-      val revertFavourites = if(isFavourites.contains("false")) {
-        //TODO first hard code this ID here
-        val createSelectionEndpointUrl = "/obp/v4.0.0/my/api-collections/Favourites/api-collection-endpoints"
-
-        val postSelectionEndpointJson =  PostSelectionEndpointJson400(favouritesOperationId)
-        val response = ObpPost.apply(createSelectionEndpointUrl, Extraction.decompose(postSelectionEndpointJson))
-        "true"
-      } else {
-        //TODO first hard code this ID here
-        val deleteSelectionEndpointUrl = s"/obp/v4.0.0/my/api-collections/Favourites/api-collection-endpoints/${favouritesOperationId}"
-        val response = ObpDeleteBoolean.apply(deleteSelectionEndpointUrl)
-        "false"
-      }
-      // enable button
+      // enable button                                                                   
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
-      val favouritesBtnColour = if (allOperationIdsCurrentUserHave.contains(favouritesOperationId))
-        s"jQuery('#favourites_button_${favouritesOperationId}').css('background-color','yellow')" 
-      else
-        s"jQuery('#favourites_button_${favouritesOperationId}').css('background-color','white')"
-      
-      val apiCollectionsForCurrentUser = getApiCollectionsForCurrentUser
-      val errorMessage = if(apiCollectionsForCurrentUser.isInstanceOf[Failure]) apiCollectionsForCurrentUser.asInstanceOf[Failure].messageChain else ""
-      
-      SetHtml(s"favourites_error_message_${favouritesOperationId}", Text(errorMessage)) &
-      Run (jsEnabledBtn) &
-      Run (favouritesBtnColour) &
-      JsCmds.SetValById(s"favourites_id_input_${favouritesOperationId}",revertFavourites) 
+      if(isLoggedIn){ // If the user is not logged in, we do not need call any apis calls. (performance enhancement)
+        //prepare the js for the button color changing.
+        val favouritesBtnColour = if (allOperationIdsCurrentUserHave.contains(favouritesOperationId)) {
+          ObpAPI.deleteMyApiCollectionEndpoint("Favourites",favouritesOperationId)
+          s"jQuery('#favourites_button_${favouritesOperationId}').css('background-color','white')"
+        } else {
+          ObpAPI.createMyApiCollectionEndpoint("Favourites",favouritesOperationId)
+          s"jQuery('#favourites_button_${favouritesOperationId}').css('background-color','yellow')"
+        }
+    
+        //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delelet the record there.
+        val apiCollectionsForCurrentUser = getApiCollectionsForCurrentUser
+        val errorMessage = if(apiCollectionsForCurrentUser.isInstanceOf[Failure]) apiCollectionsForCurrentUser.asInstanceOf[Failure].messageChain else ""
+    
+        if(errorMessage.equals("")){ //If there is no error, we changed the button
+          Run (jsEnabledBtn) &
+          Run (favouritesBtnColour)
+        } else{ //if there is error, we show the OBP-API error there.
+          SetHtml(s"favourites_error_message_${favouritesOperationId}", Text(errorMessage))& 
+          Run (jsEnabledBtn) 
+        }
+      } else {
+        SetHtml(s"favourites_error_message_${favouritesOperationId}", Text("OBP-20001: User not logged in. Authentication is required!"))&
+        Run (jsEnabledBtn)
+      }
     }
-
 
 
 
@@ -1465,7 +1464,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
            "@success_response_body [id]" #> s"success_response_body_${i.id}" &
           // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
             "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
-            ".favourites_id_input" #> text(isFavourites,   s => isFavourites = s,  "type" -> "hidden", "id" -> s"favourites_id_input_${i.id.toString}") &
             ".favourites_operatino_id" #> text(i.id.toString, s => favouritesOperationId = s,  "type" -> "hidden","class" -> "favourites_operatino_id") &
             ".favourites_button" #> Helper.ajaxSubmit("Favourites", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.id.toString}",  
               if(allOperationIdsCurrentUserHave.contains(i.id.toString)) {"style" -> "background-color:yellow"} 
