@@ -3,7 +3,7 @@ package code.snippet
 import java.net.URL
 
 import code.lib.ObpJson._
-import code.lib._
+import code.lib.{ObpAPI, _}
 import code.util.Helper
 import code.util.Helper.MdcLoggable
 import net.liftweb.http.js.JsCmds
@@ -734,7 +734,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       logger.info("tags filter reduced the list of resource docs to zero")
     }
 
-
+    val apiGetRootResponse = ObpAPI.getRoot
+    
     // Sort by the first and second tags (if any) then the summary.
     // In order to help sorting, the first tag in a call should be most general, then more specific etc.
     val resources = resourcesToUse.sortBy(r => {
@@ -1339,7 +1340,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
       ".resource [style]" #> s"display: none" &
         ".resource-error [style]" #> s"display: block" &
         ".content-box__headline *" #> {
-          if(!isLoggedIn)//If no resources, first check the login, 
+          if(apiGetRootResponse.isInstanceOf[Failure]){
+            logger.error(s"API server is down, API_Explorer get the response: ${apiGetRootResponse.asInstanceOf[Failure].messageChain}")
+            "Please check API server, it is down now."
+          }else if(!isLoggedIn)//If no resources, first check the login, 
             "OBP-20001: User not logged in. Authentication is required!"
           else if(isLoggedIn && canReadResourceRole.isEmpty) //Then check the missing role
             "OBP-20006: User is missing one or more roles: CanReadResourceDoc"     
