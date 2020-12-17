@@ -22,7 +22,6 @@ import scala.collection.immutable.{List, Nil}
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import java.util.UUID.randomUUID
-import code.snippet.{PostApiCollectionJson400, PostSelectionEndpointJson400}
 import net.liftweb.common._
 
 
@@ -148,7 +147,7 @@ object ObpAPI extends Loggable {
     result
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
-  def getApiCollections(apiCollectionName: String) : Box[ApiCollectionEndpointsJson400] = if(isLoggedIn){
+  def getApiCollectionEndpoints(apiCollectionName: String) : Box[ApiCollectionEndpointsJson400] = if(isLoggedIn){
     val response = ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
     if (response.toString.contains("OBP-30079:ApiCollection not found.  Please specify a valid value for API_COLLECTION_NAME.")) {
       createMyApiCollection("Favourites",true)
@@ -158,6 +157,22 @@ object ObpAPI extends Loggable {
     }
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
+  def getApiCollectionEndpointsById(apiCollectionId: String) : Box[ApiCollectionEndpointsJson400] = if(isLoggedIn){
+    val response = ObpGet(s"$obpPrefix/v4.0.0/api-collections/$apiCollectionId/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+    if (response.toString.contains("OBP-30079:ApiCollection not found.  Please specify a valid value for API_COLLECTION_ID.")) {
+      createMyApiCollection("Favourites",true)
+      ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/Favourites/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+    } else{
+      response
+    }
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+
+
+  def getMyApiCollections = if(isLoggedIn){
+    ObpGet(s"$obpPrefix/v4.0.0/my/api-collections").flatMap(_.extractOpt[ApiCollectionsJson400])
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  
+  
   def createMyApiCollection (apiCollectionName: String, is_sharable:Boolean) = if(isLoggedIn){
     val postSelectionEndpointJson =  PostApiCollectionJson400(apiCollectionName, is_sharable)
     ObpPost(s"$obpPrefix/v4.0.0/my/api-collections", Extraction.decompose(postSelectionEndpointJson))
@@ -1106,3 +1121,45 @@ case class TransactionImageJSON(
                                  date : Date,
                                  user : UserJSONV121
                                )
+
+case class Bank(
+  id : String,
+  shortName : String,
+  fullName : String,
+  logo : String,
+  website : String,
+  isFeatured : Boolean
+)
+
+case class CreateEntitlementRequestJSON(bank_id: String, role_name: String)
+
+case class PostApiCollectionJson400(
+  api_collection_name: String,
+  is_sharable: Boolean
+)
+
+case class PostSelectionEndpointJson400(
+  operation_id: String
+)
+
+case class SelectionEndpointJson400 (
+  selection_endpoint_id: String,
+  selection_id: String,
+  operation_id: String
+)
+
+case class UserEntitlementRequests(entitlementRequestId: String,
+  roleName: String,
+  bankId : String,
+  username : String 
+)
+case class ApiCollectionJson400 (
+  api_collection_id: String,
+  user_id: String,
+  api_collection_name: String,
+  is_sharable: Boolean
+)
+
+case class ApiCollectionsJson400 (
+  api_collections: List[ApiCollectionJson400]
+)

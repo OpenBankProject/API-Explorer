@@ -31,48 +31,6 @@ import net.liftweb.util.Helpers._
 
 // see https://simply.liftweb.net/index-7.10.html on css selectors
 
-
-case class Bank(
-                 id : String,
-                 shortName : String,
-                 fullName : String,
-                 logo : String,
-                 website : String,
-                 isFeatured : Boolean
-               )
-
-                // showToUser : Boolean)
-
-
-case class CreateEntitlementRequestJSON(bank_id: String, role_name: String)
-
-case class PostApiCollectionJson400(
-  api_collection_name: String,
-  is_sharable: Boolean
-)
-
-case class PostSelectionEndpointJson400(
-  operation_id: String
-)
-
-case class SelectionEndpointJson400 (
-  selection_endpoint_id: String,
-  selection_id: String,
-  operation_id: String
-)
-
-
-
-case class UserEntitlementRequests(entitlementRequestId: String,
-                                   roleName: String,
-                                   bankId : String,
-                                   username : String )
-
-
-
-
-
-
 /*
 Present a list of OBP resource URLs
  */
@@ -171,10 +129,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
     logger.debug(s"getUserEntitlementRequests will return: $result" )
     result
   }
-
-  //this can be empty list, if there is no operationIds there.
-  def getAllOperationIdsCurrentUserHave = ObpAPI.getApiCollections("Favourites").map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
-
   val listAllBanks = S.param("list-all-banks").getOrElse("false").toBoolean
   logger.info(s"all_banks in url param is $listAllBanks")
 
@@ -224,9 +178,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   logger.info(s"nativeParam is $nativeParam")
 
-  def rawCurrentCollectionParam = S.param("currentCollection")
+  def apiCollectionIdParam = S.param("apiCollectionId")
 
-  logger.info(s"rawCurrentCollectionParam is $rawCurrentCollectionParam")
+  logger.info(s"apiCollectionIdParam is $apiCollectionIdParam")
 
   val rawTagsParam = S.param("tags")
 
@@ -236,9 +190,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   logger.info(s"rawLanguageParam is $rawLanguageParam")
 
-  def currentCollectionParamString = "&currentCollection=" + rawCurrentCollectionParam.mkString(",")
+  def apiCollectionIdParamString = "&apiCollectionId=" + apiCollectionIdParam.mkString(",")
 
-  logger.info(s"CurrentCollectionParamString is $currentCollectionParamString")
+  logger.info(s"apiCollectionIdParamString is $apiCollectionIdParamString")
   
   val tagsParamString = "&tags=" + rawTagsParam.mkString(",")
 
@@ -273,6 +227,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
+  def apiCollectionId : String = apiCollectionIdParam match {
+    case Full(x) => x
+    case _ => ""
+  }
+  
   val tagsHeadline : String = tagsParam match {
     case Some(x) => "filtered by tag: " + x.mkString(", ")
     case _ => ""
@@ -753,11 +712,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
       (firstTag, secondTag, r.summary.toString)
     })
 
-    //Here we use the currentCollection to filter the resouces.
-    val favouritesInUrl = rawCurrentCollectionParam.map(_.equals("Favourites"))
+
+    //this can be empty list, if there is no operationIds there.
+    def getOperationIdsByApiCollectionId = ObpAPI.getApiCollectionEndpointsById(apiCollectionId).map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
+    def getMyOperationIds = ObpAPI.getApiCollectionEndpoints("Favourites").map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
+    
     val resources = 
-      if (favouritesInUrl.isDefined && favouritesInUrl.head) {
-        getAllOperationIdsCurrentUserHave.map(operationId => resourcesSort.find(_.id == operationId).toList).flatten
+      if (apiCollectionIdParam.isDefined && getOperationIdsByApiCollectionId.nonEmpty) {
+        getOperationIdsByApiCollectionId.map(operationId => resourcesSort.find(_.id == operationId).toList).flatten
       } else resourcesSort
     
     // Group resources by the first tag
@@ -831,9 +793,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
-
-
-
+    //TODO, need error handling:
+    val myApicollections: List[ApiCollectionJson400] = ObpAPI.getMyApiCollections.map(_.api_collections).getOrElse(List.empty[ApiCollectionJson400])
 
 
     def process(name: String): JsCmd = {
@@ -961,7 +922,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
       if(isLoggedIn){ // If the user is not logged in, we do not need call any apis calls. (performance enhancement)
         //prepare the js for the button color changing.
-        val favouritesBtnColour = if (getAllOperationIdsCurrentUserHave.contains(favouritesOperationId)) {
+        val favouritesBtnColour = if (getMyOperationIds.contains(favouritesOperationId)) {
           ObpAPI.deleteMyApiCollectionEndpoint("Favourites",favouritesOperationId)
           s"jQuery('#favourites_button_${favouritesOperationId}').css('color','#8590a6')"
         } else {
@@ -970,7 +931,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         }
     
         //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delelet the record there.
-        val apiCollectionsForCurrentUser = ObpAPI.getApiCollections("Favourites")
+        val apiCollectionsForCurrentUser = ObpAPI.getApiCollectionEndpoints("Favourites")
         val errorMessage = if(apiCollectionsForCurrentUser.isInstanceOf[Failure]) apiCollectionsForCurrentUser.asInstanceOf[Failure].messageChain else ""
     
         if(errorMessage.equals("")){ //If there is no error, we changed the button
@@ -987,9 +948,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
 
-
-
-    val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${tagsParamString}${languagesParamString}${contentParamString}${currentCollectionParamString}"
+    val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${tagsParamString}${languagesParamString}${contentParamString}${apiCollectionIdParamString}"
 
 
     val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i.replace("OBPv", "v"), s"?version=${i}&list-all-banks=${listAllBanks}"))
@@ -1305,6 +1264,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
               "@featured_api_list_item_link [id]" #> s"index_of_${i.id}"
           }
       } &
+      // List the resources grouped by the first tag
+      "@favouriates_list_item" #> myApicollections.map { i =>
+        "@favouriates_list_item_link [href]" #> s"?apiCollectionId=${i.api_collection_id}" & 
+         "@favouriates_list_item_link *" #> i.api_collection_name &
+         "@favouriates_list_item_link [id]" #> s"index_of_${i.api_collection_name}"
+      } &
     // List the resources grouped by the first tag
       "@api_group_item" #> groupedResources.map { i =>
           "@api_group_name *" #> s"${i._1.replace("-"," ")}" &
@@ -1320,7 +1285,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
                   else if (resources.find(_.id == currentOperationId).map(_.tags.head).getOrElse("API")==resources.find(_.id == i.id).map(_.tags.head).getOrElse("API")) //If the Tag is the current Tag.We do not need parameters.
                     s"#${i.id}" 
                   else
-                    s"?version=$apiVersionRequested&operation_id=${i.id}&currentTag=${i.tags.head}${currentCollectionParamString}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
+                    s"?version=$apiVersionRequested&operation_id=${i.id}&currentTag=${i.tags.head}${apiCollectionIdParamString}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
                   "@api_list_item_link *" #> i.summary &
                   "@api_list_item_link [id]" #> s"index_of_${i.id}"
                   // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
@@ -1488,7 +1453,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
             "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
             ".favourites_operatino_id" #> text(i.id.toString, s => favouritesOperationId = s,  "type" -> "hidden","class" -> "favourites_operatino_id") &
             ".favourites_button" #> Helper.ajaxSubmit("★", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.id.toString}",  
-              if(getAllOperationIdsCurrentUserHave.contains(i.id.toString)) {"style" -> "color:yellow"} 
+              if(apiCollectionIdParam.isDefined && getOperationIdsByApiCollectionId.nonEmpty) {"style" -> "color:yellow"} 
+              else if(getMyOperationIds.contains(i.id.toString)) {"style" -> "color:yellow"} 
               else {"style" -> "color:#8590a6"}
             ) &
             ".favourites_error_message [id]" #> s"favourites_error_message_${i.id}" &
