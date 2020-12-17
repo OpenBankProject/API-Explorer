@@ -224,6 +224,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   logger.info(s"nativeParam is $nativeParam")
 
+  def rawCurrentCollectionParam = S.param("currentCollection")
+
+  logger.info(s"rawCurrentCollectionParam is $rawCurrentCollectionParam")
+
   val rawTagsParam = S.param("tags")
 
   logger.info(s"rawTagsParam is $rawTagsParam")
@@ -231,6 +235,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val rawLanguageParam = S.param("language")
 
   logger.info(s"rawLanguageParam is $rawLanguageParam")
+
+  def currentCollectionParamString = "&currentCollection=" + rawCurrentCollectionParam.mkString(",")
+
+  logger.info(s"CurrentCollectionParamString is $currentCollectionParamString")
   
   val tagsParamString = "&tags=" + rawTagsParam.mkString(",")
 
@@ -738,13 +746,20 @@ WIP to add comments on resource docs. This code copied from Sofit.
     
     // Sort by the first and second tags (if any) then the summary.
     // In order to help sorting, the first tag in a call should be most general, then more specific etc.
-    val resources = resourcesToUse.sortBy(r => {
+    val resourcesSort = resourcesToUse.sortBy(r => {
 
       val firstTag = r.tags.headOption.getOrElse("")
       val secondTag = r.tags.take(1).toString()
       (firstTag, secondTag, r.summary.toString)
     })
 
+    //Here we use the currentCollection to filter the resouces.
+    val favouritesInUrl = rawCurrentCollectionParam.map(_.equals("Favourites"))
+    val resources = 
+      if (favouritesInUrl.isDefined && favouritesInUrl.head) {
+        getAllOperationIdsCurrentUserHave.map(operationId => resourcesSort.find(_.id == operationId).toList).flatten
+      } else resourcesSort
+    
     // Group resources by the first tag
     val unsortedGroupedResources: Map[String, List[ResourceDocPlus]] = resources.groupBy(_.tags.headOr("ToTag"))
 
@@ -974,7 +989,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
-    val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${tagsParamString}${languagesParamString}${contentParamString}"
+    val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${tagsParamString}${languagesParamString}${contentParamString}${currentCollectionParamString}"
 
 
     val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i.replace("OBPv", "v"), s"?version=${i}&list-all-banks=${listAllBanks}"))
@@ -1305,7 +1320,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
                   else if (resources.find(_.id == currentOperationId).map(_.tags.head).getOrElse("API")==resources.find(_.id == i.id).map(_.tags.head).getOrElse("API")) //If the Tag is the current Tag.We do not need parameters.
                     s"#${i.id}" 
                   else
-                    s"?version=$apiVersionRequested&operation_id=${i.id}&currentTag=${i.tags.head}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
+                    s"?version=$apiVersionRequested&operation_id=${i.id}&currentTag=${i.tags.head}${currentCollectionParamString}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
                   "@api_list_item_link *" #> i.summary &
                   "@api_list_item_link [id]" #> s"index_of_${i.id}"
                   // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
