@@ -61,7 +61,7 @@ object ObpAPI extends Loggable {
     ObpGet(s"$obpPrefix/v2.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
-  def getRoot : Box[JValue]= ObpGet(s"$obpPrefix/obp/v4.0.0/root")
+  def getRoot : Box[JValue]= ObpGet(s"$obpPrefix/v4.0.0/root")
   
   // Wrapper for looking at OAuth headers.
   def isLoggedIn : Boolean = {
