@@ -893,7 +893,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         .replaceAll("BGv1.3.3", "v1.3.3")
         .replaceAll("BGv1", "v1")
         .replaceAll("BGv1.3", "v1.3")
-        .replaceAll("(?<!/validations/)OBPv", "") //delete OBPv, but if the OBPv is part of operationId, not to do delete, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
+        .replaceAll("(?<![Vv]validations/)OBPv", "") //delete OBPv, but if the OBPv is part of operationId, not to do delete, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
       )
 
       //val urlWithVersion = s"/$apiVersion$requestUrl"
@@ -903,7 +903,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         .replaceAll("BGv1.3.3", "v1.3.3")
         .replaceAll("BGv1.3", "v1.3")
         .replaceAll("BGv1", "v1")
-        .replaceAll("(?<!/validations/)OBPv", "")) //delete OBPv, but if the OBPv is part of operationId, not to do delete, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
+        .replaceAll("(?<![Vv]validations/)OBPv", "")) //delete OBPv, but if the OBPv is part of operationId, not to do delete, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
       //////////////
 
       val (body, headers) = getResponse(requestUrl, requestVerb, jsonObject, customRequestHeader = requestCustomHeader)
