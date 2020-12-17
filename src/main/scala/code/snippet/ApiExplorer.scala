@@ -546,6 +546,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   var errorResponseBodies = List("")
   var isFavourites = "false"
   var favouritesOperationId = ""
+  var favouritesApiCollectionId = ""
 
 
   def processEntitlementRequest(name: String): JsCmd = {
@@ -921,25 +922,28 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // enable button                                                                   
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
       if(isLoggedIn){ // If the user is not logged in, we do not need call any apis calls. (performance enhancement)
-        //prepare the js for the button color changing.
-        val favouritesBtnColour = if (getMyOperationIds.contains(favouritesOperationId)) {
-          ObpAPI.deleteMyApiCollectionEndpoint("Favourites",favouritesOperationId)
-          s"jQuery('#favourites_button_${favouritesOperationId}').css('color','#8590a6')"
-        } else {
-          ObpAPI.createMyApiCollectionEndpoint("Favourites",favouritesOperationId)
-          s"jQuery('#favourites_button_${favouritesOperationId}').css('color','yellow')"
-        }
-    
         //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delelet the record there.
         val apiCollectionsForCurrentUser = ObpAPI.getApiCollectionEndpoints("Favourites")
         val errorMessage = if(apiCollectionsForCurrentUser.isInstanceOf[Failure]) apiCollectionsForCurrentUser.asInstanceOf[Failure].messageChain else ""
     
         if(errorMessage.equals("")){ //If there is no error, we changed the button
-          Run (jsEnabledBtn) &
-          Run (favouritesBtnColour)
-        } else{ //if there is error, we show the OBP-API error there.
-          SetHtml(s"favourites_error_message_${favouritesOperationId}", Text(errorMessage))& 
-          Run (jsEnabledBtn) 
+          if(favouritesApiCollectionId.nonEmpty && !apiCollectionsForCurrentUser.head.api_collection_endpoints.map(_.api_collection_id).contains(favouritesApiCollectionId)){
+            SetHtml(s"favourites_error_message_${favouritesOperationId}", Text("You only have read access for the Favourites. You can only edit your own Favourites."))&
+              Run (jsEnabledBtn)
+          }else{
+            //prepare the js for the button color changing.
+            val favouritesBtnColour = if (getMyOperationIds.contains(favouritesOperationId)) {
+              ObpAPI.deleteMyApiCollectionEndpoint("Favourites",favouritesOperationId)
+              s"jQuery('#favourites_button_${favouritesOperationId}').css('color','#8590a6')"
+            } else {
+              ObpAPI.createMyApiCollectionEndpoint("Favourites",favouritesOperationId)
+              s"jQuery('#favourites_button_${favouritesOperationId}').css('color','yellow')"
+            }
+            Run (jsEnabledBtn) &
+            Run (favouritesBtnColour)}
+        } else { //if there is error, we show the OBP-API error there.
+          SetHtml(s"favourites_error_message_${favouritesOperationId}", Text(errorMessage)) &
+            Run(jsEnabledBtn)
         }
       } else {
         SetHtml(s"favourites_error_message_${favouritesOperationId}", Text("OBP-20001: User not logged in. Authentication is required!"))&
@@ -1452,6 +1456,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
             "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
             ".favourites_operatino_id" #> text(i.id.toString, s => favouritesOperationId = s,  "type" -> "hidden","class" -> "favourites_operatino_id") &
+            ".favourites_api_collection_id" #> text(apiCollectionId, s => favouritesApiCollectionId = s,  "type" -> "hidden","class" -> "favourites_api_collection_id") &
             ".favourites_button" #> Helper.ajaxSubmit("★", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.id.toString}",  
               if(apiCollectionIdParam.isDefined && getOperationIdsByApiCollectionId.nonEmpty) {"style" -> "color:yellow"} 
               else if(getMyOperationIds.contains(i.id.toString)) {"style" -> "color:yellow"} 
