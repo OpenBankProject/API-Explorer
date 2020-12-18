@@ -1,12 +1,13 @@
 package code.snippet
 
-import java.net.URL
+import code.lib.ObpAPI.{canGetAuthenticationTypeValidation, canGetJsonSchemaValidation, getAuthenticationTypeValidations, getJsonSchemaValidations}
 
+import java.net.URL
 import code.lib.ObpJson._
 import code.lib._
 import code.util.Helper
 import code.util.Helper.MdcLoggable
-import net.liftweb.util.{CssSel, Html5, Props}
+import net.liftweb.util.{CssSel, Html5}
 
 import scala.collection.immutable.{List, Nil}
 
@@ -517,6 +518,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val entitlementsForCurrentUser = getEntitlementsForCurrentUser
   logger.info(s"there are ${entitlementsForCurrentUser.length} entitlementsForCurrentUser(s)")
 
+  private val jsonSchemaValidations: Box[Map[String, JObject]] = getJsonSchemaValidations(entitlementsForCurrentUser)
+  logger.info(s"there are ${jsonSchemaValidations.map(_.size).openOr(0)} JSON Schema Validation(s)")
+
+  private val authenticationTypeValidations: Box[Map[String, List[String]]] = getAuthenticationTypeValidations(entitlementsForCurrentUser)
+  logger.info(s"there are ${authenticationTypeValidations.map(_.size).openOr(0)} Authentication Type Validation(s)")
+
   val canReadResourceRole: Option[Entitlement] = entitlementsForCurrentUser.find(_.roleName=="CanReadResourceDoc")
   
   val canReadGlossaryRole: Option[Entitlement] = entitlementsForCurrentUser.find(_.roleName=="CanReadGlossary")
@@ -680,7 +687,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
                                             }
                                               )),
     isFeatured = r.is_featured,
-    specialInstructions = stringToNodeSeq(r.special_instructions)
+    specialInstructions = stringToNodeSeq(r.special_instructions),
+    authenticationTypeValidation = authenticationTypeValidations.flatMap(_.get(r.operation_id)),
+    hasJsonSchemaValidations = jsonSchemaValidations.exists(_.contains(r.operation_id))
     )
 
 
@@ -1370,10 +1379,28 @@ WIP to add comments on resource docs. This code copied from Sofit.
           // Typical Success Response
           "@typical_success_response_box [id]" #> s"typical_success_response_box_${i.id}" &
           //"@typical_success_response [id]" #> s"typical_success_response_${i.id}" &
-          "@typical_success_response *" #> Helper.renderJson(i.successResponseBody) &
+          "@typical_success_response *" #> Helper.renderJson(i.successResponseBody) & {
+            // Possible Validations
+            val hasSchemaValidationRole = i.roleInfos.exists(_.role == canGetJsonSchemaValidation)
+            val hasAuthTypeValidationRole = i.roleInfos.exists(_.role == canGetAuthenticationTypeValidation)
+            if(hasSchemaValidationRole || hasAuthTypeValidationRole) {
+              ".required_json_validation" #> (i.hasJsonSchemaValidations match {
+                case true if hasSchemaValidationRole => "Yes"
+                case false if hasSchemaValidationRole => "No"
+                case _ => s"Unknown, because you have no entitlement $canGetJsonSchemaValidation"
+              }) &
+              ".allowed_authentication_types" #> (i.authenticationTypeValidation match {
+                case Full(v) if hasAuthTypeValidationRole => v.mkString("[", ", ", "]")
+                case Empty if hasAuthTypeValidationRole => "This endpoint has no Authentication Type Validation"
+                case _ => s"Unknown, because you have no entitlement $canGetAuthenticationTypeValidation"
+              })
+            } else {
+              "@possible_validations_box" #> ""
+            }
+          } &
           // Possible Errors
           "@possible_error_responses_box [id]" #> s"possible_error_responses_box_${i.id}" &
-          // This class gets a list of several possible error reponse items
+          // This class gets a list of several possible error response items
           ".possible_error_item" #> i.errorResponseBodies.map { i =>
               ".possible_error_item *" #> i
           } &

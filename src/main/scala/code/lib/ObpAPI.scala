@@ -137,6 +137,40 @@ object ObpAPI extends Loggable {
     ObpGet(s"$obpPrefix/v3.0.0/my/entitlements").flatMap(_.extractOpt[EntitlementsJson]) 
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
+  val canGetJsonSchemaValidation = "CanGetJsonSchemaValidation"
+
+  def getJsonSchemaValidations(entitlements: List[Entitlement]) : Box[Map[String, JObject]] = {
+    if (isLoggedIn && entitlements.exists(_.roleName == canGetJsonSchemaValidation)) {
+      ObpGet(s"$obpPrefix/v4.0.0/management/json-schema-validations").flatMap {
+        case JObject(JField("json_schema_validations", JArray(values @ _)) :: Nil) =>
+          val operationIdToAuthTypes = values map { it =>
+            val operationId = (it \ "operation_id").extract[String]
+            val jsonSchema = (it \ "json_schema_validations").asInstanceOf[JObject]
+            operationId -> jsonSchema
+          }
+          Full(operationIdToAuthTypes.toMap)
+        case _ => Empty
+      }
+    } else Empty
+  }
+
+  val canGetAuthenticationTypeValidation = "CanGetAuthenticationTypeValidation"
+
+  def getAuthenticationTypeValidations(entitlements: List[Entitlement]) : Box[Map[String, List[String]]] = {
+    if (isLoggedIn && entitlements.exists(_.roleName == canGetAuthenticationTypeValidation)) {
+      ObpGet(s"$obpPrefix/v4.0.0/management/authentication-type-validations").flatMap {
+        case JObject(JField("authentication_types_validations", JArray(values @ _)) :: Nil) =>
+          val operationIdToAuthTypes = values map { it =>
+            val operationId = (it \ "operation_id").extract[String]
+            val allowedAuthTypes = (it \ "allowed_authentication_types").extract[List[String]]
+            operationId -> allowedAuthTypes
+          }
+          Full(operationIdToAuthTypes.toMap)
+        case _ => Empty
+      }
+    } else Empty
+  }
+
 
   def getEntitlementRequestsV300 : Box[EntitlementRequestsJson] = if(isLoggedIn){
     val result = ObpGet(s"$obpPrefix/v3.0.0/my/entitlement-requests").flatMap(_.extractOpt[EntitlementRequestsJson])
@@ -933,7 +967,9 @@ object ObpJson {
                              roleInfos: List[RoleInfo],
                              isFeatured: Boolean,
                              specialInstructions: NodeSeq,
-                             connectorMethods: List[String]
+                             connectorMethods: List[String],
+                             authenticationTypeValidation: Box[List[String]], // Empty: have no AuthenticationTypeValidation
+                             hasJsonSchemaValidations: Boolean
   )
 
 
