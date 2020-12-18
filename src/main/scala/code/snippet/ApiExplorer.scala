@@ -1,12 +1,13 @@
 package code.snippet
 
-import java.net.URL
+import code.lib.ObpAPI.{canGetAuthenticationTypeValidation, canGetJsonSchemaValidation, getAuthenticationTypeValidations, getJsonSchemaValidations}
 
+import java.net.URL
 import code.lib.ObpJson._
 import code.lib._
 import code.util.Helper
 import code.util.Helper.MdcLoggable
-import net.liftweb.util.{CssSel, Html5, Props}
+import net.liftweb.util.{CssSel, Html5}
 
 import scala.collection.immutable.{List, Nil}
 
@@ -517,6 +518,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val entitlementsForCurrentUser = getEntitlementsForCurrentUser
   logger.info(s"there are ${entitlementsForCurrentUser.length} entitlementsForCurrentUser(s)")
 
+  private val jsonSchemaValidations: Box[Map[String, JObject]] = getJsonSchemaValidations(entitlementsForCurrentUser)
+  logger.info(s"there are ${jsonSchemaValidations.map(_.size).openOr(0)} JSON Schema Validation(s)")
+
+  private val authenticationTypeValidations: Box[Map[String, List[String]]] = getAuthenticationTypeValidations(entitlementsForCurrentUser)
+  logger.info(s"there are ${authenticationTypeValidations.map(_.size).openOr(0)} Authentication Type Validation(s)")
+
   val canReadResourceRole: Option[Entitlement] = entitlementsForCurrentUser.find(_.roleName=="CanReadResourceDoc")
   
   val canReadGlossaryRole: Option[Entitlement] = entitlementsForCurrentUser.find(_.roleName=="CanReadGlossary")
@@ -680,7 +687,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
                                             }
                                               )),
     isFeatured = r.is_featured,
-    specialInstructions = stringToNodeSeq(r.special_instructions)
+    specialInstructions = stringToNodeSeq(r.special_instructions),
+    authenticationTypeValidation = authenticationTypeValidations.flatMap(_.get(r.operation_id)),
+    hasJsonSchemaValidations = jsonSchemaValidations.exists(_.contains(r.operation_id))
     )
 
 
@@ -1370,10 +1379,47 @@ WIP to add comments on resource docs. This code copied from Sofit.
           // Typical Success Response
           "@typical_success_response_box [id]" #> s"typical_success_response_box_${i.id}" &
           //"@typical_success_response [id]" #> s"typical_success_response_${i.id}" &
-          "@typical_success_response *" #> Helper.renderJson(i.successResponseBody) &
+          "@typical_success_response *" #> Helper.renderJson(i.successResponseBody) & {
+            // Possible Validations
+            val hasSchemaValidationRole = entitlementsForCurrentUser.exists(_.roleName == canGetJsonSchemaValidation)
+            val hasAuthTypeValidationRole = entitlementsForCurrentUser.exists(_.roleName == canGetAuthenticationTypeValidation)
+            val requestedJsonSchemaValidation = userEntitlementRequests.exists(_.roleName == canGetJsonSchemaValidation)
+            val requestedAuthTypeValidation = userEntitlementRequests.exists(_.roleName == canGetAuthenticationTypeValidation)
+            if(isLoggedIn) {
+              val cssSelSchemaValidationRole = if (hasSchemaValidationRole) {
+                ".required_json_validation" #> (if (i.hasJsonSchemaValidations) "Yes" else "No") &
+                "#request_json_validation" #> ""
+              } else if (requestedJsonSchemaValidation) {
+                ".required_json_validation" #> "Unknown" &
+                "#request_json_validation form" #> ""
+              } else {
+                ".required_json_validation" #> "Unknown" &
+                  "#request_json_validation @roles__role_input" #> SHtml.text(canGetJsonSchemaValidation, entitlementRequestRoleName = _, "type" -> "hidden" ) &
+                  "#request_json_validation @roles__request_entitlement_button" #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
+                  "#request_json_validation @roles__entitlement_request_response" #> ""
+              }
+
+              val cssSelAuthTypeValidationRole = if (hasAuthTypeValidationRole) {
+                ".allowed_authentication_types" #> i.authenticationTypeValidation.map(_.mkString("[", ", ", "]")).openOr("Not set") &
+                  "#request_authentication_type_validation" #> ""
+              } else if (requestedAuthTypeValidation) {
+                ".allowed_authentication_types" #> "Unknown" &
+                  "#request_authentication_type_validation form" #> ""
+              } else {
+                ".allowed_authentication_types" #> "Unknown" &
+                  "#request_authentication_type_validation @roles__role_input" #> SHtml.text(canGetAuthenticationTypeValidation, entitlementRequestRoleName = _, "type" -> "hidden" ) &
+                  "#request_authentication_type_validation @roles__request_entitlement_button" #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
+                  "#request_authentication_type_validation @roles__entitlement_request_response" #> ""
+              }
+
+              cssSelSchemaValidationRole & cssSelAuthTypeValidationRole
+            } else {
+              "@possible_validations_box" #> ""
+            }
+          } &
           // Possible Errors
           "@possible_error_responses_box [id]" #> s"possible_error_responses_box_${i.id}" &
-          // This class gets a list of several possible error reponse items
+          // This class gets a list of several possible error response items
           ".possible_error_item" #> i.errorResponseBodies.map { i =>
               ".possible_error_item *" #> i
           } &

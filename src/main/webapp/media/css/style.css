@@ -563,6 +563,9 @@ a img {
   outline: 0;
   border: 0;
 }
+.validation_request_form form {
+  display: inline-flex;
+}
 
 .content-box__input-box .default-button:active {
   background-color: #0b3aef;
