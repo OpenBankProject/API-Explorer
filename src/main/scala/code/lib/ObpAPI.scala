@@ -149,7 +149,7 @@ object ObpAPI extends Loggable {
 
   def getApiCollectionEndpoints(apiCollectionName: String) : Box[ApiCollectionEndpointsJson400] = if(isLoggedIn){
     val response = ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
-    if (response.toString.contains("OBP-30079:ApiCollection not found.  Please specify a valid value for API_COLLECTION_NAME.")) {
+    if (response.toString.contains("OBP-30079: ApiCollection not found.")) {
       createMyApiCollection("Favourites",true)
       ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
     } else{
