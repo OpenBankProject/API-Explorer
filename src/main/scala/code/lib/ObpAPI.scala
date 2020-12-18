@@ -145,7 +145,7 @@ object ObpAPI extends Loggable {
         case JObject(JField("json_schema_validations", JArray(values @ _)) :: Nil) =>
           val operationIdToAuthTypes = values map { it =>
             val operationId = (it \ "operation_id").extract[String]
-            val jsonSchema = (it \ "json_schema_validations").asInstanceOf[JObject]
+            val jsonSchema = (it \ "json_schema").asInstanceOf[JObject]
             operationId -> jsonSchema
           }
           Full(operationIdToAuthTypes.toMap)

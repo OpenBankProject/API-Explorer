@@ -1381,19 +1381,38 @@ WIP to add comments on resource docs. This code copied from Sofit.
           //"@typical_success_response [id]" #> s"typical_success_response_${i.id}" &
           "@typical_success_response *" #> Helper.renderJson(i.successResponseBody) & {
             // Possible Validations
-            val hasSchemaValidationRole = i.roleInfos.exists(_.role == canGetJsonSchemaValidation)
-            val hasAuthTypeValidationRole = i.roleInfos.exists(_.role == canGetAuthenticationTypeValidation)
-            if(hasSchemaValidationRole || hasAuthTypeValidationRole) {
-              ".required_json_validation" #> (i.hasJsonSchemaValidations match {
-                case true if hasSchemaValidationRole => "Yes"
-                case false if hasSchemaValidationRole => "No"
-                case _ => s"Unknown, because you have no entitlement $canGetJsonSchemaValidation"
-              }) &
-              ".allowed_authentication_types" #> (i.authenticationTypeValidation match {
-                case Full(v) if hasAuthTypeValidationRole => v.mkString("[", ", ", "]")
-                case Empty if hasAuthTypeValidationRole => "This endpoint has no Authentication Type Validation"
-                case _ => s"Unknown, because you have no entitlement $canGetAuthenticationTypeValidation"
-              })
+            val hasSchemaValidationRole = entitlementsForCurrentUser.exists(_.roleName == canGetJsonSchemaValidation)
+            val hasAuthTypeValidationRole = entitlementsForCurrentUser.exists(_.roleName == canGetAuthenticationTypeValidation)
+            val requestedJsonSchemaValidation = userEntitlementRequests.exists(_.roleName == canGetJsonSchemaValidation)
+            val requestedAuthTypeValidation = userEntitlementRequests.exists(_.roleName == canGetAuthenticationTypeValidation)
+            if(isLoggedIn) {
+              val cssSelSchemaValidationRole = if (hasSchemaValidationRole) {
+                ".required_json_validation" #> (if (i.hasJsonSchemaValidations) "Yes" else "No") &
+                "#request_json_validation" #> ""
+              } else if (requestedJsonSchemaValidation) {
+                ".required_json_validation" #> "Unknown" &
+                "#request_json_validation form" #> ""
+              } else {
+                ".required_json_validation" #> "Unknown" &
+                  "#request_json_validation @roles__role_input" #> SHtml.text(canGetJsonSchemaValidation, entitlementRequestRoleName = _, "type" -> "hidden" ) &
+                  "#request_json_validation @roles__request_entitlement_button" #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
+                  "#request_json_validation @roles__entitlement_request_response" #> ""
+              }
+
+              val cssSelAuthTypeValidationRole = if (hasAuthTypeValidationRole) {
+                ".allowed_authentication_types" #> i.authenticationTypeValidation.map(_.mkString("[", ", ", "]")).openOr("Not set") &
+                  "#request_authentication_type_validation" #> ""
+              } else if (requestedAuthTypeValidation) {
+                ".allowed_authentication_types" #> "Unknown" &
+                  "#request_authentication_type_validation form" #> ""
+              } else {
+                ".allowed_authentication_types" #> "Unknown" &
+                  "#request_authentication_type_validation @roles__role_input" #> SHtml.text(canGetAuthenticationTypeValidation, entitlementRequestRoleName = _, "type" -> "hidden" ) &
+                  "#request_authentication_type_validation @roles__request_entitlement_button" #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
+                  "#request_authentication_type_validation @roles__entitlement_request_response" #> ""
+              }
+
+              cssSelSchemaValidationRole & cssSelAuthTypeValidationRole
             } else {
               "@possible_validations_box" #> ""
             }
