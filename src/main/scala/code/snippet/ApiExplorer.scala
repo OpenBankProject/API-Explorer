@@ -934,10 +934,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
             //prepare the js for the button color changing.
             val favouritesBtnColour = if (getMyOperationIds.contains(favouritesOperationId)) {
               ObpAPI.deleteMyApiCollectionEndpoint("Favourites",favouritesOperationId)
-              s"jQuery('#favourites_button_${favouritesOperationId}').css('color','#8590a6')"
+              s"jQuery('#favourites_button_${favouritesOperationId}').css('color','#767676')"
             } else {
               ObpAPI.createMyApiCollectionEndpoint("Favourites",favouritesOperationId)
-              s"jQuery('#favourites_button_${favouritesOperationId}').css('color','yellow')"
+              s"jQuery('#favourites_button_${favouritesOperationId}').css('color','#53C4EF')"
             }
             Run (jsEnabledBtn) &
             Run (favouritesBtnColour)}
@@ -1458,9 +1458,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
             ".favourites_operatino_id" #> text(i.id.toString, s => favouritesOperationId = s,  "type" -> "hidden","class" -> "favourites_operatino_id") &
             ".favourites_api_collection_id" #> text(apiCollectionId, s => favouritesApiCollectionId = s,  "type" -> "hidden","class" -> "favourites_api_collection_id") &
             ".favourites_button" #> Helper.ajaxSubmit("★", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.id.toString}",  
-              if(apiCollectionIdParam.isDefined && getOperationIdsByApiCollectionId.nonEmpty) {"style" -> "color:yellow"} 
-              else if(getMyOperationIds.contains(i.id.toString)) {"style" -> "color:yellow"} 
-              else {"style" -> "color:#8590a6"}
+              if(apiCollectionIdParam.isDefined && getOperationIdsByApiCollectionId.nonEmpty) {"style" -> "color:#53C4EF"} 
+              else if(getMyOperationIds.contains(i.id.toString)) {"style" -> "color:#53C4EF"} 
+              else {"style" -> "color:#767676"}
             ) &
             ".favourites_error_message [id]" #> s"favourites_error_message_${i.id}" &
           ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}"
