@@ -137,38 +137,38 @@ object ObpAPI extends Loggable {
     ObpGet(s"$obpPrefix/v3.0.0/my/entitlements").flatMap(_.extractOpt[EntitlementsJson]) 
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
-  val canGetJsonSchemaValidation = "CanGetJsonSchemaValidation"
+  val isAllowAnonymousReadJsonSchemaValidation: Boolean = Helper.getPropsAsBoolValue("allow_anonymous_access_to_read_json_schema_validation", true)
+  val isAllowAnonymousReadAuthenticationTypeValidation: Boolean = Helper.getPropsAsBoolValue("allow_anonymous_access_to_read_authentication_type_validation", true)
 
-  def getJsonSchemaValidations(entitlements: List[Entitlement]) : Box[Map[String, JObject]] = {
-    if (isLoggedIn && entitlements.exists(_.roleName == canGetJsonSchemaValidation)) {
-      ObpGet(s"$obpPrefix/v4.0.0/management/json-schema-validations").flatMap {
-        case JObject(JField("json_schema_validations", JArray(values @ _)) :: Nil) =>
-          val operationIdToAuthTypes = values map { it =>
-            val operationId = (it \ "operation_id").extract[String]
-            val jsonSchema = (it \ "json_schema").asInstanceOf[JObject]
-            operationId -> jsonSchema
-          }
-          Full(operationIdToAuthTypes.toMap)
-        case _ => Empty
+
+  private val jsonSchemaValidationTTL: FiniteDuration = Helper.getPropsAsIntValue("json_schema_validation.cache.ttl.seconds", 3800) seconds
+  def getJsonSchemaValidation(operationId: String) : Box[JObject] = {
+    var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
+    CacheKeyFromArguments.buildCacheKey {
+      Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(jsonSchemaValidationTTL) {
+        val url = s"$obpPrefix/v4.0.0/management/json-schema-validations/$operationId"
+        ObpGet(url).map {
+          case v: JObject =>
+            (v \ "json_schema").asInstanceOf[JObject]
+          case v => throw new IllegalStateException(s"The endpoint $url return wrong structure data, it have no 'json_schema', response body: ${render(v)}")
+        }
       }
-    } else Empty
+    }
   }
 
-  val canGetAuthenticationTypeValidation = "CanGetAuthenticationTypeValidation"
-
-  def getAuthenticationTypeValidations(entitlements: List[Entitlement]) : Box[Map[String, List[String]]] = {
-    if (isLoggedIn && entitlements.exists(_.roleName == canGetAuthenticationTypeValidation)) {
-      ObpGet(s"$obpPrefix/v4.0.0/management/authentication-type-validations").flatMap {
-        case JObject(JField("authentication_types_validations", JArray(values @ _)) :: Nil) =>
-          val operationIdToAuthTypes = values map { it =>
-            val operationId = (it \ "operation_id").extract[String]
-            val allowedAuthTypes = (it \ "allowed_authentication_types").extract[List[String]]
-            operationId -> allowedAuthTypes
-          }
-          Full(operationIdToAuthTypes.toMap)
-        case _ => Empty
+  private val authenticationTypeValidationTTL: FiniteDuration = Helper.getPropsAsIntValue("authentication_type_validation.cache.ttl.seconds", 3600) seconds
+  def getAuthenticationTypeValidation(operationId: String) : Box[List[String]] = {
+    var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
+    CacheKeyFromArguments.buildCacheKey {
+      Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(authenticationTypeValidationTTL) {
+        val url = s"$obpPrefix/v4.0.0/management/authentication-type-validations/$operationId"
+        ObpGet(url).map {
+          case  v: JObject =>
+            (v \ "allowed_authentication_types").extract[List[String]]
+          case v => throw new IllegalStateException(s"The endpoint $url return wrong structure data, it have no 'allowed_authentication_types', response body: ${render(v)}")
+        }
       }
-    } else Empty
+    }
   }
 
 
@@ -213,7 +213,7 @@ object ObpAPI extends Loggable {
 
   private val DAYS_365 = 31536000
   //  static resourceDocs can be cached for a long time, only be changed when new deployment.
-  val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("resourceDocsJson.cache.ttl.seconds", DAYS_365) seconds
+  val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("resource_docs_json.cache.ttl.seconds", DAYS_365) seconds
   def getStaticResourceDocs(apiVersion : String, requestParams: String): List[ResourceDocJson] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
@@ -249,7 +249,7 @@ object ObpAPI extends Loggable {
 
   private val DAYS_30 = 2592000
   //  this is one month
-  val getGlossaryItemsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("glossaryItemsJson.cache.ttl.seconds", DAYS_30) seconds
+  val getGlossaryItemsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("glossary_items_json.cache.ttl.seconds", DAYS_30) seconds
   
   def getGlossaryItemsJson : Box[GlossaryItemsJsonV300] = {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
@@ -261,7 +261,7 @@ object ObpAPI extends Loggable {
   }
 
   //  this is one month
-  val getMessageDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("messageDocsJson.cache.ttl.seconds", DAYS_30) seconds
+  val getMessageDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("message_docs_json.cache.ttl.seconds", DAYS_30) seconds
   
   def getMessageDocsJson(connector: String) : Box[MessageDocsJsonV220] = {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
@@ -967,9 +967,7 @@ object ObpJson {
                              roleInfos: List[RoleInfo],
                              isFeatured: Boolean,
                              specialInstructions: NodeSeq,
-                             connectorMethods: List[String],
-                             authenticationTypeValidation: Box[List[String]], // Empty: have no AuthenticationTypeValidation
-                             hasJsonSchemaValidations: Boolean
+                             connectorMethods: List[String]
   )
 
 

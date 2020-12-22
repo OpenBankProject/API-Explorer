@@ -1,6 +1,6 @@
 package code.snippet
 
-import code.lib.ObpAPI.{canGetAuthenticationTypeValidation, canGetJsonSchemaValidation, getAuthenticationTypeValidations, getJsonSchemaValidations}
+import code.lib.ObpAPI.{isAllowAnonymousReadAuthenticationTypeValidation, getAuthenticationTypeValidation, getJsonSchemaValidation, isAllowAnonymousReadJsonSchemaValidation}
 
 import java.net.URL
 import code.lib.ObpJson._
@@ -163,9 +163,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   val currentGitCommit = gitCommit
   logger.info(s"currentGitCommit $currentGitCommit")
-  
+
   val currentOperationId = S.param("operation_id").getOrElse("OBPv3_1_0-config")
-  
+
 
   val presetBankId = S.param("bank_id").getOrElse("")
   logger.info(s"bank_id in url param is $presetBankId")
@@ -214,7 +214,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val rawLanguageParam = S.param("language")
 
   logger.info(s"rawLanguageParam is $rawLanguageParam")
-  
+
   val tagsParamString = "&tags=" + rawTagsParam.mkString(",")
 
   logger.info(s"tagsParamString is $rawTagsParam")
@@ -230,7 +230,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val contentParamString = "&content=" + rawContentParam.mkString(",")
 
   logger.info(s"contentParamString is $contentParamString")
-  
+
   val tagsParam: Option[List[String]] = rawTagsParam match {
     // if tags= is supplied in the url we want to ignore it
     case Full("") => None
@@ -279,11 +279,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ""
     }
 
-    //Note: `parse` method: We much enclose the div, otherwise only the first element is returned. 
+    //Note: `parse` method: We much enclose the div, otherwise only the first element is returned.
     Html5.parse(newHtmlString) match {
       case Full(parsedHtml) =>
         parsedHtml
-      case _ => 
+      case _ =>
         logger.error("Cannot parse HTML:")
         logger.error(html)
         NodeSeq.Empty
@@ -367,25 +367,25 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val obpVersionsSupported = List("OBPv3.1.0", "OBPv4.0.0")
 
     val otherVersionsSupported = List("BGv1.3", "UKv3.1")
-    
+
     val otherVersionsSupportedInDropdownMenu = List(
-      "OBPv1.2.1", 
-      "OBPv1.3.0", 
-      "OBPv1.4.0", 
-      "OBPv2.0.0", 
-      "OBPv2.1.0", 
-      "OBPv2.2.0", 
-      "OBPv3.0.0", 
-      "UKv2.0", 
-      "STETv1.4", 
-      "PAPIv2.1.1.1", 
+      "OBPv1.2.1",
+      "OBPv1.3.0",
+      "OBPv1.4.0",
+      "OBPv2.0.0",
+      "OBPv2.1.0",
+      "OBPv2.2.0",
+      "OBPv3.0.0",
+      "UKv2.0",
+      "STETv1.4",
+      "PAPIv2.1.1.1",
       "AUv1.0.0",
       "b1")
 
     // Set the version to use.
     val apiVersion: String = {
-      if (obpVersionsSupported.contains(apiVersionRequested) 
-        || otherVersionsSupported.contains(apiVersionRequested) 
+      if (obpVersionsSupported.contains(apiVersionRequested)
+        || otherVersionsSupported.contains(apiVersionRequested)
         || otherVersionsSupportedInDropdownMenu.contains(apiVersionRequested)) {        // Prefix with v (for OBP versions because they come just with number from API Explorer)
         // Note: We want to get rid of this "v" prefix ASAP.s
         s"$apiVersionRequested"
@@ -419,7 +419,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   val chineseVersionPath = "?language=zh"
   val allPartialFunctions = "/partial-functions.html"
-  
+
   //Note > this method is only for partial-functions.html .
   def showPartialFunctions =  {
     // Get a list of resource docs from the API server
@@ -432,7 +432,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // The list generated here might be used by an administrator as a white or black list of API calls for the API itself.
     val commaSeparatedListOfResources = allResources.map(_.implemented_by.function).mkString("[", ", ", "]")
 
-    "#all-partial-functions" #> commaSeparatedListOfResources 
+    "#all-partial-functions" #> commaSeparatedListOfResources
   }
 
   def getResponse (url : String, resourceVerb: String, json : JValue, customRequestHeader: String = "") : (String, String) = {
@@ -451,7 +451,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
             Header(key, value)
         }.toList
     }
-    
+
     var headersOfCurrentCall: List[String] = Nil
 
     val responseBodyBox = {
@@ -514,15 +514,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     Run (jsCode)
   }
 
-  
+
   val entitlementsForCurrentUser = getEntitlementsForCurrentUser
   logger.info(s"there are ${entitlementsForCurrentUser.length} entitlementsForCurrentUser(s)")
 
-  private val jsonSchemaValidations: Box[Map[String, JObject]] = getJsonSchemaValidations(entitlementsForCurrentUser)
-  logger.info(s"there are ${jsonSchemaValidations.map(_.size).openOr(0)} JSON Schema Validation(s)")
-
-  private val authenticationTypeValidations: Box[Map[String, List[String]]] = getAuthenticationTypeValidations(entitlementsForCurrentUser)
-  logger.info(s"there are ${authenticationTypeValidations.map(_.size).openOr(0)} Authentication Type Validation(s)")
 
   val canReadResourceRole: Option[Entitlement] = entitlementsForCurrentUser.find(_.roleName=="CanReadResourceDoc")
   
@@ -687,9 +682,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
                                             }
                                               )),
     isFeatured = r.is_featured,
-    specialInstructions = stringToNodeSeq(r.special_instructions),
-    authenticationTypeValidation = authenticationTypeValidations.flatMap(_.get(r.operation_id)),
-    hasJsonSchemaValidations = jsonSchemaValidations.exists(_.contains(r.operation_id))
+    specialInstructions = stringToNodeSeq(r.special_instructions)
     )
 
 
@@ -1381,35 +1374,19 @@ WIP to add comments on resource docs. This code copied from Sofit.
           //"@typical_success_response [id]" #> s"typical_success_response_${i.id}" &
           "@typical_success_response *" #> Helper.renderJson(i.successResponseBody) & {
             // Possible Validations
-            val hasSchemaValidationRole = entitlementsForCurrentUser.exists(_.roleName == canGetJsonSchemaValidation)
-            val hasAuthTypeValidationRole = entitlementsForCurrentUser.exists(_.roleName == canGetAuthenticationTypeValidation)
-            val requestedJsonSchemaValidation = userEntitlementRequests.exists(_.roleName == canGetJsonSchemaValidation)
-            val requestedAuthTypeValidation = userEntitlementRequests.exists(_.roleName == canGetAuthenticationTypeValidation)
-            if(isLoggedIn) {
-              val cssSelSchemaValidationRole = if (hasSchemaValidationRole) {
-                ".required_json_validation" #> (if (i.hasJsonSchemaValidations) "Yes" else "No") &
-                "#request_json_validation" #> ""
-              } else if (requestedJsonSchemaValidation) {
-                ".required_json_validation" #> "Unknown" &
-                "#request_json_validation form" #> ""
+            if(isLoggedIn || isAllowAnonymousReadJsonSchemaValidation || isAllowAnonymousReadAuthenticationTypeValidation) {
+              val cssSelSchemaValidationRole = if (isLoggedIn || isAllowAnonymousReadJsonSchemaValidation) {
+                ".required_json_validation" #>
+                  (if (getJsonSchemaValidation(i.operationId).isDefined) "Yes" else "No")
               } else {
-                ".required_json_validation" #> "Unknown" &
-                  "#request_json_validation @roles__role_input" #> SHtml.text(canGetJsonSchemaValidation, entitlementRequestRoleName = _, "type" -> "hidden" ) &
-                  "#request_json_validation @roles__request_entitlement_button" #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
-                  "#request_json_validation @roles__entitlement_request_response" #> ""
+                ".required_json_validation" #> "Unknown, This information can be viewed after log in"
               }
 
-              val cssSelAuthTypeValidationRole = if (hasAuthTypeValidationRole) {
-                ".allowed_authentication_types" #> i.authenticationTypeValidation.map(_.mkString("[", ", ", "]")).openOr("Not set") &
-                  "#request_authentication_type_validation" #> ""
-              } else if (requestedAuthTypeValidation) {
-                ".allowed_authentication_types" #> "Unknown" &
-                  "#request_authentication_type_validation form" #> ""
+              val cssSelAuthTypeValidationRole = if (isLoggedIn || isAllowAnonymousReadAuthenticationTypeValidation) {
+                ".allowed_authentication_types" #>
+                  getAuthenticationTypeValidation(i.operationId).map(_.mkString("[", ", ", "]")).openOr("Not set")
               } else {
-                ".allowed_authentication_types" #> "Unknown" &
-                  "#request_authentication_type_validation @roles__role_input" #> SHtml.text(canGetAuthenticationTypeValidation, entitlementRequestRoleName = _, "type" -> "hidden" ) &
-                  "#request_authentication_type_validation @roles__request_entitlement_button" #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
-                  "#request_authentication_type_validation @roles__entitlement_request_response" #> ""
+                ".allowed_authentication_types" #> "Unknown, This information can be viewed after log in"
               }
 
               cssSelSchemaValidationRole & cssSelAuthTypeValidationRole

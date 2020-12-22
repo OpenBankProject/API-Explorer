@@ -105,9 +105,21 @@ oauth_1.hostname=FILL_ME_IN
 
 ### api call response cache start ##################
 #default value is 31536000, 365 days
-resourceDocsJson.cache.ttl.seconds=31536000
+resource_docs_json.cache.ttl.seconds=31536000
 #default value is 2592000, 30 days
-glossaryItemsJson.cache.ttl.seconds=2592000
+glossary_items_json.cache.ttl.seconds=2592000
 #default value is 2592000, 30 days
-messageDocsJson.cache.ttl.seconds=2592000
+message_docs_json.cache.ttl.seconds=2592000
 ### api call response cache end ##################
+
+### show validation info related, start ###
+## whether allow anonymous user view Authentication Type Validation, default is true
+allow_anonymous_access_to_read_authentication_type_validation=true
+## whether allow anonymous user view Json Schema Validation, default is true
+allow_anonymous_access_to_read_json_schema_validation=true
+## default value is 3600 seconds
+authentication_type_validation.cache.ttl.seconds=3600
+## default value is one hour: 3800 seconds
+json_schema_validation.cache.ttl.seconds=3800
+### show validation info related, stop ###
+
