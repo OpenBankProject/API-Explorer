@@ -213,7 +213,7 @@ object ObpAPI extends Loggable {
 
   private val DAYS_365 = 31536000
   //  static resourceDocs can be cached for a long time, only be changed when new deployment.
-  val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("resourceDocsJson.cache.ttl.seconds", DAYS_365) seconds
+  val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("resource_docs_json.cache.ttl.seconds", DAYS_365) seconds
   def getStaticResourceDocs(apiVersion : String, requestParams: String): List[ResourceDocJson] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
@@ -249,7 +249,7 @@ object ObpAPI extends Loggable {
 
   private val DAYS_30 = 2592000
   //  this is one month
-  val getGlossaryItemsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("glossaryItemsJson.cache.ttl.seconds", DAYS_30) seconds
+  val getGlossaryItemsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("glossary_items_json.cache.ttl.seconds", DAYS_30) seconds
   
   def getGlossaryItemsJson : Box[GlossaryItemsJsonV300] = {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
@@ -261,7 +261,7 @@ object ObpAPI extends Loggable {
   }
 
   //  this is one month
-  val getMessageDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("messageDocsJson.cache.ttl.seconds", DAYS_30) seconds
+  val getMessageDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("message_docs_json.cache.ttl.seconds", DAYS_30) seconds
   
   def getMessageDocsJson(connector: String) : Box[MessageDocsJsonV220] = {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)

@@ -105,11 +105,11 @@ oauth_1.hostname=FILL_ME_IN
 
 ### api call response cache start ##################
 #default value is 31536000, 365 days
-resourceDocsJson.cache.ttl.seconds=31536000
+resource_docs_json.cache.ttl.seconds=31536000
 #default value is 2592000, 30 days
-glossaryItemsJson.cache.ttl.seconds=2592000
+glossary_items_json.cache.ttl.seconds=2592000
 #default value is 2592000, 30 days
-messageDocsJson.cache.ttl.seconds=2592000
+message_docs_json.cache.ttl.seconds=2592000
 ### api call response cache end ##################
 
 ### show validation info related, start ###
