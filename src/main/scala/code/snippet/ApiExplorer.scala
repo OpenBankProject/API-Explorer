@@ -1,20 +1,25 @@
 package code.snippet
 
-import code.lib.ObpAPI.{isAllowAnonymousReadAuthenticationTypeValidation, getAuthenticationTypeValidation, getJsonSchemaValidation, isAllowAnonymousReadJsonSchemaValidation}
+import code.lib.ObpAPI.{getAuthenticationTypeValidations, getJsonSchemaValidations}
 
 import java.net.URL
 import code.lib.ObpJson._
 import code.lib.{ObpAPI, _}
 import code.util.Helper
 import code.util.Helper.MdcLoggable
+
 import net.liftweb.http.js.JsCmds
 import net.liftweb.util.{CssSel, Html5, Props}
+
+import net.liftweb.json
+import net.liftweb.util.{CssSel, Html5}
+
 
 import scala.collection.immutable.{List, Nil}
 
 //import code.snippet.CallUrlForm._
 import net.liftweb.http.{S, SHtml}
-import net.liftweb.json.JsonAST.{JObject, JValue}
+import net.liftweb.json.JsonAST.JValue
 import net.liftweb.json.{Extraction, JsonParser}
 
 import scala.xml.{NodeSeq, Text}
@@ -22,7 +27,7 @@ import scala.xml.{NodeSeq, Text}
 import code.lib.ObpAPI.{allBanks, getEntitlementRequestsV300, getEntitlementsV300, getGlossaryItemsJson, getResourceDocsJson, isLoggedIn, getMessageDocsJson}
 import net.liftweb.common._
 import net.liftweb.http.CurrentReq
-import net.liftweb.http.SHtml.{ajaxSelect, ajaxSubmit, text}
+import net.liftweb.http.SHtml.{ajaxSelect, text}
 import net.liftweb.http.js.JsCmd
 import net.liftweb.http.js.JsCmds.{Run, SetHtml}
 import net.liftweb.json.Serialization.writePretty
@@ -503,18 +508,18 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
   val canReadResourceRole: Option[Entitlement] = entitlementsForCurrentUser.find(_.roleName=="CanReadResourceDoc")
-  
+
   val canReadGlossaryRole: Option[Entitlement] = entitlementsForCurrentUser.find(_.roleName=="CanReadGlossary")
 
   val userEntitlementRequests = getUserEntitlementRequests
 
   val canReadResourceRequest = userEntitlementRequests.find(_.roleName=="CanReadResourceDoc")
-  
+
   val canReadGlossaryRequest = userEntitlementRequests.find(_.roleName=="CanReadGlossary")
 
 
   logger.info(s"there are ${userEntitlementRequests.length} userEntitlementRequests(s)")
-  
+
   val canReadResourceDocRoleInfo = List(RoleInfo(
     role ="CanReadResourceDoc",
     requiresBankId = false,
@@ -546,9 +551,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
   var requestBody = "{}"
   var responseBody = "{}"
   var errorResponseBodies = List("")
+
   var isFavourites = "false"
   var favouritesOperationId = ""
   var favouritesApiCollectionId = ""
+
 
 
   def processEntitlementRequest(name: String): JsCmd = {
@@ -598,7 +605,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     Run (jsEnabledBtn)
   }
 
-  
+
   def showResources = {
     logger.debug("before showResources:")
     // Get a list of resource docs from the API server
@@ -860,7 +867,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // The javascript to show it
       val jsCommandShowFullPath : String =  s"DOLLAR_SIGN('#$fullPathTarget').fadeIn();".replace("DOLLAR_SIGN","$")
       val jsCommandShowFullHeaders : String =
-        s"DOLLAR_SIGN('#$fullHeadersBox').show();".replace("DOLLAR_SIGN","$") ++s"DOLLAR_SIGN('#$fullHeadersTarget').fadeIn();".replace("DOLLAR_SIGN","$") 
+        s"DOLLAR_SIGN('#$fullHeadersBox').show();".replace("DOLLAR_SIGN","$") ++s"DOLLAR_SIGN('#$fullHeadersTarget').fadeIn();".replace("DOLLAR_SIGN","$")
 
       // alert('$fullPathTarget');
       //logger.info(s"jsCommand is $jsCommand")
@@ -871,8 +878,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // TODO It would be nice to modify getResponse and underlying functions to return more information about the request including full path
       // For now we duplicate the construction of the fullPath
       val apiUrl = OAuthClient.currentApiBaseUrl
-      
-      val urlWithVersion =      
+
+      val urlWithVersion =
         if (tagsParamString.equalsIgnoreCase("PSD2") == Some(true)) {
           s"$requestUrl".split("\\?").toList match {
             case url :: params :: Nil =>
@@ -962,7 +969,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
-    // Create a list of (version, url) used to populate the versions whilst preserving the other parameters 
+    // Create a list of (version, url) used to populate the versions whilst preserving the other parameters
     // Includes hack for Berlin Group
     val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i
       .replace("b1", "API Builder")
@@ -1144,7 +1151,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
             counterpartiesJson <- ObpAPI.getExplictCounterparties(presetBankId, presetAccountId, presetViewId).toList
             counterparty <- counterpartiesJson.counterparties
           } yield (counterparty.counterparty_id, counterparty.name)
-          
+
           implicitCounterparties ++ explictCounterparties
         }
       }
@@ -1287,10 +1294,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
             "@api_list_item" #> i._2.sortBy(_.summary.toString()).map { i =>
               // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
                 "@api_list_item_link [href]" #>
-                  (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty) //If the tags are in the URL, we just need to show the anchor, no need the parameters. 
-                    s"#${i.id}" 
+                  (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty) //If the tags are in the URL, we just need to show the anchor, no need the parameters.
+                    s"#${i.id}"
                   else if (resources.find(_.id == currentOperationId).map(_.tags.head).getOrElse("API")==resources.find(_.id == i.id).map(_.tags.head).getOrElse("API")) //If the Tag is the current Tag.We do not need parameters.
-                    s"#${i.id}" 
+                    s"#${i.id}"
                   else
                     s"?version=$apiVersionRequested&operation_id=${i.id}&currentTag=${i.tags.head}${apiCollectionIdParamString}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
                   "@api_list_item_link *" #> i.summary &
@@ -1298,7 +1305,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
                   // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
         }
       } &
-      // The `api_group_item_small_screen` is all for the small screen, 
+      // The `api_group_item_small_screen` is all for the small screen,
       "@api_group_item_small_screen" #> groupedResources.map { i =>
         "@api_group_item_small_screen [data-target]" #> s"#group-collapse_small_screen-${i._1.replaceAll(" ","_").replaceAll("""\(""","_").replaceAll("""\)""","")}" &
           "@api_group_name_small_screen *" #> s"${i._1.replace("-"," ")}" &
@@ -1310,7 +1317,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           "@api_list_item_small_screen" #> i._2.sortBy(_.summary.toString()).map { i =>
             // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
             "@api_list_item_link_small_screen [href]" #>
-              (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty) //If the tags are in the URL, we just need to show the anchor, no need the parameters. 
+              (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty) //If the tags are in the URL, we just need to show the anchor, no need the parameters.
                 s"#${i.id}"
               else
                 s"?operation_id=${i.id}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
@@ -1330,10 +1337,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
           if(apiGetRootResponse.isInstanceOf[Failure]){
             logger.error(s"API server is down, API_Explorer get the response: ${apiGetRootResponse.asInstanceOf[Failure].messageChain}")
             "Please check API server, it is down now."
-          }else if(!isLoggedIn)//If no resources, first check the login, 
+          } else if(!isLoggedIn)//If no resources, first check the login,
             "OBP-20001: User not logged in. Authentication is required!"
           else if(isLoggedIn && canReadResourceRole.isEmpty) //Then check the missing role
-            "OBP-20006: User is missing one or more roles: CanReadResourceDoc"     
+            "OBP-20006: User is missing one or more roles: CanReadResourceDoc"
           else // all other cases throw the gernal error.
             "There are no resource docs in the current Sandbox for this request!"
         }&{
@@ -1374,6 +1381,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
         //The default tag is the first tag of the resource, if it is empty, we use the API Tag.
         val theResourcesFirstTag = resources.map(_.tags.headOption).flatten.headOption.getOrElse("API")
         val currentTag = resources.find(_.id == currentOperationId).map(_.tags.head).getOrElse(theResourcesFirstTag)
+        val authenticationTypeValidations: Box[Map[String, List[String]]] = getAuthenticationTypeValidations()
+        val jsonSchemaValidations: Box[Map[String, json.JObject]] = getJsonSchemaValidations()
+
         ".resource" #> (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty)  resources else (resources.filter(_.tags.head==currentTag))).map { i =>
           // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
           ".end-point-anchor [href]" #> s"#${i.id}" &
@@ -1407,17 +1417,17 @@ WIP to add comments on resource docs. This code copied from Sofit.
           //"@typical_success_response [id]" #> s"typical_success_response_${i.id}" &
           "@typical_success_response *" #> Helper.renderJson(i.successResponseBody) & {
             // Possible Validations
-            if(isLoggedIn || isAllowAnonymousReadJsonSchemaValidation || isAllowAnonymousReadAuthenticationTypeValidation) {
-              val cssSelSchemaValidationRole = if (isLoggedIn || isAllowAnonymousReadJsonSchemaValidation) {
+            if(jsonSchemaValidations.isDefined || authenticationTypeValidations.isDefined) {
+              val cssSelSchemaValidationRole = if (jsonSchemaValidations.isDefined) {
                 ".required_json_validation" #>
-                  (if (getJsonSchemaValidation(i.operationId).isDefined) "Yes" else "No")
+                  (if (jsonSchemaValidations.exists(_.contains(i.operationId))) "Yes" else "No")
               } else {
                 ".required_json_validation" #> "Unknown, This information can be viewed after log in"
               }
 
-              val cssSelAuthTypeValidationRole = if (isLoggedIn || isAllowAnonymousReadAuthenticationTypeValidation) {
+              val cssSelAuthTypeValidationRole = if (authenticationTypeValidations.isDefined) {
                 ".allowed_authentication_types" #>
-                  getAuthenticationTypeValidation(i.operationId).map(_.mkString("[", ", ", "]")).openOr("Not set")
+                  authenticationTypeValidations.flatMap(_.get(i.operationId)).map(_.mkString("[", ", ", "]")).openOr("Not set")
               } else {
                 ".allowed_authentication_types" #> "Unknown, This information can be viewed after log in"
               }

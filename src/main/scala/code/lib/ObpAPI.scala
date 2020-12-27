@@ -139,35 +139,47 @@ object ObpAPI extends Loggable {
     ObpGet(s"$obpPrefix/v3.0.0/my/entitlements").flatMap(_.extractOpt[EntitlementsJson]) 
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
-  val isAllowAnonymousReadJsonSchemaValidation: Boolean = Helper.getPropsAsBoolValue("allow_anonymous_access_to_read_json_schema_validation", true)
-  val isAllowAnonymousReadAuthenticationTypeValidation: Boolean = Helper.getPropsAsBoolValue("allow_anonymous_access_to_read_authentication_type_validation", true)
-
-
   private val jsonSchemaValidationTTL: FiniteDuration = Helper.getPropsAsIntValue("json_schema_validation.cache.ttl.seconds", 3800) seconds
-  def getJsonSchemaValidation(operationId: String) : Box[JObject] = {
+  def getJsonSchemaValidations() : Box[Map[String, JObject]] = {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(jsonSchemaValidationTTL) {
-        val url = s"$obpPrefix/v4.0.0/management/json-schema-validations/$operationId"
-        ObpGet(url).map {
-          case v: JObject =>
-            (v \ "json_schema").asInstanceOf[JObject]
-          case v => throw new IllegalStateException(s"The endpoint $url return wrong structure data, it have no 'json_schema', response body: ${render(v)}")
+        val url = s"$obpPrefix/v4.0.0/endpoints/json-schema-validations"
+        ObpGet(url).flatMap {
+          case JObject(JField("json_schema_validations", JArray(values @ _)) :: Nil) =>
+            val operationIdToAuthTypes = values map { it =>
+              val operationId = (it \ "operation_id").extract[String]
+              val jsonSchema = (it \ "json_schema").asInstanceOf[JObject]
+              operationId -> jsonSchema
+            }
+            Full(operationIdToAuthTypes.toMap)
+          case v =>
+            val errorMsg = s"The endpoint $url return wrong structure data, it have no 'json_schema_validations', response body: ${render(v)}"
+            logger.error(errorMsg)
+            throw new IllegalStateException(errorMsg)
         }
       }
     }
   }
 
   private val authenticationTypeValidationTTL: FiniteDuration = Helper.getPropsAsIntValue("authentication_type_validation.cache.ttl.seconds", 3600) seconds
-  def getAuthenticationTypeValidation(operationId: String) : Box[List[String]] = {
+  def getAuthenticationTypeValidations() : Box[Map[String, List[String]]] = {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(authenticationTypeValidationTTL) {
-        val url = s"$obpPrefix/v4.0.0/management/authentication-type-validations/$operationId"
-        ObpGet(url).map {
-          case  v: JObject =>
-            (v \ "allowed_authentication_types").extract[List[String]]
-          case v => throw new IllegalStateException(s"The endpoint $url return wrong structure data, it have no 'allowed_authentication_types', response body: ${render(v)}")
+        val url = s"$obpPrefix/v4.0.0/endpoints/authentication-type-validations"
+        ObpGet(url).flatMap {
+          case JObject(JField("authentication_types_validations", JArray(values @ _)) :: Nil) =>
+            val operationIdToAuthTypes = values map { it =>
+              val operationId = (it \ "operation_id").extract[String]
+              val allowedAuthTypes = (it \ "allowed_authentication_types").extract[List[String]]
+              operationId -> allowedAuthTypes
+            }
+            Full(operationIdToAuthTypes.toMap)
+          case v =>
+            val errorMsg = s"The endpoint $url return wrong structure data, it have no 'authentication_types_validations', response body: ${render(v)}"
+            logger.error(errorMsg)
+            throw new IllegalStateException(errorMsg)
         }
       }
     }
