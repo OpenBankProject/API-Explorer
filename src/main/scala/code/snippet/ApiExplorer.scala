@@ -1,30 +1,23 @@
 package code.snippet
 
 import code.lib.ObpAPI.{getAuthenticationTypeValidations, getJsonSchemaValidations}
-
-import java.net.URL
 import code.lib.ObpJson._
 import code.lib.{ObpAPI, _}
 import code.util.Helper
 import code.util.Helper.MdcLoggable
-
-import net.liftweb.http.js.JsCmds
-import net.liftweb.util.{CssSel, Html5, Props}
-
 import net.liftweb.json
 import net.liftweb.util.{CssSel, Html5}
 
-
+import java.net.URL
 import scala.collection.immutable.{List, Nil}
 
-//import code.snippet.CallUrlForm._
 import net.liftweb.http.{S, SHtml}
 import net.liftweb.json.JsonAST.JValue
 import net.liftweb.json.{Extraction, JsonParser}
 
 import scala.xml.{NodeSeq, Text}
 // for compact render
-import code.lib.ObpAPI.{allBanks, getEntitlementRequestsV300, getEntitlementsV300, getGlossaryItemsJson, getResourceDocsJson, isLoggedIn, getMessageDocsJson}
+import code.lib.ObpAPI.{allBanks, getEntitlementRequestsV300, getEntitlementsV300, getGlossaryItemsJson, getMessageDocsJson, getResourceDocsJson, isLoggedIn}
 import net.liftweb.common._
 import net.liftweb.http.CurrentReq
 import net.liftweb.http.SHtml.{ajaxSelect, text}
@@ -1422,14 +1415,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
                 ".required_json_validation" #>
                   (if (jsonSchemaValidations.exists(_.contains(i.operationId))) "Yes" else "No")
               } else {
-                ".required_json_validation" #> "Unknown, This information can be viewed after log in"
+                ".required_json_validation" #> "Invisible to anonymous users"
               }
 
               val cssSelAuthTypeValidationRole = if (authenticationTypeValidations.isDefined) {
                 ".allowed_authentication_types" #>
                   authenticationTypeValidations.flatMap(_.get(i.operationId)).map(_.mkString("[", ", ", "]")).openOr("Not set")
               } else {
-                ".allowed_authentication_types" #> "Unknown, This information can be viewed after log in"
+                ".allowed_authentication_types" #> "Invisible to anonymous users"
               }
 
               cssSelSchemaValidationRole & cssSelAuthTypeValidationRole
