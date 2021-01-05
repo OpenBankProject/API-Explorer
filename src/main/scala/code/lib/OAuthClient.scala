@@ -32,6 +32,7 @@ Berlin 13359, Germany
 
 package code.lib
 
+import code.lib.ObpAPI.obpPrefix
 import code.util.Helper
 import net.liftweb.http.SessionVar
 import net.liftweb.common.Box
@@ -45,7 +46,11 @@ import net.liftweb.mapper.By
 import net.liftweb.common.{Failure, Full}
 import net.liftweb.http.LiftResponse
 import code.util.Helper.MdcLoggable
+import net.liftweb.util.Helpers
 import net.liftweb.util.Helpers.tryo
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 sealed trait Provider {
   val name : String
@@ -200,7 +205,9 @@ object OAuthClient extends MdcLoggable {
   def loggedIn : Boolean = credentials.map(_.readyToSign).getOrElse(false)
 
   def logoutAll() = {
+    val apiExplorerHost = {Helper.getPropsValue("base_url", S.hostName)}
+    val obpApiHost = {Helper.getPropsValue("api_hostname", "Unknown")}
     credentials.set(None)
-    S.redirectTo("/")
+    S.redirectTo(s"$obpApiHost/user_mgt/logout?redirect=$apiExplorerHost")
   }
 }

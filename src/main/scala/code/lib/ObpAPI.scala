@@ -1,7 +1,6 @@
 package code.lib
 
 import java.io._
-import java.net.{HttpURLConnection, URL}
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -140,6 +139,40 @@ object ObpAPI extends Loggable {
     ObpGet(s"$obpPrefix/v3.0.0/my/entitlements").flatMap(_.extractOpt[EntitlementsJson]) 
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
+  val isAllowAnonymousReadJsonSchemaValidation: Boolean = Helper.getPropsAsBoolValue("allow_anonymous_access_to_read_json_schema_validation", true)
+  val isAllowAnonymousReadAuthenticationTypeValidation: Boolean = Helper.getPropsAsBoolValue("allow_anonymous_access_to_read_authentication_type_validation", true)
+
+
+  private val jsonSchemaValidationTTL: FiniteDuration = Helper.getPropsAsIntValue("json_schema_validation.cache.ttl.seconds", 3800) seconds
+  def getJsonSchemaValidation(operationId: String) : Box[JObject] = {
+    var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
+    CacheKeyFromArguments.buildCacheKey {
+      Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(jsonSchemaValidationTTL) {
+        val url = s"$obpPrefix/v4.0.0/management/json-schema-validations/$operationId"
+        ObpGet(url).map {
+          case v: JObject =>
+            (v \ "json_schema").asInstanceOf[JObject]
+          case v => throw new IllegalStateException(s"The endpoint $url return wrong structure data, it have no 'json_schema', response body: ${render(v)}")
+        }
+      }
+    }
+  }
+
+  private val authenticationTypeValidationTTL: FiniteDuration = Helper.getPropsAsIntValue("authentication_type_validation.cache.ttl.seconds", 3600) seconds
+  def getAuthenticationTypeValidation(operationId: String) : Box[List[String]] = {
+    var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
+    CacheKeyFromArguments.buildCacheKey {
+      Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(authenticationTypeValidationTTL) {
+        val url = s"$obpPrefix/v4.0.0/management/authentication-type-validations/$operationId"
+        ObpGet(url).map {
+          case  v: JObject =>
+            (v \ "allowed_authentication_types").extract[List[String]]
+          case v => throw new IllegalStateException(s"The endpoint $url return wrong structure data, it have no 'allowed_authentication_types', response body: ${render(v)}")
+        }
+      }
+    }
+  }
+
 
   def getEntitlementRequestsV300 : Box[EntitlementRequestsJson] = if(isLoggedIn){
     val result = ObpGet(s"$obpPrefix/v3.0.0/my/entitlement-requests").flatMap(_.extractOpt[EntitlementRequestsJson])
@@ -217,9 +250,10 @@ object ObpAPI extends Loggable {
       staticResourcesDocs ++ dynamicResourcesDocs 
     }
   }
-  
+
+  private val DAYS_365 = 31536000
   //  static resourceDocs can be cached for a long time, only be changed when new deployment.
-  val getStaticResourceDocsJsonTTL: FiniteDuration = 365 days
+  val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("resource_docs_json.cache.ttl.seconds", DAYS_365) seconds
   def getStaticResourceDocs(apiVersion : String, requestParams: String): List[ResourceDocJson] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
@@ -253,8 +287,9 @@ object ObpAPI extends Loggable {
   }
 
 
+  private val DAYS_30 = 2592000
   //  this is one month
-  val getGlossaryItemsJsonTTL: FiniteDuration = 30 days
+  val getGlossaryItemsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("glossary_items_json.cache.ttl.seconds", DAYS_30) seconds
   
   def getGlossaryItemsJson : Box[GlossaryItemsJsonV300] = {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
@@ -266,7 +301,7 @@ object ObpAPI extends Loggable {
   }
 
   //  this is one month
-  val getMessageDocsJsonTTL: FiniteDuration = 30 days
+  val getMessageDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("message_docs_json.cache.ttl.seconds", DAYS_30) seconds
   
   def getMessageDocsJson(connector: String) : Box[MessageDocsJsonV220] = {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
@@ -298,6 +333,7 @@ object OBPRequest extends MdcLoggable {
 //        .replaceAll("BGv1.3", "v1.3")
 //        .replaceAll("BGv1", "v1")
 //        .replaceAll("OBPv", "v")
+//        .replaceAll("(?<![Vv]alidations/)OBPv", "v") 
 
       val url = apiUrl + apiPath
 
@@ -970,6 +1006,7 @@ object ObpJson {
 
 
   case class ResourceDocPlus(id: String,
+                             operationId: String,
                              verb: String,
                              url: String,
                              summary: String,

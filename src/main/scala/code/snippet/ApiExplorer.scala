@@ -1,7 +1,8 @@
 package code.snippet
 
-import java.net.URL
+import code.lib.ObpAPI.{isAllowAnonymousReadAuthenticationTypeValidation, getAuthenticationTypeValidation, getJsonSchemaValidation, isAllowAnonymousReadJsonSchemaValidation}
 
+import java.net.URL
 import code.lib.ObpJson._
 import code.lib.{ObpAPI, _}
 import code.util.Helper
@@ -134,9 +135,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   val currentGitCommit = gitCommit
   logger.info(s"currentGitCommit $currentGitCommit")
-  
+
   val currentOperationId = S.param("operation_id").getOrElse("OBPv3_1_0-config")
-  
+
 
   val presetBankId = S.param("bank_id").getOrElse("")
   logger.info(s"bank_id in url param is $presetBankId")
@@ -209,7 +210,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val contentParamString = "&content=" + rawContentParam.mkString(",")
 
   logger.info(s"contentParamString is $contentParamString")
-  
+
   val tagsParam: Option[List[String]] = rawTagsParam match {
     // if tags= is supplied in the url we want to ignore it
     case Full("") => None
@@ -263,11 +264,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ""
     }
 
-    //Note: `parse` method: We much enclose the div, otherwise only the first element is returned. 
+    //Note: `parse` method: We much enclose the div, otherwise only the first element is returned.
     Html5.parse(newHtmlString) match {
       case Full(parsedHtml) =>
         parsedHtml
-      case _ => 
+      case _ =>
         logger.error("Cannot parse HTML:")
         logger.error(html)
         NodeSeq.Empty
@@ -351,25 +352,25 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val obpVersionsSupported = List("OBPv3.1.0", "OBPv4.0.0")
 
     val otherVersionsSupported = List("BGv1.3", "UKv3.1")
-    
+
     val otherVersionsSupportedInDropdownMenu = List(
-      "OBPv1.2.1", 
-      "OBPv1.3.0", 
-      "OBPv1.4.0", 
-      "OBPv2.0.0", 
-      "OBPv2.1.0", 
-      "OBPv2.2.0", 
-      "OBPv3.0.0", 
-      "UKv2.0", 
-      "STETv1.4", 
-      "PAPIv2.1.1.1", 
+      "OBPv1.2.1",
+      "OBPv1.3.0",
+      "OBPv1.4.0",
+      "OBPv2.0.0",
+      "OBPv2.1.0",
+      "OBPv2.2.0",
+      "OBPv3.0.0",
+      "UKv2.0",
+      "STETv1.4",
+      "PAPIv2.1.1.1",
       "AUv1.0.0",
       "b1")
 
     // Set the version to use.
     val apiVersion: String = {
-      if (obpVersionsSupported.contains(apiVersionRequested) 
-        || otherVersionsSupported.contains(apiVersionRequested) 
+      if (obpVersionsSupported.contains(apiVersionRequested)
+        || otherVersionsSupported.contains(apiVersionRequested)
         || otherVersionsSupportedInDropdownMenu.contains(apiVersionRequested)) {        // Prefix with v (for OBP versions because they come just with number from API Explorer)
         // Note: We want to get rid of this "v" prefix ASAP.s
         s"$apiVersionRequested"
@@ -403,7 +404,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   val chineseVersionPath = "?language=zh"
   val allPartialFunctions = "/partial-functions.html"
-  
+
   //Note > this method is only for partial-functions.html .
   def showPartialFunctions =  {
     // Get a list of resource docs from the API server
@@ -416,7 +417,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // The list generated here might be used by an administrator as a white or black list of API calls for the API itself.
     val commaSeparatedListOfResources = allResources.map(_.implemented_by.function).mkString("[", ", ", "]")
 
-    "#all-partial-functions" #> commaSeparatedListOfResources 
+    "#all-partial-functions" #> commaSeparatedListOfResources
   }
 
   def getResponse (url : String, resourceVerb: String, json : JValue, customRequestHeader: String = "") : (String, String) = {
@@ -433,7 +434,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
             Header(key, value)
         }.toList
     }
-    
+
     var headersOfCurrentCall: List[String] = Nil
 
     val responseBodyBox = {
@@ -496,9 +497,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     Run (jsCode)
   }
 
-  
+
   val entitlementsForCurrentUser = getEntitlementsForCurrentUser
   logger.info(s"there are ${entitlementsForCurrentUser.length} entitlementsForCurrentUser(s)")
+
 
   val canReadResourceRole: Option[Entitlement] = entitlementsForCurrentUser.find(_.roleName=="CanReadResourceDoc")
   
@@ -609,6 +611,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
        //in OBP-API, before it returned v3_1_0, but now, only return v3.1.0
       //But this filed will be used in JavaScript, so need clean the field.
       id = r.operation_id.replace(".","_").replaceAll(" ","_"),
+      operationId = r.operation_id,
       verb = r.request_verb,
       url = modifiedRequestUrl(
         r.specified_url, // We used to use the request_url - but we want to use the specified url i.e. the later version.
@@ -888,7 +891,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         .replaceAll("BGv1.3.3", "v1.3.3")
         .replaceAll("BGv1", "v1")
         .replaceAll("BGv1.3", "v1.3")
-        .replaceAll("OBPv", "")
+        .replaceAll("(?<![Vv]validations/)OBPv", "") //delete OBPv, but if the OBPv is part of operationId, not to do delete, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
       )
 
       //val urlWithVersion = s"/$apiVersion$requestUrl"
@@ -898,7 +901,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         .replaceAll("BGv1.3.3", "v1.3.3")
         .replaceAll("BGv1.3", "v1.3")
         .replaceAll("BGv1", "v1")
-        .replaceAll("OBPv", ""))
+        .replaceAll("(?<![Vv]validations/)OBPv", "")) //delete OBPv, but if the OBPv is part of operationId, not to do delete, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
       //////////////
 
       val (body, headers) = getResponse(requestUrl, requestVerb, jsonObject, customRequestHeader = requestCustomHeader)
@@ -1374,7 +1377,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".resource" #> (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty)  resources else (resources.filter(_.tags.head==currentTag))).map { i =>
           // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
           ".end-point-anchor [href]" #> s"#${i.id}" &
-//          ".content-box__headline *" #> <div> {i.summary} <button class="like-button"></button></div> &
           ".content-box__headline *" #> i.summary &
           ".content-box__headline [id]" #> i.id & // id for the anchor to find
           // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
@@ -1403,10 +1405,31 @@ WIP to add comments on resource docs. This code copied from Sofit.
           // Typical Success Response
           "@typical_success_response_box [id]" #> s"typical_success_response_box_${i.id}" &
           //"@typical_success_response [id]" #> s"typical_success_response_${i.id}" &
-          "@typical_success_response *" #> Helper.renderJson(i.successResponseBody) &
+          "@typical_success_response *" #> Helper.renderJson(i.successResponseBody) & {
+            // Possible Validations
+            if(isLoggedIn || isAllowAnonymousReadJsonSchemaValidation || isAllowAnonymousReadAuthenticationTypeValidation) {
+              val cssSelSchemaValidationRole = if (isLoggedIn || isAllowAnonymousReadJsonSchemaValidation) {
+                ".required_json_validation" #>
+                  (if (getJsonSchemaValidation(i.operationId).isDefined) "Yes" else "No")
+              } else {
+                ".required_json_validation" #> "Unknown, This information can be viewed after log in"
+              }
+
+              val cssSelAuthTypeValidationRole = if (isLoggedIn || isAllowAnonymousReadAuthenticationTypeValidation) {
+                ".allowed_authentication_types" #>
+                  getAuthenticationTypeValidation(i.operationId).map(_.mkString("[", ", ", "]")).openOr("Not set")
+              } else {
+                ".allowed_authentication_types" #> "Unknown, This information can be viewed after log in"
+              }
+
+              cssSelSchemaValidationRole & cssSelAuthTypeValidationRole
+            } else {
+              "@possible_validations_box" #> ""
+            }
+          } &
           // Possible Errors
           "@possible_error_responses_box [id]" #> s"possible_error_responses_box_${i.id}" &
-          // This class gets a list of several possible error reponse items
+          // This class gets a list of several possible error response items
           ".possible_error_item" #> i.errorResponseBodies.map { i =>
               ".possible_error_item *" #> i
           } &
@@ -1463,7 +1486,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
               else {"style" -> "color:#767676"}
             ) &
             ".favourites_error_message [id]" #> s"favourites_error_message_${i.id}" &
-          ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}"
+          ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}, operation_id: ${i.operationId}"
         }
       }   
     }

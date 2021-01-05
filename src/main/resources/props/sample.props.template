@@ -102,3 +102,24 @@ oauth_1.hostname=FILL_ME_IN
 # but for all the portal home page link, we need to use this props. If do not set this, it will use api_hostname value instead.
 # api_portal_hostname=http://127.0.0.1:8080
 # --------------------------------------------
+
+### api call response cache start ##################
+#default value is 31536000, 365 days
+resource_docs_json.cache.ttl.seconds=31536000
+#default value is 2592000, 30 days
+glossary_items_json.cache.ttl.seconds=2592000
+#default value is 2592000, 30 days
+message_docs_json.cache.ttl.seconds=2592000
+### api call response cache end ##################
+
+### show validation info related, start ###
+## whether allow anonymous user view Authentication Type Validation, default is true
+allow_anonymous_access_to_read_authentication_type_validation=true
+## whether allow anonymous user view Json Schema Validation, default is true
+allow_anonymous_access_to_read_json_schema_validation=true
+## default value is 3600 seconds
+authentication_type_validation.cache.ttl.seconds=3600
+## default value is one hour: 3800 seconds
+json_schema_validation.cache.ttl.seconds=3800
+### show validation info related, stop ###
+
