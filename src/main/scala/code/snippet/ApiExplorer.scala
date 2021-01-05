@@ -926,11 +926,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
       if(isLoggedIn){ // If the user is not logged in, we do not need call any apis calls. (performance enhancement)
         //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delelet the record there.
-        val apiCollectionsForCurrentUser = ObpAPI.getApiCollectionEndpoints("Favourites")
-        val errorMessage = if(apiCollectionsForCurrentUser.isInstanceOf[Failure]) apiCollectionsForCurrentUser.asInstanceOf[Failure].messageChain else ""
-    
+        val apiFavouriteCollection = ObpAPI.getApiCollection("Favourites")
+        val errorMessage = if(apiFavouriteCollection.isInstanceOf[Failure]) apiFavouriteCollection.asInstanceOf[Failure].messageChain else ""
+
         if(errorMessage.equals("")){ //If there is no error, we changed the button
-          if(favouritesApiCollectionId.nonEmpty && !apiCollectionsForCurrentUser.head.api_collection_endpoints.map(_.api_collection_id).contains(favouritesApiCollectionId)){
+          if(favouritesApiCollectionId.nonEmpty && !apiFavouriteCollection.map(_.api_collection_id).contains(favouritesApiCollectionId)){
             SetHtml(s"favourites_error_message_${favouritesOperationId}", Text("You only have read access for the Favourites. You can only edit your own Favourites."))&
               Run (jsEnabledBtn)
           }else{

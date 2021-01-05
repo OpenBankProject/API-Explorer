@@ -180,19 +180,23 @@ object ObpAPI extends Loggable {
     result
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
-  def getApiCollectionEndpoints(apiCollectionName: String) : Box[ApiCollectionEndpointsJson400] = if(isLoggedIn){
-    val response = ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
-    if (response.toString.contains("OBP-30079: ApiCollection not found.")) {
+  def getApiCollection(apiCollectionName: String) : Box[ApiCollectionJson400] = if(isLoggedIn){
+    val response = ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName").flatMap(_.extractOpt[ApiCollectionJson400])
+    if (response.toString.contains("OBP-30079")) {
       createMyApiCollection("Favourites",true)
-      ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+      ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName").flatMap(_.extractOpt[ApiCollectionJson400])
     } else{
       response
     }
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
+  def getApiCollectionEndpoints(apiCollectionName: String) : Box[ApiCollectionEndpointsJson400] = if(isLoggedIn){
+    ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+
   def getApiCollectionEndpointsById(apiCollectionId: String) : Box[ApiCollectionEndpointsJson400] = {
     val response = ObpGet(s"$obpPrefix/v4.0.0/api-collections/$apiCollectionId/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
-    if (isLoggedIn && response.toString.contains("OBP-30079:ApiCollection not found.  Please specify a valid value for API_COLLECTION_ID.")) {
+    if (isLoggedIn && response.toString.contains("OBP-30079")) {
       createMyApiCollection("Favourites",true)
       ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/Favourites/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
     } else{
