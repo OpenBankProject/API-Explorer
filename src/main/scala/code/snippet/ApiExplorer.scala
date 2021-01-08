@@ -4,10 +4,11 @@ import code.lib.ObpAPI.{isAllowAnonymousReadAuthenticationTypeValidation, getAut
 
 import java.net.URL
 import code.lib.ObpJson._
-import code.lib._
+import code.lib.{ObpAPI, _}
 import code.util.Helper
 import code.util.Helper.MdcLoggable
-import net.liftweb.util.{CssSel, Html5}
+import net.liftweb.http.js.JsCmds
+import net.liftweb.util.{CssSel, Html5, Props}
 
 import scala.collection.immutable.{List, Nil}
 
@@ -30,32 +31,6 @@ import net.liftweb.util.Helpers._
 
 
 // see https://simply.liftweb.net/index-7.10.html on css selectors
-
-
-case class Bank(
-                 id : String,
-                 shortName : String,
-                 fullName : String,
-                 logo : String,
-                 website : String,
-                 isFeatured : Boolean
-               )
-
-                // showToUser : Boolean)
-
-
-case class CreateEntitlementRequestJSON(bank_id: String, role_name: String)
-
-
-case class UserEntitlementRequests(entitlementRequestId: String,
-                                   roleName: String,
-                                   bankId : String,
-                                   username : String )
-
-
-
-
-
 
 /*
 Present a list of OBP resource URLs
@@ -131,6 +106,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 */
 
 
+  // In case we use Extraction.decompose
+  implicit val formats = net.liftweb.json.DefaultFormats
   // Get entitlements for the logged in user
 
   def getEntitlementsForCurrentUser: List[Entitlement] = getEntitlementsV300 match {
@@ -153,11 +130,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
     logger.debug(s"getUserEntitlementRequests will return: $result" )
     result
   }
-
-
-
-
-
   val listAllBanks = S.param("list-all-banks").getOrElse("false").toBoolean
   logger.info(s"all_banks in url param is $listAllBanks")
 
@@ -207,6 +179,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   logger.info(s"nativeParam is $nativeParam")
 
+  def apiCollectionIdParam = S.param("api-collection-id")
+
+  logger.info(s"apiCollectionIdParam is $apiCollectionIdParam")
+
   val rawTagsParam = S.param("tags")
 
   logger.info(s"rawTagsParam is $rawTagsParam")
@@ -215,6 +191,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   logger.info(s"rawLanguageParam is $rawLanguageParam")
 
+  def apiCollectionIdParamString = "&api-collection-id=" + apiCollectionIdParam.mkString(",")
+
+  logger.info(s"apiCollectionIdParamString is $apiCollectionIdParamString")
+  
   val tagsParamString = "&tags=" + rawTagsParam.mkString(",")
 
   logger.info(s"tagsParamString is $rawTagsParam")
@@ -248,6 +228,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
+  def apiCollectionId : String = apiCollectionIdParam match {
+    case Full(x) => x
+    case _ => ""
+  }
+  
   val tagsHeadline : String = tagsParam match {
     case Some(x) => "filtered by tag: " + x.mkString(", ")
     case _ => ""
@@ -437,8 +422,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   def getResponse (url : String, resourceVerb: String, json : JValue, customRequestHeader: String = "") : (String, String) = {
 
-    implicit val formats = net.liftweb.json.DefaultFormats
-
     // version is now included in the url
     val urlWithVersion = s"$url"
     val requestHeader = customRequestHeader.trim.isEmpty match {
@@ -563,8 +546,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
   var requestBody = "{}"
   var responseBody = "{}"
   var errorResponseBodies = List("")
-  
-  
+  var isFavourites = "false"
+  var favouritesOperationId = ""
+  var favouritesApiCollectionId = ""
+
+
   def processEntitlementRequest(name: String): JsCmd = {
     logger.debug(s"processEntitlementRequest entitlementRequestStatus is $entitlementRequestStatus rolesBankId is $rolesBankId")
 
@@ -719,16 +705,27 @@ WIP to add comments on resource docs. This code copied from Sofit.
       logger.info("tags filter reduced the list of resource docs to zero")
     }
 
-
+    val apiGetRootResponse = ObpAPI.getRoot
+    
     // Sort by the first and second tags (if any) then the summary.
     // In order to help sorting, the first tag in a call should be most general, then more specific etc.
-    val resources = resourcesToUse.sortBy(r => {
+    val resourcesSort = resourcesToUse.sortBy(r => {
 
       val firstTag = r.tags.headOption.getOrElse("")
       val secondTag = r.tags.take(1).toString()
       (firstTag, secondTag, r.summary.toString)
     })
 
+
+    //this can be empty list, if there is no operationIds there.
+    def getOperationIdsByApiCollectionId = ObpAPI.getApiCollectionEndpointsById(apiCollectionId).map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
+    def getMyOperationIds = ObpAPI.getApiCollectionEndpoints("Favourites").map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
+    
+    val resources = 
+      if (apiCollectionIdParam.isDefined && getOperationIdsByApiCollectionId.nonEmpty) {
+        getOperationIdsByApiCollectionId.map(operationId => resourcesSort.find(_.id == operationId).toList).flatten
+      } else resourcesSort
+    
     // Group resources by the first tag
     val unsortedGroupedResources: Map[String, List[ResourceDocPlus]] = resources.groupBy(_.tags.headOr("ToTag"))
 
@@ -800,9 +797,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
-
-
-
+    //TODO, need error handling:
+    val myApicollections: List[ApiCollectionJson400] = ObpAPI.getMyApiCollections.map(_.api_collections).getOrElse(List.empty[ApiCollectionJson400])
 
 
     def process(name: String): JsCmd = {
@@ -925,12 +921,41 @@ WIP to add comments on resource docs. This code copied from Sofit.
       SetHtml(fullHeadersTarget, Text(headers))
     }
 
+    def processFavourites(name: String): JsCmd = {
+      // enable button                                                                   
+      val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
+      if(isLoggedIn){ // If the user is not logged in, we do not need call any apis calls. (performance enhancement)
+        //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delelet the record there.
+        val apiFavouriteCollection = ObpAPI.getApiCollection("Favourites")
+        val errorMessage = if(apiFavouriteCollection.isInstanceOf[Failure]) apiFavouriteCollection.asInstanceOf[Failure].messageChain else ""
+
+        if(errorMessage.equals("")){ //If there is no error, we changed the button
+          if(favouritesApiCollectionId.nonEmpty && !apiFavouriteCollection.map(_.api_collection_id).contains(favouritesApiCollectionId)){
+            SetHtml(s"favourites_error_message_${favouritesOperationId}", Text("You only have read access for the Favourites. You can only edit your own Favourites."))&
+              Run (jsEnabledBtn)
+          }else{
+            //prepare the js for the button color changing.
+            val favouritesBtnColour = if (getMyOperationIds.contains(favouritesOperationId)) {
+              ObpAPI.deleteMyApiCollectionEndpoint("Favourites",favouritesOperationId)
+              s"jQuery('#favourites_button_${favouritesOperationId}').css('color','#767676')"
+            } else {
+              ObpAPI.createMyApiCollectionEndpoint("Favourites",favouritesOperationId)
+              s"jQuery('#favourites_button_${favouritesOperationId}').css('color','#53C4EF')"
+            }
+            Run (jsEnabledBtn) &
+            Run (favouritesBtnColour)}
+        } else { //if there is error, we show the OBP-API error there.
+          SetHtml(s"favourites_error_message_${favouritesOperationId}", Text(errorMessage)) &
+            Run(jsEnabledBtn)
+        }
+      } else {
+        SetHtml(s"favourites_error_message_${favouritesOperationId}", Text("OBP-20001: User not logged in. Authentication is required!"))&
+        Run (jsEnabledBtn)
+      }
+    }
 
 
-
-
-
-    val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${tagsParamString}${languagesParamString}${contentParamString}"
+    val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${tagsParamString}${languagesParamString}${contentParamString}${apiCollectionIdParamString}"
 
 
     val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i.replace("OBPv", "v"), s"?version=${i}&list-all-banks=${listAllBanks}"))
@@ -1185,8 +1210,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
 
-    // In case we use Extraction.decompose
-    implicit val formats = net.liftweb.json.DefaultFormats
     val cssResult = "#login_status_message" #> loggedInStatusMessage &
     "#bank_selector" #> doBankSelect _ &
     "#account_selector" #> doAccountSelect _ &
@@ -1229,6 +1252,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "@version_path [href]" #> s"$baseVersionUrl" &
     "@resource_docs_path [href]" #> s"$resourceDocsPath" &
     "@swagger_path [href]" #> s"$swaggerPath" &
+    "@git_commit [href]" #> s"https://github.com/OpenBankProject/API-Explorer/commit/$currentGitCommit" &
     "@chinese_version_path [href]" #> s"$chineseVersionPath" &
     "@all_partial_functions [href]" #> s"$allPartialFunctions" &
     "#api_home_link [href]" #> s"$apiPortalHostname" &
@@ -1247,6 +1271,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
               "@featured_api_list_item_link [id]" #> s"index_of_${i.id}"
           }
       } &
+      // List the resources grouped by the first tag
+      "@favouriates_list_item" #> myApicollections.map { i =>
+        "@favouriates_list_item_link [href]" #> s"?api-collection-id=${i.api_collection_id}" & 
+         "@favouriates_list_item_link *" #> i.api_collection_name &
+         "@favouriates_list_item_link [id]" #> s"index_of_${i.api_collection_name}"
+      } &
     // List the resources grouped by the first tag
       "@api_group_item" #> groupedResources.map { i =>
           "@api_group_name *" #> s"${i._1.replace("-"," ")}" &
@@ -1262,7 +1292,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
                   else if (resources.find(_.id == currentOperationId).map(_.tags.head).getOrElse("API")==resources.find(_.id == i.id).map(_.tags.head).getOrElse("API")) //If the Tag is the current Tag.We do not need parameters.
                     s"#${i.id}" 
                   else
-                    s"?version=$apiVersionRequested&operation_id=${i.id}&currentTag=${i.tags.head}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
+                    s"?version=$apiVersionRequested&operation_id=${i.id}&currentTag=${i.tags.head}${apiCollectionIdParamString}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
                   "@api_list_item_link *" #> i.summary &
                   "@api_list_item_link [id]" #> s"index_of_${i.id}"
                   // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
@@ -1297,7 +1327,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
       ".resource [style]" #> s"display: none" &
         ".resource-error [style]" #> s"display: block" &
         ".content-box__headline *" #> {
-          if(!isLoggedIn)//If no resources, first check the login, 
+          if(apiGetRootResponse.isInstanceOf[Failure]){
+            logger.error(s"API server is down, API_Explorer get the response: ${apiGetRootResponse.asInstanceOf[Failure].messageChain}")
+            "Please check API server, it is down now."
+          }else if(!isLoggedIn)//If no resources, first check the login, 
             "OBP-20001: User not logged in. Authentication is required!"
           else if(isLoggedIn && canReadResourceRole.isEmpty) //Then check the missing role
             "OBP-20006: User is missing one or more roles: CanReadResourceDoc"     
@@ -1445,6 +1478,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
            "@success_response_body [id]" #> s"success_response_body_${i.id}" &
           // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
             "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
+            ".favourites_operatino_id" #> text(i.id.toString, s => favouritesOperationId = s,  "type" -> "hidden","class" -> "favourites_operatino_id") &
+            ".favourites_api_collection_id" #> text(apiCollectionId, s => favouritesApiCollectionId = s,  "type" -> "hidden","class" -> "favourites_api_collection_id") &
+            ".favourites_button" #> Helper.ajaxSubmit("★", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.id.toString}",  
+              if(apiCollectionIdParam.isDefined && getOperationIdsByApiCollectionId.nonEmpty) {"style" -> "color:#53C4EF"} 
+              else if(getMyOperationIds.contains(i.id.toString)) {"style" -> "color:#53C4EF"} 
+              else {"style" -> "color:#767676"}
+            ) &
+            ".favourites_error_message [id]" #> s"favourites_error_message_${i.id}" &
           ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}, operation_id: ${i.operationId}"
         }
       }   
@@ -1461,8 +1502,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val glossaryItems = getGlossaryItemsJson.map(_.glossary_items).getOrElse(List())
 
     if(glossaryItems.length==0) {
-      "@git_commit *" #> s"$currentGitCommit" & 
-      "@git_commit [href]" #> s"https://github.com/OpenBankProject/API-Explorer/commit/$currentGitCommit" &
       ".resource [style]" #> s"display: none" &
         ".resource-error [style]" #> s"display: block" &
         ".content-box__headline *" #> {
@@ -1505,8 +1544,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
         }
       }
     }else{
-      "@git_commit *" #> s"$currentGitCommit" &
-      "@git_commit [href]" #> s"https://github.com/OpenBankProject/API-Explorer/commit/$currentGitCommit" &
       ".glossary" #> glossaryItems.map  { i =>
       // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
       ".end-point-anchor [href]" #> s"#${urlEncode(i.title.replaceAll(" ", "-"))}" &

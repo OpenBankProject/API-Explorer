@@ -59,6 +59,8 @@ object ObpAPI extends Loggable {
     ObpGet(s"$obpPrefix/v2.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
+  def getRoot : Box[JValue]= ObpGet(s"$obpPrefix/v4.0.0/root")
+  
   // Wrapper for looking at OAuth headers.
   def isLoggedIn : Boolean = {
     OAuthClient.loggedIn
@@ -178,7 +180,49 @@ object ObpAPI extends Loggable {
     result
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
+  def getApiCollection(apiCollectionName: String) : Box[ApiCollectionJson400] = if(isLoggedIn){
+    val response = ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName").flatMap(_.extractOpt[ApiCollectionJson400])
+    if (response.toString.contains("OBP-30079")) {
+      createMyApiCollection("Favourites",true)
+      ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName").flatMap(_.extractOpt[ApiCollectionJson400])
+    } else{
+      response
+    }
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
+  def getApiCollectionEndpoints(apiCollectionName: String) : Box[ApiCollectionEndpointsJson400] = if(isLoggedIn){
+    ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+
+  def getApiCollectionEndpointsById(apiCollectionId: String) : Box[ApiCollectionEndpointsJson400] = {
+    val response = ObpGet(s"$obpPrefix/v4.0.0/api-collections/$apiCollectionId/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+    if (isLoggedIn && response.toString.contains("OBP-30079")) {
+      createMyApiCollection("Favourites",true)
+      ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/Favourites/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+    } else{
+      response
+    }
+  }
+
+
+  def getMyApiCollections = if(isLoggedIn){
+    ObpGet(s"$obpPrefix/v4.0.0/my/api-collections").flatMap(_.extractOpt[ApiCollectionsJson400])
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  
+  
+  def createMyApiCollection (apiCollectionName: String, is_sharable:Boolean) = if(isLoggedIn){
+    val postSelectionEndpointJson =  PostApiCollectionJson400(apiCollectionName, is_sharable)
+    ObpPost(s"$obpPrefix/v4.0.0/my/api-collections", Extraction.decompose(postSelectionEndpointJson))
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  
+  def createMyApiCollectionEndpoint (apiCollectionName: String, operationId: String) = if(isLoggedIn){
+    val postSelectionEndpointJson =  PostSelectionEndpointJson400(operationId)
+    ObpPost(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints", Extraction.decompose(postSelectionEndpointJson))
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+
+  def deleteMyApiCollectionEndpoint (apiCollectionName: String, operationId: String)  = if(isLoggedIn){
+    ObpDelete(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints/$operationId")
+  } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
   /**
    * The request vars ensure that for one page load, the same API call isn't made multiple times
@@ -218,13 +262,13 @@ object ObpAPI extends Loggable {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
-        ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=static").map(extractResourceDocsJson).map(_.resource_docs).head
+        ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=static").map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
       }
     }
   }
   
   def getDynamicResourceDocs(apiVersion : String, requestParams: String) =  
-    ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=dynamic").map(extractResourceDocsJson).map(_.resource_docs).head
+    ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=dynamic").map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
 
   /**
    * extract ResourceDocsJson and output details of error if extract json to case class fail
@@ -286,16 +330,18 @@ object OBPRequest extends MdcLoggable {
       val credentials = OAuthClient.getAuthorizedCredential
       val apiUrl = OAuthClient.currentApiBaseUrl
 
-      val convertedApiPath = apiPath
-        .replaceAll("UKv2.0", "v2.0")
-        .replaceAll("UKv3.1", "v3.1")
-        .replaceAll("BGv1.3", "v1.3")
-        .replaceAll("BGv1", "v1")
-        .replaceAll("(?<![Vv]alidations/)OBPv", "v") //replace OBPv to v, but if the OBPv is part of operationId, don't replace, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
+      //TODO this need to be checked again.
+//      val convertedApiPath = apiPath
+//        .replaceAll("UKv2.0", "v2.0")
+//        .replaceAll("UKv3.1", "v3.1")
+//        .replaceAll("BGv1.3", "v1.3")
+//        .replaceAll("BGv1", "v1")
+//        .replaceAll("OBPv", "v")
+//        .replaceAll("(?<![Vv]alidations/)OBPv", "v") 
 
-      val url = apiUrl + convertedApiPath
+      val url = apiUrl + apiPath
 
-      logger.info(s"OBP Server Request URL: ${apiUrl}${convertedApiPath}")
+//      logger.info(s"OBP Server Request URL: ${apiUrl}${convertedApiPath}")
 
       //bleh
       val request = SSLHelper.getConnection(url) //blagh!
@@ -858,6 +904,16 @@ object ObpJson {
 
 
   case class EntitlementsJson (list : List[EntitlementJson])
+  
+  case class ApiCollectionEndpointJson400 (
+    api_collection_endpoint_id: String,
+    api_collection_id: String,
+    operation_id: String
+  )
+  
+  case class ApiCollectionEndpointsJson400(
+    api_collection_endpoints: List[ApiCollectionEndpointJson400]
+  )
 
   case class UserJsonV200(
                            user_id: String,
@@ -1106,3 +1162,45 @@ case class TransactionImageJSON(
                                  date : Date,
                                  user : UserJSONV121
                                )
+
+case class Bank(
+  id : String,
+  shortName : String,
+  fullName : String,
+  logo : String,
+  website : String,
+  isFeatured : Boolean
+)
+
+case class CreateEntitlementRequestJSON(bank_id: String, role_name: String)
+
+case class PostApiCollectionJson400(
+  api_collection_name: String,
+  is_sharable: Boolean
+)
+
+case class PostSelectionEndpointJson400(
+  operation_id: String
+)
+
+case class SelectionEndpointJson400 (
+  selection_endpoint_id: String,
+  selection_id: String,
+  operation_id: String
+)
+
+case class UserEntitlementRequests(entitlementRequestId: String,
+  roleName: String,
+  bankId : String,
+  username : String 
+)
+case class ApiCollectionJson400 (
+  api_collection_id: String,
+  user_id: String,
+  api_collection_name: String,
+  is_sharable: Boolean
+)
+
+case class ApiCollectionsJson400 (
+  api_collections: List[ApiCollectionJson400]
+)

@@ -197,6 +197,9 @@ hr {
     margin: 0 0 32px 0;
     padding: 220px 0 0 0;
   }
+  #right_side .resource:nth-child(4) .content-box .end-point-anchor form{
+    padding: 220px 0 0 0;
+  }
   #small-nav-collapse{
     display: block;
     margin-right: 70px;
@@ -372,6 +375,9 @@ hr {
     margin: 0 0 32px 0;
     padding: 220px 0 0 0;
   }
+  #right_side .resource:nth-child(4) .content-box .end-point-anchor form{
+    padding: 220px 0 0 0;
+  }
   #small-nav-collapse{
     display: block;
     margin-right: 40px;
@@ -419,6 +425,9 @@ hr {
   #right_side .resource:nth-child(4) .content-box__headline {
     padding: 280px 0 0 0;
   }
+  #right_side .resource:nth-child(4) .content-box .end-point-anchor form{
+    padding: 280px 0 0 0;
+  }
   .content-box__headline {
     margin: -280px 0 32px 0;
     padding: 280px 0 0 0;
@@ -450,6 +459,9 @@ hr {
 }
 @media only screen and (max-width: 379px) {
   #right_side .resource:nth-child(4) .content-box__headline {
+    padding: 290px 0 0 0;
+  }
+  #right_side .resource:nth-child(4) .content-box .end-point-anchor form{
     padding: 290px 0 0 0;
   }
   .content-box__headline {
