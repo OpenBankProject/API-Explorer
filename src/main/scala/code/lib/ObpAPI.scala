@@ -254,8 +254,14 @@ object ObpAPI extends Loggable {
           case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
         }
         .mkString("?", "&", "")
-
-    val staticResourcesDocs= getStaticResourceDocs(apiVersion,requestParams) 
+    
+    //If api side set resource_docs_requires_role = true, then only the users who have CanReadResourceDoc role can see the resourceDoc
+    //So we set the userId and  CanReadResourceDoc role as the staticResourcesDocs cache key
+    val loggedInUserId = currentUser.map(_.user_id).openOr("")
+    val userHasCanReadResourceDocRole = getEntitlementsV300.map(_.list.map(_.role_name)).map(_.contains("CanReadResourceDoc")).openOr(false)
+    val cacheKey = loggedInUserId+userHasCanReadResourceDocRole
+    
+    val staticResourcesDocs = getStaticResourceDocs(apiVersion, requestParams, cacheKey) 
     
     if(requestParams.contains("content=static")) {
       staticResourcesDocs
@@ -270,7 +276,7 @@ object ObpAPI extends Loggable {
   private val DAYS_365 = 31536000
   //  static resourceDocs can be cached for a long time, only be changed when new deployment.
   val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("resource_docs_json.cache.ttl.seconds", DAYS_365) seconds
-  def getStaticResourceDocs(apiVersion : String, requestParams: String): List[ResourceDocJson] =  {
+  def getStaticResourceDocs(apiVersion : String, requestParams: String, cacheKey: String): List[ResourceDocJson] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
