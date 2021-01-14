@@ -61,4 +61,17 @@ $(document).ready(function() {
         $("#"+smallSceenEndpointId).parent().parent().css('height', '').attr("class","collapse in").attr("aria-expanded","true")
         $("#"+smallSceenEndpointId).css("font-family","Roboto-Medium")
     });
+    
+    //get the parameters from URL, need to remove the version and tags.
+    var urlParameter = window.location.search.slice(1).split('&').filter(function(item) {
+        return !item.includes("version") && (!item.includes("tags")) && (!item.includes("api-collection-id"))
+    }).join("&");
+    
+    //and update the value for .version class
+    var versions =$(".breadcrumbs .breadcrumbs__row .breadcrumbs__list .version")
+    if(urlParameter !== ""){
+        for (i = 0; i < versions.length; i++) {
+            $(".breadcrumbs .breadcrumbs__row .breadcrumbs__list .version")[i].href=versions[i].href+"&"+urlParameter
+        }
+    }
 });
