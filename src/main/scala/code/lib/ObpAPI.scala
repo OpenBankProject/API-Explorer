@@ -245,7 +245,14 @@ object ObpAPI extends Loggable {
   // Returns Json containing Resource Docs
   def getResourceDocsJson(apiVersion : String) : List[ResourceDocJson] = {
 
-    //Note: ?content=true&content=false
+    val apiCollectionIdParam = List("api-collection-id")
+      .map(paramName => (paramName, S.param(paramName)))
+      .collect{
+        case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
+      }
+      .mkString("?", "&", "")
+    
+    //Note: ?content=static&content=dynamic
     // if there are two content parameters there, only the first one is valid for the api call. 
     // so requestParams have the high priority 
     val requestParams = List("tags", "language", "functions", "content")
@@ -261,9 +268,12 @@ object ObpAPI extends Loggable {
     val userHasCanReadResourceDocRole = getEntitlementsV300.map(_.list.map(_.role_name)).map(_.contains("CanReadResourceDoc")).openOr(false)
     val cacheKey = loggedInUserId+userHasCanReadResourceDocRole
     
-    val staticResourcesDocs = getStaticResourceDocs(apiVersion, requestParams, cacheKey) 
-    
-    if(requestParams.contains("content=static")) {
+    lazy val staticResourcesDocs = getStaticResourceDocs(apiVersion, requestParams, cacheKey)
+
+    //If the api-collection-id in the URL, it will ignore all other parameters, so here we first check it:
+    if(apiCollectionIdParam.contains("api-collection-id=")) {
+      getResourceDocsByApiCollectionId(apiVersion, apiCollectionIdParam)
+    }else if(requestParams.contains("content=static")) {
       staticResourcesDocs
     } else if (requestParams.contains("content=dynamic")){
       getDynamicResourceDocs(apiVersion,requestParams)
@@ -287,6 +297,9 @@ object ObpAPI extends Loggable {
   
   def getDynamicResourceDocs(apiVersion : String, requestParams: String) =  
     ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=dynamic").map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
+
+  def getResourceDocsByApiCollectionId(apiVersion : String, requestParams: String) =
+    ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams").map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
 
   /**
    * extract ResourceDocsJson and output details of error if extract json to case class fail
