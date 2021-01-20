@@ -709,7 +709,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     
     // Sort by the first and second tags (if any) then the summary.
     // In order to help sorting, the first tag in a call should be most general, then more specific etc.
-    val resourcesSort = resourcesToUse.sortBy(r => {
+    val resources = resourcesToUse.sortBy(r => {
 
       val firstTag = r.tags.headOption.getOrElse("")
       val secondTag = r.tags.take(1).toString()
@@ -720,11 +720,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
     //this can be empty list, if there is no operationIds there.
     def getOperationIdsByApiCollectionId = ObpAPI.getApiCollectionEndpointsById(apiCollectionId).map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
     def getMyOperationIds = ObpAPI.getApiCollectionEndpoints("Favourites").map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
-    
-    val resources = 
-      if (apiCollectionIdParam.isDefined && getOperationIdsByApiCollectionId.nonEmpty) {
-        getOperationIdsByApiCollectionId.map(operationId => resourcesSort.find(_.id == operationId).toList).flatten
-      } else resourcesSort
     
     // Group resources by the first tag
     val unsortedGroupedResources: Map[String, List[ResourceDocPlus]] = resources.groupBy(_.tags.headOr("ToTag"))
