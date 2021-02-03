@@ -239,7 +239,7 @@ object ObpAPI extends Loggable {
   /**
    * The request vars ensure that for one page load, the same API call isn't made multiple times
    */
-  object allResoucesVar extends SessionVar[Box[ResourceDocsJson]] (Empty)
+  object allResourcesVar extends SessionVar[Box[ResourceDocsJson]] (Empty)
   
   
   // Returns Json containing Resource Docs
