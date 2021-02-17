@@ -1284,7 +1284,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
                 "@api_list_item_link [href]" #>
                   (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty) //If the tags are in the URL, we just need to show the anchor, no need the parameters.
                     s"#${i.id}"
-                  else if (resources.find(_.id == currentOperationId).map(_.tags.head).getOrElse("API")==resources.find(_.id == i.id).map(_.tags.head).getOrElse("API")) //If the Tag is the current Tag.We do not need parameters.
+                  else if (resources.find(_.id == currentOperationId).map(_.tags.headOption.getOrElse("API"))==resources.find(_.id == i.id).map(_.tags.headOption.getOrElse("API"))) //If the Tag is the current Tag.We do not need parameters.
                     s"#${i.id}"
                   else
                     s"?version=$apiVersionRequested&operation_id=${i.id}&currentTag=${i.tags.head}${apiCollectionIdParamString}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
@@ -1368,11 +1368,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
       else {
         //The default tag is the first tag of the resource, if it is empty, we use the API Tag.
         val theResourcesFirstTag = resources.map(_.tags.headOption).flatten.headOption.getOrElse("API")
-        val currentTag = resources.find(_.id == currentOperationId).map(_.tags.head).getOrElse(theResourcesFirstTag)
+        val currentTag = resources.find(_.id == currentOperationId).map(_.tags.headOption.getOrElse("API")).getOrElse(theResourcesFirstTag)
         val authenticationTypeValidations: Box[Map[String, List[String]]] = getAuthenticationTypeValidations()
         val jsonSchemaValidations: Box[Map[String, json.JObject]] = getJsonSchemaValidations()
 
-        ".resource" #> (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty)  resources else (resources.filter(_.tags.head==currentTag))).map { i =>
+        ".resource" #> (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty)  resources else (resources.filter(_.tags.headOption.getOrElse("API")==currentTag))).map { i =>
           // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
           ".end-point-anchor [href]" #> s"#${i.id}" &
           ".content-box__headline *" #> i.summary &
