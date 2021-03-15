@@ -1,16 +1,14 @@
 package code.snippet
 
-import code.lib.ObpAPI.{getAuthenticationTypeValidations, getJsonSchemaValidations}
+import code.lib.ObpAPI.{getAuthenticationTypeValidations, getJsonSchemaValidations, obpPrefix}
 import code.lib.ObpJson._
-import code.lib.{ObpAPI, _}
+import code.lib.{ObpAPI, ObpGet, _}
 import code.util.Helper
 import code.util.Helper.MdcLoggable
 import net.liftweb.json
 import net.liftweb.util.{CssSel, Html5}
-
 import java.net.URL
 import scala.collection.immutable.{List, Nil}
-
 import net.liftweb.http.{S, SHtml}
 import net.liftweb.json.JsonAST.JValue
 import net.liftweb.json.{Extraction, JsonParser}
@@ -705,7 +703,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       logger.info("tags filter reduced the list of resource docs to zero")
     }
 
-    val apiGetRootResponse = ObpAPI.getRoot
+    //following varible is  for error handling, it is lazy varibles, only used them when something is worng in api_explorer side. 
+    lazy val resourceDocBox = ObpAPI.getResourceDocsJValueResponse("v4.0.0","?","static")
     
     // Sort by the first and second tags (if any) then the summary.
     // In order to help sorting, the first tag in a call should be most general, then more specific etc.
@@ -1322,13 +1321,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
       ".resource [style]" #> s"display: none" &
         ".resource-error [style]" #> s"display: block" &
         ".content-box__headline *" #> {
-          if(apiGetRootResponse.isInstanceOf[Failure]){
-            logger.error(s"API server is down, API_Explorer get the response: ${apiGetRootResponse.asInstanceOf[Failure].messageChain}")
-            "Please check API server, it is down now."
-          } else if(!isLoggedIn)//If no resources, first check the login,
+          if(!isLoggedIn)//If no resources, first check the login,
             "OBP-20001: User not logged in. Authentication is required!"
-          else if(isLoggedIn && canReadResourceRole.isEmpty) //Then check the missing role
-            "OBP-20006: User is missing one or more roles: CanReadResourceDoc"
+          else if(resourceDocBox.isInstanceOf[Failure]) //Then check the missing role
+            resourceDocBox.asInstanceOf[Failure].msg
           else // all other cases throw the gernal error.
             "There are no resource docs in the current Sandbox for this request!"
         }&{
