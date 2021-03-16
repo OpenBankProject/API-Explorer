@@ -1204,6 +1204,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
 
+    /**
+     * If it is the Favourates Resource Docs, we need to show all the resourceDocs.
+     * we need to skip the case: &api-collection-id=&
+     */
+    def isCollectionOfResourceDocs_? = {
+      S.param("api-collection-id").isDefined && S.param("api-collection-id").getOrElse("").nonEmpty
+    }
+
     val cssResult = "#login_status_message" #> loggedInStatusMessage &
     "#bank_selector" #> doBankSelect _ &
     "#account_selector" #> doAccountSelect _ &
@@ -1283,7 +1291,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
                 "@api_list_item_link [href]" #>
                   (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty) //If the tags are in the URL, we just need to show the anchor, no need the parameters.
                     s"#${i.id}"
-                  else if (S.param("api-collection-id").isDefined) //If the Tag is the current Tag.We do not need parameters.
+                  else if (isCollectionOfResourceDocs_?) 
                     s"#${i.id}"
                   else if (resources.find(_.id == currentOperationId).map(_.tags.headOption.getOrElse("API"))==resources.find(_.id == i.id).map(_.tags.headOption.getOrElse("API"))) //If the Tag is the current Tag.We do not need parameters.
                     s"#${i.id}"
@@ -1308,7 +1316,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
             "@api_list_item_link_small_screen [href]" #>
               (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty) //If the tags are in the URL, we just need to show the anchor, no need the parameters.
                 s"#${i.id}"
-              else if (S.param("api-collection-id").isDefined) //If the Tag is the current Tag.We do not need parameters.
+              else if (isCollectionOfResourceDocs_?) 
                 s"#${i.id}"
               else if (resources.find(_.id == currentOperationId).map(_.tags.headOption.getOrElse("API"))==resources.find(_.id == i.id).map(_.tags.headOption.getOrElse("API"))) //If the Tag is the current Tag.We do not need parameters.
                 s"#${i.id}"
@@ -1376,7 +1384,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
         ".resource" #> (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty)  resources else {
           //For the Favourites collections, we will show all the resource in the page, ignore the perfermance at the moment.
-          val resourcesShowedInPage = if(S.param("api-collection-id").isDefined) resources else resources.filter(_.tags.headOption.getOrElse("API") == currentTag)
+          val resourcesShowedInPage = if(isCollectionOfResourceDocs_?) resources else resources.filter(_.tags.headOption.getOrElse("API") == currentTag)
           resourcesShowedInPage
         }).map { i =>
           // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
