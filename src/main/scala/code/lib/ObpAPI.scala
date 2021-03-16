@@ -276,9 +276,9 @@ object ObpAPI extends Loggable {
     }else if(requestParams.contains("content=static")) {
       staticResourcesDocs
     } else if (requestParams.contains("content=dynamic")){
-      getDynamicResourceDocs(apiVersion,requestParams)
+      getResourceDocs(apiVersion,requestParams, "dynamic")
     } else{
-      val dynamicResourcesDocs= getDynamicResourceDocs(apiVersion,requestParams)
+      val dynamicResourcesDocs= getResourceDocs(apiVersion,requestParams, "dynamic")
       staticResourcesDocs ++ dynamicResourcesDocs 
     }
   }
@@ -290,13 +290,15 @@ object ObpAPI extends Loggable {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
-        ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=static").map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
+        getResourceDocs(apiVersion,requestParams, "static")
       }
     }
   }
+
+  def getResourceDocs(apiVersion : String, requestParams: String, contentTag: String) =
+    getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String).map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
   
-  def getDynamicResourceDocs(apiVersion : String, requestParams: String) =  
-    ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=dynamic").map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
+  def getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String) = ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=$contentTag")
 
   def getResourceDocsByApiCollectionId(apiVersion : String, requestParams: String) =
     ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams").map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
