@@ -1283,6 +1283,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
                 "@api_list_item_link [href]" #>
                   (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty) //If the tags are in the URL, we just need to show the anchor, no need the parameters.
                     s"#${i.id}"
+                  else if (S.param("api-collection-id").isDefined) //If the Tag is the current Tag.We do not need parameters.
+                    s"#${i.id}"
                   else if (resources.find(_.id == currentOperationId).map(_.tags.headOption.getOrElse("API"))==resources.find(_.id == i.id).map(_.tags.headOption.getOrElse("API"))) //If the Tag is the current Tag.We do not need parameters.
                     s"#${i.id}"
                   else
@@ -1305,6 +1307,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
             // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
             "@api_list_item_link_small_screen [href]" #>
               (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty) //If the tags are in the URL, we just need to show the anchor, no need the parameters.
+                s"#${i.id}"
+              else if (S.param("api-collection-id").isDefined) //If the Tag is the current Tag.We do not need parameters.
+                s"#${i.id}"
+              else if (resources.find(_.id == currentOperationId).map(_.tags.headOption.getOrElse("API"))==resources.find(_.id == i.id).map(_.tags.headOption.getOrElse("API"))) //If the Tag is the current Tag.We do not need parameters.
                 s"#${i.id}"
               else
                 s"?operation_id=${i.id}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
@@ -1368,7 +1374,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
         val authenticationTypeValidations: Box[Map[String, List[String]]] = getAuthenticationTypeValidations()
         val jsonSchemaValidations: Box[Map[String, json.JObject]] = getJsonSchemaValidations()
 
-        ".resource" #> (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty)  resources else (resources.filter(_.tags.headOption.getOrElse("API")==currentTag))).map { i =>
+        ".resource" #> (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty)  resources else {
+          //For the Favourites collections, we will show all the resource in the page, ignore the perfermance at the moment.
+          val resourcesShowedInPage = if(S.param("api-collection-id").isDefined) resources else resources.filter(_.tags.headOption.getOrElse("API") == currentTag)
+          resourcesShowedInPage
+        }).map { i =>
           // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
           ".end-point-anchor [href]" #> s"#${i.id}" &
           ".content-box__headline *" #> i.summary &
