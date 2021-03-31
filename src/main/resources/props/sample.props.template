@@ -74,7 +74,7 @@ dev.port=8082
 ## OAuth1.0a #########################
 # The hostname to which the request was sent. This is taken from the "Host" HTTP header, or if that
 # does not exist, the DNS name or IP address of the server.
-oauth_1.hostname=FILL_ME_IN
+#oauth_1.hostname=FILL_ME_IN
 ######################################
 
 ## certificate authorization ##
