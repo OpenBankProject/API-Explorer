@@ -755,6 +755,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Used to show / hide the Views selector
     // TODO disable instead of hiding
     val displayViews = "block"
+    
+    //Only show the collections when the user logined In
+    val displayCollectionsDiv = if (isLoggedIn) {
+      "block"
+    } else {
+      "none"
+    }
 
     val displayFeatured = if (featuredResources.length > 0 ) {
       logger.info("show featured")
@@ -1259,6 +1266,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "@all_partial_functions [href]" #> s"$allPartialFunctions" &
     "#api_home_link [href]" #> s"$apiPortalHostname" &
     "@views_box [style]" #> s"display: $displayViews;" &
+    "@favouriates_group_item [style]" #> s"display: $displayCollectionsDiv;" &
     // Show / hide featured
     "@featured_box [style]" #> s"display: $displayFeatured;" &
       "@featured_list [style]" #> s"display: $displayFeatured;" &
