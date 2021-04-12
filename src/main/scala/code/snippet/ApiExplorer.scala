@@ -230,7 +230,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
   }
   
   val tagsHeadline : String = tagsParam match {
-    case Some(x) => "filtered by tag: " + x.mkString(", ")
+    case Some(x) if (x.length == 1) => "filtered by tag: " + x.mkString(", ")
+    case Some(x) if (x.length > 1)=> s"filtered by tags: ${x.head} ..." 
     case _ => ""
   }
 
@@ -705,6 +706,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     //following varible is  for error handling, it is lazy varibles, only used them when something is worng in api_explorer side. 
     lazy val resourceDocBox = ObpAPI.getResourceDocsJValueResponse("v4.0.0","?","static")
+    lazy val ApiCollectionBox = ObpAPI.getApiCollectionByIdJValueResponse("v4.0.0")
     
     // Sort by the first and second tags (if any) then the summary.
     // In order to help sorting, the first tag in a call should be most general, then more specific etc.
@@ -1251,6 +1253,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
       "@other_versions" #> otherVersionUrls.map { i =>
         "@other_version *" #> s" ${i._1} " &
           "@other_version [href]" #> s"${i._2}"
+      } &
+      "@custom_api_collections" #> ObpAPI.sharableApiCollections.map { i =>
+        ".version *" #> s"${i._1}" &
+          ".version [href]" #> s"?api-collection-id=${i._2}"
       } &
       "@dropdown_versions" #> otherVersionsSupportedInDropdownMenuUrls.map { i =>
         ".dropdown-item *" #> s" ${i._1} " &
