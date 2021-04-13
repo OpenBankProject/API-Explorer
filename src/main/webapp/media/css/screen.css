@@ -228,6 +228,10 @@ hr {
   #left-logo{
     display: none;
   }
+  #consent_flow_link,
+  #custom_api_collections_ul{
+    display: none;
+  }
   .container .version_path{
     display: none;
   }
@@ -437,6 +441,10 @@ hr {
   }
   #api-info-section-more-page {
     top: 150px;
+  }
+  #onboard_link,
+  #obp_banking_model_div{
+    display: none;
   }
 }
 

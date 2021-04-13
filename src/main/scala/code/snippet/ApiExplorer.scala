@@ -387,7 +387,17 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // To link to API home page (this is duplicated in OAuthClient)
     val baseUrl = Helper.getPropsValue("api_hostname", S.hostName)
     //
-    val apiPortalHostname = Helper.getPropsValue("api_portal_hostname", baseUrl)
+    val apiPortalHostname = Helper.getPropsValue("api_portal_hostname", "baseUrl")
+    val apiCreationAndManagementTags = Helper.getPropsValue("api_creation_and_management_tags", 
+      "API,Dynamic-Entity-(Manage),Dynamic-Swagger-Doc-(Manage),Dynamic-Resource-Doc-(Manage),Aggregate-Metrics," +
+        "Metric,Documentation,WebUi-Props,Method-Routing,Dynamic-Message-Doc-(Manage),Api-Collection," +
+        "Connector-Method,Sandbox,WebUi-Props,JSON-Schema-Validation,Authentication-Type-Validation")
+    val userManagementTags = Helper.getPropsValue("user_management_tags", "User,Role,Scope,Entitlement," +
+      "Consent,Consumer,Onboarding,View-(Custom),View-(System)")
+    val obpBankingModelTags = Helper.getPropsValue("obp_banking_model_tags", "Bank,Account,Transaction," +
+      "FX,Customer-Message,Data-Warehouse,Product-Collection,Product,ATM,Branch,Card,Person,Customer-Meeting,User,Customer," +
+      "" +
+      "KYC,Counterparty,Transaction-Metadata,Transaction,Account-Access,Transaction-Request")
 
 
     // Use to show the developer the current base version url
@@ -1270,6 +1280,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "@git_commit [href]" #> s"https://github.com/OpenBankProject/API-Explorer/commit/$currentGitCommit" &
     "@chinese_version_path [href]" #> s"$chineseVersionPath" &
     "@all_partial_functions [href]" #> s"$allPartialFunctions" &
+    "#api_creation_and_management_link [href]" #> s"./?tags=$apiCreationAndManagementTags" &
+    "#user_management_link [href]" #> s"./?tags=$userManagementTags" &
+    "#obp_banking_model_link [href]" #> s"./?tags=$obpBankingModelTags" &
+    "#onboard_link [href]" #> s"$apiPortalHostname/user_mgt/sign_up?after-signup=link-to-customer" &
+    "#consent_flow_link [href]" #> s"https://oauth2-flow.demo.openbankproject.com/" & //TODO, this need to be fixed later. not all sandbox have the Hola app now.
     "#api_home_link [href]" #> s"$apiPortalHostname" &
     "@views_box [style]" #> s"display: $displayViews;" &
     "@favouriates_group_item [style]" #> s"display: $displayCollectionsDiv;" &
