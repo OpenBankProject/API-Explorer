@@ -387,7 +387,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // To link to API home page (this is duplicated in OAuthClient)
     val baseUrl = Helper.getPropsValue("api_hostname", S.hostName)
     //
-    val apiPortalHostname = Helper.getPropsValue("api_portal_hostname", "baseUrl")
+    val apiPortalHostname = Helper.getPropsValue("api_portal_hostname", baseUrl)
     val apiCreationAndManagementTags = Helper.getPropsValue("api_creation_and_management_tags", 
       "API,Dynamic-Entity-(Manage),Dynamic-Swagger-Doc-(Manage),Dynamic-Resource-Doc-(Manage),Aggregate-Metrics," +
         "Metric,Documentation,WebUi-Props,Method-Routing,Dynamic-Message-Doc-(Manage),Api-Collection," +
@@ -1264,7 +1264,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         "@other_version *" #> s" ${i._1} " &
           "@other_version [href]" #> s"${i._2}"
       } &
-      "@custom_api_collections" #> ObpAPI.sharableApiCollections.map { i =>
+      "@custom_api_collections" #> ObpAPI.sharableApiCollections.openOr(Nil).map { i =>
         ".version *" #> s"${i._1}" &
           ".version [href]" #> s"?api-collection-id=${i._2}"
       } &
