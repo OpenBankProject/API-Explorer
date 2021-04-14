@@ -236,6 +236,17 @@ object ObpAPI extends Loggable {
     ObpDelete(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints/$operationId")
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
+  private val sharableApiCollectionsTTL: FiniteDuration = Helper.getPropsAsIntValue("sharable_api_collections.cache.ttl.seconds", 3600) seconds
+  def sharableApiCollections: Box[List[(String, String)]] = {
+    var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
+    CacheKeyFromArguments.buildCacheKey {
+      Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(authenticationTypeValidationTTL) {
+        val apiCollectionsResponse = ObpGet(s"$obpPrefix/v4.0.0/api-collections/featured").flatMap(_.extractOpt[ApiCollectionsJson400])
+        apiCollectionsResponse.map(_.api_collections.map(apiCollection => (apiCollection.api_collection_name, apiCollection.api_collection_id)))
+      }
+    }
+  } 
+
   /**
    * The request vars ensure that for one page load, the same API call isn't made multiple times
    */
@@ -303,6 +314,15 @@ object ObpAPI extends Loggable {
   def getResourceDocsByApiCollectionId(apiVersion : String, requestParams: String) =
     ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams").map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
 
+  def getApiCollectionByIdJValueResponse(apiVersion : String) = {
+    val apiCollectionIdParam = List("api-collection-id")
+      .map(paramName => (paramName, S.param(paramName)))
+      .collect{
+        case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
+      }
+      .mkString("?", "&", "")
+    ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$apiCollectionIdParam")
+  }
   /**
    * extract ResourceDocsJson and output details of error if extract json to case class fail
    * @param jValue

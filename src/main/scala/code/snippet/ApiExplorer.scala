@@ -230,7 +230,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
   }
   
   val tagsHeadline : String = tagsParam match {
-    case Some(x) => "filtered by tag: " + x.mkString(", ")
+    case Some(x) if (x.length == 1) => "filtered by tag: " + x.mkString(", ")
+    case Some(x) if (x.length > 1)=> s"filtered by tags: ${x.head} ..." 
     case _ => ""
   }
 
@@ -387,6 +388,16 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val baseUrl = Helper.getPropsValue("api_hostname", S.hostName)
     //
     val apiPortalHostname = Helper.getPropsValue("api_portal_hostname", baseUrl)
+    val apiCreationAndManagementTags = Helper.getPropsValue("api_creation_and_management_tags", 
+      "API,Dynamic-Entity-(Manage),Dynamic-Swagger-Doc-(Manage),Dynamic-Resource-Doc-(Manage),Aggregate-Metrics," +
+        "Metric,Documentation,WebUi-Props,Method-Routing,Dynamic-Message-Doc-(Manage),Api-Collection," +
+        "Connector-Method,Sandbox,WebUi-Props,JSON-Schema-Validation,Authentication-Type-Validation")
+    val userManagementTags = Helper.getPropsValue("user_management_tags", "User,Role,Scope,Entitlement," +
+      "Consent,Consumer,Onboarding,View-(Custom),View-(System)")
+    val obpBankingModelTags = Helper.getPropsValue("obp_banking_model_tags", "Bank,Account,Transaction," +
+      "FX,Customer-Message,Data-Warehouse,Product-Collection,Product,ATM,Branch,Card,Person,Customer-Meeting,User,Customer," +
+      "" +
+      "KYC,Counterparty,Transaction-Metadata,Transaction,Account-Access,Transaction-Request")
 
 
     // Use to show the developer the current base version url
@@ -705,6 +716,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     //following varible is  for error handling, it is lazy varibles, only used them when something is worng in api_explorer side. 
     lazy val resourceDocBox = ObpAPI.getResourceDocsJValueResponse("v4.0.0","?","static")
+    lazy val ApiCollectionBox = ObpAPI.getApiCollectionByIdJValueResponse("v4.0.0")
     
     // Sort by the first and second tags (if any) then the summary.
     // In order to help sorting, the first tag in a call should be most general, then more specific etc.
@@ -755,6 +767,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Used to show / hide the Views selector
     // TODO disable instead of hiding
     val displayViews = "block"
+    
+    //Only show the collections when the user logined In
+    val displayCollectionsDiv = if (isLoggedIn) {
+      "block"
+    } else {
+      "none"
+    }
 
     val displayFeatured = if (featuredResources.length > 0 ) {
       logger.info("show featured")
@@ -1245,6 +1264,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
         "@other_version *" #> s" ${i._1} " &
           "@other_version [href]" #> s"${i._2}"
       } &
+      "@custom_api_collections" #> ObpAPI.sharableApiCollections.openOr(Nil).map { i =>
+        ".version *" #> s"${i._1}" &
+          ".version [href]" #> s"?api-collection-id=${i._2}"
+      } &
       "@dropdown_versions" #> otherVersionsSupportedInDropdownMenuUrls.map { i =>
         ".dropdown-item *" #> s" ${i._1} " &
           ".dropdown-item [href]" #> s"${i._2}"
@@ -1257,8 +1280,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "@git_commit [href]" #> s"https://github.com/OpenBankProject/API-Explorer/commit/$currentGitCommit" &
     "@chinese_version_path [href]" #> s"$chineseVersionPath" &
     "@all_partial_functions [href]" #> s"$allPartialFunctions" &
+    "#api_creation_and_management_link [href]" #> s"./?tags=$apiCreationAndManagementTags" &
+    "#user_management_link [href]" #> s"./?tags=$userManagementTags" &
+    "#obp_banking_model_link [href]" #> s"./?tags=$obpBankingModelTags" &
+    "#onboard_link [href]" #> s"$apiPortalHostname/user_mgt/sign_up?after-signup=link-to-customer" &
+    "#consent_flow_link [href]" #> s"https://oauth2-flow.demo.openbankproject.com/" & //TODO, this need to be fixed later. not all sandbox have the Hola app now.
     "#api_home_link [href]" #> s"$apiPortalHostname" &
     "@views_box [style]" #> s"display: $displayViews;" &
+    "@favouriates_group_item [style]" #> s"display: $displayCollectionsDiv;" &
     // Show / hide featured
     "@featured_box [style]" #> s"display: $displayFeatured;" &
       "@featured_list [style]" #> s"display: $displayFeatured;" &

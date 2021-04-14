@@ -42,6 +42,14 @@ $(window).resize(function() {
 
 // In your Javascript (external .js resource or <script> tag)
 $(document).ready(function() {
+    
+    //This mean the custom_api_collections is empty, so just one line for the home page.
+    if($("#custom_api_collections_ul").html().indexOf("li")===-1){
+        $(".breadcrumbs__row").css('height','40px');
+        $(".api-info-section").css('top','127px');
+        $(".option-section").css('top','193px');
+    }
+    
     $('.js-example-basic-single').select2();
     $("#select2-bank_selector-container").attr("aria-labelledby", "Banks-Dropdown")
     $("#select2-account_selector-container").attr("aria-labelledby", "Accounts-Dropdown")
