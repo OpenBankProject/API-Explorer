@@ -540,6 +540,7 @@ a img {
 
 .content-box__text-box p:first-child {
   margin-top: 0;
+  word-break:break-all;
 }
 
 
@@ -1020,6 +1021,7 @@ sub {
  */
 img {
   border: 0;
+  width: 100%;
 }
 
 /**
@@ -1072,7 +1074,7 @@ samp {
 .glossary samp {
   font-family: Roboto-Regular;
   font-size: 16px;
-  color: #333333;
+  color: #FFFFFF;
   line-height: 24px;
 }
 
@@ -1679,4 +1681,15 @@ footer a:hover{
 }
 .favourites_error_message{
   color: red;
+}
+
+a, a:focus, a:hover {
+  color: inherit;
+  word-break:break-all;
+}
+p{
+  word-break:break-all;
+}
+.glossary .content-box__text-box p code{
+  color: #000000;
 }
