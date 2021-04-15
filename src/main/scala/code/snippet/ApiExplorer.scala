@@ -389,11 +389,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
     //
     val apiPortalHostname = Helper.getPropsValue("api_portal_hostname", baseUrl)
     val apiCreationAndManagementTags = Helper.getPropsValue("api_creation_and_management_tags", 
-      "API,Dynamic-Entity-(Manage),Dynamic-Swagger-Doc-(Manage),Dynamic-Resource-Doc-(Manage),Aggregate-Metrics," +
-        "Metric,Documentation,WebUi-Props,Method-Routing,Dynamic-Message-Doc-(Manage),Api-Collection," +
+      "API,Dynamic-Entity-Manage,Dynamic-Swagger-Doc-Manage,Dynamic-Resource-Doc-Manage,Aggregate-Metrics," +
+        "Metric,Documentation,WebUi-Props,Method-Routing,Dynamic-Message-Doc-Manage,Api-Collection," +
         "Connector-Method,Sandbox,WebUi-Props,JSON-Schema-Validation,Authentication-Type-Validation")
     val userManagementTags = Helper.getPropsValue("user_management_tags", "User,Role,Scope,Entitlement," +
-      "Consent,Consumer,Onboarding,View-(Custom),View-(System)")
+      "Consent,Consumer,Onboarding,View-Custom,View-System")
     val obpBankingModelTags = Helper.getPropsValue("obp_banking_model_tags", "Bank,Account,Transaction," +
       "FX,Customer-Message,Data-Warehouse,Product-Collection,Product,ATM,Branch,Card,Person,Customer-Meeting,User,Customer," +
       "" +
