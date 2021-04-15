@@ -1527,7 +1527,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
               else {"style" -> "color:#767676"}
             ) &
             ".favourites_error_message [id]" #> s"favourites_error_message_${i.id}" &
-          ".content-box__available-since *" #> s"Implemented in ${i.implementedBy.version} by ${i.implementedBy.function}, operation_id: ${i.operationId}"
+            "@content-box__available-since_version [href]" #> s"/?version=${i.implementedBy.version}" &
+            "@content-box__available-since_version *" #> s"${i.implementedBy.version},  " &
+            "@content-box__available-since_span *" #> s"function_name: by ${i.implementedBy.function},  operation_id: ${i.operationId}  "&
+            "@content-box__available-since_tags" #> i.tags.map { tag =>
+                "@content-box__available-since_tags [href]" #> s"/?tags=$tag" & 
+                  "@content-box__available-since_tags *" #> s"$tag, " 
+          }
         }
       }   
     }
