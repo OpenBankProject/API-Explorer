@@ -422,7 +422,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       rs <- getResourceDocsJson(apiVersion)
     } yield rs
     // The list generated here might be used by an administrator as a white or black list of API calls for the API itself.
-    val commaSeparatedListOfResources = allResources.map(_.implemented_by.function).mkString("[", ", ", "]")
+    val commaSeparatedListOfResources = allResources.map(_.operation_id).mkString("[", ", ", "]")
 
     "#all-partial-functions" #> commaSeparatedListOfResources
   }
