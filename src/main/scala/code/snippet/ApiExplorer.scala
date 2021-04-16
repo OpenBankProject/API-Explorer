@@ -1303,10 +1303,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
           }
       } &
       // List the resources grouped by the first tag
-      "@favouriates_list_item" #> myApicollections.map { i =>
-        "@favouriates_list_item_link [href]" #> s"?api-collection-id=${i.api_collection_id}" & 
-         "@favouriates_list_item_link *" #> i.api_collection_name &
-         "@favouriates_list_item_link [id]" #> s"index_of_${i.api_collection_name}"
+      "@favourites_list_item" #> myApicollections.map { i =>
+        "@favourites_list_item_link [href]" #> s"?api-collection-id=${i.api_collection_id}" &
+         "@favourites_list_item_link *" #> i.api_collection_name &
+         "@favourites_list_item_link [id]" #> s"index_of_${i.api_collection_name}"
       } &
     // List the resources grouped by the first tag
       "@api_group_item" #> groupedResources.map { i =>
