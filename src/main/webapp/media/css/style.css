@@ -1021,7 +1021,6 @@ sub {
  */
 img {
   border: 0;
-  width: 100%;
 }
 
 /**
@@ -1692,4 +1691,14 @@ p{
 }
 .glossary .content-box__text-box p code{
   color: #000000;
+}
+
+.glossary img{
+  width: 100%;
+}
+
+.content-box__available-since span{
+  color: #000000;
+  font-size: 8px;
+  font-family: Roboto-Regular;
 }
