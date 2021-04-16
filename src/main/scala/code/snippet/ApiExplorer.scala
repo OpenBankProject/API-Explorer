@@ -410,7 +410,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?${tagsParamString}${languagesParamString}${contentParamString}"
 
   val chineseVersionPath = "?language=zh"
-  val allPartialFunctions = "/partial-functions.html"
+  val allPartialFunctions = s"/partial-functions.html?${tagsParamString}${languagesParamString}${contentParamString}"
 
   //Note > this method is only for partial-functions.html .
   def showPartialFunctions =  {
@@ -618,7 +618,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       r <- getResourceDocsJson(apiVersion)
     } yield ResourceDocPlus(
        //in OBP-API, before it returned v3_1_0, but now, only return v3.1.0
-      //But this filed will be used in JavaScript, so need clean the field.
+      //But this field will be used in JavaScript, so need clean the field.
       id = r.operation_id.replace(".","_").replaceAll(" ","_"),
       operationId = r.operation_id,
       verb = r.request_verb,
