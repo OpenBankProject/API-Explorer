@@ -1287,7 +1287,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "#consent_flow_link [href]" #> s"https://oauth2-flow.demo.openbankproject.com/" & //TODO, this need to be fixed later. not all sandbox have the Hola app now.
     "#api_home_link [href]" #> s"$apiPortalHostname" &
     "@views_box [style]" #> s"display: $displayViews;" &
-    "@favouriates_group_item [style]" #> s"display: $displayCollectionsDiv;" &
+    "@favourites_group_item [style]" #> s"display: $displayCollectionsDiv;" &
     // Show / hide featured
     "@featured_box [style]" #> s"display: $displayFeatured;" &
       "@featured_list [style]" #> s"display: $displayFeatured;" &
