@@ -193,10 +193,10 @@ object ObpAPI extends Loggable {
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
   def getApiCollection(apiCollectionName: String) : Box[ApiCollectionJson400] = if(isLoggedIn){
-    val response = ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName").flatMap(_.extractOpt[ApiCollectionJson400])
+    val response = ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/name/$apiCollectionName").flatMap(_.extractOpt[ApiCollectionJson400])
     if (response.toString.contains("OBP-30079")) {
       createMyApiCollection("Favourites",true)
-      ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName").flatMap(_.extractOpt[ApiCollectionJson400])
+      ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/name/$apiCollectionName").flatMap(_.extractOpt[ApiCollectionJson400])
     } else{
       response
     }
