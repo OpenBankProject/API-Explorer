@@ -228,10 +228,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     case Full(x) => x
     case _ => ""
   }
-  
+
   val tagsHeadline : String = tagsParam match {
     case Some(x) if (x.length == 1) => "filtered by tag: " + x.mkString(", ")
-    case Some(x) if (x.length > 1)=> s"filtered by tags: ${x.head} ..." 
+    case Some(x) if (x.length > 1)=> s"filtered by tags: ${x.head} ..."
     case _ => ""
   }
 
@@ -377,6 +377,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
       }
     }
 
+    val apiVersionParamString = "&version=" + apiVersion
+    logger.info(s"apiVersionParamString is $apiVersionParamString")
+
+
     val isObpVersion: Boolean = {
       obpVersionsSupported.contains(apiVersionRequested)
     }
@@ -388,7 +392,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val baseUrl = Helper.getPropsValue("api_hostname", S.hostName)
     //
     val apiPortalHostname = Helper.getPropsValue("api_portal_hostname", baseUrl)
-    val apiCreationAndManagementTags = Helper.getPropsValue("api_creation_and_management_tags", 
+    val apiCreationAndManagementTags = Helper.getPropsValue("api_creation_and_management_tags",
       "API,Dynamic-Entity-Manage,Dynamic-Swagger-Doc-Manage,Dynamic-Resource-Doc-Manage,Aggregate-Metrics," +
         "Metric,Documentation,WebUi-Props,Method-Routing,Dynamic-Message-Doc-Manage,Api-Collection," +
         "Connector-Method,Sandbox,WebUi-Props,JSON-Schema-Validation,Authentication-Type-Validation")
@@ -410,7 +414,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?${tagsParamString}${languagesParamString}${contentParamString}"
 
   val chineseVersionPath = "?language=zh"
-  val allPartialFunctions = s"/partial-functions.html?${tagsParamString}${languagesParamString}${contentParamString}"
+  val allPartialFunctions = s"/partial-functions.html?${apiVersionParamString}${tagsParamString}${languagesParamString}${contentParamString}"
 
   //Note > this method is only for partial-functions.html .
   def showPartialFunctions =  {
@@ -1488,7 +1492,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
             else
               s"display: block"
             } &
-          // We generate mulutiple .role_items from roleInfos (including the form defined in index.html)
+          // We generate multiple .role_items from roleInfos (including the form defined in index.html)
           ".role_item" #> i.roleInfos.map { r =>
             "@roles__status" #> {if (! isLoggedIn)
                                   s" - Please login to request this Role"
