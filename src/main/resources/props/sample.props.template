@@ -67,8 +67,18 @@ dev.port=8082
 
 # webui_override_style_sheet=./media/css/your_override.css
 
-
-
+################################
+# THIS IS NOT IMPLEMENTED YET !!!
+# Index page link customisation
+# Top links to show / hide
+#
+# webui_index_show_obp_api_management_link=true
+# webui_index_show_obp_user_management_link=true
+# webui_index_show_obp_all_link=true
+# webui_index_show_more_link=true
+# webui_index_show_berlin_group_link=false
+# webui_index_show_uk_link=false
+################################
 
 
 ## OAuth1.0a #########################
