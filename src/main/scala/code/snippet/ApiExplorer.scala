@@ -772,7 +772,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // TODO disable instead of hiding
     val displayViews = "block"
     
-    //Only show the collections when the user logined In
+    //Only show the collections when the user logged In
     val displayCollectionsDiv = if (isLoggedIn) {
       "block"
     } else {
@@ -788,8 +788,21 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
 
+
+    val showIndexObpApiManagementLink = Helper.getPropsValue("webui_index_show_obp_api_management_link", "true").toBoolean
+    val showIndexObpUserManagementLink = Helper.getPropsValue("webui_index_show_obp_user_management_link", "true").toBoolean
+    val showIndexObpAllLink = Helper.getPropsValue("webui_index_show_obp_all_link", "true").toBoolean
+    val showIndexMoreLink = Helper.getPropsValue("webui_index_show_more_link", "true").toBoolean
+
+    val showIndexShowBerlinGroupLink = Helper.getPropsValue("webui_index_show_berlin_group_link", "false").toBoolean
+    val showIndexShowUkLink = Helper.getPropsValue("webui_index_show_uk_link", "false").toBoolean
+
+
+
+
+
     // Do we want to show the Request Entitlement button.
-    // Should also consider if User has submitted an entitlment request or already has the role.
+    // Should also consider if User has submitted an entitlement request or already has the role.
     val displayRequestEntitlementButton = if (isLoggedIn) {
       logger.info("show Request Entitlement button")
       "block"
@@ -1225,6 +1238,24 @@ WIP to add comments on resource docs. This code copied from Sofit.
     def loggedInStatusMessage = {
       if (OAuthClient.loggedIn) "" else "Some options and calls require login."
     }
+
+
+    /*
+
+          "#register-consumer-input" #> "" & {
+        val hasDummyUsers = getWebUiPropsValue("webui_dummy_user_logins", "").nonEmpty
+        val isShowDummyUserTokens = getWebUiPropsValue("webui_show_dummy_user_tokens", "false").toBoolean
+        if(hasDummyUsers && isShowDummyUserTokens) {
+          "#create-directlogin a [href]" #> s"dummy-user-tokens?consumer_key=${consumer.key.get}"
+        } else {
+          "#dummy-user-tokens" #> ""
+        }
+      }
+
+
+
+    */
+
 
 
     /**
