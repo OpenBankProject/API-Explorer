@@ -789,16 +789,21 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
 
-    val showIndexObpApiManagementLink = Helper.getPropsValue("webui_index_show_obp_api_management_link", "true").toBoolean
-    val showIndexObpUserManagementLink = Helper.getPropsValue("webui_index_show_obp_user_management_link", "true").toBoolean
-    val showIndexObpAllLink = Helper.getPropsValue("webui_index_show_obp_all_link", "true").toBoolean
-    val showIndexMoreLink = Helper.getPropsValue("webui_index_show_more_link", "true").toBoolean
+    val showIndexObpApiManagementLink = Helper.getPropsValue("webui_show_index_obp_api_management_link", "true").toBoolean
+    val showIndexObpUserManagementLink = Helper.getPropsValue("webui_show_index_obp_user_management_link", "true").toBoolean
+    val showIndexAllObpLink = Helper.getPropsValue("webui_show_index_obp_all_link", "true").toBoolean
+    val showIndexDynamicLink = Helper.getPropsValue("webui_show_index_dynamic_link", "true").toBoolean
+    val showIndexMoreLink = Helper.getPropsValue("webui_show_index_more_link", "true").toBoolean
+    val showIndexBerlinGroupLink = Helper.getPropsValue("webui_show_index_berlin_group_link", "false").toBoolean
+    val showIndexUkLink = Helper.getPropsValue("webui_show_index_uk_link", "false").toBoolean
 
-    val showIndexShowBerlinGroupLink = Helper.getPropsValue("webui_index_show_berlin_group_link", "false").toBoolean
-    val showIndexShowUkLink = Helper.getPropsValue("webui_index_show_uk_link", "false").toBoolean
-
-
-
+    val displayIndexObpApiManagementLink = if (showIndexObpApiManagementLink ) {"block"} else {"none"}
+    val displayIndexObpUserManagementLink = if (showIndexObpUserManagementLink ) {"block"} else {"none"}
+    val displayIndexAllObpLink = if (showIndexAllObpLink ) {"block"} else {"none"}
+    val displayIndexDynamicLink = if (showIndexDynamicLink ) {"block"} else {"none"}
+    val displayIndexMoreLink = if (showIndexMoreLink ) {"block"} else {"none"}
+    val displayIndexBerlinGroupLink = if (showIndexBerlinGroupLink ) {"block"} else {"none"}
+    val displayIndexUkLink = if (showIndexUkLink ) {"block"} else {"none"}
 
 
     // Do we want to show the Request Entitlement button.
@@ -1316,8 +1321,15 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "@chinese_version_path [href]" #> s"$chineseVersionPath" &
     "@all_partial_functions [href]" #> s"$allPartialFunctions" &
     "#api_creation_and_management_link [href]" #> s"./?tags=$apiCreationAndManagementTags" &
+    "#api_creation_and_management_link [style]"  #> s"display: $displayIndexObpApiManagementLink;" &
+    "#dynamic_link [style]"  #> s"display: $displayIndexDynamicLink;" &
     "#user_management_link [href]" #> s"./?tags=$userManagementTags" &
+    "#user_management_link [style]"  #> s"display: $displayIndexObpUserManagementLink;" &
     "#obp_banking_model_link [href]" #> s"./?tags=$obpBankingModelTags" &
+    "#all_obp_link [style]"  #> s"display: $displayIndexAllObpLink;" &
+    "#berlin_group_link [style]"  #> s"display: $displayIndexBerlinGroupLink;" &
+    "#uk_link [style]"  #> s"display: $displayIndexUkLink;" &
+    "#more_link [style]"  #> s"display: $displayIndexMoreLink;" &
     "#onboard_link [href]" #> s"$apiPortalHostname/user_mgt/sign_up?after-signup=link-to-customer" &
     "#consent_flow_link [href]" #> s"https://oauth2-flow.demo.openbankproject.com/" & //TODO, this need to be fixed later. not all sandbox have the Hola app now.
     "#api_home_link [href]" #> s"$apiPortalHostname" &
