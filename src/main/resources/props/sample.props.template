@@ -71,10 +71,10 @@ dev.port=8082
 # Index page link customisation
 # Top links to show / hide
 #
-# webui_show_index_obp_api_management_link=false
-# webui_show_index_obp_user_management_link=false
-# webui_show_index_obp_all_link=false
-# webui_show_index_dynamic_link=false
+# webui_show_index_obp_api_management_link=true
+# webui_show_index_obp_user_management_link=true
+# webui_show_index_obp_all_link=true
+# webui_show_index_dynamic_link=true
 # webui_show_index_more_link=true
 # webui_show_index_berlin_group_link=false
 # webui_show_index_uk_link=false
