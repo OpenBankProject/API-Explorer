@@ -5,6 +5,17 @@
 //    "default_topic_url": "http://polarize.it/polarize/socialfinanceapp_55868373368"
 //  });
 //});
+
+function openMore() {
+    $("#more_panel").css("width","100%");
+    $("#more_panel").css("display","block");
+}
+
+function closeMore() {
+    $("#more_panel").css("width","0%");
+    $("#more_panel").css("display","none");
+}
+
 function openNav() {
     $("#left_side_small_screen").css("width","100%");
     $("#left_side_small_screen").css("display","block");
