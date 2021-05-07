@@ -7,19 +7,21 @@
 //});
 
 function openMore() {
-    $("#more_panel").css("width","100%");
-    $("#more_panel").css("display","block");
+    alert('hello');
+    //$(".breadcrumb-collections-section").css("width","100%");
+    //$(".breadcrumb-collections-section").css("display","block");
 }
 
 function closeMore() {
-    $("#more_panel").css("width","0%");
-    $("#more_panel").css("display","none");
+    $(".breadcrumb-collections-section").css("width","0%");
+    $(".breadcrumb-collections-section").css("display","none");
 }
 
 function openNav() {
     $("#left_side_small_screen").css("width","100%");
     $("#left_side_small_screen").css("display","block");
     $(".breadcrumb-section").css("display","none");
+    //$(".breadcrumb-collections-section").css("display","none");
     $(".api-info-section").css("display","none");
     $("#right_side").css("display","none");
     $("#small-nav-collapse").attr("onclick","closeNav()");
@@ -33,6 +35,7 @@ function closeNav() {
     $("#left_side_small_screen").css("width","0");
     $("#left_side_small_screen").css("display","none");
     $(".breadcrumb-section").css("display","block");
+    //$(".breadcrumb-collections-section").css("display","block");
     $(".api-info-section").css("display","block");
     $("#right_side").css("display","block");
     $("#small-nav-collapse").attr("onclick","openNav()");
