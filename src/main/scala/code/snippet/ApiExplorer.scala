@@ -358,7 +358,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
       "OBPv2.1.0",
       "OBPv2.2.0",
       "OBPv3.0.0",
-      "UKv2.0",
+      "OBPv3.1.0",
+      "OBPv4.0.0",
+      "UKv3.1",
+      "BGv1.3",
       "STETv1.4",
       "PAPIv2.1.1.1",
       "AUv1.0.0",
@@ -1014,14 +1017,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
     //TODO this need to be a method,
     val otherVersionsSupportedInDropdownMenuUrls: List[(String, String)] = otherVersionsSupportedInDropdownMenu.map(i => (i
       .replace("b1", "API Builder")
-      .replace("BGv1.3.3", "Berlin Group 1.3.3")
-      .replace("BGv1.3", "Berlin Group 1.3")
-      .replace("BGv1", "Berlin Group")
-      .replace("UKv2.0", "UK 2.0")
-      .replace("UKv3.1", "UK 3.1")
-      .replace("STETv1.4", "STET 1.4")
-      .replace("PAPIv2.1.1.1", "Polish API 2.1.1.1")
-      .replace("AUv1.0.0", "AU CDR v1.0.0"),
+      .replace("STETv", "STET ")
+      .replace("PAPIv", "Polish API ")
+      .replace("AUv", "AU CDR ")
+      .replace("OBPv", "OBP ")
+      .replace("UKv", "UK ")
+      .replace("BGv", "Berlin Group "), // replace v with space
       s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
 

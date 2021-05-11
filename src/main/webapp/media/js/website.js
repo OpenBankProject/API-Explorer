@@ -7,7 +7,6 @@
 //});
 
 function openMore() {
-    alert('hello');
     // Show the More section
     $(".breadcrumb-more-section").css("width","100%");
     $(".breadcrumb-more-section").css("display","block");
@@ -15,11 +14,9 @@ function openMore() {
     // Hide the normal breadcrumbs
     $(".breadcrumb-section").css("width","0%");
     $(".breadcrumb-section").css("display","none");
-
 }
 
 function closeMore() {
-    alert('hellooooob');
     // Show the Normal breadcrumbs
     $(".breadcrumb-section").css("width","100%");
     $(".breadcrumb-section").css("display","block");
