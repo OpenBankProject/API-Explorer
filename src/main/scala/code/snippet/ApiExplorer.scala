@@ -350,7 +350,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     val otherVersionsSupported = List("BGv1.3", "UKv3.1")
 
-    val otherVersionsSupportedInDropdownMenu = List(
+    // This is basically all versions supported
+    val allSupportedVersionsInDropdownMenu = List(
       "OBPv1.2.1",
       "OBPv1.3.0",
       "OBPv1.4.0",
@@ -371,7 +372,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val apiVersion: String = {
       if (obpVersionsSupported.contains(apiVersionRequested)
         || otherVersionsSupported.contains(apiVersionRequested)
-        || otherVersionsSupportedInDropdownMenu.contains(apiVersionRequested)) {        // Prefix with v (for OBP versions because they come just with number from API Explorer)
+        || allSupportedVersionsInDropdownMenu.contains(apiVersionRequested)) {        // Prefix with v (for OBP versions because they come just with number from API Explorer)
         // Note: We want to get rid of this "v" prefix ASAP.s
         s"$apiVersionRequested"
       } else {
@@ -721,10 +722,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
       logger.info("tags filter reduced the list of resource docs to zero")
     }
 
-    //following varible is  for error handling, it is lazy varibles, only used them when something is worng in api_explorer side. 
+    //following varible is  for error handling, it is lazy varibles, only used them when something is worng in api_explorer side.
     lazy val resourceDocBox = ObpAPI.getResourceDocsJValueResponse("v4.0.0","?","static")
     lazy val ApiCollectionBox = ObpAPI.getApiCollectionByIdJValueResponse("v4.0.0")
-    
+
     // Sort by the first and second tags (if any) then the summary.
     // In order to help sorting, the first tag in a call should be most general, then more specific etc.
     val resources = resourcesToUse.sortBy(r => {
@@ -738,7 +739,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     //this can be empty list, if there is no operationIds there.
     def getOperationIdsByApiCollectionId = ObpAPI.getApiCollectionEndpointsById(apiCollectionId).map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
     def getMyOperationIds = ObpAPI.getApiCollectionEndpoints("Favourites").map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
-    
+
     // Group resources by the first tag
     val unsortedGroupedResources: Map[String, List[ResourceDocPlus]] = resources.groupBy(_.tags.headOr("ToTag"))
 
@@ -774,7 +775,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Used to show / hide the Views selector
     // TODO disable instead of hiding
     val displayViews = "block"
-    
+
     //Only show the collections when the user logged In
     val displayCollectionsDiv = if (isLoggedIn) {
       "block"
@@ -960,7 +961,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
     def processFavourites(name: String): JsCmd = {
-      // enable button                                                                   
+      // enable button
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
       if(isLoggedIn){ // If the user is not logged in, we do not need call any apis calls. (performance enhancement)
         //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delelet the record there.
@@ -1015,7 +1016,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
     //TODO this need to be a method,
-    val otherVersionsSupportedInDropdownMenuUrls: List[(String, String)] = otherVersionsSupportedInDropdownMenu.map(i => (i
+    val otherVersionsSupportedInDropdownMenuUrls: List[(String, String)] = allSupportedVersionsInDropdownMenu.map(i => (i
       .replace("b1", "API Builder")
       .replace("STETv", "STET ")
       .replace("PAPIv", "Polish API ")
