@@ -125,21 +125,12 @@
 <!--                                <a id="consent_flow_link" class="version" href="https://oauth2-flow.demo.openbankproject.com/">Consent Flow</a>-->
 <!--                            </li>-->
                             <li class="breadcrumbs__list" id="More">
-
-                                <a  onclick="openMore()">click me</a>
-
-                                <a id="more_link" href="./more?" class="breadcrumbs__link version">More</a>
+                                <a onclick="openMore()" id="more_link" href="#" class="breadcrumbs__link version">More</a>
                             </li>
                         </ul>
-
-
-
-
                     </div>
                 </div>
             </section>
-
-
 
             <section class="breadcrumb-collections-section">
                 <div class="container">
@@ -158,7 +149,49 @@
             <section class="breadcrumb-more-section">
                 <div class="container">
                     <div class="breadcrumbs">
-                            More will go here
+                        <ul class="breadcrumbs__row">
+
+
+                            <li class="breadcrumbs__list">
+                                <a id="index_link" href="./?" class="breadcrumbs__link version">API Explorer</a>
+                            </li>
+
+                            <li name="obp_versions" class="versions breadcrumbs__list">
+                                <a name="obp_version" class="version" href="./?version=1.2.1">version</a>
+                            </li>
+
+                            <li class="breadcrumbs__list">
+                                <a class="version" href="./more?version=OBPv4.0.0&tags=PSD2">OBP PSD2</a>
+                            </li>
+
+                            <li name="other_versions" class="versions breadcrumbs__list">
+                                <a name="other_version" class="version" href="./?version=1.2.1">version</a>
+                            </li>
+
+                            <li class="breadcrumbs__list">
+                                <a id="onboard_link" class="version" href="This href should be replaced">Onboard</a>
+                            </li>
+                            <li class="breadcrumbs__list">
+                                <a id="consent_flow_link" class="version" href="https://oauth2-flow.demo.openbankproject.com/">Consent Flow</a>
+                            </li>
+
+                            <li class="breadcrumbs__list">
+                                <a id="message_doc_link" href="./message-docs?connector=kafka_vSept2018"
+                                   class="breadcrumbs__link version">Message Docs</a>
+                            </li>
+                            <li class="breadcrumbs__list" id="Glossary">
+                                <a id="glossary_link" href="./glossary?" class="breadcrumbs__link version">Glossary</a>
+                            </li>
+                            <li class="breadcrumbs__list">
+                                <div class="dropdown">
+                                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">All Versions</button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <li name="dropdown_versions"><a class="dropdown-item version" href="#">Another action</a> <hr></li>
+
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
 
 
                     </div>

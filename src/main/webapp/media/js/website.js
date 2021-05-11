@@ -8,13 +8,25 @@
 
 function openMore() {
     alert('hello');
-    //$(".breadcrumb-collections-section").css("width","100%");
-    //$(".breadcrumb-collections-section").css("display","block");
+    // Show the More section
+    $(".breadcrumb-more-section").css("width","100%");
+    $(".breadcrumb-more-section").css("display","block");
+
+    // Hide the normal breadcrumbs
+    $(".breadcrumb-section").css("width","0%");
+    $(".breadcrumb-section").css("display","none");
+
 }
 
 function closeMore() {
-    $(".breadcrumb-collections-section").css("width","0%");
-    $(".breadcrumb-collections-section").css("display","none");
+    alert('hellooooob');
+    // Show the Normal breadcrumbs
+    $(".breadcrumb-section").css("width","100%");
+    $(".breadcrumb-section").css("display","block");
+
+    // Hide the More section
+    $(".breadcrumb-more-section").css("width","0%");
+    $(".breadcrumb-more-section").css("display","none");
 }
 
 function openNav() {

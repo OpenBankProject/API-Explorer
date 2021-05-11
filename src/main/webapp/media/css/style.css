@@ -160,28 +160,29 @@ a img {
   top: 88px;
   left: 0;
   width: 100%;
-  height: 60px;
+  height: 40px;
   z-index: 5;
 }
 
 .breadcrumb-collections-section {
   background-color: #333333;
   position: fixed;
-  top: 100px;
+  top: 128px;
   left: 0;
-  width: 100%;
-  height: 70px;
-  z-index: 7;
+  width: 200%;
+  height: 40px;
+  z-index: 5;
 }
 
 .breadcrumb-more-section {
-  background-color: #333333;
+  background-color: red;
   position: fixed;
-  top: 100px;
+  top: 88px;
   left: 0;
   width: 100%;
-  height: 70px;
-  z-index: 4;
+  height: 40px;
+  z-index: 7;
+  display: none;
 }
 
 
@@ -262,11 +263,11 @@ a img {
 
 .api-info-section {
   position: fixed;
-  top: 146px;
+  top: 168px;
   left: 0;
   width: 100%;
   /*height: 68px;*/
-  z-index: 5;
+  z-index: 6;
   background: #767676;
 }
 .api-info-section .container {
