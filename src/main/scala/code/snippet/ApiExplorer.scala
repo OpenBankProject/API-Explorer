@@ -801,13 +801,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val showIndexBerlinGroupLink = Helper.getPropsValue("webui_show_index_berlin_group_link", "false").toBoolean
     val showIndexUkLink = Helper.getPropsValue("webui_show_index_uk_link", "false").toBoolean
 
-    val displayIndexObpApiManagementLink = if (showIndexObpApiManagementLink ) {"block"} else {"none"}
-    val displayIndexObpUserManagementLink = if (showIndexObpUserManagementLink ) {"block"} else {"none"}
-    val displayIndexAllObpLink = if (showIndexAllObpLink ) {"block"} else {"none"}
-    val displayIndexDynamicLink = if (showIndexDynamicLink ) {"block"} else {"none"}
-    val displayIndexMoreLink = if (showIndexMoreLink ) {"block"} else {"none"}
-    val displayIndexBerlinGroupLink = if (showIndexBerlinGroupLink ) {"block"} else {"none"}
-    val displayIndexUkLink = if (showIndexUkLink ) {"block"} else {"none"}
+    val displayIndexObpApiManagementLink = if (showIndexObpApiManagementLink ) {""} else {"none"}
+    val displayIndexObpUserManagementLink = if (showIndexObpUserManagementLink ) {""} else {"none"}
+    val displayIndexAllObpLink = if (showIndexAllObpLink ) {""} else {"none"}
+    val displayIndexDynamicLink = if (showIndexDynamicLink ) {""} else {"none"}
+    val displayIndexMoreLink = if (showIndexMoreLink ) {""} else {"none"}
+    val displayIndexBerlinGroupLink = if (showIndexBerlinGroupLink ) {""} else {"none"}
+    val displayIndexUkLink = if (showIndexUkLink ) {""} else {"none"}
 
 
     // Do we want to show the Request Entitlement button.
@@ -1323,15 +1323,15 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "@chinese_version_path [href]" #> s"$chineseVersionPath" &
     "@all_partial_functions [href]" #> s"$allPartialFunctions" &
     "#api_creation_and_management_link [href]" #> s"./?tags=$apiCreationAndManagementTags" &
-    "#api_creation_and_management_link [style]"  #> s"display: $displayIndexObpApiManagementLink;" &
-    "#dynamic_link [style]"  #> s"display: $displayIndexDynamicLink;" &
+    "#api_creation_and_management_link_div [style]"  #> s"display: $displayIndexObpApiManagementLink;" &
+    "#dynamic_link_div [style]"  #> s"display: $displayIndexDynamicLink;" &
     "#user_management_link [href]" #> s"./?tags=$userManagementTags" &
-    "#user_management_link [style]"  #> s"display: $displayIndexObpUserManagementLink;" &
+    "#user_management_link_div [style]"  #> s"display: $displayIndexObpUserManagementLink;" &
     "#obp_banking_model_link [href]" #> s"./?tags=$obpBankingModelTags" &
-    "#all_obp_link [style]"  #> s"display: $displayIndexAllObpLink;" &
-    "#berlin_group_link [style]"  #> s"display: $displayIndexBerlinGroupLink;" &
-    "#uk_link [style]"  #> s"display: $displayIndexUkLink;" &
-    "#more_link [style]"  #> s"display: $displayIndexMoreLink;" &
+    "#all_obp_link_div [style]"  #> s"display: $displayIndexAllObpLink;" &
+    "#berlin_group_link_div [style]"  #> s"display: $displayIndexBerlinGroupLink;" &
+    "#uk_link_div [style]"  #> s"display: $displayIndexUkLink;" &
+    "#More [style]"  #> s"display: $displayIndexMoreLink;" &
     "#onboard_link [href]" #> s"$apiPortalHostname/user_mgt/sign_up?after-signup=link-to-customer" &
     "#consent_flow_link [href]" #> s"https://oauth2-flow.demo.openbankproject.com/" & //TODO, this need to be fixed later. not all sandbox have the Hola app now.
     "#api_home_link [href]" #> s"$apiPortalHostname" &
