@@ -496,12 +496,12 @@ a img {
 .resource-error .bg--white {
   background-color: #333333;
 }
-#right_side .resource:nth-child(4) .content-box__headline{
+#right_side .resource:nth-child(6) .content-box__headline{
   margin: 0 20px 32px 0;
   padding: 332px 0 0 0;
 }
 
-#right_side .resource:nth-child(4) .content-box .end-point-anchor form{
+#right_side .resource:nth-child(6) .content-box .end-point-anchor form{
   padding: 332px 0 0 0;
 }
  
