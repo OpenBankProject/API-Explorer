@@ -270,6 +270,10 @@ a img {
   z-index: 6;
   background: #767676;
 }
+#message-docs .api-info-section,
+#glossary-resources .api-info-section {
+  top: 121px;
+}
 .api-info-section .container {
   position: relative;
 }

@@ -67,10 +67,13 @@ $(window).resize(function() {
 $(document).ready(function() {
     
     //This mean the custom_api_collections is empty, so just one line for the home page.
-    if($("#custom_api_collections_ul").html().indexOf("li")===-1){
-        $(".breadcrumbs__row").css('height','40px');
-        $(".api-info-section").css('top','127px');
-        $(".option-section").css('top','193px');
+    var customApiCollectionsUl = $("#custom_api_collections_ul").html();
+    if(undefined!=customApiCollectionsUl){
+        if (customApiCollectionsUl.indexOf("li") === -1){
+            $(".breadcrumbs__row").css('height','40px');
+            $(".api-info-section").css('top','127px');
+            $(".option-section").css('top','193px');
+        }
     }
     
     $('.js-example-basic-single').select2();
