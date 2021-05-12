@@ -240,7 +240,7 @@ object ObpAPI extends Loggable {
   def sharableApiCollections: Box[List[(String, String)]] = {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
-      Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(authenticationTypeValidationTTL) {
+      Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(sharableApiCollectionsTTL) {
         val apiCollectionsResponse = ObpGet(s"$obpPrefix/v4.0.0/api-collections/featured").flatMap(_.extractOpt[ApiCollectionsJson400])
         apiCollectionsResponse.map(_.api_collections.map(apiCollection => (apiCollection.api_collection_name, apiCollection.api_collection_id)))
       }
