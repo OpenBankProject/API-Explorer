@@ -229,8 +229,7 @@ hr {
     display: none;
   }
   #consent_flow_link_div,
-  #consent_flow_link,
-  #custom_api_collections_ul{
+  #consent_flow_link{
     display: none;
   }
   .container .version_path{
@@ -411,12 +410,9 @@ hr {
     text-align: center;
     line-height: 18px;
   }
-  .breadcrumb-section {
-    top: 70px;
-  }
-  .api-info-section {
-    top:109px
-  }
+  /*.api-info-section {*/
+  /*  top:109px*/
+  /*}*/
   .header .settings-box {
     float: right;
     margin: 19px 16px 19px 0;
@@ -443,6 +439,8 @@ hr {
   #api-info-section-more-page {
     top: 150px;
   }
+  #api_creation_and_management_link_div,
+  #api_creation_and_management_link_div,
   #onboard_link,
   #onboard_link_div{
     display: none;
@@ -456,6 +454,9 @@ hr {
   .api-info-section {
      top:129px
    }
+  #user_management_link_div{
+    display: none;
+  }
 }
 
 @media only screen and (max-width: 505px) {
