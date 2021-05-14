@@ -228,6 +228,7 @@ hr {
   #left-logo{
     display: none;
   }
+  #consent_flow_link_div,
   #consent_flow_link,
   #custom_api_collections_ul{
     display: none;
@@ -443,7 +444,7 @@ hr {
     top: 150px;
   }
   #onboard_link,
-  #obp_banking_model_div{
+  #onboard_link_div{
     display: none;
   }
 }
@@ -464,6 +465,11 @@ hr {
   #api-info-section-more-page {
     top: 165px;
   }
+  #message_doc_link_div,
+  #Glossary{
+    display: none;
+  }
+  
 }
 @media only screen and (max-width: 379px) {
   #right_side .resource:nth-child(6) .content-box__headline {
