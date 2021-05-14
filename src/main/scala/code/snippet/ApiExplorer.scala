@@ -350,7 +350,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     val otherVersionsSupported = List("BGv1.3", "UKv3.1")
 
-    val otherVersionsSupportedInDropdownMenu = List(
+    // This is basically all versions supported
+    val allSupportedVersionsInDropdownMenu = List(
       "OBPv1.2.1",
       "OBPv1.3.0",
       "OBPv1.4.0",
@@ -358,7 +359,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
       "OBPv2.1.0",
       "OBPv2.2.0",
       "OBPv3.0.0",
-      "UKv2.0",
+      "OBPv3.1.0",
+      "OBPv4.0.0",
+      "UKv3.1",
+      "BGv1.3",
       "STETv1.4",
       "PAPIv2.1.1.1",
       "AUv1.0.0",
@@ -368,7 +372,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val apiVersion: String = {
       if (obpVersionsSupported.contains(apiVersionRequested)
         || otherVersionsSupported.contains(apiVersionRequested)
-        || otherVersionsSupportedInDropdownMenu.contains(apiVersionRequested)) {        // Prefix with v (for OBP versions because they come just with number from API Explorer)
+        || allSupportedVersionsInDropdownMenu.contains(apiVersionRequested)) {        // Prefix with v (for OBP versions because they come just with number from API Explorer)
         // Note: We want to get rid of this "v" prefix ASAP.s
         s"$apiVersionRequested"
       } else {
@@ -718,10 +722,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
       logger.info("tags filter reduced the list of resource docs to zero")
     }
 
-    //following varible is  for error handling, it is lazy varibles, only used them when something is worng in api_explorer side. 
+    //following varible is  for error handling, it is lazy varibles, only used them when something is worng in api_explorer side.
     lazy val resourceDocBox = ObpAPI.getResourceDocsJValueResponse("v4.0.0","?","static")
     lazy val ApiCollectionBox = ObpAPI.getApiCollectionByIdJValueResponse("v4.0.0")
-    
+
     // Sort by the first and second tags (if any) then the summary.
     // In order to help sorting, the first tag in a call should be most general, then more specific etc.
     val resources = resourcesToUse.sortBy(r => {
@@ -735,7 +739,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     //this can be empty list, if there is no operationIds there.
     def getOperationIdsByApiCollectionId = ObpAPI.getApiCollectionEndpointsById(apiCollectionId).map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
     def getMyOperationIds = ObpAPI.getApiCollectionEndpoints("Favourites").map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
-    
+
     // Group resources by the first tag
     val unsortedGroupedResources: Map[String, List[ResourceDocPlus]] = resources.groupBy(_.tags.headOr("ToTag"))
 
@@ -771,7 +775,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Used to show / hide the Views selector
     // TODO disable instead of hiding
     val displayViews = "block"
-    
+
     //Only show the collections when the user logged In
     val displayCollectionsDiv = if (isLoggedIn) {
       "block"
@@ -797,13 +801,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val showIndexBerlinGroupLink = Helper.getPropsValue("webui_show_index_berlin_group_link", "false").toBoolean
     val showIndexUkLink = Helper.getPropsValue("webui_show_index_uk_link", "false").toBoolean
 
-    val displayIndexObpApiManagementLink = if (showIndexObpApiManagementLink ) {"block"} else {"none"}
-    val displayIndexObpUserManagementLink = if (showIndexObpUserManagementLink ) {"block"} else {"none"}
-    val displayIndexAllObpLink = if (showIndexAllObpLink ) {"block"} else {"none"}
-    val displayIndexDynamicLink = if (showIndexDynamicLink ) {"block"} else {"none"}
-    val displayIndexMoreLink = if (showIndexMoreLink ) {"block"} else {"none"}
-    val displayIndexBerlinGroupLink = if (showIndexBerlinGroupLink ) {"block"} else {"none"}
-    val displayIndexUkLink = if (showIndexUkLink ) {"block"} else {"none"}
+    val displayIndexObpApiManagementLink = if (showIndexObpApiManagementLink ) {""} else {"none"}
+    val displayIndexObpUserManagementLink = if (showIndexObpUserManagementLink ) {""} else {"none"}
+    val displayIndexAllObpLink = if (showIndexAllObpLink ) {""} else {"none"}
+    val displayIndexDynamicLink = if (showIndexDynamicLink ) {""} else {"none"}
+    val displayIndexMoreLink = if (showIndexMoreLink ) {""} else {"none"}
+    val displayIndexBerlinGroupLink = if (showIndexBerlinGroupLink ) {""} else {"none"}
+    val displayIndexUkLink = if (showIndexUkLink ) {""} else {"none"}
 
 
     // Do we want to show the Request Entitlement button.
@@ -957,7 +961,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
     def processFavourites(name: String): JsCmd = {
-      // enable button                                                                   
+      // enable button
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
       if(isLoggedIn){ // If the user is not logged in, we do not need call any apis calls. (performance enhancement)
         //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delelet the record there.
@@ -1012,16 +1016,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
       s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
     //TODO this need to be a method,
-    val otherVersionsSupportedInDropdownMenuUrls: List[(String, String)] = otherVersionsSupportedInDropdownMenu.map(i => (i
+    val otherVersionsSupportedInDropdownMenuUrls: List[(String, String)] = allSupportedVersionsInDropdownMenu.map(i => (i
       .replace("b1", "API Builder")
-      .replace("BGv1.3.3", "Berlin Group 1.3.3")
-      .replace("BGv1.3", "Berlin Group 1.3")
-      .replace("BGv1", "Berlin Group")
-      .replace("UKv2.0", "UK 2.0")
-      .replace("UKv3.1", "UK 3.1")
-      .replace("STETv1.4", "STET 1.4")
-      .replace("PAPIv2.1.1.1", "Polish API 2.1.1.1")
-      .replace("AUv1.0.0", "AU CDR v1.0.0"),
+      .replace("STETv", "STET ")
+      .replace("PAPIv", "Polish API ")
+      .replace("AUv", "AU CDR ")
+      .replace("OBPv", "OBP ")
+      .replace("UKv", "UK ")
+      .replace("BGv", "Berlin Group "), // replace v with space
       s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
 
@@ -1321,15 +1323,15 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "@chinese_version_path [href]" #> s"$chineseVersionPath" &
     "@all_partial_functions [href]" #> s"$allPartialFunctions" &
     "#api_creation_and_management_link [href]" #> s"./?tags=$apiCreationAndManagementTags" &
-    "#api_creation_and_management_link [style]"  #> s"display: $displayIndexObpApiManagementLink;" &
-    "#dynamic_link [style]"  #> s"display: $displayIndexDynamicLink;" &
+    "#api_creation_and_management_link_div [style]"  #> s"display: $displayIndexObpApiManagementLink;" &
+    "#dynamic_link_div [style]"  #> s"display: $displayIndexDynamicLink;" &
     "#user_management_link [href]" #> s"./?tags=$userManagementTags" &
-    "#user_management_link [style]"  #> s"display: $displayIndexObpUserManagementLink;" &
+    "#user_management_link_div [style]"  #> s"display: $displayIndexObpUserManagementLink;" &
     "#obp_banking_model_link [href]" #> s"./?tags=$obpBankingModelTags" &
-    "#all_obp_link [style]"  #> s"display: $displayIndexAllObpLink;" &
-    "#berlin_group_link [style]"  #> s"display: $displayIndexBerlinGroupLink;" &
-    "#uk_link [style]"  #> s"display: $displayIndexUkLink;" &
-    "#more_link [style]"  #> s"display: $displayIndexMoreLink;" &
+    "#all_obp_link_div [style]"  #> s"display: $displayIndexAllObpLink;" &
+    "#berlin_group_link_div [style]"  #> s"display: $displayIndexBerlinGroupLink;" &
+    "#uk_link_div [style]"  #> s"display: $displayIndexUkLink;" &
+    "#More [style]"  #> s"display: $displayIndexMoreLink;" &
     "#onboard_link [href]" #> s"$apiPortalHostname/user_mgt/sign_up?after-signup=link-to-customer" &
     "#consent_flow_link [href]" #> s"https://oauth2-flow.demo.openbankproject.com/" & //TODO, this need to be fixed later. not all sandbox have the Hola app now.
     "#api_home_link [href]" #> s"$apiPortalHostname" &
