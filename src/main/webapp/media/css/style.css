@@ -1730,3 +1730,8 @@ p{
   font-size: 8px;
   font-family: Roboto-Regular;
 }
+
+#dropdownMenuButton{
+  height: 20px;
+  padding: 0px 12px;
+}
