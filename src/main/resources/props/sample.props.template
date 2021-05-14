@@ -129,9 +129,6 @@ dev.port=8082
 #json_schema_validation.cache.ttl.seconds=3800
 ### show validation info related, stop ###
 
-## default value is 0 seconds
-#sharable_api_collections.cache.ttl.seconds = 0
-
 ### The setting for Home page `API Creation and Management`,` User Management` , ` OBP Banking Model` And `Favourites` ###
 #The fault value already hardcode in the scala code, but also can be modified here: 
 #api_creation_and_management_tags=API,Dynamic-Entity-Manage,Dynamic-Swagger-Doc-Manage,Dynamic-Resource-Doc-Manage,\
