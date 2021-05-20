@@ -193,11 +193,11 @@ hr {
     float: none;
   }
   #logo-right {visibility: hidden;}
-  #right_side .resource:nth-child(4) .content-box__headline{
+  #right_side .resource:nth-child(6) .content-box__headline{
     margin: 0 0 32px 0;
     padding: 220px 0 0 0;
   }
-  #right_side .resource:nth-child(4) .content-box .end-point-anchor form{
+  #right_side .resource:nth-child(6) .content-box .end-point-anchor form{
     padding: 220px 0 0 0;
   }
   #small-nav-collapse{
@@ -228,8 +228,8 @@ hr {
   #left-logo{
     display: none;
   }
-  #consent_flow_link,
-  #custom_api_collections_ul{
+  #consent_flow_link_div,
+  #consent_flow_link{
     display: none;
   }
   .container .version_path{
@@ -375,11 +375,11 @@ hr {
     float: none;
   }
   #logo-right {visibility: hidden;}
-  #right_side .resource:nth-child(4) .content-box__headline{
+  #right_side .resource:nth-child(6) .content-box__headline{
     margin: 0 0 32px 0;
     padding: 220px 0 0 0;
   }
-  #right_side .resource:nth-child(4) .content-box .end-point-anchor form{
+  #right_side .resource:nth-child(6) .content-box .end-point-anchor form{
     padding: 220px 0 0 0;
   }
   #small-nav-collapse{
@@ -410,12 +410,9 @@ hr {
     text-align: center;
     line-height: 18px;
   }
-  .breadcrumb-section {
-    top: 70px;
-  }
-  .api-info-section {
-    top:109px
-  }
+  /*.api-info-section {*/
+  /*  top:109px*/
+  /*}*/
   .header .settings-box {
     float: right;
     margin: 19px 16px 19px 0;
@@ -426,10 +423,10 @@ hr {
 }
 
 @media only screen and (max-width: 720px) {
-  #right_side .resource:nth-child(4) .content-box__headline {
+  #right_side .resource:nth-child(6) .content-box__headline {
     padding: 280px 0 0 0;
   }
-  #right_side .resource:nth-child(4) .content-box .end-point-anchor form{
+  #right_side .resource:nth-child(6) .content-box .end-point-anchor form{
     padding: 280px 0 0 0;
   }
   .content-box__headline {
@@ -442,8 +439,10 @@ hr {
   #api-info-section-more-page {
     top: 150px;
   }
+  #api_creation_and_management_link_div,
+  #api_creation_and_management_link_div,
   #onboard_link,
-  #obp_banking_model_div{
+  #onboard_link_div{
     display: none;
   }
 }
@@ -455,6 +454,9 @@ hr {
   .api-info-section {
      top:129px
    }
+  #user_management_link_div{
+    display: none;
+  }
 }
 
 @media only screen and (max-width: 505px) {
@@ -464,12 +466,17 @@ hr {
   #api-info-section-more-page {
     top: 165px;
   }
+  #message_doc_link_div,
+  #Glossary{
+    display: none;
+  }
+  
 }
 @media only screen and (max-width: 379px) {
-  #right_side .resource:nth-child(4) .content-box__headline {
+  #right_side .resource:nth-child(6) .content-box__headline {
     padding: 290px 0 0 0;
   }
-  #right_side .resource:nth-child(4) .content-box .end-point-anchor form{
+  #right_side .resource:nth-child(6) .content-box .end-point-anchor form{
     padding: 290px 0 0 0;
   }
   .content-box__headline {

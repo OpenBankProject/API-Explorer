@@ -236,15 +236,16 @@ object ObpAPI extends Loggable {
     ObpDelete(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints/$operationId")
   } else Failure("OBP-20001: User not logged in. Authentication is required!")
 
-  private val sharableApiCollectionsTTL: FiniteDuration = Helper.getPropsAsIntValue("sharable_api_collections.cache.ttl.seconds", 0) seconds
+  //NOTE: there is no parameters for the method, the cache is not working well. need to fix later
+//  private val sharableApiCollectionsTTL: FiniteDuration = Helper.getPropsAsIntValue("sharable_api_collections.cache.ttl.seconds", 0) seconds
   def sharableApiCollections: Box[List[(String, String)]] = {
-    var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
-    CacheKeyFromArguments.buildCacheKey {
-      Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(authenticationTypeValidationTTL) {
+//    var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
+//    CacheKeyFromArguments.buildCacheKey {
+//      Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(sharableApiCollectionsTTL) {
         val apiCollectionsResponse = ObpGet(s"$obpPrefix/v4.0.0/api-collections/featured").flatMap(_.extractOpt[ApiCollectionsJson400])
         apiCollectionsResponse.map(_.api_collections.map(apiCollection => (apiCollection.api_collection_name, apiCollection.api_collection_id)))
-      }
-    }
+//      }
+//    }
   } 
 
   /**

@@ -5,10 +5,32 @@
 //    "default_topic_url": "http://polarize.it/polarize/socialfinanceapp_55868373368"
 //  });
 //});
+
+function openMore() {
+    // Show the More section
+    $(".breadcrumb-more-section").css("width","100%");
+    $(".breadcrumb-more-section").css("display","block");
+
+    // Hide the normal breadcrumbs
+    $(".breadcrumb-section").css("width","0%");
+    $(".breadcrumb-section").css("display","none");
+}
+
+function closeMore() {
+    // Show the Normal breadcrumbs
+    $(".breadcrumb-section").css("width","100%");
+    $(".breadcrumb-section").css("display","block");
+
+    // Hide the More section
+    $(".breadcrumb-more-section").css("width","0%");
+    $(".breadcrumb-more-section").css("display","none");
+}
+
 function openNav() {
     $("#left_side_small_screen").css("width","100%");
     $("#left_side_small_screen").css("display","block");
     $(".breadcrumb-section").css("display","none");
+    //$(".breadcrumb-collections-section").css("display","none");
     $(".api-info-section").css("display","none");
     $("#right_side").css("display","none");
     $("#small-nav-collapse").attr("onclick","closeNav()");
@@ -22,6 +44,7 @@ function closeNav() {
     $("#left_side_small_screen").css("width","0");
     $("#left_side_small_screen").css("display","none");
     $(".breadcrumb-section").css("display","block");
+    //$(".breadcrumb-collections-section").css("display","block");
     $(".api-info-section").css("display","block");
     $("#right_side").css("display","block");
     $("#small-nav-collapse").attr("onclick","openNav()");
@@ -44,10 +67,13 @@ $(window).resize(function() {
 $(document).ready(function() {
     
     //This mean the custom_api_collections is empty, so just one line for the home page.
-    if($("#custom_api_collections_ul").html().indexOf("li")===-1){
-        $(".breadcrumbs__row").css('height','40px');
-        $(".api-info-section").css('top','127px');
-        $(".option-section").css('top','193px');
+    var customApiCollectionsUl = $("#custom_api_collections_ul").html();
+    if(undefined!=customApiCollectionsUl){
+        if (customApiCollectionsUl.indexOf("li") === -1){
+            $(".breadcrumbs__row").css('height','40px');
+            $(".api-info-section").css('top','127px');
+            $(".option-section").css('top','193px');
+        }
     }
     
     $('.js-example-basic-single').select2();
