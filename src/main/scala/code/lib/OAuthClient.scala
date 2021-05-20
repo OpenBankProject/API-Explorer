@@ -193,7 +193,12 @@ object OAuthClient extends MdcLoggable {
     val credential = setNewCredential(provider)
 
     val oauthcallbackUrl = Helper.getPropsValue("base_url", S.hostName) + "/oauthcallback"
+    logger.debug("redirect says: credential.consumer.getConsumerKey: " + credential.consumer.getConsumerKey)
+    logger.debug("redirect says: credential.consumer.getToken: " + credential.consumer.getToken)
+    logger.debug("redirect says: credential.provider: " + credential.provider)
+    logger.debug("redirect says: oauthcallbackUrl: " + oauthcallbackUrl)
     val authUrl = provider.oAuthProvider.retrieveRequestToken(credential.consumer, oauthcallbackUrl)
+    logger.debug("redirect says: authUrl: " + authUrl)
     
     S.redirectTo(authUrl)
   }
