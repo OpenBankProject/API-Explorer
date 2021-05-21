@@ -37,6 +37,8 @@ import org.eclipse.jetty.webapp.WebAppContext
 
 object RunMtlsWebApp extends App {
   val server = new Server
+  //set run mode value to "development", So the value is true of Props.devMode
+  System.setProperty("run.mode", "development")
 
   // set MTLS
   val connectors: Array[Connector] = {
