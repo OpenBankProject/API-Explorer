@@ -45,7 +45,7 @@ object SSLHelper {
  
     
 
-    val sslContext = SSLContext.getInstance("TLS")
+    val sslContext = SSLContext.getInstance("TLSv1.2")
     sslContext.init(keyManager.getKeyManagers, tmf.getTrustManagers, new SecureRandom())
 
     val hostnameVerifier: HostnameVerifier = new HostnameVerifier {
