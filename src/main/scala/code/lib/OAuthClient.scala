@@ -32,25 +32,14 @@ Berlin 13359, Germany
 
 package code.lib
 
-import code.lib.ObpAPI.obpPrefix
 import code.util.Helper
-import net.liftweb.http.SessionVar
-import net.liftweb.common.Box
-import net.liftweb.common.Empty
-import oauth.signpost.OAuthProvider
-import oauth.signpost.basic.DefaultOAuthProvider
-import net.liftweb.http.S
-import oauth.signpost.OAuthConsumer
-import oauth.signpost.basic.DefaultOAuthConsumer
-import net.liftweb.mapper.By
-import net.liftweb.common.{Failure, Full}
-import net.liftweb.http.LiftResponse
 import code.util.Helper.MdcLoggable
-import net.liftweb.util.Helpers
+import net.liftweb.common.{Box, Empty, Failure, Full}
+import net.liftweb.http.{LiftResponse, S, SessionVar}
 import net.liftweb.util.Helpers.tryo
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import oauth.signpost.basic.{DefaultOAuthConsumer, DefaultOAuthProvider}
+import oauth.signpost.signature.HmacSha256MessageSigner
+import oauth.signpost.{OAuthConsumer, OAuthProvider}
 
 sealed trait Provider {
   val name : String
@@ -197,6 +186,7 @@ object OAuthClient extends MdcLoggable {
     logger.debug("redirect says: credential.consumer.getToken: " + credential.consumer.getToken)
     logger.debug("redirect says: credential.provider: " + credential.provider)
     logger.debug("redirect says: oauthcallbackUrl: " + oauthcallbackUrl)
+    credential.consumer.setMessageSigner(new HmacSha256MessageSigner())
     val authUrl = provider.oAuthProvider.retrieveRequestToken(credential.consumer, oauthcallbackUrl)
     logger.debug("redirect says: authUrl: " + authUrl)
     
