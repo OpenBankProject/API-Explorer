@@ -85,7 +85,7 @@ trait DefaultProvider extends Provider with MdcLoggable {
   val authorizeUrl = oauthBaseUrl + "/oauth/authorize"
   val signupUrl = Some(oauthBaseUrl + "/user_mgt/sign_up")
 
-  lazy val oAuthProvider : OAuthProvider = new DefaultOAuthProvider(requestTokenUrl, accessTokenUrl, authorizeUrl)
+  lazy val oAuthProvider : OAuthProvider = new ObpOAuthProvider(requestTokenUrl, accessTokenUrl, authorizeUrl)
 
   val consumerKey = Helper.getPropsValue("obp_consumer_key", "")
   val consumerSecret = Helper.getPropsValue("obp_secret_key", "")
