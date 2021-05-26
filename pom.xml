@@ -14,7 +14,7 @@
         <scala.compiler>2.11.12</scala.compiler>
         <scala.version>2.11</scala.version>
         <lift.version>2.6.3</lift.version>
-        <jetty.version>9.4.12.v20180830</jetty.version>
+        <jetty.version>9.4.38.v20210224</jetty.version>
         <!-- Common plugin settings -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
