@@ -801,7 +801,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val showIndexMoreLink = Helper.getPropsValue("webui_show_index_more_link", "true").toBoolean
     val showIndexBerlinGroupLink = Helper.getPropsValue("webui_show_index_berlin_group_link", "false").toBoolean
     val showIndexUkLink = Helper.getPropsValue("webui_show_index_uk_link", "false").toBoolean
-
+    val consentFlowLink = Helper.getPropsValue("consent_flow_link", "")
+    
     val displayIndexObpApiManagementLink = if (showIndexObpApiManagementLink ) {""} else {"none"}
     val displayIndexObpUserManagementLink = if (showIndexObpUserManagementLink ) {""} else {"none"}
     val displayIndexAllObpLink = if (showIndexAllObpLink ) {""} else {"none"}
@@ -809,6 +810,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val displayIndexMoreLink = if (showIndexMoreLink ) {""} else {"none"}
     val displayIndexBerlinGroupLink = if (showIndexBerlinGroupLink ) {""} else {"none"}
     val displayIndexUkLink = if (showIndexUkLink ) {""} else {"none"}
+    val displayConsentFlowLink = if (consentFlowLink.nonEmpty ) {""} else {"none"}
 
 
     // Do we want to show the Request Entitlement button.
@@ -1334,7 +1336,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "#uk_link_div [style]"  #> s"display: $displayIndexUkLink;" &
     "#More [style]"  #> s"display: $displayIndexMoreLink;" &
     "#onboard_link [href]" #> s"$apiPortalHostname/user_mgt/sign_up?after-signup=link-to-customer" &
-    "#consent_flow_link [href]" #> s"https://oauth2-flow.demo.openbankproject.com/" & //TODO, this need to be fixed later. not all sandbox have the Hola app now.
+    "#consent_flow_link_div [style]" #> s"display: $displayConsentFlowLink;" &
+    "#consent_flow_link [href]" #> s"$consentFlowLink" & 
     "#api_home_link [href]" #> s"$apiPortalHostname" &
     "@views_box [style]" #> s"display: $displayViews;" &
     "@favourites_group_item [style]" #> s"display: $displayCollectionsDiv;" &
