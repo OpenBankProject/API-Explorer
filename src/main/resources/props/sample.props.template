@@ -139,3 +139,6 @@ dev.port=8082
 #
 #obp_banking_model_tags=Bank,Account,Transaction,FX,Customer-Message,Data-Warehouse,Product-Collection,Product,ATM,Branch,\
 #Card,Person,Customer-Meeting,User,Customer,KYC,Counterparty,Transaction-Metadata,Transaction,Account-Access,Transaction-Request
+
+# this is the consent flow link, eg: the Halo App link. If we set the link, it will show the consent_flow_link_div in the more page.
+# consent_flow_link=
