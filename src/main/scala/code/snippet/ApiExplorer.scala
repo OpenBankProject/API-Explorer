@@ -367,6 +367,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       "PAPIv2.1.1.1",
       "AUv1.0.0",
       "0.6v1",
+      "MXOFv1.0.0",
       "b1")
 
     // Set the version to use.
