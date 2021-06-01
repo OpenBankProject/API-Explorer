@@ -379,7 +379,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         s"$apiVersionRequested"
       } else {
         S.notice(s"Note: Requested version $apiVersionRequested is not currently supported. Set to v$defaultVersion")
-        s"v$defaultVersion"
+        s"$defaultVersion"
       }
     }
 
