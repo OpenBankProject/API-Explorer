@@ -460,6 +460,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
           val x = ObpGetWithHeader(urlWithVersion, requestHeader)
           headersOfCurrentCall = x._2
           x._1
+        case "HEAD" =>
+          val x = ObpHeadWithHeader(urlWithVersion, requestHeader)
+          headersOfCurrentCall = x._2
+          x._1
         case "DELETE" =>
           val x = ObpDeleteWithHeader(urlWithVersion, requestHeader)
           headersOfCurrentCall = x._2
@@ -486,6 +490,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Handle the contents of the Box
     val responseBody =
       responseBodyBox match {
+        case Full(JNothing) => "" // If httpmethod is `HEAD`, the response maybe JNothing here.
         case Full(json) => writePretty(json)
         case Empty => "Empty: API did not return anything"
         case Failure(message, _, _) => message
