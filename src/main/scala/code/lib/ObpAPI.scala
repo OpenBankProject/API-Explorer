@@ -535,9 +535,30 @@ object ObpGet {
     }
   }
 }
+object ObpHead {
+  def apply(apiPath: String, headers : List[Header] = Nil): Box[JValue] = {
+    // the bankId is blank
+    if(apiPath.contains("/banks//")) {
+      Empty
+    } else {
+      OBPRequest(apiPath, None, "HEAD", headers).flatMap {
+        case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+      }
+    }
+  }
+}
+
 object ObpGetWithHeader {
   def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
     OBPRequest(apiPath, None, "GET", headers) match {
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
+    }
+  }
+}
+
+object ObpHeadWithHeader {
+  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+    OBPRequest(apiPath, None, "HEAD", headers) match {
       case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
     }
   }
