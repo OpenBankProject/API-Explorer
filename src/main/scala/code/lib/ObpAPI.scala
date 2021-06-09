@@ -537,7 +537,7 @@ object ObpGet {
 }
 object ObpHead {
   def apply(apiPath: String, headers : List[Header] = Nil): Box[JValue] = {
-    // the bankId is blank
+    // the bankId is blank, avoid sending empty bankId like this "/banks//accounts".
     if(apiPath.contains("/banks//")) {
       Empty
     } else {
