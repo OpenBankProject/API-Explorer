@@ -1033,7 +1033,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       .replace("OBPv", "OBP ")
       .replace("UKv", "UK ")
       .replace("BGv", "Berlin Group "), // replace v with space
-      s"${CurrentReq.value.uri}?version=${i}&content=static&list-all-banks=${listAllBanks}"))
+      s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
 
     // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
@@ -1331,10 +1331,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "@git_commit [href]" #> s"https://github.com/OpenBankProject/API-Explorer/commit/$currentGitCommit" &
     "@chinese_version_path [href]" #> s"$chineseVersionPath" &
     "@all_partial_functions [href]" #> s"$allPartialFunctions" &
-    "#api_creation_and_management_link [href]" #> s"./?tags=$apiCreationAndManagementTags&content=static" &
+    "#api_creation_and_management_link [href]" #> s"./?tags=$apiCreationAndManagementTags" &
     "#api_creation_and_management_link_div [style]"  #> s"display: $displayIndexObpApiManagementLink;" &
     "#dynamic_link_div [style]"  #> s"display: $displayIndexDynamicLink;" &
-    "#user_management_link [href]" #> s"./?tags=$userManagementTags&content=static" &
+    "#user_management_link [href]" #> s"./?tags=$userManagementTags" &
     "#user_management_link_div [style]"  #> s"display: $displayIndexObpUserManagementLink;" &
     "#obp_banking_model_link [href]" #> s"./?tags=$obpBankingModelTags" &
     "#all_obp_link_div [style]"  #> s"display: $displayIndexAllObpLink;" &
