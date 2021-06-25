@@ -1733,7 +1733,11 @@ p{
 
 #dropdownMenuButton{
   height: 22px;
-  padding: 0px 12px;
+  padding: 0px 0px;
   background-color: #333333;
   border-color: #333333;
+}
+
+#dropdownMenuButton img{
+  vertical-align:baseline;
 }
