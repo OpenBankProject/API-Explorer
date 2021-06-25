@@ -398,6 +398,19 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val baseUrl = Helper.getPropsValue("api_hostname", S.hostName)
     //
     val apiPortalHostname = Helper.getPropsValue("api_portal_hostname", baseUrl)
+  
+    /**
+     * https://demo.openbankproject.com/
+     * https://demo-manager.openbankproject.com/
+     * 
+     * Here is the example for api_manager, will generate the url from api_host, just added the `-manager` to the first part.
+     * 
+     */
+    private val hostParts: Array[String] = baseUrl.split("\\.")
+    private val defaultApiManagerUrl = (Array(hostParts.head+"-manager")++ hostParts.drop(1)).mkString(".")
+    val apiManagerUrl = Helper.getPropsValue("api_manager_url", defaultApiManagerUrl)
+  
+  
     val apiCreationAndManagementTags = Helper.getPropsValue("api_creation_and_management_tags",
       "API,Dynamic-Entity-Manage,Dynamic-Swagger-Doc-Manage,Dynamic-Resource-Doc-Manage,Aggregate-Metrics," +
         "Metric,Documentation,Method-Routing,Dynamic-Message-Doc-Manage,Api-Collection," +
@@ -1345,6 +1358,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "#consent_flow_link_div [style]" #> s"display: $displayConsentFlowLink;" &
     "#consent_flow_link [href]" #> s"$consentFlowLink" & 
     "#api_home_link [href]" #> s"$apiPortalHostname" &
+    "#api_manager_link [href]" #> s"$apiManagerUrl" &
     "@views_box [style]" #> s"display: $displayViews;" &
     "@favourites_group_item [style]" #> s"display: $displayCollectionsDiv;" &
     // Show / hide featured

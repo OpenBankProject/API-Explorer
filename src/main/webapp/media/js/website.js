@@ -6,25 +6,25 @@
 //  });
 //});
 
-function openMore() {
-    // Show the More section
-    $(".breadcrumb-more-section").css("width","100%");
-    $(".breadcrumb-more-section").css("display","block");
-
-    // Hide the normal breadcrumbs
-    $(".breadcrumb-section").css("width","0%");
-    $(".breadcrumb-section").css("display","none");
-}
-
-function closeMore() {
-    // Show the Normal breadcrumbs
-    $(".breadcrumb-section").css("width","100%");
-    $(".breadcrumb-section").css("display","block");
-
-    // Hide the More section
-    $(".breadcrumb-more-section").css("width","0%");
-    $(".breadcrumb-more-section").css("display","none");
-}
+// function openMore() {
+//     // Show the More section
+//     $(".breadcrumb-more-section").css("width","100%");
+//     $(".breadcrumb-more-section").css("display","block");
+//
+//     // Hide the normal breadcrumbs
+//     $(".breadcrumb-section").css("width","0%");
+//     $(".breadcrumb-section").css("display","none");
+// }
+//
+// function closeMore() {
+//     // Show the Normal breadcrumbs
+//     $(".breadcrumb-section").css("width","100%");
+//     $(".breadcrumb-section").css("display","block");
+//
+//     // Hide the More section
+//     $(".breadcrumb-more-section").css("width","0%");
+//     $(".breadcrumb-more-section").css("display","none");
+// }
 
 function openNav() {
     $("#left_side_small_screen").css("width","100%");

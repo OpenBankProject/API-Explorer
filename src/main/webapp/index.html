@@ -118,9 +118,34 @@
                             </li>
                             -->
 
+<!--                            <li class="breadcrumbs__list" id="More">-->
+<!--                                <a onclick="openMore()" id="more_link" href="#" class="breadcrumbs__link version">More</a>-->
+<!--                            </li>-->
+                            <li class="breadcrumbs__list">
+                                <div class="dropdown">
+                                    <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">More <img src="./media/images/chevron_down_thick_write.svg" alt="Girl in a jacket" width="10" height="10"></button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <li name="dropdown_versions"><a class="dropdown-item version" href="#">Another action</a> <hr></li>
 
-                            <li class="breadcrumbs__list" id="More">
-                                <a onclick="openMore()" id="more_link" href="#" class="breadcrumbs__link version">More</a>
+                                        <li id="onboard_link_div">
+                                            <a id="onboard_link" class="version" href="This href should be replaced">Onboard</a>
+                                        </li>
+                                        <li id="consent_flow_link_div">
+                                            <a id="consent_flow_link" class="version" href="https://oauth2-flow.demo.openbankproject.com/">Consent Flow</a>
+                                        </li><hr>
+                                        <li id ="message_doc_link_div">
+                                            <a id="message_doc_link" href="./message-docs?connector=kafka_vSept2018"
+                                               class="breadcrumbs__link version">Message Docs</a>
+                                        </li><hr>
+                                        <li id="Glossary">
+                                            <a id="glossary_link" href="./glossary?" class="breadcrumbs__link version">Glossary</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <li class="breadcrumbs__list" id="api_manager_link_div" >
+                                <a id="api_manager_link" class="version" href="http://127.0.0.1:8000/">API Manager</a>
                             </li>
                         </ul>
                     </div>
@@ -141,67 +166,53 @@
                 </div>
             </section>
 
-            <section class="breadcrumb-more-section">
-                <div class="container">
-                    <div class="breadcrumbs">
-                        <ul class="breadcrumbs__row">
+<!--            <section class="breadcrumb-more-section">-->
+<!--                <div class="container">-->
+<!--                    <div class="breadcrumbs">-->
+<!--                        <ul class="breadcrumbs__row">-->
 
 
-<!--
+<!--&lt;!&ndash;-->
 
-                            <li name="obp_versions" class="versions breadcrumbs__list">
-                                <a name="obp_version" class="version" href="./?version=1.2.1">version</a>
-                            </li>
+<!--                            <li name="obp_versions" class="versions breadcrumbs__list">-->
+<!--                                <a name="obp_version" class="version" href="./?version=1.2.1">version</a>-->
+<!--                            </li>-->
 
-                            <li class="breadcrumbs__list">
-                                <a class="version" href="./?version=OBPv4.0.0&tags=PSD2">OBP PSD2</a>
-                            </li>
+<!--                            <li class="breadcrumbs__list">-->
+<!--                                <a class="version" href="./?version=OBPv4.0.0&tags=PSD2">OBP PSD2</a>-->
+<!--                            </li>-->
 
-                            <li name="other_versions" class="versions breadcrumbs__list">
-                                <a name="other_version" class="version" href="./?version=1.2.1">version</a>
-                            </li>
-
-
--->
-
-                            <li class="breadcrumbs__list">
-                                <a onclick="closeMore()" id="index_link" href="#" class="breadcrumbs__link version">API Explorer</a>
-                            </li>
+<!--                            <li name="other_versions" class="versions breadcrumbs__list">-->
+<!--                                <a name="other_version" class="version" href="./?version=1.2.1">version</a>-->
+<!--                            </li>-->
 
 
-                            <li class="breadcrumbs__list" id="onboard_link_div">
-                                <a id="onboard_link" class="version" href="This href should be replaced">Onboard</a>
-                            </li>
-                            <li class="breadcrumbs__list" id="consent_flow_link_div">
-                                <a id="consent_flow_link" class="version" href="https://oauth2-flow.demo.openbankproject.com/">Consent Flow</a>
-                            </li>
+<!--&ndash;&gt;-->
 
-                            <li class="breadcrumbs__list" id ="message_doc_link_div">
-                                <a id="message_doc_link" href="./message-docs?connector=kafka_vSept2018"
-                                   class="breadcrumbs__link version">Message Docs</a>
-                            </li>
-                            <li class="breadcrumbs__list" id="Glossary">
-                                <a id="glossary_link" href="./glossary?" class="breadcrumbs__link version">Glossary</a>
-                            </li>
+<!--&lt;!&ndash;                            <li class="breadcrumbs__list">&ndash;&gt;-->
+<!--&lt;!&ndash;                                <a onclick="closeMore()" id="index_link" href="#" class="breadcrumbs__link version">API Explorer</a>&ndash;&gt;-->
+<!--&lt;!&ndash;                            </li>&ndash;&gt;-->
 
 
 
 
-                            <li class="breadcrumbs__list">
-                                <div class="dropdown">
-                                    <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">All Standards <img src="./media/images/chevron_down_thick_write.svg" alt="Girl in a jacket" width="10" height="10"></button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <li name="dropdown_versions"><a class="dropdown-item version" href="#">Another action</a> <hr></li>
-
-                                    </ul>
-                                </div>
-                            </li>
-                        </ul>
 
 
-                    </div>
-                </div>
-            </section>
+<!--                            <li class="breadcrumbs__list">-->
+<!--                                <div class="dropdown">-->
+<!--                                    <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">All Standards <img src="./media/images/chevron_down_thick_write.svg" alt="Girl in a jacket" width="10" height="10"></button>-->
+<!--                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">-->
+<!--                                        <li name="dropdown_versions"><a class="dropdown-item version" href="#">Another action</a> <hr></li>-->
+
+<!--                                    </ul>-->
+<!--                                </div>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+
+
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </section>-->
 
 
 
