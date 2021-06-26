@@ -195,10 +195,10 @@ hr {
   #logo-right {visibility: hidden;}
   #right_side .resource:nth-child(5) .content-box__headline{
     margin: 0 0 32px 0;
-    padding: 220px 0 0 0;
+    padding: 120px 0 0 0;
   }
   #right_side .resource:nth-child(5) .content-box .end-point-anchor form{
-    padding: 220px 0 0 0;
+    padding: 120px 0 0 0;
   }
   #small-nav-collapse{
     display: block;
@@ -366,8 +366,8 @@ hr {
     top:88px
   }
   .content-box__headline {
-    margin: -220px 0 32px 0;
-    padding: 220px 0 0 0;
+    margin: -120px 0 32px 0;
+    padding: 120px 0 0 0;
   }
   #logo-left {
     visibility: visible;
@@ -377,10 +377,10 @@ hr {
   #logo-right {visibility: hidden;}
   #right_side .resource:nth-child(5) .content-box__headline{
     margin: 0 0 32px 0;
-    padding: 220px 0 0 0;
+    padding: 120px 0 0 0;
   }
   #right_side .resource:nth-child(5) .content-box .end-point-anchor form{
-    padding: 220px 0 0 0;
+    padding: 120px 0 0 0;
   }
   #small-nav-collapse{
     display: block;
@@ -424,14 +424,14 @@ hr {
 
 @media only screen and (max-width: 720px) {
   #right_side .resource:nth-child(5) .content-box__headline {
-    padding: 280px 0 0 0;
+    padding: 180px 0 0 0;
   }
   #right_side .resource:nth-child(5) .content-box .end-point-anchor form{
-    padding: 280px 0 0 0;
+    padding: 180px 0 0 0;
   }
   .content-box__headline {
-    margin: -280px 0 32px 0;
-    padding: 280px 0 0 0;
+    margin: -180px 0 32px 0;
+    padding: 180px 0 0 0;
   }
   #breadcrumb-section-more-page {
     height: 80px;
@@ -474,14 +474,14 @@ hr {
 }
 @media only screen and (max-width: 379px) {
   #right_side .resource:nth-child(5) .content-box__headline {
-    padding: 290px 0 0 0;
+    padding: 190px 0 0 0;
   }
   #right_side .resource:nth-child(5) .content-box .end-point-anchor form{
-    padding: 290px 0 0 0;
+    padding: 190px 0 0 0;
   }
   .content-box__headline {
-    margin: -290px 0 32px 0;
-    padding: 290px 0 0 0;
+    margin: -190px 0 32px 0;
+    padding: 190px 0 0 0;
   }
   #breadcrumb-section-more-page {
     height: 130px;

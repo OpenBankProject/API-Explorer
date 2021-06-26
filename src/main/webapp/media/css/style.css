@@ -349,6 +349,7 @@ a img {
 }
 
 .option-section {
+  display: none;
   position: fixed;
   top: 225px;
   left: 0;
@@ -478,9 +479,9 @@ a img {
 }
 
 .content-box__headline {
-  margin: -332px 0 32px 0;
+  margin: -240px 0 32px 0;
   font-weight: 400;
-  padding: 332px 0 0 0;
+  padding: 240px 0 0 0;
   font-family: Roboto-Light;
   font-size: 28px;
   color: #333333;
@@ -502,16 +503,16 @@ a img {
 }
 #right_side .resource:nth-child(5) .content-box__headline{
   margin: 0 20px 32px 0;
-  padding: 332px 0 0 0;
+  padding: 242px 0 0 0;
 }
 
 #right_side .resource:nth-child(5) .content-box .end-point-anchor form{
-  padding: 332px 0 0 0;
+  padding: 242px 0 0 0;
 }
  
 #obp\.getAdapterInfo{
   margin: 0 0 32px 0;
-  padding: 220px 0 0 0;
+  padding: 120px 0 0 0;
 }
 
 .message-doc .content-box__headline{
