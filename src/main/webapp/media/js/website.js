@@ -88,7 +88,7 @@ $(document).ready(function() {
         $("a[href$="+hashValue+"]").parents('.api_group_item')[0].scrollIntoView();
     };
 
-    //this will show which endpoint is slected, when you click the endpoints in the left_side_small_screen div
+    //this will show which endpoint is selected, when you click the endpoints in the left_side_small_screen div
     $("#small-nav-collapse").click(function(){
         var hasValue = window.location.hash.substr(1);
         var smallSceenEndpointId="index_of__small_screen"+hasValue;
@@ -97,15 +97,24 @@ $(document).ready(function() {
     });
     
     //get the parameters from URL, need to remove the version and tags.
-    var urlParameter = window.location.search.slice(1).split('&').filter(function(item) {
+    var urlParameters = window.location.search.slice(1).split('&');
+    var urlParameterFilterdVersionAndTags = urlParameters.filter(function(item) {
         return !item.includes("version") && (!item.includes("tags")) && (!item.includes("api-collection-id"))
     }).join("&");
     
     //and update the value for .version class
     var versions =$(".breadcrumbs .breadcrumbs__row .breadcrumbs__list .version")
-    if(urlParameter !== ""){
+    if(urlParameterFilterdVersionAndTags !== ""){
         for (i = 0; i < versions.length; i++) {
-            $(".breadcrumbs .breadcrumbs__row .breadcrumbs__list .version")[i].href=versions[i].href+"&"+urlParameter
+            $(".breadcrumbs .breadcrumbs__row .breadcrumbs__list .version")[i].href=versions[i].href+"&"+urlParameterFilterdVersionAndTags
         }
+    }
+    //only show the BankId/AccountId... filtering when the version=OBPVxxx, other case it will be hidden:
+    if (urlParameters.toString().indexOf("version=OBPv") != -1) {
+        $(".option-section").css("display","block");
+        $("#obp\\.getAdapterInfo").css("padding","220px 0 0 0");
+        $(".content-box__headline").css("margin","-332px 0 0 0").css("padding","332px 0 0 0");
+        $("#right_side .resource:nth-child(5) .content-box__headline").css("padding","332px 0 0 0").css("margin","0 0 32px 0");
+        $("#right_side .resource:nth-child(5) .content-box .end-point-anchor form").css("padding","332px 0 0 0").css("margin","0 0 32px 0");;
     }
 });
