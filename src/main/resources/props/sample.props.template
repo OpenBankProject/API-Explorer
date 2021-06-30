@@ -142,3 +142,7 @@ dev.port=8082
 
 # this is the consent flow link, eg: the Halo App link. If we set the link, it will show the consent_flow_link_div in the more page.
 # consent_flow_link=
+
+# this is the api_manager link, it will generate the api_manager from the api_hostname, if the default is not working, 
+# need to set it manually here.
+#api_manager_url=
