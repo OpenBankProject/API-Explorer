@@ -1328,9 +1328,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
         "@other_version *" #> s" ${i._1} " &
           "@other_version [href]" #> s"${i._2}"
       } &
-      "@custom_api_collections" #> ObpAPI.sharableApiCollections.openOr(Nil).map { i =>
+      "@custom_api_collections" #> ObpAPI.getApiCollectionsFromProps.openOr(Nil).map { i =>
         ".version *" #> s"${i._1}" &
-          ".version [href]" #> s"?api-collection-id=${i._2}"
+          ".version [href]" #> s"${i._2}"
       } &
       "@dropdown_versions" #> otherVersionsSupportedInDropdownMenuUrls.map { i =>
         ".dropdown-item *" #> s" ${i._1} " &
