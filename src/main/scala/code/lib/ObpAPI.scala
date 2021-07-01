@@ -287,22 +287,22 @@ object ObpAPI extends Loggable {
         .mkString("?", "&", "")
     
     //If api side set resource_docs_requires_role = true, then only the users who have CanReadResourceDoc role can see the resourceDoc
-    //So we set the userId and  CanReadResourceDoc role as the staticResourcesDocs cache key
-    val loggedInUserId = currentUser.map(_.user_id).openOr("")
+    //So we set CanReadResourceDoc role as the staticResourcesDocs cache key
     val userHasCanReadResourceDocRole = getEntitlementsV300.map(_.list.map(_.role_name)).map(_.contains("CanReadResourceDoc")).openOr(false)
-    val cacheKey = loggedInUserId+userHasCanReadResourceDocRole
+    val cacheKey = userHasCanReadResourceDocRole.toString //remove the userId from the cacheKey(20210701)
     
     lazy val staticResourcesDocs = getStaticResourceDocs(apiVersion, requestParams, cacheKey)
-
+    
+    lazy val dynamicResourcesDocs = getDynamicResourceDocs(apiVersion,requestParams, cacheKey)
+    
     //If the api-collection-id in the URL, it will ignore all other parameters, so here we first check it:
     if(apiCollectionIdParam.contains("api-collection-id=")) {
       getResourceDocsByApiCollectionId(apiVersion, apiCollectionIdParam)
     }else if(requestParams.contains("content=static")) {
       staticResourcesDocs
     } else if (requestParams.contains("content=dynamic")){
-      getResourceDocs(apiVersion,requestParams, "dynamic")
+      dynamicResourcesDocs
     } else{
-      val dynamicResourcesDocs= getResourceDocs(apiVersion,requestParams, "dynamic")
       staticResourcesDocs ++ dynamicResourcesDocs 
     }
   }
@@ -310,11 +310,23 @@ object ObpAPI extends Loggable {
   private val DAYS_365 = 31536000
   //  static resourceDocs can be cached for a long time, only be changed when new deployment.
   val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("resource_docs_json.cache.ttl.seconds", DAYS_365) seconds
-  def getStaticResourceDocs(apiVersion : String, requestParams: String, userIdAndCanReadResourceDocRole: String): List[ResourceDocJson] =  {
+  def getStaticResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: String): List[ResourceDocJson] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
         getResourceDocs(apiVersion,requestParams, "static")
+      }
+    }
+  }
+
+  //  dynamic resourceDocs can be cached only for short time, 1 hour 
+  private val HOUR_1 = 3600
+  val getDynamicResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("dynamic_resource_docs_json.cache.ttl.seconds", HOUR_1) seconds
+  def getDynamicResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: String): List[ResourceDocJson] =  {
+    var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
+    CacheKeyFromArguments.buildCacheKey {
+      Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getDynamicResourceDocsJsonTTL) {
+        getResourceDocs(apiVersion,requestParams, "dynamic")
       }
     }
   }
