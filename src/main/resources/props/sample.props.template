@@ -152,3 +152,6 @@ dev.port=8082
 # API explorer menu structure (temporary layout - for first workshops)
 webui_index_dynamic_1_link_url=/?tags=Dynamic-Endpoint
 webui_index_dynamic_1_link_text=HSBC
+
+# Sngle Sign On 
+# sso.enabled=false
