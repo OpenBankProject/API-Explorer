@@ -448,6 +448,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val commaSeparatedListOfResources = allResources.map(_.operation_id).mkString("[", ", ", "]")
 
     "#all-partial-functions" #> commaSeparatedListOfResources
+    OAuthClient.redirectToOauthLogin()
   }
 
   def getResponse (url : String, resourceVerb: String, json : JValue, customRequestHeader: String = "") : (String, String) = {
@@ -1611,7 +1612,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
       }   
     }
     logger.debug("after showResources:")
-    cssResult
+    if(Helper.getPropsAsBoolValue("sso.enabled", false)) {
+      logger.debug("Single Sign On is enabled")
+      if(OAuthClient.loggedIn) cssResult else OAuthClient.redirectToOauthLogin()
+    } else {
+      cssResult
+    }
   }
 
   def showGlossary = {
