@@ -77,12 +77,14 @@ trait DefaultProvider extends Provider with MdcLoggable {
         S.hostName
     }
   }
+  val oauthBaseUrlPortal = Helper.getPropsValue("portal.hostname").getOrElse(oauthBaseUrl)
+
   // To link to API home page (this is duplicated in OAuthClient)
   val baseUrl = Helper.getPropsValue("api_hostname", S.hostName)
   val apiBaseUrl = baseUrl + "" // Was "/obp"
   val requestTokenUrl = oauthBaseUrl + "/oauth/initiate"
   val accessTokenUrl = oauthBaseUrl + "/oauth/token"
-  val authorizeUrl = oauthBaseUrl + "/oauth/authorize"
+  val authorizeUrl = oauthBaseUrlPortal + "/oauth/authorize"
   val signupUrl = Some(oauthBaseUrl + "/user_mgt/sign_up")
 
   lazy val oAuthProvider : OAuthProvider = new ObpOAuthProvider(requestTokenUrl, accessTokenUrl, authorizeUrl)
@@ -201,7 +203,8 @@ object OAuthClient extends MdcLoggable {
 
   def logoutAll() = {
     val apiExplorerHost = {Helper.getPropsValue("base_url", S.hostName)}
-    val obpApiHost = {Helper.getPropsValue("api_hostname", "Unknown")}
+    val obpApiHost = Helper.getPropsValue("portal.hostname")
+      .getOrElse(Helper.getPropsValue("api_hostname", "Unknown"))
     credentials.set(None)
     S.redirectTo(s"$obpApiHost/user_mgt/logout?redirect=$apiExplorerHost")
   }
