@@ -87,11 +87,6 @@ dev.port=8082
 #oauth_1.hostname=FILL_ME_IN
 ######################################
 
-## Portal #########################
-# In case we have dedicated backends for portal and api we must define this props
-# portal.hostname=FILL_ME_IN
-######################################
-
 ## certificate authorization ##
 # activate certificate authorization, default is false
 
