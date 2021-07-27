@@ -309,7 +309,7 @@ object ObpAPI extends Loggable {
 
   private val DAYS_365 = 31536000
   //  static resourceDocs can be cached for a long time, only be changed when new deployment.
-  val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("resource_docs_json.cache.ttl.seconds", DAYS_365) seconds
+  val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("static_resource_docs_json.cache.ttl.seconds", DAYS_365) seconds
   def getStaticResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: String): List[ResourceDocJson] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
@@ -321,7 +321,7 @@ object ObpAPI extends Loggable {
 
   //  dynamic resourceDocs can be cached only for short time, 1 hour 
   private val HOUR_1 = 3600
-  val getDynamicResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("dynamic_resource_docs_json.cache.ttl.seconds", HOUR_1) seconds
+  val getDynamicResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("dynamic_static_resource_docs_json.cache.ttl.seconds", HOUR_1) seconds
   def getDynamicResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: String): List[ResourceDocJson] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
