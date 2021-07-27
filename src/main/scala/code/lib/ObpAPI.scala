@@ -314,7 +314,7 @@ object ObpAPI extends Loggable {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
-        getResourceDocs(apiVersion,requestParams, "static")
+        getResourceDocs(apiVersion,requestParams)
       }
     }
   }
@@ -326,22 +326,21 @@ object ObpAPI extends Loggable {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getDynamicResourceDocsJsonTTL) {
-        getResourceDocs(apiVersion,requestParams, "dynamic")
+        getResourceDocs(apiVersion,requestParams)
       }
     }
   }
 
-  def getResourceDocs(apiVersion : String, requestParams: String, contentTag: String) = {
+  def getResourceDocs(apiVersion : String, requestParams: String) = {
     logger.debug("getResourceDocs says:")
     logger.debug("apiVersion:" + apiVersion)
     logger.debug("requestParams:" + requestParams)
-    logger.debug("contentTag:" + contentTag)
-    getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String).map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
+    getResourceDocsJValueResponse(apiVersion : String, requestParams: String).map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
   }
 
-  def getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String) = {
+  def getResourceDocsJValueResponse(apiVersion : String, requestParams: String) = {
     logger.debug("getResourceDocsJValueResponse says Hello")
-    val result = ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=$contentTag")
+    val result = ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams")
     logger.debug("getResourceDocsJValueResponse says result is: " + result)
     result
   }
