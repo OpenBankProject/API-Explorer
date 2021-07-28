@@ -279,7 +279,7 @@ object ObpAPI extends Loggable {
     //Note: ?content=static&content=dynamic
     // if there are two content parameters there, only the first one is valid for the api call. 
     // so requestParams have the high priority 
-    val requestParams = List("tags", "language", "functions", "content")
+    val requestParams = List("tags", "language", "functions", "content", "cache-modifier")
         .map(paramName => (paramName, S.param(paramName)))
         .collect{
           case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -289,11 +289,11 @@ object ObpAPI extends Loggable {
     //If api side set resource_docs_requires_role = true, then only the users who have CanReadResourceDoc role can see the resourceDoc
     //So we set CanReadResourceDoc role as the staticResourcesDocs cache key
     val userHasCanReadResourceDocRole = getEntitlementsV300.map(_.list.map(_.role_name)).map(_.contains("CanReadResourceDoc")).openOr(false)
-    val cacheKey = userHasCanReadResourceDocRole.toString //remove the userId from the cacheKey(20210701)
+    val canReadResourceDocRole = userHasCanReadResourceDocRole
     
-    lazy val staticResourcesDocs = getStaticResourceDocs(apiVersion, requestParams, cacheKey)
+    lazy val staticResourcesDocs = getStaticResourceDocs(apiVersion, requestParams, canReadResourceDocRole)
     
-    lazy val dynamicResourcesDocs = getDynamicResourceDocs(apiVersion,requestParams, cacheKey)
+    lazy val dynamicResourcesDocs = getDynamicResourceDocs(apiVersion,requestParams, canReadResourceDocRole)
     
     //If the api-collection-id in the URL, it will ignore all other parameters, so here we first check it:
     if(apiCollectionIdParam.contains("api-collection-id=")) {
@@ -310,7 +310,7 @@ object ObpAPI extends Loggable {
   private val DAYS_365 = 31536000
   //  static resourceDocs can be cached for a long time, only be changed when new deployment.
   val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("static_resource_docs_json.cache.ttl.seconds", DAYS_365) seconds
-  def getStaticResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: String): List[ResourceDocJson] =  {
+  def getStaticResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: Boolean): List[ResourceDocJson] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
@@ -322,7 +322,7 @@ object ObpAPI extends Loggable {
   //  dynamic resourceDocs can be cached only for short time, 1 hour 
   private val HOUR_1 = 3600
   val getDynamicResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("dynamic_static_resource_docs_json.cache.ttl.seconds", HOUR_1) seconds
-  def getDynamicResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: String): List[ResourceDocJson] =  {
+  def getDynamicResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: Boolean): List[ResourceDocJson] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getDynamicResourceDocsJsonTTL) {
