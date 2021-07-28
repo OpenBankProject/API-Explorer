@@ -309,39 +309,38 @@ object ObpAPI extends Loggable {
 
   private val DAYS_365 = 31536000
   //  static resourceDocs can be cached for a long time, only be changed when new deployment.
-  val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("resource_docs_json.cache.ttl.seconds", DAYS_365) seconds
+  val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("static_resource_docs_json.cache.ttl.seconds", DAYS_365) seconds
   def getStaticResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: String): List[ResourceDocJson] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
-        getResourceDocs(apiVersion,requestParams, "static")
+        getResourceDocs(apiVersion,requestParams)
       }
     }
   }
 
   //  dynamic resourceDocs can be cached only for short time, 1 hour 
   private val HOUR_1 = 3600
-  val getDynamicResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("dynamic_resource_docs_json.cache.ttl.seconds", HOUR_1) seconds
+  val getDynamicResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("dynamic_static_resource_docs_json.cache.ttl.seconds", HOUR_1) seconds
   def getDynamicResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: String): List[ResourceDocJson] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getDynamicResourceDocsJsonTTL) {
-        getResourceDocs(apiVersion,requestParams, "dynamic")
+        getResourceDocs(apiVersion,requestParams)
       }
     }
   }
 
-  def getResourceDocs(apiVersion : String, requestParams: String, contentTag: String) = {
+  def getResourceDocs(apiVersion : String, requestParams: String) = {
     logger.debug("getResourceDocs says:")
     logger.debug("apiVersion:" + apiVersion)
     logger.debug("requestParams:" + requestParams)
-    logger.debug("contentTag:" + contentTag)
-    getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String).map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
+    getResourceDocsJValueResponse(apiVersion : String, requestParams: String).map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
   }
 
-  def getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String) = {
+  def getResourceDocsJValueResponse(apiVersion : String, requestParams: String) = {
     logger.debug("getResourceDocsJValueResponse says Hello")
-    val result = ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams&content=$contentTag")
+    val result = ObpGet(s"$obpPrefix/v3.1.0/resource-docs/$apiVersion/obp$requestParams")
     logger.debug("getResourceDocsJValueResponse says result is: " + result)
     result
   }
