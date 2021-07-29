@@ -98,15 +98,15 @@ $(document).ready(function() {
     
     //get the parameters from URL, need to remove the version and tags.
     var urlParameters = window.location.search.slice(1).split('&');
-    var urlParameterFilterdVersionAndTags = urlParameters.filter(function(item) {
-        return !item.includes("version") && (!item.includes("tags")) && (!item.includes("api-collection-id"))
+    var urlParameterFilteredVersionAndTagsAndContent = urlParameters.filter(function(item) {
+        return !item.includes("version") && (!item.includes("tags")) && (!item.includes("api-collection-id"))&& (!item.includes("content"))
     }).join("&");
     
     //and update the value for .version class
     var versions =$(".breadcrumbs .breadcrumbs__row .breadcrumbs__list .version")
-    if(urlParameterFilterdVersionAndTags !== ""){
+    if(urlParameterFilteredVersionAndTagsAndContent !== ""){
         for (i = 0; i < versions.length; i++) {
-            $(".breadcrumbs .breadcrumbs__row .breadcrumbs__list .version")[i].href=versions[i].href+"&"+urlParameterFilterdVersionAndTags
+            $(".breadcrumbs .breadcrumbs__row .breadcrumbs__list .version")[i].href=versions[i].href+"&"+urlParameterFilteredVersionAndTagsAndContent
         }
     }
     //only show the BankId/AccountId... filtering when the version=OBPVxxx, other case it will be hidden:
