@@ -115,7 +115,7 @@ dev.port=8082
 
 ### api call response cache start ##################
 #default value is 31536000, 365 days
-#resource_docs_json.cache.ttl.seconds=31536000
+#static_resource_docs_json.cache.ttl.seconds=31536000
 #default value is 3600, 1 hour
 #dynamic_resource_docs_json.cache.ttl.seconds=3600
 #default value is 2592000, 30 days

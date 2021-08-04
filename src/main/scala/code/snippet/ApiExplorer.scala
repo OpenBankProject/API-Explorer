@@ -744,7 +744,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
     //following varible is  for error handling, it is lazy varibles, only used them when something is worng in api_explorer side.
-    lazy val resourceDocBox = ObpAPI.getResourceDocsJValueResponse("v4.0.0","?","static")
+    lazy val resourceDocBox = ObpAPI.getResourceDocsJValueResponse("v4.0.0","?content=static")
     lazy val ApiCollectionBox = ObpAPI.getApiCollectionByIdJValueResponse("v4.0.0")
 
     // Sort by the first and second tags (if any) then the summary.
