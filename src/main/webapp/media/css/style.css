@@ -1743,10 +1743,7 @@ p{
   vertical-align:baseline;
 }
 
-summary.api_group_item_details_summary:after {
-  content: '\02800\02795'; /* Unicode character for "plus" sign (+) */
-}
-
-details[open] > summary.api_group_item_details_summary:after{
-  content: "\02800\2212"; /* Unicode character for "minus" sign (-) */
+details > summary.api_group_item_details_summary{
+  display:list-item;
+  cursor:s-resize;
 }
