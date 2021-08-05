@@ -1400,6 +1400,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
                     s"#${i.id}"
                   else
                     s"?version=$apiVersionRequested&operation_id=${i.id}&currentTag=${i.tags.head}${apiCollectionIdParamString}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
+                  "@api_list_item_link [style]" #>
+                  (if (i.id == currentOperationId)
+                    s"font-weight: bold;"
+                  else
+                    s"font-weight: normal;") &
                   "@api_list_item_link *" #> i.summary &
                   "@api_list_item_link [id]" #> s"index_of_${i.id}"
                   // ".content-box__available-since *" #> s"Implmented in ${i.implementedBy.version} by ${i.implementedBy.function}"
