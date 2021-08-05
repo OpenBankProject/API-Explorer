@@ -35,11 +35,11 @@
 
                 <ul>
                     <li name="favourites_group_item" class="api_group_item">
-                        <details open style="cursor:s-resize;" >
+                        <details open style="cursor:s-resize;" class="api_group_item_details">
                             <summary class="api_group_item_details_summary"><a name="favourites_group_name" class="api_group_name" href="./#groupanchor">My Collections</a></summary>
                             <ul>
                                 <li name="favourites_list_item" class="api_list_item">
-                                    <a name="favourites_list_item_link" class="api_list_item_link" href="">Favoriates</a>
+                                    <a onclick="setApiLisItemLinkToClicked(this)" name="favourites_list_item_link" class="api_list_item_link" href="">Favoriates</a>
                                 </li>
                             </ul>
                         </details>
@@ -48,11 +48,11 @@
 
                 <ul>
                     <li name="api_group_item" class="api_group_item">
-                        <details open style="cursor:s-resize;" >
+                        <details open style="cursor:s-resize;" class="api_group_item_details">
                             <summary class="api_group_item_details_summary"><a name="api_group_name" class="api_group_name" >API group</a></summary>
                             <ul>
                                 <li name="api_list_item" class="api_list_item">
-                                    <a name="api_list_item_link" class="api_list_item_link" href="./#anchor">API call title</a>
+                                    <a onclick="setApiLisItemLinkToClicked(this)" name="api_list_item_link" class="api_list_item_link" href="./#anchor">API call title</a>
                                 </li>
                             </ul>
                         </details>

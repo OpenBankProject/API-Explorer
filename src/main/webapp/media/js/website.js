@@ -118,3 +118,9 @@ $(document).ready(function() {
         $("#right_side .resource:nth-child(5) .content-box .end-point-anchor form").css("padding","332px 0 0 0").css("margin","0 0 32px 0");;
     }
 });
+
+
+function setApiLisItemLinkToClicked(element) {
+    $(".api_list_item_link").css("fontWeight","normal");
+    $(element).css("fontWeight", "bold");
+}
