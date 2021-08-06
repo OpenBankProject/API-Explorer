@@ -124,3 +124,21 @@ function setApiLisItemLinkToClicked(element) {
     $(".api_list_item_link").css("fontWeight","normal");
     $(element).css("fontWeight", "bold");
 }
+
+
+function collapseAllEndpoints() {
+    var coll = document.getElementsByClassName("api_group_item_details");
+    var i;
+    
+    for (i = 0; i < coll.length; i++) {
+      coll[i].removeAttribute("open");
+    };
+}
+function expandAllEndpoints() {
+    var coll = document.getElementsByClassName("api_group_item_details");
+    var i;
+    
+    for (i = 0; i < coll.length; i++) {
+      coll[i].setAttribute("open", true);
+    };
+}
