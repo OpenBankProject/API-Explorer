@@ -29,12 +29,11 @@
 
                 <div class="api-info-about">
                     <div class="info-box">
-                        <h3 class="info-box__about_selected">API Explorer</h3>
+                        <a hidden id="expand_all_endpoints_link" onclick="expandAllEndpoints()">&#11208; </a>
+                        <a id="collapse_all_endpoints_link" onclick="collapseAllEndpoints()">&#11206;</a>
                     </div>
-                    <div class="info-box" style="float:right;margin-right:20px">
-                        <a style="cursor:s-resize;" onclick="expandAllEndpoints()">+</a>
-                        <a> / </a>
-                        <a style="cursor:n-resize;" onclick="collapseAllEndpoints()">-</a>
+                    <div class="info-box">
+                        <h3 class="info-box__about_selected">API Explorer</h3>
                     </div>
                 </div>
 

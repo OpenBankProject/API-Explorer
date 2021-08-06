@@ -133,6 +133,8 @@ function collapseAllEndpoints() {
     for (i = 0; i < coll.length; i++) {
       coll[i].removeAttribute("open");
     };
+    document.getElementById("expand_all_endpoints_link").removeAttribute("hidden");
+    document.getElementById("collapse_all_endpoints_link").setAttribute("hidden", true);
 }
 function expandAllEndpoints() {
     var coll = document.getElementsByClassName("api_group_item_details");
@@ -141,4 +143,6 @@ function expandAllEndpoints() {
     for (i = 0; i < coll.length; i++) {
       coll[i].setAttribute("open", true);
     };
+    document.getElementById("expand_all_endpoints_link").setAttribute("hidden", true);
+    document.getElementById("collapse_all_endpoints_link").removeAttribute("hidden");
 }
