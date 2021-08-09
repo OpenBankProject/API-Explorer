@@ -146,3 +146,26 @@ function expandAllEndpoints() {
     document.getElementById("expand_all_endpoints_link").setAttribute("hidden", true);
     document.getElementById("collapse_all_endpoints_link").removeAttribute("hidden");
 }
+
+function searchForEndpoints(element) {
+    var searchText = String(element.value).toLowerCase();
+
+    var coll = document.getElementsByClassName("api_group_item_details");
+    var i;
+    
+    for (i = 0; i < coll.length; i++) {
+      coll[i].setAttribute("open", true);
+    };
+    document.getElementById("expand_all_endpoints_link").setAttribute("hidden", true);
+    document.getElementById("collapse_all_endpoints_link").removeAttribute("hidden");
+    
+    var endpoints = document.getElementsByClassName("api_list_item");
+    for (i = 0; i < endpoints.length; i++) {
+        var endpoint = endpoints[i].querySelector(".api_list_item_link");
+        if(String(endpoint.text).toLowerCase().includes(searchText)) {
+            endpoints[i].removeAttribute("hidden");
+        } else {
+            endpoints[i].setAttribute("hidden", true);
+        }
+    };
+}
