@@ -1742,3 +1742,8 @@ p{
 #dropdownMenuButton img{
   vertical-align:baseline;
 }
+
+details > summary.api_group_item_details_summary{
+  display:list-item;
+  cursor:s-resize;
+}
