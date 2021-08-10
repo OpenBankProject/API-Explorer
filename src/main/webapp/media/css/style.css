@@ -1750,8 +1750,8 @@ details > summary.api_group_item_details_summary{
 
 .api-info-search input[type=text] {
   padding: 10px;
+  margin-bottom: 10px;
   font-size: 17px;
-  border: 1px solid grey;
   float: left;
   width: 100%;
   background: #f1f1f1;
