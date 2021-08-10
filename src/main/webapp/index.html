@@ -29,12 +29,15 @@
 
                 <div class="api-info-about">
                     <div class="info-box">
-                        <a hidden id="expand_all_endpoints_link" onclick="expandAllEndpoints()">&#11208; </a>
+                        <a hidden id="expand_all_endpoints_link" onclick="expandAllEndpoints()">&#11208;</a>
                         <a id="collapse_all_endpoints_link" onclick="collapseAllEndpoints()">&#11206;</a>
                     </div>
                     <div class="info-box">
                         <h3 class="info-box__about_selected">API Explorer</h3>
                     </div>
+                </div>
+                <div class="api-info-search">
+                    <input oninput="searchForEndpoints(this)" type="text" placeholder="Filter.." name="search">
                 </div>
 
                 <ul>
