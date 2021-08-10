@@ -153,12 +153,15 @@ function searchForEndpoints(element) {
     var coll = document.getElementsByClassName("api_group_item_details");
     var i;
     
+    // Show and open al top level headings
     for (i = 0; i < coll.length; i++) {
       coll[i].setAttribute("open", true);
+      coll[i].removeAttribute("hidden");
     };
     document.getElementById("expand_all_endpoints_link").setAttribute("hidden", true);
     document.getElementById("collapse_all_endpoints_link").removeAttribute("hidden");
     
+    // Filter out the list of APIs in accordance to the search text
     var endpoints = document.getElementsByClassName("api_list_item");
     for (i = 0; i < endpoints.length; i++) {
         var endpoint = endpoints[i].querySelector(".api_list_item_link");
@@ -167,5 +170,17 @@ function searchForEndpoints(element) {
         } else {
             endpoints[i].setAttribute("hidden", true);
         }
+    };
+    
+    // Filter out all top level headings with empty list
+    for (i = 0; i < coll.length; i++) {
+      var groupEndpoints = coll[i].getElementsByClassName("api_list_item");
+      var j;
+      var emptyList = true;
+      for (j = 0; j < groupEndpoints.length; j++) {
+        var attribute = groupEndpoints[j].getAttribute("hidden");
+        if (attribute == false || attribute == null) { emptyList = false; };
+      };
+      if (emptyList) { coll[i].setAttribute("hidden", true); };
     };
 }
