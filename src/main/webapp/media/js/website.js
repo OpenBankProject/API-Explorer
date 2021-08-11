@@ -147,7 +147,7 @@ function expandAllItems() {
     document.getElementById("collapse_all_items_link").removeAttribute("hidden");
 }
 
-function searchForEndpoints(element) {
+function filterEndpoints(element) {
     var searchText = String(element.value).toLowerCase();
 
     var coll = document.getElementsByClassName("api_group_item_details");
