@@ -154,7 +154,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val presetConnector = S.param("connector").getOrElse("kafka_vSept2018")
   logger.info(s"connector in url param is $presetConnector")
 
-
+  val queryString = S.queryString
 
   def stringToOptBoolean (x: String) : Option[Boolean] = x.toLowerCase match {
     case "true" | "yes" | "1" | "-1" => Some(true)
@@ -1413,7 +1413,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
                     s"$urlParams#${i.id}"
                   }) &
                   "@api_list_item_link [style]" #>
-                  (if (i.id == currentOperationId)
+                  (if (i.id == currentOperationId && queryString.isDefined)
                     s"font-weight: bold;"
                   else
                     s"font-weight: normal;") &
