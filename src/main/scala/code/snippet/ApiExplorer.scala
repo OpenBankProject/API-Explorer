@@ -256,7 +256,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       case Full(htmlString) =>
         htmlString
       case _ =>
-        logger.error(s"Cannot parse HTML to XML:" )
+        logger.error(s"stringToNodeSeq says: I cannot parse the following html plus div with scala.xml.XML.loadString:" )
         logger.error(html)
         ""
     }
@@ -266,8 +266,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       case Full(parsedHtml) =>
         parsedHtml
       case _ =>
-        logger.error("Cannot parse HTML:")
-        logger.error(html)
+        logger.error("stringToNodeSeq says: I cannot Html5.parse the following html:")
+        logger.error(newHtmlString)
         NodeSeq.Empty
     }
   }
@@ -1459,8 +1459,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
             "OBP-20001: User not logged in. Authentication is required!"
           else if(resourceDocBox.isInstanceOf[Failure]) //Then check the missing role
             resourceDocBox.asInstanceOf[Failure].msg
-          else // all other cases throw the gernal error.
-            "There are no resource docs in the current Sandbox for this request!"
+          else // all other cases throw the general error.
+            "Sorry, we could not return any Resource Docs."
         }&{
           if(isLoggedIn && canReadResourceRole.isEmpty){
             //required roles and related user information
@@ -1652,8 +1652,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
             "OBP-20001: User not logged in. Authentication is required!"
           else if(isLoggedIn && canReadGlossaryRole.isEmpty) //Then check the missing role
             "OBP-20006: User is missing one or more roles: CanReadGlossary"
-          else // all other cases throw the gernal error.
-            "There are no resource docs in the current Sandbox for this request!"
+          else // all other cases throw the general error.
+            "Sorry, we could not return any Glossary Items."
         }&{
         if(isLoggedIn && canReadGlossaryRole.isEmpty){
           //required roles and related user information
@@ -1666,7 +1666,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
               else if  (r.userHasEntitlement)
                 s" - You have this Role."
               else if (r.userHasEntitlementRequest)
-                s" - You have requested this Role. Please contact Open Bank Project team to grant your this role."
+                s" - You have requested this Role. Please contact the administrators to grant you this role."
               else
                 s" - You can request this Role."} &
                 "@roles__role_name" #> s"${r.role}" &
