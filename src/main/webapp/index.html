@@ -29,15 +29,15 @@
 
                 <div class="api-info-about">
                     <div class="info-box">
-                        <a hidden id="expand_all_endpoints_link" onclick="expandAllEndpoints()">&#11208;</a>
-                        <a id="collapse_all_endpoints_link" onclick="collapseAllEndpoints()">&#11206;</a>
+                        <a hidden id="expand_all_items_link" onclick="expandAllItems()">⯈</a><!-- Unicode number: U+2BC8 -->
+                        <a id="collapse_all_items_link" onclick="collapseAllItems()">⯆</a><!-- Unicode number: U+2BC6 -->
                     </div>
                     <div class="info-box">
                         <h3 class="info-box__about_selected">API Explorer</h3>
                     </div>
                 </div>
-                <div class="api-info-search">
-                    <input oninput="searchForEndpoints(this)" type="text" placeholder="Filter.." name="search">
+                <div class="api-info-filter">
+                    <input oninput="filterEndpoints(this)" type="text" placeholder="Filter..">
                 </div>
 
                 <ul>
