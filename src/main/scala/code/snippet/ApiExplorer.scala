@@ -187,15 +187,15 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   logger.info(s"rawLanguageParam is $rawLanguageParam")
 
-  def apiCollectionIdParamString = "&api-collection-id=" + apiCollectionIdParam.mkString(",")
+  def apiCollectionIdParamString = if (apiCollectionIdParam.isEmpty) "" else "&api-collection-id=" + apiCollectionIdParam.mkString(",")
 
   logger.info(s"apiCollectionIdParamString is $apiCollectionIdParamString")
   
-  val tagsParamString = "&tags=" + rawTagsParam.mkString(",")
+  val tagsParamString = if (rawTagsParam.isEmpty) "" else "&tags=" + rawTagsParam.mkString(",")
 
   logger.info(s"tagsParamString is $rawTagsParam")
 
-  val languagesParamString = "&language=" + rawLanguageParam.mkString(",")
+  val languagesParamString = if (rawLanguageParam.isEmpty) "" else "&language=" + rawLanguageParam.mkString(",")
 
   logger.info(s"languagesParamString is $languagesParamString")
 
@@ -203,7 +203,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   logger.info(s"contentParam is $rawContentParam")
 
-  val contentParamString = "&content=" + rawContentParam.mkString(",")
+  val contentParamString = if (rawContentParam.isEmpty) "" else "&content=" + rawContentParam.mkString(",")
 
   logger.info(s"contentParamString is $contentParamString")
 
@@ -1398,8 +1398,20 @@ WIP to add comments on resource docs. This code copied from Sofit.
                     s"#${i.id}"
                   else if (resources.find(_.id == currentOperationId).map(_.tags.headOption.getOrElse("API"))==resources.find(_.id == i.id).map(_.tags.headOption.getOrElse("API"))) //If the Tag is the current Tag.We do not need parameters.
                     s"#${i.id}"
-                  else
-                    s"?version=$apiVersionRequested&operation_id=${i.id}&currentTag=${i.tags.head}${apiCollectionIdParamString}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
+                  else {
+                    def urlParams = {
+                      val verionRequestedParam = if (apiVersionRequested == "" ) "?" else s"?version=$apiVersionRequested"
+                      val operationIdParam = if (i.id == "" ) "" else s"&operation_id=${i.id}"
+                      val currentTagParam = if (i.tags.head == "" ) "" else s"&currentTag=${i.tags.head}"
+                      val bankIdParam = if (presetBankId == "" ) "" else s"&bank_id=${presetBankId}"
+                      val accountIdParam = if (presetAccountId == "" ) "" else s"&account_id=${presetAccountId}"
+                      val viewIdParam = if (presetViewId == "" ) "" else s"&view_id=${presetViewId}"
+                      val counterpartyIdParam = if (presetCounterpartyId == "" ) "" else s"&counterparty_id=${presetCounterpartyId}"
+                      val transactionIdParam = if (presetTransactionId == "" ) "" else s"&transaction_id=${presetTransactionId}"
+                      s"$verionRequestedParam$operationIdParam$currentTagParam$apiCollectionIdParamString$bankIdParam$accountIdParam$viewIdParam$counterpartyIdParam$transactionIdParam"
+                    }
+                    s"$urlParams#${i.id}"
+                  }) &
                   "@api_list_item_link [style]" #>
                   (if (i.id == currentOperationId)
                     s"font-weight: bold;"
