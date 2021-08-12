@@ -632,6 +632,22 @@ a img {
   line-height: 24px;
 }
 
+#api_request_url .default-input {
+  width: 69%;
+  float: left;
+  margin-right: 20px;
+  margin-top: 0;
+  margin-bottom: 13px;
+  font-family: Roboto-Regular;
+  font-size: 16px;
+  color: #333333;
+  line-height: 24px;
+}
+
+#api_request_url .rest-call-button {
+  float: right;
+}
+
 .content-box__available-since {
   float: left;
   position: relative;
@@ -734,7 +750,7 @@ a img {
   -moz-appearance: none;
   -webkit-appearance: none;
   margin-top: 0px;
-  width: 96%;
+  width: 100%;
   font-family: Roboto-Regular;
   font-size: 16px;
   color: #333333;
@@ -798,7 +814,7 @@ a img {
 }
 
 .content-box__info-box {
-  width:60.4em;
+  width: 100%;
   background-color: #333333;
   color: #fff;
   margin-top: 13px;
