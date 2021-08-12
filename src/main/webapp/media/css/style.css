@@ -542,6 +542,11 @@ a img {
 }
 
 
+#glossary-resources pre,
+#glossary-resources pre code {
+  font-family: 'Courier New', monospace;
+}
+
 .content-box__text-box {
   /*float: left;*/
   /*left: 0;*/

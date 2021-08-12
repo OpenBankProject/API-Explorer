@@ -252,6 +252,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   }
 
   def stringToNodeSeq(html : String) : NodeSeq = {
+    // Note! scala.xml.XML.loadString fails to parse "--" (double hyphen)
     val newHtmlString = tryo {scala.xml.XML.loadString("<div>" + html + "</div>").toString()} match {
       case Full(htmlString) =>
         htmlString
@@ -1649,9 +1650,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".resource-error [style]" #> s"display: block" &
         ".content-box__headline *" #> {
           if(!isLoggedIn)//If no resources, first check the login, 
-            "OBP-20001: User not logged in. Authentication is required!"
+            "Sorry, we could not return any Glossary Items. Note: OBP-20001: User not logged in."
           else if(isLoggedIn && canReadGlossaryRole.isEmpty) //Then check the missing role
-            "OBP-20006: User is missing one or more roles: CanReadGlossary"
+            "Sorry, we could not return any Glossary Items. Note: OBP-20006: User is missing one or more roles: CanReadGlossary"
           else // all other cases throw the general error.
             "Sorry, we could not return any Glossary Items."
         }&{
@@ -1659,7 +1660,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           //required roles and related user information
           "@roles_box [id]" #> s"roles_box_CanReadGlossaryRoleInfo" &
             "@roles_box [style]" #> {s"display: block"} &
-            // We generate mulutiple .role_items from roleInfos (including the form defined in index.html)
+            // We generate multiple .role_items from roleInfos (including the form defined in index.html)
             ".role_item" #> canReadGlossaryRoleInfo.map { r =>
               "@roles__status" #> {if (! isLoggedIn)
                 s" - Please login to request this Role"
@@ -1692,9 +1693,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
       ".end-point-anchor [href]" #> s"#${urlEncode(i.title.replaceAll(" ", "-"))}" &
         ".content-box__headline *" #> i.title &
         ".content-box__headline [id]" #> i.title.replaceAll(" ", "-") & // id for the anchor to find
-        //   // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
+        // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
+        // This is the main description text. We use the html version of the description
         ".content-box__text-box *" #> stringToNodeSeq(i.description.html)
     } &
+      // This is the left hand (title) list of glossary items
       ".api_list_item" #> glossaryItems.map { i =>
         // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
         ".api_list_item_link [href]" #> s"#${urlEncode(i.title.replaceAll(" ", "-"))}" &
