@@ -1,6 +1,6 @@
 package code.snippet
 
-import code.lib.ObpAPI.{getAuthenticationTypeValidations, getJsonSchemaValidations, obpPrefix}
+import code.lib.ObpAPI.{getAuthenticationTypeValidations, getJsonSchemaValidations, getMySpaces, obpPrefix}
 import code.lib.ObpJson._
 import code.lib.{ObpAPI, ObpGet, _}
 import code.util.Helper
@@ -15,7 +15,9 @@ import net.liftweb.json.{Extraction, JsonParser}
 
 import scala.xml.{NodeSeq, Text}
 // for compact render
-import code.lib.ObpAPI.{allBanks, getEntitlementRequestsV300, getEntitlementsV300, getGlossaryItemsJson, getMessageDocsJson, getResourceDocsJson, isLoggedIn}
+import code.lib.ObpAPI.{allBanks, getEntitlementRequestsV300, getEntitlementsV300, 
+  getGlossaryItemsJson, getMessageDocsJson,
+  getAllResourceDocsJson, getBankLevelResourceDocsJson, isLoggedIn}
 import net.liftweb.common._
 import net.liftweb.http.CurrentReq
 import net.liftweb.http.SHtml.{ajaxSelect, text}
@@ -443,7 +445,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
     // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
     val allResources: List[ResourceDocJson] = for {
-      rs <- getResourceDocsJson(apiVersion)
+      rs <- getAllResourceDocsJson(apiVersion, false)
     } yield rs
     // The list generated here might be used by an administrator as a white or black list of API calls for the API itself.
     val commaSeparatedListOfResources = allResources.map(_.operation_id).mkString("[", ", ", "]")
@@ -640,12 +642,19 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   def showResources = {
     logger.debug("before showResources:")
+    def resourceDocsRequiresRole = ObpAPI.getRoot.flatMap(_.extractOpt[APIInfoJson400].map(_.resource_docs_requires_role)).openOr(false)
+    val spaceBankId = S.param("space_bank_id").getOrElse("")
+
     // Get a list of resource docs from the API server
     // This will throw an exception if resource_docs key is not populated
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
     // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
     val allResources = for {
-      r <- getResourceDocsJson(apiVersion)
+      r <- 
+        if (resourceDocsRequiresRole && !spaceBankId.isEmpty) //If resourceDocsRequiresRole == true && spaceBankId is there, we only return one bank level data. 
+          getBankLevelResourceDocsJson(apiVersion, spaceBankId) 
+        else// other case, we will return 
+          getAllResourceDocsJson(apiVersion, resourceDocsRequiresRole)
     } yield ResourceDocPlus(
        //in OBP-API, before it returned v3_1_0, but now, only return v3.1.0
       //But this field will be used in JavaScript, so need clean the field.
@@ -744,8 +753,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
       logger.info("tags filter reduced the list of resource docs to zero")
     }
 
-    //following varible is  for error handling, it is lazy varibles, only used them when something is worng in api_explorer side.
-    lazy val resourceDocBox = ObpAPI.getResourceDocsJValueResponse("v4.0.0","?content=static")
     lazy val ApiCollectionBox = ObpAPI.getApiCollectionByIdJValueResponse("v4.0.0")
 
     // Sort by the first and second tags (if any) then the summary.
@@ -1338,6 +1345,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".dropdown-item *" #> s" ${i._1} " &
           ".dropdown-item [href]" #> s"${i._2}"
       } &
+      "@dropdown_space" #> getMySpaces.map(_.bank_ids).getOrElse(Nil).map { i =>
+        ".dropdown-item *" #> s" $i " &
+          ".dropdown-item [href]" #> s"?space_bank_id=${i}"
+      } &
     ".info-box__headline *" #> s"$headline"  &
     "@version_path *" #> s"$baseVersionUrl" &
     "@version_path [href]" #> s"$baseVersionUrl" &
@@ -1458,8 +1469,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".content-box__headline *" #> {
           if(!isLoggedIn)//If no resources, first check the login,
             "OBP-20001: User not logged in. Authentication is required!"
-          else if(resourceDocBox.isInstanceOf[Failure]) //Then check the missing role
-            resourceDocBox.asInstanceOf[Failure].msg
           else // all other cases throw the general error.
             "Sorry, we could not return any Resource Docs."
         }&{
@@ -1642,7 +1651,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     // logger.info(s"showGlossary hello ")
 
-    // TODO cache this.
     val glossaryItems = getGlossaryItemsJson.map(_.glossary_items).getOrElse(List())
 
     if(glossaryItems.length==0) {
