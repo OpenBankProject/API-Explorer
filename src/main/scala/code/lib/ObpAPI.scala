@@ -2,8 +2,7 @@ package code.lib
 
 import java.io._
 import java.text.SimpleDateFormat
-import java.util.Date
-
+import java.util.{Date, UUID}
 import code.lib.ObpJson._
 import code.util.Helper
 import code.util.Helper.MdcLoggable
@@ -425,7 +424,7 @@ object ObpAPI extends Loggable {
   
   def getBankLevelDynamicResourceDocsJValueResponse(apiVersion : String, bankId:String, requestParams: String) = {
     logger.debug("getBankLevelResourceDocsJValueResponse says Hello")
-    val result = ObpGet(s"$obpPrefix/v4.0.0/banks/$bankId/resource-docs/$apiVersion/obp$requestParams")
+    val result = ObpGet(s"$obpPrefix/v4.0.0/banks/$bankId/resource-docs/$apiVersion/obp$requestParams&cache-modifier=${UUID.randomUUID().toString}")
     logger.debug("getBankLevelResourceDocsJValueResponse says result is: " + result)
     result  
   }
