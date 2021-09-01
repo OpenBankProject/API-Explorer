@@ -26,7 +26,9 @@
 
                 </div>
 
-
+                <div class="api-info-filter">
+                    <input oninput="filterEndpoints(this)" type="text" placeholder="Filter..">
+                </div>
                 <div class="api-info-about">
                     <div class="info-box">
                         <a hidden id="expand_all_items_link" onclick="expandAllItems()">⯈</a><!-- Unicode number: U+2BC8 -->
@@ -36,9 +38,7 @@
                         <h3 class="info-box__about_selected">API Explorer</h3>
                     </div>
                 </div>
-                <div class="api-info-filter">
-                    <input oninput="filterEndpoints(this)" type="text" placeholder="Filter..">
-                </div>
+                
 
                 <ul>
                     <li name="favourites_group_item" class="api_group_item">
@@ -350,9 +350,11 @@
                                         <input type="hidden" name="request_verb_input"
                                                placeholder="GET, POST, PUT etc.">
                                         <!-- The url_to_call is populated at render (but it can be edited manually) -->
-                                        <input type="text" name="request_url_input" class="default-input"
-                                               placeholder="OBP URL to call">
-                                        <button name="call_button" class="rest-call-button">POST</button>
+                                        <div id="api_request_url" style="display: block;">
+                                            <input type="text" name="request_url_input" class="default-input"
+                                                   placeholder="OBP URL to call">
+                                            <button name="call_button" class="rest-call-button">POST</button>
+                                        </div>
 
                                         <div name="example_request_header" id="example_request_header" style="display: block;">
                                             <!-- It is populated at render (but it can be edited manually) -->
