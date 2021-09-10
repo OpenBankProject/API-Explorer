@@ -5,7 +5,14 @@
 
 
         <div class="api_list">
+            <div class="api-info-filter">
+                <input oninput="filterMessageDocs(this)" type="text" placeholder="Filter..">
+            </div>
             <div class="api-info-about">
+                <div class="info-box">
+                    <a hidden id="expand_all_items_link" onclick="expandAllItems()">⯈</a><!-- Unicode number: U+2BC8 -->
+                    <a id="collapse_all_items_link" onclick="collapseAllItems()">⯆</a><!-- Unicode number: U+2BC6 -->
+                </div>
                 <div class="info-box">
                     <h3 class="info-box__about_selected">Message Doc Index</h3>
                 </div>
@@ -13,12 +20,14 @@
 
             <ul>
                 <li class="api_group_item" name="api_group_item">
-                    <div class="api_group_name" name="api_group_name">Group</div>
-                    <ul>
-                        <li class="api_list_item" name="api_list_item">
-                            <a class="api_list_item_link" name="api_list_item_link" href="./#anchor">Item</a>
-                        </li>
-                    </ul>
+                    <details open style="cursor:s-resize;" class="api_group_item_details">
+                        <summary class="api_group_item_details_summary"><a class="api_group_name" name="api_group_name">Group</a></summary>
+                        <ul>
+                            <li class="api_list_item" name="api_list_item">
+                                <a onclick="setApiLisItemLinkToClicked(this)" class="api_list_item_link" name="api_list_item_link" href="./#anchor">Item</a>
+                            </li>
+                        </ul>
+                    </details>
 
                 </li>
             </ul>

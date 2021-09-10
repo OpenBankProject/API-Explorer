@@ -17,7 +17,10 @@ import scala.xml.{NodeSeq, Text}
 // for compact render
 import code.lib.ObpAPI.{allBanks, getEntitlementRequestsV300, getEntitlementsV300, 
   getGlossaryItemsJson, getMessageDocsJson,
-  getAllResourceDocsJson, getBankLevelResourceDocsJson, isLoggedIn}
+  getAllResourceDocsJson,
+  getOneBankLevelResourceDocsJson,
+  getStaticAndAllBankLevelDynamicResourceDocs,
+  isLoggedIn}
 import net.liftweb.common._
 import net.liftweb.http.CurrentReq
 import net.liftweb.http.SHtml.{ajaxSelect, text}
@@ -156,7 +159,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   val presetConnector = S.param("connector").getOrElse("kafka_vSept2018")
   logger.info(s"connector in url param is $presetConnector")
 
-
+  val queryString = S.queryString
 
   def stringToOptBoolean (x: String) : Option[Boolean] = x.toLowerCase match {
     case "true" | "yes" | "1" | "-1" => Some(true)
@@ -445,7 +448,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
     // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
     val allResources: List[ResourceDocJson] = for {
-      rs <- getAllResourceDocsJson(apiVersion, false)
+      rs <- getAllResourceDocsJson(apiVersion)
     } yield rs
     // The list generated here might be used by an administrator as a white or black list of API calls for the API itself.
     val commaSeparatedListOfResources = allResources.map(_.operation_id).mkString("[", ", ", "]")
@@ -651,10 +654,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
     val allResources = for {
       r <- 
-        if (resourceDocsRequiresRole && !spaceBankId.isEmpty) //If resourceDocsRequiresRole == true && spaceBankId is there, we only return one bank level data. 
-          getBankLevelResourceDocsJson(apiVersion, spaceBankId) 
-        else// other case, we will return 
-          getAllResourceDocsJson(apiVersion, resourceDocsRequiresRole)
+        if (resourceDocsRequiresRole && !spaceBankId.isEmpty) //If resourceDocsRequiresRole == true && spaceBankId is there, we only return one bank level dynamic resource docs
+          getOneBankLevelResourceDocsJson(apiVersion, spaceBankId)
+        else if( resourceDocsRequiresRole && spaceBankId.isEmpty)//If resourceDocsRequiresRole == true && spaceBankId empty, we will return all static + all the banks dynamic resource docs
+          getStaticAndAllBankLevelDynamicResourceDocs(apiVersion)
+        else // other case, we will return
+          getAllResourceDocsJson(apiVersion)
     } yield ResourceDocPlus(
        //in OBP-API, before it returned v3_1_0, but now, only return v3.1.0
       //But this field will be used in JavaScript, so need clean the field.
@@ -1425,7 +1430,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
                     s"$urlParams#${i.id}"
                   }) &
                   "@api_list_item_link [style]" #>
-                  (if (i.id == currentOperationId)
+                  (if (i.id == currentOperationId && queryString.isDefined)
                     s"font-weight: bold;"
                   else
                     s"font-weight: normal;") &

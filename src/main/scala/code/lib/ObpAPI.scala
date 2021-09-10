@@ -2,8 +2,7 @@ package code.lib
 
 import java.io._
 import java.text.SimpleDateFormat
-import java.util.Date
-
+import java.util.{Date, UUID}
 import code.lib.ObpJson._
 import code.util.Helper
 import code.util.Helper.MdcLoggable
@@ -268,10 +267,10 @@ object ObpAPI extends Loggable {
    * The request vars ensure that for one page load, the same API call isn't made multiple times
    */
   object allResourcesVar extends SessionVar[Box[ResourceDocsJson]] (Empty)
-  
-  
+
+
   // Returns both system and dynamic resource docs:
-  def getAllResourceDocsJson(apiVersion : String, resourceDocsRequiresRole: Boolean) : List[ResourceDocJson] = {
+  def getAllResourceDocsJson(apiVersion : String) : List[ResourceDocJson] = {
 
     val apiCollectionIdParam = List("api-collection-id")
       .map(paramName => (paramName, S.param(paramName)))
@@ -291,32 +290,28 @@ object ObpAPI extends Loggable {
         .mkString("?", "&", "")
     
     //If api side set resource_docs_requires_role = true, then only the users who have CanReadResourceDoc role can see the resourceDoc
-    //So we set CanReadResourceDoc role as the systemResourcesDocs cache key
+    //So we set CanReadResourceDoc role as the staticResourcesDocs cache key
     val userHasCanReadResourceDocRole = getEntitlementsV300.map(_.list.map(_.role_name)).map(_.contains("CanReadResourceDoc")).openOr(false)
     val canReadResourceDocRole = userHasCanReadResourceDocRole
     
-    lazy val systemResourcesDocs = getSystemResourceDocs(apiVersion, requestParams, canReadResourceDocRole)
+    lazy val staticResourcesDocs = getStaticResourceDocs(apiVersion, requestParams, canReadResourceDocRole)
     
-    lazy val dynamicResourcesDocs = 
-      if(resourceDocsRequiresRole)
-        getAllBankLevelDynamicResourceDocsJson(apiVersion)
-      else
-        getDynamicResourceDocs(apiVersion,requestParams, canReadResourceDocRole)
+    lazy val dynamicResourcesDocs = getDynamicResourceDocs(apiVersion,requestParams, canReadResourceDocRole)
 
     //If the api-collection-id in the URL, it will ignore all other parameters, so here we first check it:
     if(apiCollectionIdParam.contains("api-collection-id=")) {
       getResourceDocsByApiCollectionId(apiVersion, apiCollectionIdParam)
     }else if(requestParams.contains("content=static")) {
-      systemResourcesDocs
+      staticResourcesDocs
     } else if (requestParams.contains("content=dynamic")){
       dynamicResourcesDocs
     } else{
-      systemResourcesDocs ++ dynamicResourcesDocs 
+      staticResourcesDocs ++ dynamicResourcesDocs
     }
   }
   
   // Returns all bank level dynamic resources
-  def getAllBankLevelDynamicResourceDocsJson(apiVersion : String) : List[ResourceDocJson] = {
+  def getStaticAndAllBankLevelDynamicResourceDocs(apiVersion : String) : List[ResourceDocJson] = {
 
     val apiCollectionIdParam = List("api-collection-id")
       .map(paramName => (paramName, S.param(paramName)))
@@ -342,7 +337,7 @@ object ObpAPI extends Loggable {
     
     val canReadDynamicResourceDocsAtOneBankEntitlementBankIds = getMySpaces.map(_.bank_ids).getOrElse(Nil)
     
-    lazy val staticResourcesDocs = getSystemResourceDocs(apiVersion, requestParams, canReadResourceDocRole)
+    lazy val staticResourcesDocs = getStaticResourceDocs(apiVersion, requestParams, canReadResourceDocRole)
     
     lazy val dynamicResourcesDocs = canReadDynamicResourceDocsAtOneBankEntitlementBankIds.map(
       bankId => getBankLevelDynamicResourceDocs(apiVersion,bankId,requestParams)).flatten
@@ -360,7 +355,7 @@ object ObpAPI extends Loggable {
   }
 
   // Returns only the bank level resource docs
-  def getBankLevelResourceDocsJson(apiVersion : String, bankId:String) : List[ResourceDocJson] = {
+  def getOneBankLevelResourceDocsJson(apiVersion : String, bankId:String) : List[ResourceDocJson] = {
     val apiCollectionIdParam = List("api-collection-id")
       .map(paramName => (paramName, S.param(paramName)))
       .collect{
@@ -384,11 +379,11 @@ object ObpAPI extends Loggable {
   private val DAYS_365 = 31536000
   //  static resourceDocs can be cached for a long time, only be changed when new deployment.
   val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("static_resource_docs_json.cache.ttl.seconds", DAYS_365) seconds
-  def getSystemResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: Boolean): List[ResourceDocJson] =  {
+  def getStaticResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: Boolean): List[ResourceDocJson] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
-        getResourceDocs(apiVersion,requestParams)
+        getResourceDocs(apiVersion,requestParams, "static")
       }
     }
   }
@@ -400,21 +395,21 @@ object ObpAPI extends Loggable {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getDynamicResourceDocsJsonTTL) {
-        getResourceDocs(apiVersion,requestParams)
+        getResourceDocs(apiVersion,requestParams, "dynamic")
       }
     }
   }
 
-  def getResourceDocs(apiVersion : String, requestParams: String) = {
+  def getResourceDocs(apiVersion : String, requestParams: String, contentTag: String) = {
     logger.debug("getResourceDocs says:")
     logger.debug("apiVersion:" + apiVersion)
     logger.debug("requestParams:" + requestParams)
-    getResourceDocsJValueResponse(apiVersion : String, requestParams: String).map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
+    getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String).map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
   }
 
-  def getResourceDocsJValueResponse(apiVersion : String, requestParams: String) = {
+  def getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String) = {
     logger.debug("getResourceDocsJValueResponse says Hello")
-    val result = ObpGet(s"$obpPrefix/v4.0.0/resource-docs/$apiVersion/obp$requestParams")
+    val result = ObpGet(s"$obpPrefix/v4.0.0/resource-docs/$apiVersion/obp$requestParams&content=$contentTag")
     logger.debug("getResourceDocsJValueResponse says result is: " + result)
     result
   }
@@ -429,7 +424,7 @@ object ObpAPI extends Loggable {
   
   def getBankLevelDynamicResourceDocsJValueResponse(apiVersion : String, bankId:String, requestParams: String) = {
     logger.debug("getBankLevelResourceDocsJValueResponse says Hello")
-    val result = ObpGet(s"$obpPrefix/v4.0.0/banks/$bankId/resource-docs/$apiVersion/obp$requestParams")
+    val result = ObpGet(s"$obpPrefix/v4.0.0/banks/$bankId/resource-docs/$apiVersion/obp$requestParams&cache-modifier=${UUID.randomUUID().toString}")
     logger.debug("getBankLevelResourceDocsJValueResponse says result is: " + result)
     result  
   }
