@@ -99,7 +99,12 @@ $(document).ready(function() {
     //get the parameters from URL, need to remove the version and tags.
     var urlParameters = window.location.search.slice(1).split('&');
     var urlParameterFilteredVersionAndTagsAndContent = urlParameters.filter(function(item) {
-        return !item.includes("version") && (!item.includes("tags")) && (!item.includes("api-collection-id"))&& (!item.includes("content"))&& (!item.includes("space_bank_id"))
+        return !item.includes("version") 
+            && (!item.includes("tags")) 
+            && (!item.includes("api-collection-id"))
+            && (!item.includes("content"))
+            && (!item.includes("functions"))
+            && (!item.includes("space_bank_id"))
     }).join("&");
     
     //and update the value for .version class
