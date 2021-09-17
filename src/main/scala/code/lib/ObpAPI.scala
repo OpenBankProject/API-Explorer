@@ -383,7 +383,8 @@ object ObpAPI extends Loggable {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
-        getResourceDocs(apiVersion,requestParams, "static")
+        val requestParamsRemovedContent = requestParams.replace("content=static","")
+        getResourceDocs(apiVersion, requestParamsRemovedContent, "static")
       }
     }
   }
@@ -395,7 +396,8 @@ object ObpAPI extends Loggable {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getDynamicResourceDocsJsonTTL) {
-        getResourceDocs(apiVersion,requestParams, "dynamic")
+        val requestParamsRemovedContent = requestParams.replace("content=dynamic","")
+        getResourceDocs(apiVersion, requestParamsRemovedContent, "dynamic")
       }
     }
   }
