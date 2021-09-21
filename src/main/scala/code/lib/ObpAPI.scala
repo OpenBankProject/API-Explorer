@@ -499,7 +499,7 @@ object OBPRequest extends MdcLoggable {
   //returns a tuple of the status code,  response body and list of headers
   def apply(apiPath : String, jsonBody : Option[JValue], method : String, headers : List[Header]) : Box[(Int, String, List[String])] = {
     logger.debug(s"before $apiPath call:")
-    val statusAndBody = tryo {
+    lazy val statusAndBody = tryo {
       val credentials = OAuthClient.getAuthorizedCredential
       val apiUrl = OAuthClient.currentApiBaseUrl
 
@@ -561,15 +561,27 @@ object OBPRequest extends MdcLoggable {
       (status, builder.toString(), adjustedResponseHeaders)
     }
 
-    val result = statusAndBody pass {
-      case Failure(msg, ex, _) => {
-        val sw = new StringWriter()
-        val writer = new PrintWriter(sw)
-        ex.foreach(_.printStackTrace(writer))
-        logger.debug("Error making api call: " + msg + ", stack trace: " + sw.toString)
+    val urlParametersUrl = apiPath.split("\\?")
+    val hasDuplicatedUrlParameters = if(urlParametersUrl.length >1) {
+      val duplicatedParameters = urlParametersUrl(1).split("&").map(_.split("=")).map(_.head).toList.groupBy(identity).collect { case (x, List(_,_,_*)) => x }
+      if(duplicatedParameters.size >0) {
+        (true, duplicatedParameters)
+      } else{ (false,"")}
+    } else (false,"")
+    
+    val result = if(hasDuplicatedUrlParameters._1) {
+      Failure(s"Duplicated URL Parameter, please check the parameter ${hasDuplicatedUrlParameters._2}")
+      } else {
+        statusAndBody pass {
+        case Failure(msg, ex, _) => {
+          val sw = new StringWriter()
+          val writer = new PrintWriter(sw)
+          ex.foreach(_.printStackTrace(writer))
+          logger.debug("Error making api call: " + msg + ", stack trace: " + sw.toString)
+        }
+        case _ => Unit
+        }
       }
-      case _ => Unit
-    }
     logger.debug(s"after $apiPath call:")
     result
   }
@@ -577,8 +589,10 @@ object OBPRequest extends MdcLoggable {
 
 object ObpPut {
   def apply(apiPath: String, json : JValue): Box[JValue] = {
-    OBPRequest(apiPath, Some(json), "PUT", Nil).flatMap {
-      case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+    OBPRequest(apiPath, Some(json), "PUT", Nil) match {
+      case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+      case Failure(msg, exception, chain) => Failure(msg)
+      case _ => Failure("Unknown Error!")
     }
   }
 }
@@ -592,8 +606,10 @@ object ObpPutWithHeader {
 
 object ObpPost {
   def apply(apiPath: String, json : JValue): Box[JValue] = {
-    OBPRequest(apiPath, Some(json), "POST", Nil).flatMap {
-      case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+    OBPRequest(apiPath, Some(json), "POST", Nil) match {
+      case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+      case Failure(msg, exception, chain) => Failure(msg)
+      case _ => Failure("Unknown Error!")
     }
   }
 }
@@ -627,8 +643,10 @@ object ObpDeleteBoolean {
 // TODO
 object ObpDelete {
   def apply(apiPath: String): Box[JValue] = {
-    OBPRequest(apiPath, None, "DELETE", Nil).map {
-      case(status, result, _) => APIUtils.apiResponseWorked(status, result)
+    OBPRequest(apiPath, None, "DELETE", Nil) match {
+      case Full((status, result, _)) => Full(APIUtils.apiResponseWorked(status, result))
+      case Failure(msg, exception, chain) => Failure(msg)
+      case _ => Failure("Unknown Error!")
     }
   }
 }
@@ -648,8 +666,10 @@ object ObpGet {
     if(apiPath.contains("/banks//")) {
       Empty
     } else {
-      OBPRequest(apiPath, None, "GET", headers).flatMap {
-        case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+      OBPRequest(apiPath, None, "GET", headers) match {
+        case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+        case Failure(msg, exception, chain) => Failure(msg)
+        case _ => Failure("Unknown Error!")
       }
     }
   }
@@ -660,8 +680,10 @@ object ObpHead {
     if(apiPath.contains("/banks//")) {
       Empty
     } else {
-      OBPRequest(apiPath, None, "HEAD", headers).flatMap {
-        case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+      OBPRequest(apiPath, None, "HEAD", headers) match {
+        case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+        case Failure(msg, exception, chain) => Failure(msg)
+        case _ => Failure("Unknown Error!")
       }
     }
   }
