@@ -253,14 +253,21 @@ object ObpAPI extends Loggable {
 
   val webuiIndexDynamic1LinkUrl = Helper.getPropsValue("webui_index_dynamic_1_link_url", "")
   val webuiIndexDynamic1LinkText = Helper.getPropsValue("webui_index_dynamic_1_link_text", "")
+
+  val webuiIndexDynamic2LinkUrl = Helper.getPropsValue("webui_index_dynamic_2_link_url", "")
+  val webuiIndexDynamic2LinkText = Helper.getPropsValue("webui_index_dynamic_2_link_text", "")
   
   def getApiCollectionsFromProps: Box[List[(String, String)]] = {
-    if (webuiIndexDynamic1LinkText.isEmpty ||webuiIndexDynamic1LinkText.isEmpty ) 
-      Full(Nil)
-    else
+    if (webuiIndexDynamic1LinkUrl.nonEmpty && webuiIndexDynamic1LinkText.nonEmpty && webuiIndexDynamic2LinkText.nonEmpty && webuiIndexDynamic2LinkUrl.nonEmpty){
+      Full(List(
+        (webuiIndexDynamic1LinkText,webuiIndexDynamic1LinkUrl), (webuiIndexDynamic2LinkText,webuiIndexDynamic2LinkUrl)
+      ))
+    } else if (webuiIndexDynamic1LinkText.nonEmpty && webuiIndexDynamic1LinkText.nonEmpty )
       Full(List(
         (webuiIndexDynamic1LinkText,webuiIndexDynamic1LinkUrl)
       ))
+    else
+      Full(Nil)
   }
   
   /**
