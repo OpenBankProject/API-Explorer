@@ -448,7 +448,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
     // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
     val allResources: List[ResourceDocJson] = for {
-      rs <- getAllResourceDocsJson(apiVersion)
+      rs <- getAllResourceDocsJson(apiVersion).openOrThrowException("Resource docs can not be empty here!")
     } yield rs
     // The list generated here might be used by an administrator as a white or black list of API calls for the API itself.
     val commaSeparatedListOfResources = allResources.map(_.operation_id).mkString("[", ", ", "]")
@@ -655,11 +655,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val allResources = for {
       r <- 
         if (resourceDocsRequiresRole && !spaceBankId.isEmpty) //If resourceDocsRequiresRole == true && spaceBankId is there, we only return one bank level dynamic resource docs
-          getOneBankLevelResourceDocsJson(apiVersion, spaceBankId)
+          getOneBankLevelResourceDocsJson(apiVersion, spaceBankId).openOrThrowException("Resource docs can not be empty here!")
         else if( resourceDocsRequiresRole && spaceBankId.isEmpty)//If resourceDocsRequiresRole == true && spaceBankId empty, we will return all static + all the banks dynamic resource docs
-          getStaticAndAllBankLevelDynamicResourceDocs(apiVersion)
+          getStaticAndAllBankLevelDynamicResourceDocs(apiVersion).openOrThrowException("Resource docs can not be empty here!")
         else // other case, we will return
-          getAllResourceDocsJson(apiVersion)
+          getAllResourceDocsJson(apiVersion).openOrThrowException("Resource docs can not be empty here!")
     } yield ResourceDocPlus(
        //in OBP-API, before it returned v3_1_0, but now, only return v3.1.0
       //But this field will be used in JavaScript, so need clean the field.

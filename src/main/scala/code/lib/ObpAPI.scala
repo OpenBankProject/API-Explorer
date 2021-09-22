@@ -270,7 +270,7 @@ object ObpAPI extends Loggable {
 
 
   // Returns both system and dynamic resource docs:
-  def getAllResourceDocsJson(apiVersion : String) : List[ResourceDocJson] = {
+  def getAllResourceDocsJson(apiVersion : String): Box[List[ResourceDocJson]] = {
 
     val apiCollectionIdParam = List("api-collection-id")
       .map(paramName => (paramName, S.param(paramName)))
@@ -306,12 +306,17 @@ object ObpAPI extends Loggable {
     } else if (requestParams.contains("content=dynamic")){
       dynamicResourcesDocs
     } else{
-      staticResourcesDocs ++ dynamicResourcesDocs
+    for{
+        staticResourcesDocsList <-staticResourcesDocs
+        dynamicResourcesDocsList <-dynamicResourcesDocs
+      } yield {
+        staticResourcesDocsList++dynamicResourcesDocsList
+      }
     }
   }
   
   // Returns all bank level dynamic resources
-  def getStaticAndAllBankLevelDynamicResourceDocs(apiVersion : String) : List[ResourceDocJson] = {
+  def getStaticAndAllBankLevelDynamicResourceDocs(apiVersion : String) = {
 
     val apiCollectionIdParam = List("api-collection-id")
       .map(paramName => (paramName, S.param(paramName)))
@@ -339,8 +344,8 @@ object ObpAPI extends Loggable {
     
     lazy val staticResourcesDocs = getStaticResourceDocs(apiVersion, requestParams, canReadResourceDocRole)
     
-    lazy val dynamicResourcesDocs = canReadDynamicResourceDocsAtOneBankEntitlementBankIds.map(
-      bankId => getBankLevelDynamicResourceDocs(apiVersion,bankId,requestParams)).flatten
+    lazy val dynamicResourcesDocs = tryo (canReadDynamicResourceDocsAtOneBankEntitlementBankIds.map(
+      bankId => getBankLevelDynamicResourceDocs(apiVersion,bankId,requestParams)).flatten.flatten)
     
     //If the api-collection-id in the URL, it will ignore all other parameters, so here we first check it:
     if(apiCollectionIdParam.contains("api-collection-id=")) {
@@ -350,12 +355,17 @@ object ObpAPI extends Loggable {
     } else if (requestParams.contains("content=dynamic")){
       dynamicResourcesDocs
     } else{
-      staticResourcesDocs ++ dynamicResourcesDocs 
+      for{
+        staticResourcesDocsList <-staticResourcesDocs
+        dynamicResourcesDocsList <-dynamicResourcesDocs
+      } yield {
+        staticResourcesDocsList++dynamicResourcesDocsList
+      }
     }
   }
 
   // Returns only the bank level resource docs
-  def getOneBankLevelResourceDocsJson(apiVersion : String, bankId:String) : List[ResourceDocJson] = {
+  def getOneBankLevelResourceDocsJson(apiVersion : String, bankId:String) = {
     val apiCollectionIdParam = List("api-collection-id")
       .map(paramName => (paramName, S.param(paramName)))
       .collect{
@@ -379,7 +389,7 @@ object ObpAPI extends Loggable {
   private val DAYS_365 = 31536000
   //  static resourceDocs can be cached for a long time, only be changed when new deployment.
   val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("static_resource_docs_json.cache.ttl.seconds", DAYS_365) seconds
-  def getStaticResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: Boolean): List[ResourceDocJson] =  {
+  def getStaticResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: Boolean): Box[List[ResourceDocJson]] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
@@ -392,7 +402,7 @@ object ObpAPI extends Loggable {
   //  dynamic resourceDocs can be cached only for short time, 1 hour 
   private val HOUR_1 = 3600
   val getDynamicResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("dynamic_static_resource_docs_json.cache.ttl.seconds", HOUR_1) seconds
-  def getDynamicResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: Boolean): List[ResourceDocJson] =  {
+  def getDynamicResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: Boolean): Box[List[ResourceDocJson]] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getDynamicResourceDocsJsonTTL) {
@@ -406,7 +416,7 @@ object ObpAPI extends Loggable {
     logger.debug("getResourceDocs says:")
     logger.debug("apiVersion:" + apiVersion)
     logger.debug("requestParams:" + requestParams)
-    getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String).map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
+    getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String).map(extractResourceDocsJson).map(_.resource_docs)
   }
 
   def getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String) = {
@@ -421,7 +431,7 @@ object ObpAPI extends Loggable {
     logger.debug("apiVersion:" + apiVersion)
     logger.debug("bankId:" + apiVersion)
     logger.debug("requestParams:" + requestParams)
-    getBankLevelDynamicResourceDocsJValueResponse(apiVersion : String, bankId:String, requestParams: String).map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
+    getBankLevelDynamicResourceDocsJValueResponse(apiVersion : String, bankId:String, requestParams: String).map(extractResourceDocsJson).map(_.resource_docs)
   }
   
   def getBankLevelDynamicResourceDocsJValueResponse(apiVersion : String, bankId:String, requestParams: String) = {
@@ -432,7 +442,7 @@ object ObpAPI extends Loggable {
   }
   
   def getResourceDocsByApiCollectionId(apiVersion : String, requestParams: String) =
-    ObpGet(s"$obpPrefix/v4.0.0/resource-docs/$apiVersion/obp$requestParams").map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
+    ObpGet(s"$obpPrefix/v4.0.0/resource-docs/$apiVersion/obp$requestParams").map(extractResourceDocsJson).map(_.resource_docs)
 
   def getApiCollectionByIdJValueResponse(apiVersion : String) = {
     val apiCollectionIdParam = List("api-collection-id")
