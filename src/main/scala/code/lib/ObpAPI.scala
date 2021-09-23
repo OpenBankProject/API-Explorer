@@ -54,9 +54,7 @@ object ObpAPI extends Loggable {
     }
   }
 
-  def currentUser : Box[CurrentUserJson]= if(isLoggedIn){
-    ObpGet(s"$obpPrefix/v2.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  def currentUser : Box[CurrentUserJson]= ObpGet(s"$obpPrefix/v2.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
 
   def getRoot : Box[JValue]= ObpGet(s"$obpPrefix/v4.0.0/root")
   
@@ -79,7 +77,7 @@ object ObpAPI extends Loggable {
     * @return Json for transactions of a particular bank account Uses 3.0.0 call and format.
     */
   def transactions300(bankId: String, accountId: String, viewId: String, limit: Option[Int],
-                      offset: Option[Int], fromDate: Option[Date], toDate: Option[Date], sortDirection: Option[SortDirection]) : Box[TransactionsJsonV300]= if(isLoggedIn){
+                      offset: Option[Int], fromDate: Option[Date], toDate: Option[Date], sortDirection: Option[SortDirection]) : Box[TransactionsJsonV300]= {
 
     val headers : List[Header] = limit.map(l => Header("obp_limit", l.toString)).toList ::: offset.map(o => Header("obp_offset", o.toString)).toList :::
       fromDate.map(f => Header("obp_from_date", dateFormat.format(f))).toList ::: toDate.map(t => Header("obp_to_date", dateFormat.format(t))).toList :::
@@ -87,7 +85,7 @@ object ObpAPI extends Loggable {
 
     ObpGet(s"$obpPrefix/v3.0.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) +
       "/transactions", headers).flatMap(x => x.extractOpt[TransactionsJsonV300])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  }
 
 
 
@@ -103,40 +101,40 @@ object ObpAPI extends Loggable {
     ObpGet(s"$obpPrefix/v3.1.0/accounts/public").flatMap(_.extractOpt[BarebonesAccountsJson])
   }
 
-  def privateAccounts(bankId : String) : Box[BarebonesAccountsJson] = if(isLoggedIn){
+  def privateAccounts(bankId : String) : Box[BarebonesAccountsJson] = {
     ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/private").flatMap(_.extractOpt[BarebonesAccountsJson])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
-  def privateAccounts : Box[BarebonesAccountsJson] = if(isLoggedIn){
+  def privateAccounts : Box[BarebonesAccountsJson] = {
     ObpGet(s"$obpPrefix/v1.2.1/accounts/private").flatMap(_.extractOpt[BarebonesAccountsJson])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  }
   
   @deprecated("This method will mix public and private, not clear for Apps.","2018-02-18")
-  def allAccountsAtOneBank(bankId : String) : Box[BarebonesAccountsJson] = if(isLoggedIn){
+  def allAccountsAtOneBank(bankId : String) : Box[BarebonesAccountsJson] = {
     ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts").flatMap(_.extractOpt[BarebonesAccountsJson])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
   // Similar to getViews below
-  def getViewsForBankAccount(bankId: String, accountId: String) = if(isLoggedIn){
+  def getViewsForBankAccount(bankId: String, accountId: String) = {
     ObpGet(s"$obpPrefix/v3.1.0/banks/" + bankId + "/accounts/" + accountId + "/views").flatMap(_.extractOpt[ViewsJson])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  }
 
-  def getAccount(bankId: String, accountId: String, viewId: String) : Box[AccountJson] = if(isLoggedIn) {
+  def getAccount(bankId: String, accountId: String, viewId: String) : Box[AccountJson] = {
     ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/account").flatMap(x => x.extractOpt[AccountJson])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
-  def getCounterparties(bankId: String, accountId: String, viewId: String): Box[DirectOtherAccountsJson] = if(isLoggedIn) {
+  def getCounterparties(bankId: String, accountId: String, viewId: String): Box[DirectOtherAccountsJson] =  {
     val counterparties  = ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/other_accounts").flatMap(x => x.extractOpt[DirectOtherAccountsJson])
     counterparties
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
-  def getExplictCounterparties(bankId: String, accountId: String, viewId: String): Box[ExplictCounterpartiesJson] = if(isLoggedIn){
+  def getExplictCounterparties(bankId: String, accountId: String, viewId: String): Box[ExplictCounterpartiesJson] = {
      ObpGet(s"$obpPrefix/v2.2.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/counterparties").flatMap(x => x.extractOpt[ExplictCounterpartiesJson])
-  }else Failure("OBP-20001: User not logged in. Authentication is required!")
+  }
 
-  def getEntitlementsV300 : Box[EntitlementsJson] = if(isLoggedIn){
+  def getEntitlementsV300 : Box[EntitlementsJson] = {
     ObpGet(s"$obpPrefix/v3.0.0/my/entitlements").flatMap(_.extractOpt[EntitlementsJson]) 
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
   //Can not use the `isLoggedIn` guard here. It use for the home page, sometimes no need the authentication. 
   def getMySpaces : Box[MySpaces] = ObpGet(s"$obpPrefix/v4.0.0/my/spaces").flatMap(_.extractOpt[MySpaces])
@@ -189,13 +187,13 @@ object ObpAPI extends Loggable {
   }
 
 
-  def getEntitlementRequestsV300 : Box[EntitlementRequestsJson] = if(isLoggedIn){
+  def getEntitlementRequestsV300 : Box[EntitlementRequestsJson] = {
     val result = ObpGet(s"$obpPrefix/v3.0.0/my/entitlement-requests").flatMap(_.extractOpt[EntitlementRequestsJson])
     logger.debug(s"We got this result for EntitlementRequestsJson: ${result}")
     result
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
-  def getApiCollection(apiCollectionName: String) : Box[ApiCollectionJson400] = if(isLoggedIn){
+  def getApiCollection(apiCollectionName: String) : Box[ApiCollectionJson400] = {
     val response = ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/name/$apiCollectionName").flatMap(_.extractOpt[ApiCollectionJson400])
     if (response.toString.contains("OBP-30079")) {
       createMyApiCollection("Favourites",true)
@@ -203,11 +201,11 @@ object ObpAPI extends Loggable {
     } else{
       response
     }
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
-  def getApiCollectionEndpoints(apiCollectionName: String) : Box[ApiCollectionEndpointsJson400] = if(isLoggedIn){
+  def getApiCollectionEndpoints(apiCollectionName: String) : Box[ApiCollectionEndpointsJson400] = {
     ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
   def getApiCollectionEndpointsById(apiCollectionId: String) : Box[ApiCollectionEndpointsJson400] = {
     val response = ObpGet(s"$obpPrefix/v4.0.0/api-collections/$apiCollectionId/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
@@ -220,24 +218,22 @@ object ObpAPI extends Loggable {
   }
 
 
-  def getMyApiCollections = if(isLoggedIn){
-    ObpGet(s"$obpPrefix/v4.0.0/my/api-collections").flatMap(_.extractOpt[ApiCollectionsJson400])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  def getMyApiCollections = ObpGet(s"$obpPrefix/v4.0.0/my/api-collections").flatMap(_.extractOpt[ApiCollectionsJson400])
   
   
-  def createMyApiCollection (apiCollectionName: String, is_sharable:Boolean) = if(isLoggedIn){
+  def createMyApiCollection (apiCollectionName: String, is_sharable:Boolean) = {
     val postSelectionEndpointJson =  PostApiCollectionJson400(apiCollectionName, is_sharable)
     ObpPost(s"$obpPrefix/v4.0.0/my/api-collections", Extraction.decompose(postSelectionEndpointJson))
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  }
   
-  def createMyApiCollectionEndpoint (apiCollectionName: String, operationId: String) = if(isLoggedIn){
+  def createMyApiCollectionEndpoint (apiCollectionName: String, operationId: String) = {
     val postSelectionEndpointJson =  PostSelectionEndpointJson400(operationId)
     ObpPost(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints", Extraction.decompose(postSelectionEndpointJson))
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  }
 
-  def deleteMyApiCollectionEndpoint (apiCollectionName: String, operationId: String)  = if(isLoggedIn){
+  def deleteMyApiCollectionEndpoint (apiCollectionName: String, operationId: String)  = {
     ObpDelete(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints/$operationId")
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  }
 
   //NOTE: there is no parameters for the method, the cache is not working well. need to fix later
 //  private val sharableApiCollectionsTTL: FiniteDuration = Helper.getPropsAsIntValue("sharable_api_collections.cache.ttl.seconds", 0) seconds

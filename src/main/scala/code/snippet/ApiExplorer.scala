@@ -762,8 +762,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
       logger.info("tags filter reduced the list of resource docs to zero")
     }
 
-    lazy val ApiCollectionBox = ObpAPI.getApiCollectionByIdJValueResponse("v4.0.0")
-
     // Sort by the first and second tags (if any) then the summary.
     // In order to help sorting, the first tag in a call should be most general, then more specific etc.
     val resources = resourcesToUse.sortBy(r => {
@@ -1003,11 +1001,15 @@ WIP to add comments on resource docs. This code copied from Sofit.
     def processFavourites(name: String): JsCmd = {
       // enable button
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
-      if(isLoggedIn){ // If the user is not logged in, we do not need call any apis calls. (performance enhancement)
-        //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delelet the record there.
-        val apiFavouriteCollection = ObpAPI.getApiCollection("Favourites")
-        val errorMessage = if(apiFavouriteCollection.isInstanceOf[Failure]) apiFavouriteCollection.asInstanceOf[Failure].messageChain else ""
+      //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delelet the record there.
+      val apiFavouriteCollection = ObpAPI.getApiCollection("Favourites")
+      val errorMessage = if(apiFavouriteCollection.isInstanceOf[Failure]) apiFavouriteCollection.asInstanceOf[Failure].messageChain else ""
 
+      
+      if(apiFavouriteCollection.isInstanceOf[Failure]){ // If the user is not logged in, we do not need call any apis calls. (performance enhancement)
+        SetHtml(s"favourites_error_message_${favouritesOperationId}", Text(errorMessage))&
+          Run (jsEnabledBtn)
+      } else {
         if(errorMessage.equals("")){ //If there is no error, we changed the button
           if(favouritesApiCollectionId.nonEmpty && !apiFavouriteCollection.map(_.api_collection_id).contains(favouritesApiCollectionId)){
             SetHtml(s"favourites_error_message_${favouritesOperationId}", Text("You only have read access for the Favourites. You can only edit your own Favourites."))&
@@ -1022,14 +1024,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
               s"jQuery('#favourites_button_${favouritesOperationId}').css('color','#53C4EF')"
             }
             Run (jsEnabledBtn) &
-            Run (favouritesBtnColour)}
+              Run (favouritesBtnColour)}
         } else { //if there is error, we show the OBP-API error there.
           SetHtml(s"favourites_error_message_${favouritesOperationId}", Text(errorMessage)) &
             Run(jsEnabledBtn)
         }
-      } else {
-        SetHtml(s"favourites_error_message_${favouritesOperationId}", Text("OBP-20001: User not logged in. Authentication is required!"))&
-        Run (jsEnabledBtn)
       }
     }
 
