@@ -448,7 +448,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
     // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
     val allResources: List[ResourceDocJson] = for {
-      rs <- getAllResourceDocsJson(apiVersion)
+      rs <- getAllResourceDocsJson(apiVersion).openOrThrowException("Resource docs can not be empty here!")
     } yield rs
     // The list generated here might be used by an administrator as a white or black list of API calls for the API itself.
     val commaSeparatedListOfResources = allResources.map(_.operation_id).mkString("[", ", ", "]")
@@ -643,7 +643,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
   }
 
 
-  def showResources = {
+  def showResources: CssSel = {
     logger.debug("before showResources:")
     def resourceDocsRequiresRole = ObpAPI.getRoot.flatMap(_.extractOpt[APIInfoJson400].map(_.resource_docs_requires_role)).openOr(false)
     val spaceBankId = S.param("space_bank_id").getOrElse("")
@@ -652,14 +652,18 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // This will throw an exception if resource_docs key is not populated
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
     // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
+    val allResourcesBox = if (resourceDocsRequiresRole && !spaceBankId.isEmpty) //If resourceDocsRequiresRole == true && spaceBankId is there, we only return one bank level dynamic resource docs
+      getOneBankLevelResourceDocsJson(apiVersion, spaceBankId)
+    else if( resourceDocsRequiresRole && spaceBankId.isEmpty)//If resourceDocsRequiresRole == true && spaceBankId empty, we will return all static + all the banks dynamic resource docs
+      getStaticAndAllBankLevelDynamicResourceDocs(apiVersion)
+    else // other case, we will return
+      getAllResourceDocsJson(apiVersion)
+    
+    //Here need to change to Nil, if we throw exception here, we can not render the other parts of the home page.
+    val allResourcesList = allResourcesBox.getOrElse(Nil)
+    
     val allResources = for {
-      r <- 
-        if (resourceDocsRequiresRole && !spaceBankId.isEmpty) //If resourceDocsRequiresRole == true && spaceBankId is there, we only return one bank level dynamic resource docs
-          getOneBankLevelResourceDocsJson(apiVersion, spaceBankId)
-        else if( resourceDocsRequiresRole && spaceBankId.isEmpty)//If resourceDocsRequiresRole == true && spaceBankId empty, we will return all static + all the banks dynamic resource docs
-          getStaticAndAllBankLevelDynamicResourceDocs(apiVersion)
-        else // other case, we will return
-          getAllResourceDocsJson(apiVersion)
+      r <- allResourcesList
     } yield ResourceDocPlus(
        //in OBP-API, before it returned v3_1_0, but now, only return v3.1.0
       //But this field will be used in JavaScript, so need clean the field.
@@ -758,8 +762,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
       logger.info("tags filter reduced the list of resource docs to zero")
     }
 
-    lazy val ApiCollectionBox = ObpAPI.getApiCollectionByIdJValueResponse("v4.0.0")
-
     // Sort by the first and second tags (if any) then the summary.
     // In order to help sorting, the first tag in a call should be most general, then more specific etc.
     val resources = resourcesToUse.sortBy(r => {
@@ -771,8 +773,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     //this can be empty list, if there is no operationIds there.
-    def getOperationIdsByApiCollectionId = ObpAPI.getApiCollectionEndpointsById(apiCollectionId).map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
-    def getMyOperationIds = ObpAPI.getApiCollectionEndpoints("Favourites").map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
+    val getOperationIdsByApiCollectionId = ObpAPI.getApiCollectionEndpointsById(apiCollectionId).map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
+    val getMyOperationIds = ObpAPI.getApiCollectionEndpoints("Favourites").map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
 
     // Group resources by the first tag
     val unsortedGroupedResources: Map[String, List[ResourceDocPlus]] = resources.groupBy(_.tags.headOr("ToTag"))
@@ -999,11 +1001,15 @@ WIP to add comments on resource docs. This code copied from Sofit.
     def processFavourites(name: String): JsCmd = {
       // enable button
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
-      if(isLoggedIn){ // If the user is not logged in, we do not need call any apis calls. (performance enhancement)
-        //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delelet the record there.
-        val apiFavouriteCollection = ObpAPI.getApiCollection("Favourites")
-        val errorMessage = if(apiFavouriteCollection.isInstanceOf[Failure]) apiFavouriteCollection.asInstanceOf[Failure].messageChain else ""
+      //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delelet the record there.
+      val apiFavouriteCollection = ObpAPI.getApiCollection("Favourites")
+      val errorMessage = if(apiFavouriteCollection.isInstanceOf[Failure]) apiFavouriteCollection.asInstanceOf[Failure].messageChain else ""
 
+      
+      if(apiFavouriteCollection.isInstanceOf[Failure]){ // If the user is not logged in, we do not need call any apis calls. (performance enhancement)
+        SetHtml(s"favourites_error_message_${favouritesOperationId}", Text(errorMessage))&
+          Run (jsEnabledBtn)
+      } else {
         if(errorMessage.equals("")){ //If there is no error, we changed the button
           if(favouritesApiCollectionId.nonEmpty && !apiFavouriteCollection.map(_.api_collection_id).contains(favouritesApiCollectionId)){
             SetHtml(s"favourites_error_message_${favouritesOperationId}", Text("You only have read access for the Favourites. You can only edit your own Favourites."))&
@@ -1018,14 +1024,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
               s"jQuery('#favourites_button_${favouritesOperationId}').css('color','#53C4EF')"
             }
             Run (jsEnabledBtn) &
-            Run (favouritesBtnColour)}
+              Run (favouritesBtnColour)}
         } else { //if there is error, we show the OBP-API error there.
           SetHtml(s"favourites_error_message_${favouritesOperationId}", Text(errorMessage)) &
             Run(jsEnabledBtn)
         }
-      } else {
-        SetHtml(s"favourites_error_message_${favouritesOperationId}", Text("OBP-20001: User not logged in. Authentication is required!"))&
-        Run (jsEnabledBtn)
       }
     }
 
@@ -1468,16 +1471,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // replace the node identified by the class "resource" with the following
       // This creates the list of resources in the DOM
     {
-      if(resources.length==0) {
+      if(allResourcesBox.isInstanceOf[Failure]) {
       ".resource [style]" #> s"display: none" &
         ".resource-error [style]" #> s"display: block" &
         ".content-box__headline *" #> {
-          if(!isLoggedIn)//If no resources, first check the login,
-            "OBP-20001: User not logged in. Authentication is required!"
-          else // all other cases throw the general error.
-            "Sorry, we could not return any Resource Docs."
-        }&{
-          if(isLoggedIn && canReadResourceRole.isEmpty){
+          allResourcesBox.asInstanceOf[Failure].msg
+        }&
+        {
+          if(allResourcesBox.asInstanceOf[Failure].msg.contains("CanReadResourceDoc")){
             //required roles and related user information
             "@roles_box [id]" #> s"roles_box_canReadResourceDocRoleInfo" &
               "@roles_box [style]" #> {s"display: block"} &
@@ -1505,10 +1506,17 @@ WIP to add comments on resource docs. This code copied from Sofit.
                     s"display: block"
                   }
               }
-          }else{
+          } else{
             "@roles_box [style]" #> s"display: none"
             }
         }
+      }else if(allResourcesBox.isEmpty || allResourcesBox.openOr(Nil).length ==0){
+        ".resource [style]" #> s"display: none" &
+          ".resource-error [style]" #> s"display: block" &
+          ".content-box__headline *" #> {
+            "Sorry, we could not return any Resource Docs."
+          }&
+          ".content-box__info-box [style]" #> s"display: none"
       }
       else {
         //The default tag is the first tag of the resource, if it is empty, we use the API Tag.

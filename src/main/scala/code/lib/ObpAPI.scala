@@ -54,9 +54,7 @@ object ObpAPI extends Loggable {
     }
   }
 
-  def currentUser : Box[CurrentUserJson]= if(isLoggedIn){
-    ObpGet(s"$obpPrefix/v2.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  def currentUser : Box[CurrentUserJson]= ObpGet(s"$obpPrefix/v2.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
 
   def getRoot : Box[JValue]= ObpGet(s"$obpPrefix/v4.0.0/root")
   
@@ -79,7 +77,7 @@ object ObpAPI extends Loggable {
     * @return Json for transactions of a particular bank account Uses 3.0.0 call and format.
     */
   def transactions300(bankId: String, accountId: String, viewId: String, limit: Option[Int],
-                      offset: Option[Int], fromDate: Option[Date], toDate: Option[Date], sortDirection: Option[SortDirection]) : Box[TransactionsJsonV300]= if(isLoggedIn){
+                      offset: Option[Int], fromDate: Option[Date], toDate: Option[Date], sortDirection: Option[SortDirection]) : Box[TransactionsJsonV300]= {
 
     val headers : List[Header] = limit.map(l => Header("obp_limit", l.toString)).toList ::: offset.map(o => Header("obp_offset", o.toString)).toList :::
       fromDate.map(f => Header("obp_from_date", dateFormat.format(f))).toList ::: toDate.map(t => Header("obp_to_date", dateFormat.format(t))).toList :::
@@ -87,7 +85,7 @@ object ObpAPI extends Loggable {
 
     ObpGet(s"$obpPrefix/v3.0.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) +
       "/transactions", headers).flatMap(x => x.extractOpt[TransactionsJsonV300])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  }
 
 
 
@@ -103,40 +101,40 @@ object ObpAPI extends Loggable {
     ObpGet(s"$obpPrefix/v3.1.0/accounts/public").flatMap(_.extractOpt[BarebonesAccountsJson])
   }
 
-  def privateAccounts(bankId : String) : Box[BarebonesAccountsJson] = if(isLoggedIn){
+  def privateAccounts(bankId : String) : Box[BarebonesAccountsJson] = {
     ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/private").flatMap(_.extractOpt[BarebonesAccountsJson])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
-  def privateAccounts : Box[BarebonesAccountsJson] = if(isLoggedIn){
+  def privateAccounts : Box[BarebonesAccountsJson] = {
     ObpGet(s"$obpPrefix/v1.2.1/accounts/private").flatMap(_.extractOpt[BarebonesAccountsJson])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  }
   
   @deprecated("This method will mix public and private, not clear for Apps.","2018-02-18")
-  def allAccountsAtOneBank(bankId : String) : Box[BarebonesAccountsJson] = if(isLoggedIn){
+  def allAccountsAtOneBank(bankId : String) : Box[BarebonesAccountsJson] = {
     ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts").flatMap(_.extractOpt[BarebonesAccountsJson])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
   // Similar to getViews below
-  def getViewsForBankAccount(bankId: String, accountId: String) = if(isLoggedIn){
+  def getViewsForBankAccount(bankId: String, accountId: String) = {
     ObpGet(s"$obpPrefix/v3.1.0/banks/" + bankId + "/accounts/" + accountId + "/views").flatMap(_.extractOpt[ViewsJson])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  }
 
-  def getAccount(bankId: String, accountId: String, viewId: String) : Box[AccountJson] = if(isLoggedIn) {
+  def getAccount(bankId: String, accountId: String, viewId: String) : Box[AccountJson] = {
     ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/account").flatMap(x => x.extractOpt[AccountJson])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
-  def getCounterparties(bankId: String, accountId: String, viewId: String): Box[DirectOtherAccountsJson] = if(isLoggedIn) {
+  def getCounterparties(bankId: String, accountId: String, viewId: String): Box[DirectOtherAccountsJson] =  {
     val counterparties  = ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/other_accounts").flatMap(x => x.extractOpt[DirectOtherAccountsJson])
     counterparties
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
-  def getExplictCounterparties(bankId: String, accountId: String, viewId: String): Box[ExplictCounterpartiesJson] = if(isLoggedIn){
+  def getExplictCounterparties(bankId: String, accountId: String, viewId: String): Box[ExplictCounterpartiesJson] = {
      ObpGet(s"$obpPrefix/v2.2.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/counterparties").flatMap(x => x.extractOpt[ExplictCounterpartiesJson])
-  }else Failure("OBP-20001: User not logged in. Authentication is required!")
+  }
 
-  def getEntitlementsV300 : Box[EntitlementsJson] = if(isLoggedIn){
+  def getEntitlementsV300 : Box[EntitlementsJson] = {
     ObpGet(s"$obpPrefix/v3.0.0/my/entitlements").flatMap(_.extractOpt[EntitlementsJson]) 
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
   //Can not use the `isLoggedIn` guard here. It use for the home page, sometimes no need the authentication. 
   def getMySpaces : Box[MySpaces] = ObpGet(s"$obpPrefix/v4.0.0/my/spaces").flatMap(_.extractOpt[MySpaces])
@@ -189,13 +187,13 @@ object ObpAPI extends Loggable {
   }
 
 
-  def getEntitlementRequestsV300 : Box[EntitlementRequestsJson] = if(isLoggedIn){
+  def getEntitlementRequestsV300 : Box[EntitlementRequestsJson] = {
     val result = ObpGet(s"$obpPrefix/v3.0.0/my/entitlement-requests").flatMap(_.extractOpt[EntitlementRequestsJson])
     logger.debug(s"We got this result for EntitlementRequestsJson: ${result}")
     result
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
-  def getApiCollection(apiCollectionName: String) : Box[ApiCollectionJson400] = if(isLoggedIn){
+  def getApiCollection(apiCollectionName: String) : Box[ApiCollectionJson400] = {
     val response = ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/name/$apiCollectionName").flatMap(_.extractOpt[ApiCollectionJson400])
     if (response.toString.contains("OBP-30079")) {
       createMyApiCollection("Favourites",true)
@@ -203,11 +201,11 @@ object ObpAPI extends Loggable {
     } else{
       response
     }
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
-  def getApiCollectionEndpoints(apiCollectionName: String) : Box[ApiCollectionEndpointsJson400] = if(isLoggedIn){
+  def getApiCollectionEndpoints(apiCollectionName: String) : Box[ApiCollectionEndpointsJson400] = {
     ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  } 
 
   def getApiCollectionEndpointsById(apiCollectionId: String) : Box[ApiCollectionEndpointsJson400] = {
     val response = ObpGet(s"$obpPrefix/v4.0.0/api-collections/$apiCollectionId/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
@@ -220,24 +218,22 @@ object ObpAPI extends Loggable {
   }
 
 
-  def getMyApiCollections = if(isLoggedIn){
-    ObpGet(s"$obpPrefix/v4.0.0/my/api-collections").flatMap(_.extractOpt[ApiCollectionsJson400])
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  def getMyApiCollections = ObpGet(s"$obpPrefix/v4.0.0/my/api-collections").flatMap(_.extractOpt[ApiCollectionsJson400])
   
   
-  def createMyApiCollection (apiCollectionName: String, is_sharable:Boolean) = if(isLoggedIn){
+  def createMyApiCollection (apiCollectionName: String, is_sharable:Boolean) = {
     val postSelectionEndpointJson =  PostApiCollectionJson400(apiCollectionName, is_sharable)
     ObpPost(s"$obpPrefix/v4.0.0/my/api-collections", Extraction.decompose(postSelectionEndpointJson))
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  }
   
-  def createMyApiCollectionEndpoint (apiCollectionName: String, operationId: String) = if(isLoggedIn){
+  def createMyApiCollectionEndpoint (apiCollectionName: String, operationId: String) = {
     val postSelectionEndpointJson =  PostSelectionEndpointJson400(operationId)
     ObpPost(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints", Extraction.decompose(postSelectionEndpointJson))
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  }
 
-  def deleteMyApiCollectionEndpoint (apiCollectionName: String, operationId: String)  = if(isLoggedIn){
+  def deleteMyApiCollectionEndpoint (apiCollectionName: String, operationId: String)  = {
     ObpDelete(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints/$operationId")
-  } else Failure("OBP-20001: User not logged in. Authentication is required!")
+  }
 
   //NOTE: there is no parameters for the method, the cache is not working well. need to fix later
 //  private val sharableApiCollectionsTTL: FiniteDuration = Helper.getPropsAsIntValue("sharable_api_collections.cache.ttl.seconds", 0) seconds
@@ -277,7 +273,7 @@ object ObpAPI extends Loggable {
 
 
   // Returns both system and dynamic resource docs:
-  def getAllResourceDocsJson(apiVersion : String) : List[ResourceDocJson] = {
+  def getAllResourceDocsJson(apiVersion : String): Box[List[ResourceDocJson]] = {
 
     val apiCollectionIdParam = List("api-collection-id")
       .map(paramName => (paramName, S.param(paramName)))
@@ -313,12 +309,17 @@ object ObpAPI extends Loggable {
     } else if (requestParams.contains("content=dynamic")){
       dynamicResourcesDocs
     } else{
-      staticResourcesDocs ++ dynamicResourcesDocs
+    for{
+        staticResourcesDocsList <-staticResourcesDocs
+        dynamicResourcesDocsList <-dynamicResourcesDocs
+      } yield {
+        staticResourcesDocsList++dynamicResourcesDocsList
+      }
     }
   }
   
   // Returns all bank level dynamic resources
-  def getStaticAndAllBankLevelDynamicResourceDocs(apiVersion : String) : List[ResourceDocJson] = {
+  def getStaticAndAllBankLevelDynamicResourceDocs(apiVersion : String) = {
 
     val apiCollectionIdParam = List("api-collection-id")
       .map(paramName => (paramName, S.param(paramName)))
@@ -346,8 +347,8 @@ object ObpAPI extends Loggable {
     
     lazy val staticResourcesDocs = getStaticResourceDocs(apiVersion, requestParams, canReadResourceDocRole)
     
-    lazy val dynamicResourcesDocs = canReadDynamicResourceDocsAtOneBankEntitlementBankIds.map(
-      bankId => getBankLevelDynamicResourceDocs(apiVersion,bankId,requestParams)).flatten
+    lazy val dynamicResourcesDocs = tryo (canReadDynamicResourceDocsAtOneBankEntitlementBankIds.map(
+      bankId => getBankLevelDynamicResourceDocs(apiVersion,bankId,requestParams)).flatten.flatten)
     
     //If the api-collection-id in the URL, it will ignore all other parameters, so here we first check it:
     if(apiCollectionIdParam.contains("api-collection-id=")) {
@@ -357,12 +358,17 @@ object ObpAPI extends Loggable {
     } else if (requestParams.contains("content=dynamic")){
       dynamicResourcesDocs
     } else{
-      staticResourcesDocs ++ dynamicResourcesDocs 
+      for{
+        staticResourcesDocsList <-staticResourcesDocs
+        dynamicResourcesDocsList <-dynamicResourcesDocs
+      } yield {
+        staticResourcesDocsList++dynamicResourcesDocsList
+      }
     }
   }
 
   // Returns only the bank level resource docs
-  def getOneBankLevelResourceDocsJson(apiVersion : String, bankId:String) : List[ResourceDocJson] = {
+  def getOneBankLevelResourceDocsJson(apiVersion : String, bankId:String) = {
     val apiCollectionIdParam = List("api-collection-id")
       .map(paramName => (paramName, S.param(paramName)))
       .collect{
@@ -386,11 +392,12 @@ object ObpAPI extends Loggable {
   private val DAYS_365 = 31536000
   //  static resourceDocs can be cached for a long time, only be changed when new deployment.
   val getStaticResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("static_resource_docs_json.cache.ttl.seconds", DAYS_365) seconds
-  def getStaticResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: Boolean): List[ResourceDocJson] =  {
+  def getStaticResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: Boolean): Box[List[ResourceDocJson]] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
-        getResourceDocs(apiVersion,requestParams, "static")
+        val requestParamsRemovedContent = requestParams.replace("content=static","")
+        getResourceDocs(apiVersion, requestParamsRemovedContent, "static")
       }
     }
   }
@@ -398,11 +405,12 @@ object ObpAPI extends Loggable {
   //  dynamic resourceDocs can be cached only for short time, 1 hour 
   private val HOUR_1 = 3600
   val getDynamicResourceDocsJsonTTL: FiniteDuration = Helper.getPropsAsIntValue("dynamic_static_resource_docs_json.cache.ttl.seconds", HOUR_1) seconds
-  def getDynamicResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: Boolean): List[ResourceDocJson] =  {
+  def getDynamicResourceDocs(apiVersion : String, requestParams: String, canReadResourceDocRole: Boolean): Box[List[ResourceDocJson]] =  {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getDynamicResourceDocsJsonTTL) {
-        getResourceDocs(apiVersion,requestParams, "dynamic")
+        val requestParamsRemovedContent = requestParams.replace("content=dynamic","")
+        getResourceDocs(apiVersion, requestParamsRemovedContent, "dynamic")
       }
     }
   }
@@ -411,7 +419,7 @@ object ObpAPI extends Loggable {
     logger.debug("getResourceDocs says:")
     logger.debug("apiVersion:" + apiVersion)
     logger.debug("requestParams:" + requestParams)
-    getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String).map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
+    getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String).map(extractResourceDocsJson).map(_.resource_docs)
   }
 
   def getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String) = {
@@ -426,7 +434,7 @@ object ObpAPI extends Loggable {
     logger.debug("apiVersion:" + apiVersion)
     logger.debug("bankId:" + apiVersion)
     logger.debug("requestParams:" + requestParams)
-    getBankLevelDynamicResourceDocsJValueResponse(apiVersion : String, bankId:String, requestParams: String).map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
+    getBankLevelDynamicResourceDocsJValueResponse(apiVersion : String, bankId:String, requestParams: String).map(extractResourceDocsJson).map(_.resource_docs)
   }
   
   def getBankLevelDynamicResourceDocsJValueResponse(apiVersion : String, bankId:String, requestParams: String) = {
@@ -437,7 +445,7 @@ object ObpAPI extends Loggable {
   }
   
   def getResourceDocsByApiCollectionId(apiVersion : String, requestParams: String) =
-    ObpGet(s"$obpPrefix/v4.0.0/resource-docs/$apiVersion/obp$requestParams").map(extractResourceDocsJson).map(_.resource_docs).openOr(List.empty[ResourceDocJson])
+    ObpGet(s"$obpPrefix/v4.0.0/resource-docs/$apiVersion/obp$requestParams").map(extractResourceDocsJson).map(_.resource_docs)
 
   def getApiCollectionByIdJValueResponse(apiVersion : String) = {
     val apiCollectionIdParam = List("api-collection-id")
@@ -504,7 +512,7 @@ object OBPRequest extends MdcLoggable {
   //returns a tuple of the status code,  response body and list of headers
   def apply(apiPath : String, jsonBody : Option[JValue], method : String, headers : List[Header]) : Box[(Int, String, List[String])] = {
     logger.debug(s"before $apiPath call:")
-    val statusAndBody = tryo {
+    lazy val statusAndBody = tryo {
       val credentials = OAuthClient.getAuthorizedCredential
       val apiUrl = OAuthClient.currentApiBaseUrl
 
@@ -566,15 +574,27 @@ object OBPRequest extends MdcLoggable {
       (status, builder.toString(), adjustedResponseHeaders)
     }
 
-    val result = statusAndBody pass {
-      case Failure(msg, ex, _) => {
-        val sw = new StringWriter()
-        val writer = new PrintWriter(sw)
-        ex.foreach(_.printStackTrace(writer))
-        logger.debug("Error making api call: " + msg + ", stack trace: " + sw.toString)
+    val urlParametersUrl = apiPath.split("\\?")
+    val hasDuplicatedUrlParameters = if(urlParametersUrl.length >1) {
+      val duplicatedParameters = urlParametersUrl(1).split("&").map(_.split("=")).map(_.head).toList.groupBy(identity).collect { case (x, List(_,_,_*)) => x }
+      if(duplicatedParameters.size >0) {
+        (true, duplicatedParameters)
+      } else{ (false,"")}
+    } else (false,"")
+    
+    val result = if(hasDuplicatedUrlParameters._1) {
+      Failure(s"Duplicated URL Parameter, please check the parameter ${hasDuplicatedUrlParameters._2}")
+      } else {
+        statusAndBody pass {
+        case Failure(msg, ex, _) => {
+          val sw = new StringWriter()
+          val writer = new PrintWriter(sw)
+          ex.foreach(_.printStackTrace(writer))
+          logger.debug("Error making api call: " + msg + ", stack trace: " + sw.toString)
+        }
+        case _ => Unit
+        }
       }
-      case _ => Unit
-    }
     logger.debug(s"after $apiPath call:")
     result
   }
@@ -582,8 +602,10 @@ object OBPRequest extends MdcLoggable {
 
 object ObpPut {
   def apply(apiPath: String, json : JValue): Box[JValue] = {
-    OBPRequest(apiPath, Some(json), "PUT", Nil).flatMap {
-      case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+    OBPRequest(apiPath, Some(json), "PUT", Nil) match {
+      case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+      case Failure(msg, exception, chain) => Failure(msg)
+      case _ => Failure("Unknown Error!")
     }
   }
 }
@@ -597,8 +619,10 @@ object ObpPutWithHeader {
 
 object ObpPost {
   def apply(apiPath: String, json : JValue): Box[JValue] = {
-    OBPRequest(apiPath, Some(json), "POST", Nil).flatMap {
-      case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+    OBPRequest(apiPath, Some(json), "POST", Nil) match {
+      case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+      case Failure(msg, exception, chain) => Failure(msg)
+      case _ => Failure("Unknown Error!")
     }
   }
 }
@@ -632,8 +656,10 @@ object ObpDeleteBoolean {
 // TODO
 object ObpDelete {
   def apply(apiPath: String): Box[JValue] = {
-    OBPRequest(apiPath, None, "DELETE", Nil).map {
-      case(status, result, _) => APIUtils.apiResponseWorked(status, result)
+    OBPRequest(apiPath, None, "DELETE", Nil) match {
+      case Full((status, result, _)) => Full(APIUtils.apiResponseWorked(status, result))
+      case Failure(msg, exception, chain) => Failure(msg)
+      case _ => Failure("Unknown Error!")
     }
   }
 }
@@ -653,8 +679,10 @@ object ObpGet {
     if(apiPath.contains("/banks//")) {
       Empty
     } else {
-      OBPRequest(apiPath, None, "GET", headers).flatMap {
-        case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+      OBPRequest(apiPath, None, "GET", headers) match {
+        case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+        case Failure(msg, exception, chain) => Failure(msg)
+        case _ => Failure("Unknown Error!")
       }
     }
   }
@@ -665,8 +693,10 @@ object ObpHead {
     if(apiPath.contains("/banks//")) {
       Empty
     } else {
-      OBPRequest(apiPath, None, "HEAD", headers).flatMap {
-        case(status, result, _) => APIUtils.getAPIResponseBody(status, result)
+      OBPRequest(apiPath, None, "HEAD", headers) match {
+        case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+        case Failure(msg, exception, chain) => Failure(msg)
+        case _ => Failure("Unknown Error!")
       }
     }
   }
