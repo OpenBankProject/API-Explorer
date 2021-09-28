@@ -738,7 +738,16 @@ a img {
 .api_list_item a:hover {
   color: #333333;
 }
-
+.api_glossary_item a {
+  text-decoration: none;
+  font-family: Roboto-Regular;
+  font-size: 10px;
+  color: #333333;
+  line-height: 4px;
+}
+.api_glossary_item a:hover {
+  color: #333333;
+}
 .api_group_item  ul {
   /*margin-inline-start: 4px;*/
   list-style: none;

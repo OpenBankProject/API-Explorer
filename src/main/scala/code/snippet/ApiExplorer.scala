@@ -1311,6 +1311,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     def isCollectionOfResourceDocs_? = {
       S.param("api-collection-id").isDefined && S.param("api-collection-id").getOrElse("").nonEmpty
     }
+    val glossaryItems = getGlossaryItemsJson.map(_.glossary_items).getOrElse(List())
 
     val cssResult = "#login_status_message" #> loggedInStatusMessage &
     "#bank_selector" #> doBankSelect _ &
@@ -1408,6 +1409,18 @@ WIP to add comments on resource docs. This code copied from Sofit.
             // Set an anchor (href and id) for a group
             "@api_group_name [href]" #> s"#group-${i._1}" &
             "@api_group_name [id]" #> s"group-${i._1}" &
+            // Set an anchor (href and id) for a group
+            "@api_glossary_item_link [href]" #> s"/glossary?#${i._1}" &
+            "@api_glossary_item_link [id]" #> s"glossary-${i._1}" &
+            "@api_glossary_item_link * " #>{
+              val description = glossaryItems.find(_.title == i._1).map(_.description.markdown).getOrElse("")
+              if (description.length > 15)
+                description.substring(0,14)+" ..."
+              else if(description.length > 0 && description.length<15)
+                description +" ..."
+              else
+                "" //If there is no description, we will show empty here.
+            } &
             // Within each group (first tag), list the resources
             "@api_list_item" #> i._2.sortBy(_.summary.toString()).map { i =>
               // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
@@ -1662,6 +1675,19 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   def showGlossary = {
 
+    logger.debug("before showResources:")
+    def resourceDocsRequiresRole = ObpAPI.getRoot.flatMap(_.extractOpt[APIInfoJson400].map(_.resource_docs_requires_role)).openOr(false)
+
+    // Get a list of resource docs from the API server
+    // This will throw an exception if resource_docs key is not populated
+    // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
+    // The overview contains html. Just need to convert it to a NodeSeq so the template will render it as such
+    val allResourcesBox = getAllResourceDocsJson(apiVersion)
+
+    //Here need to change to Nil, if we throw exception here, we can not render the other parts of the home page.
+    val allResourcesList = allResourcesBox.getOrElse(Nil)
+
+    
     // logger.info(s"showGlossary hello ")
 
     val glossaryItems = getGlossaryItemsJson.map(_.glossary_items).getOrElse(List())
@@ -1714,6 +1740,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
       ".end-point-anchor [href]" #> s"#${urlEncode(i.title.replaceAll(" ", "-"))}" &
         ".content-box__headline *" #> i.title &
         ".content-box__headline [id]" #> i.title.replaceAll(" ", "-") & // id for the anchor to find
+        //i.title must be a proper tag, and will prepare the URL for it ...
+        ".glossary_item_apis [href]" #> {
+          //from the tag, we need the oprationId, 
+          val tag = i.title
+          val operationId = allResourcesList.find(_.tags.head == tag).map(_.operation_id).getOrElse("")
+          s"./?operation_id=${operationId.replace(".","_").replaceAll(" ","_")}"
+        }&
+        ".glossary_item_apis *" #> {i.title +" APIs"} &
         // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
         // This is the main description text. We use the html version of the description
         ".content-box__text-box *" #> stringToNodeSeq(i.description.html)
