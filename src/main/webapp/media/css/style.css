@@ -739,21 +739,25 @@ a img {
   color: #333333;
 }
 .api_glossary_item a {
-  text-decoration: underline;
+  text-decoration: none;
   font-family: Roboto-Regular;
   font-size: 10px;
   color: #333333;
   line-height: 4px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-all;
 }
 .api_glossary_item a:hover {
   color: #333333;
+  text-decoration: underline;
 }
 .api_group_item  ul {
   /*margin-inline-start: 4px;*/
   list-style: none;
 }
 .glossary_item_apis {
-  text-decoration: underline;
+  text-decoration: none;
 }
 .default-input {
   padding: 13px 20px 9px 20px;
