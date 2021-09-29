@@ -22,7 +22,6 @@ import scala.language.postfixOps
 import java.util.UUID.randomUUID
 import net.liftweb.common._
 
-
 case class Header(key: String, value: String)
 
 
@@ -57,7 +56,6 @@ object ObpAPI extends Loggable {
   def currentUser : Box[CurrentUserJson]= ObpGet(s"$obpPrefix/v2.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
 
   def getRoot : Box[JValue]= ObpGet(s"$obpPrefix/v4.0.0/root")
-  
   // Wrapper for looking at OAuth headers.
   def isLoggedIn : Boolean = {
     OAuthClient.loggedIn

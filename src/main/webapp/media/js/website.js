@@ -93,7 +93,7 @@ $(document).ready(function() {
         var hasValue = window.location.hash.substr(1);
         var smallSceenEndpointId="index_of__small_screen"+hasValue;
         $("#"+smallSceenEndpointId).parent().parent().css('height', '').attr("class","collapse in").attr("aria-expanded","true")
-        $("#"+smallSceenEndpointId).css("font-family","Roboto-Medium")
+        $("#"+smallSceenEndpointId).css("font-family","UniversNextforHSBC-Medium")
     });
     
     //get the parameters from URL, need to remove the version and tags.

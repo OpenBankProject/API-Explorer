@@ -1,8 +1,8 @@
 @import url(/media/css/fonts.css);
 
 @font-face {
-  font-family: Roboto-Light;
-  src: url(/media/font/Roboto-Light.ttf);
+  font-family: UniversNextForHSBC-Light;
+  src: url(/media/font/UniversNextforHSBC-Light.otf);
 }
 body {
   margin: 0;
@@ -69,7 +69,7 @@ a img {
 .header .site-title-box__text {
   display: inline-block;
   margin: 0;
-  font-family: Roboto-Light;
+  font-family: UniversNextforHSBC-Light;
   font-size:18px;
   color: #333333;
   letter-spacing: 0;
@@ -106,7 +106,7 @@ a img {
 }
 
 .sign-box__text {
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #FFFFFF;
   text-align: center;
@@ -114,7 +114,7 @@ a img {
   display: block;
   padding: 9px 20px 11px;
   margin: 0;
-  background-color:#53C4EF;
+  background-color:#DB0011;
   /*border: 2px solid #a5a5a5*/
 }
 
@@ -192,7 +192,7 @@ a img {
   padding: 10px 0 10px 25px;
   margin: 0;
   float: left;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 14px;
   color: #FFFFFF;
   letter-spacing: 0;
@@ -206,7 +206,7 @@ a img {
   padding: 0;
   margin: 26px 25px 22px 0;
   letter-spacing: 0;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 14px;
   color: #FFFFFF;
   letter-spacing: 0;
@@ -242,7 +242,7 @@ a img {
   display: inline-block;
   margin: 0 0 0 0;
   text-decoration: none;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 14px;
   color: #FFFFFF;
   letter-spacing: 0;
@@ -263,7 +263,7 @@ a img {
 
 .api-info-section {
   position: fixed;
-  top: 168px;
+  top: 127px;
   left: 0;
   width: 100%;
   /*height: 68px;*/
@@ -282,7 +282,7 @@ a img {
   color: white;
   background: #767676;
   height: 52px;
-  font-family: Roboto-Medium;
+  font-family: UniversNextforHSBC-Medium;
   font-size: 18px;
   color: #FFFFFF;
   line-height: 28px;
@@ -305,7 +305,7 @@ a img {
 .info-box__headline {
   margin: 0 0 0 0;
   padding: 16px 0 16px 25px;
-  font-family: Roboto-Light;
+  font-family: UniversNextforHSBC-Light;
   font-size: 28px;
   color: #FFFFFF;
   letter-spacing: 0;
@@ -313,7 +313,7 @@ a img {
 }
 
 .info-box__about_selected {
-  font-family: Roboto-Light;
+  font-family: UniversNextforHSBC-Light;
   font-size: 18px;
   color: #FFFFFF;
   line-height: 28px;
@@ -361,14 +361,14 @@ a img {
 .option-section .option-box__headline {
   padding-top: 0;
   padding-bottom: 8px;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #333333;
   letter-spacing: 0;
   line-height: 24px;
 }
 .option-section select {
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   /*font-size: 16px;*/
   /*color: #333333;*/
   /*line-height: 24px;*/
@@ -479,10 +479,10 @@ a img {
 }
 
 .content-box__headline {
-  margin: -240px 0 32px 0;
+  margin: -332px 0 32px 0;
   font-weight: 400;
-  padding: 240px 0 0 0;
-  font-family: Roboto-Light;
+  padding: 332px 0 0 0;
+  font-family: UniversNextforHSBC-Light;
   font-size: 28px;
   color: #333333;
   letter-spacing: 0;
@@ -525,12 +525,24 @@ a img {
 }
 
 
+#obp\.getAdapterInfo{
+    margin: 0 0 32px 0;
+    padding: 220px 0 0 0;
+}
+
+.message-doc .content-box__headline{
+    margin-top: -220px;
+    padding-top: 220px ;
+}
+.message-doc .content-box pre{
+    background-color: #FFFFFF;
+}
 
 .glossary .content-box__headline {
   margin: -222px 0 32px 0;
   font-weight: 400;
   padding: 222px 0 0 0;
-  font-family: Roboto-Light;
+  font-family: UniversNextforHSBC-Light;
   font-size: 28px;
   color: #333333;
   letter-spacing: 0;
@@ -544,7 +556,7 @@ a img {
 
 #glossary-resources pre,
 #glossary-resources pre code {
-  font-family: 'Courier New', monospace;
+  font-family: 'UniversNextforHSBC-Regular';
 }
 
 .content-box__text-box {
@@ -553,7 +565,7 @@ a img {
   width: 100%;
   /*padding: 5px;*/
   max-width: 1000px;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;[
   color: #333333;]
   line-height: 24px;
@@ -561,12 +573,12 @@ a img {
 }
 
 .sign-box__text:hover {
-  background: #1f97ef;
+  background: #AF000D;
   text-decoration:none;    
 }
 
 .sign-box__text:active {
-  background: #0b3aef;
+  background: #83000A;
   text-decoration:none;
 
 }
@@ -601,14 +613,14 @@ a img {
 }
 
 .content-box__input-box .default-button:hover  {
-  background-color: #1f97ef;
+  background-color: #AF000D;
   border-radius: 0;
   outline: 0;
   border: 0;
 }
 
 .content-box__input-box .default-button:active {
-  background-color: #0b3aef;
+  background-color: #83000A;
   border-radius: 0;
   outline: 0;
   border: 0;
@@ -620,7 +632,7 @@ a img {
   margin-right: 20px;
   margin-top: 0;
   margin-bottom: 13px;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -631,7 +643,7 @@ a img {
   margin-right: 20px;
   margin-top: 0;
   margin-bottom: 13px;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -643,7 +655,7 @@ a img {
   margin-right: 20px;
   margin-top: 0;
   margin-bottom: 13px;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -659,7 +671,7 @@ a img {
   font-size: 8px;
   margin-left: 25px;
   margin-top: 13px;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   color: #333333;
   line-height: 24px;
 }
@@ -703,7 +715,7 @@ a img {
 }
 .api_group_item a {
   text-decoration: none;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -730,7 +742,7 @@ a img {
 }
 .api_list_item a {
   text-decoration: none;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 12px;
   color: #333333;
   line-height: 4px;
@@ -740,7 +752,7 @@ a img {
 }
 .api_glossary_item a {
   text-decoration: none;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 10px;
   color: #333333;
   line-height: 4px;
@@ -771,7 +783,7 @@ a img {
   -webkit-appearance: none;
   margin-top: 0px;
   width: 100%;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -787,7 +799,7 @@ a img {
   margin-left: 0 ;
   float: left;
   border: 1px solid #333333;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #333333;
   text-align: center;
@@ -800,7 +812,7 @@ a img {
   font-size: 18px;
   line-height: 18px;
   text-transform: uppercase;
-  background-color: #53C4EF;
+  background-color: #DB0011;
   -moz-border-radius: 15px;
   -webkit-border-radius: 15px;
   border-radius: 0px;
@@ -840,7 +852,7 @@ a img {
   margin-top: 13px;
   padding: 14px 19px 44px 19px;
   overflow-x: auto;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #FFFFFF;
   line-height: 24px;
@@ -851,7 +863,7 @@ a img {
   float: left;
   margin-right: 20px;
   margin-top: 5px;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -988,15 +1000,21 @@ template {
 /**
  * Remove the gray background color from active links in IE 10.
  */
-/*a {*/
-/*  background-color: transparent;*/
-/*  color: #333333;*/
-/*}*/
+a {
+  background-color: transparent;
+  color: #333333;
+}
 
-/*p a {*/
-/*  background-color: transparent;*/
-/*  color: #333333;*/
-/*}*/
+p a {
+  background-color: transparent;
+  color: #333333;
+}
+p a:active,
+p a:hover {
+  outline: 0;
+  color: #333333;
+  text-decoration:underline
+}
 .connector_method_item a {
   color: #ffffff;
 }
@@ -1005,12 +1023,12 @@ template {
  * Improve readability of focused elements when they are also in an
  * active/hover state.
  */
-/*a:active,*/
-/*a:hover {*/
-/*  outline: 0;*/
-/*  color: #FFFFFF;*/
-/*  text-decoration:underline*/
-/*}*/
+a:active,
+a:hover {
+  outline: 0;
+  color: #FFFFFF;
+  text-decoration:underline
+}
 
 /* Text-level semantics
 ========================================================================== */
@@ -1126,9 +1144,9 @@ code,
 kbd,
 pre,
 samp {
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
-  color: #FFFFFF;
+  color: #333333;
   line-height: 24px;
 }
 
@@ -1136,7 +1154,7 @@ samp {
 .glossary kbd,
 .glossary pre,
 .glossary samp {
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #FFFFFF;
   line-height: 24px;
@@ -1383,11 +1401,11 @@ a.end-point-anchor {
 
 .full_path {
     line-height: 22px;
-    color: #1f97ef;
+    color: #AF000D;
     letter-spacing: 0;
     margin: 0 0 0 5px;
     clear: both;
-    font-family: Roboto-Regular;
+    font-family: UniversNextforHSBC-Regular;
     font-size: 12px;
     line-height: 24px;
 }
@@ -1418,7 +1436,7 @@ a.end-point-anchor {
 
 .username {
   color: #000;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -1449,7 +1467,7 @@ a.end-point-anchor {
 }
 .grid-container {
   display: grid;
-  grid-template-columns: 12% 44% 44%;
+  grid-template-columns: 10% 45% 45%;
   grid-gap: 10px;
   background-color: #fff;
   color: #444;
@@ -1477,7 +1495,7 @@ a.end-point-anchor {
   outline: 0;
 }
 .select2-container--default .select2-selection--single:focus {
-  outline: solid 2px -webkit-focus-ring-color;
+  outline: solid 2px #66afe9;
 }
 .select2-container--open .select2-selection--single {
   background: url(../images/dropdown-up-icon.jpg) no-repeat right 8px top 5px;
@@ -1489,7 +1507,7 @@ a.end-point-anchor {
 }
 .select2-results__option {
   padding: 6px;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -1500,7 +1518,7 @@ a.end-point-anchor {
 }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -1523,12 +1541,12 @@ a.end-point-anchor {
 .select2-container--default .select2-results__option[aria-selected=true] {
   background: #ffffff;
   color: #333333;
-  border-left: 3px #53C4EF solid;
+  border-left: 3px #DB0011 solid;
 }
 
 #resouce-footer .container p{
   margin-left: 25px;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -1584,7 +1602,7 @@ footer .footer-links-box {
 }
 
 footer .footer-link-box__link {
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 14px;
   color: #FFFFFF;
   letter-spacing: 0;
@@ -1630,7 +1648,7 @@ footer .footer-box__paragraph {
 }
 footer .footer-box__paragraph2 {
   margin-bottom: 0px;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 14px;
   color: #FFFFFF;
   letter-spacing: 0;
@@ -1643,7 +1661,7 @@ footer .footer-box__paragraph2 a:hover  {
 }
 footer a,span,
 footer a:hover{
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
   font-size: 14px;
   color: #FFFFFF;
   letter-spacing: 0;
@@ -1663,7 +1681,7 @@ footer a:hover{
 }
 .api_group_item_small_screen a {
   text-decoration: none;
-  font-family: Roboto-Light;
+  font-family: UniversNextforHSBC-Light;
   font-size: 19px;
   color: #333333;
   line-height: 27px;
@@ -1693,12 +1711,11 @@ footer a:hover{
 }
 
 #api-info-section-more-page{
-  top: 137px;
-  z-index: 1;
+  top: 145px;
 }
 #breadcrumb-section-more-page{
   top:85px;
-  height: 52px;
+  height: 60px;
 }
 #option-section-more-page{
   top: 204px;
@@ -1706,7 +1723,7 @@ footer a:hover{
 }
 .dropdown-menu>li>a:focus, 
 .dropdown-menu>li>a:hover {
-  background-color: #53C4EF;
+  background-color: #DB0011;
 }
 
 .breadcrumbs__list .dropdown .dropdown-menu {
@@ -1721,17 +1738,17 @@ footer a:hover{
 }
 
 #redirect-link{
-  background-color: #53C4EF;
-  border-color: #53C4EF;
+  background-color: #DB0011;
+  border-color: #DB0011;
 }
 
 
 #redirect-link:hover{
-  background: #1f97ef;
+  background: #AF000D;
 }
 
 #redirect-link:active{
-  background: #0b3aef;;
+  background: #83000A;;
 }
 
 .content-box form .favourites_button{
@@ -1765,7 +1782,7 @@ p{
 .content-box__available-since span{
   color: #000000;
   font-size: 8px;
-  font-family: Roboto-Regular;
+  font-family: UniversNextforHSBC-Regular;
 }
 
 #dropdownMenuButton{
@@ -1800,4 +1817,35 @@ details > summary.api_group_item_details_summary{
   content: "";
   clear: both;
   display: table;
+}
+#small-nav-collapse{
+  border: 0;
+  background-color: #FFFFFF;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  /*left:370px;*/
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  -webkit-clip-path: inset(50%);
+  clip-path: inset(50%);
+  border: 0;
+}
+
+.sr-only-focusable:active, .sr-only-focusable:focus {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  /*left:370px;*/
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  -webkit-clip-path: none;
+  clip-path: none;
+  z-index: 12;
 }

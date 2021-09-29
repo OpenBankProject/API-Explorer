@@ -8,12 +8,10 @@
 pre{
   border: 0; 
   background-color: #333333;
-  font-family: 'Courier New', monospace;
 }
 pre code{
   border: 0;
   background-color: #333333;
-  font-family: 'Courier New', monospace;
   color: #FFFFFF;
 }
 hr {
@@ -80,7 +78,7 @@ hr {
   #left_side_small_screen .logout-link{
     margin-right: 28px;
     margin-left: 28px;
-    font-family: Roboto-Regular;
+    font-family: UniversNextforHSBC-Regular;
     font-size: 16px;
     color: #333333;
     text-align: center;
@@ -128,13 +126,13 @@ hr {
   }
   .sidebar a {
     text-decoration: none;
-    font-family: Roboto-Regular;
+    font-family: UniversNextforHSBC-Regular;
     font-size: 16px;
     color: #333333;
     line-height: 24px;
   }
   .sidebar #sideba-api-key-div a {
-    font-family: Roboto-Medium;
+    font-family: UniversNextforHSBC-Medium;
   }
   #small-screen-navbar{
     text-align: center;
@@ -210,6 +208,8 @@ hr {
   #small-nav-collapse{
     display: block;
     margin-right: 70px;
+    border: 0;
+    background-color: #FFFFFF;
   }
   #small-screen-navbar #small-nav-collapse {
     display: block;
@@ -264,7 +264,7 @@ hr {
   #left_side_small_screen .logout-link{
     margin-right: 28px;
     margin-left: 28px;
-    font-family: Roboto-Regular;
+    font-family: UniversNextforHSBC-Regular;
     font-size: 16px;
     color: #333333;
     text-align: center;
@@ -312,13 +312,13 @@ hr {
   }
   .sidebar a {
     text-decoration: none;
-    font-family: Roboto-Regular;
+    font-family: UniversNextforHSBC-Regular;
     font-size: 16px;
     color: #333333;
     line-height: 24px;
   }
   .sidebar #sideba-api-key-div a {
-    font-family: Roboto-Medium;
+    font-family: UniversNextforHSBC-Medium;
   }
   #small-screen-navbar{
     text-align: center;
@@ -409,7 +409,7 @@ hr {
     padding: 5px 12px 7px;
     margin: 0;
     background-color: #53C4EF;
-    font-family: Roboto-Regular;
+    font-family: UniversNextforHSBC-Regular;
     font-size: 12px;
     color: #FFFFFF;
     letter-spacing: 0;

@@ -1,14 +1,20 @@
 @font-face {
-    font-family: Roboto-Light;
-    src: url(../font/Roboto-Light.ttf);
+    font-family: UniversNextforHSBC-Bold;
+    src: url(../font/UniversNextforHSBC-Bold.otf);
 }
 
 @font-face {
-    font-family: Roboto-Medium;
-    src: url(../font/Roboto-Medium.ttf);
+    font-family: UniversNextforHSBC-Light;
+    src: url(../font/UniversNextforHSBC-Light.otf);
 }
 
 @font-face {
-    font-family: Roboto-Regular;
-    src: url(../font/Roboto-Regular.ttf);
+    font-family: UniversNextforHSBC-Medium;
+    src: url(../font/UniversNextforHSBC-Medium.otf);
 }
+
+@font-face {
+    font-family: UniversNextforHSBC-Regular;
+    src: url(../font/UniversNextforHSBC-Regular.otf);
+}
+
