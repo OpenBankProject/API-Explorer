@@ -161,8 +161,32 @@ a img {
   left: 0;
   width: 100%;
   height: 40px;
+  z-index: 7;
+}
+
+.breadcrumb-collections-section {
+  background-color: #333333;
+  position: fixed;
+  top: 128px;
+  left: 0;
+  width: 200%;
+  height: 40px;
   z-index: 5;
 }
+
+.breadcrumb-more-section {
+  background-color: #333333;
+  position: fixed;
+  top: 88px;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  z-index: 7;
+  display: none;
+}
+
+
+
 
 .breadcrumbs__row {
   padding: 10px 0 10px 25px;
@@ -202,8 +226,6 @@ a img {
   letter-spacing: 0;
   text-decoration: none;
 }*/
-
-
 
 .breadcrumbs__list {
   display: inline-block;
@@ -245,8 +267,12 @@ a img {
   left: 0;
   width: 100%;
   /*height: 68px;*/
-  z-index: 5;
+  z-index: 6;
   background: #767676;
+}
+#message-docs .api-info-section,
+#glossary-resources .api-info-section {
+  top: 121px;
 }
 .api-info-section .container {
   position: relative;
@@ -323,8 +349,9 @@ a img {
 }
 
 .option-section {
+  display: none;
   position: fixed;
-  top: 193px;
+  top: 225px;
   left: 0;
   width: 100%;
   height: 104px;
@@ -461,10 +488,42 @@ a img {
   letter-spacing: 0;
   line-height: 31px;
 }
-#right_side .resource:nth-child(4) .content-box__headline{
-  margin: 0 0 32px 0;
-  padding: 332px 0 0 0;
+.resource .content-box__headline{
+  margin-right:20px ;
+  float: left ;
 }
+
+.resource-error .content-box__headline {
+  margin: 0px 0 32px 0;
+  color: #FFFFFF;
+}
+
+.resource-error .bg--white {
+  background-color: #333333;
+}
+#right_side .resource:nth-child(5) .content-box__headline{
+  margin: 0 20px 32px 0;
+  padding: 242px 0 0 0;
+}
+
+#right_side .resource:nth-child(5) .content-box .end-point-anchor form{
+  padding: 242px 0 0 0;
+}
+ 
+#obp\.getAdapterInfo{
+  margin: 0 0 32px 0;
+  padding: 120px 0 0 0;
+}
+
+.message-doc .content-box__headline{
+  margin-top: -220px;
+  padding-top: 220px ;
+}
+
+.message-doc .content-box pre{
+  background-color: #FFFFFF;
+}
+
 
 #obp\.getAdapterInfo{
     margin: 0 0 32px 0;
@@ -495,6 +554,11 @@ a img {
 }
 
 
+#glossary-resources pre,
+#glossary-resources pre code {
+  font-family: 'UniversNextforHSBC-Regular';
+}
+
 .content-box__text-box {
   /*float: left;*/
   /*left: 0;*/
@@ -522,6 +586,7 @@ a img {
 
 .content-box__text-box p:first-child {
   margin-top: 0;
+  word-break:break-all;
 }
 
 
@@ -571,6 +636,33 @@ a img {
   font-size: 16px;
   color: #333333;
   line-height: 24px;
+}
+
+#example_request_header .default-input{
+  float: left;
+  margin-right: 20px;
+  margin-top: 0;
+  margin-bottom: 13px;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 16px;
+  color: #333333;
+  line-height: 24px;
+}
+
+#api_request_url .default-input {
+  width: 69%;
+  float: left;
+  margin-right: 20px;
+  margin-top: 0;
+  margin-bottom: 13px;
+  font-family: UniversNextforHSBC-Regular;
+  font-size: 16px;
+  color: #333333;
+  line-height: 24px;
+}
+
+#api_request_url .rest-call-button {
+  float: right;
 }
 
 .content-box__available-since {
@@ -675,7 +767,7 @@ a img {
   -moz-appearance: none;
   -webkit-appearance: none;
   margin-top: 0px;
-  width: 96%;
+  width: 100%;
   font-family: UniversNextforHSBC-Regular;
   font-size: 16px;
   color: #333333;
@@ -739,7 +831,7 @@ a img {
 }
 
 .content-box__info-box {
-  width:60.4em;
+  width: 100%;
   background-color: #333333;
   color: #fff;
   margin-top: 13px;
@@ -1611,7 +1703,105 @@ footer a:hover{
   height: 60px;
 }
 #option-section-more-page{
-  top: 213px;
+  top: 204px;
+  z-index: 1;
+}
+.dropdown-menu>li>a:focus, 
+.dropdown-menu>li>a:hover {
+  background-color: #DB0011;
+}
+
+.breadcrumbs__list .dropdown .dropdown-menu {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+#manual-redirect{
+  margin: 120px;
+  margin-left: 16px;
+  display: none;
+}
+
+#redirect-link{
+  background-color: #DB0011;
+  border-color: #DB0011;
+}
+
+
+#redirect-link:hover{
+  background: #AF000D;
+}
+
+#redirect-link:active{
+  background: #83000A;;
+}
+
+.content-box form .favourites_button{
+  padding:0;
+  margin:0;
+  margin-bottom: 20px;
+  margin-top: -15px;
+  border: 0;
+  font-size: 40px;
+  background-color: white;
+}
+.favourites_error_message{
+  color: red;
+}
+
+a, a:focus, a:hover {
+  color: inherit;
+  word-break:break-all;
+}
+p{
+  word-break:break-all;
+}
+.glossary .content-box__text-box p code{
+  color: #000000;
+}
+
+.glossary img{
+  width: 100%;
+}
+
+.content-box__available-since span{
+  color: #000000;
+  font-size: 8px;
+  font-family: UniversNextforHSBC-Regular;
+}
+
+#dropdownMenuButton{
+  height: 22px;
+  padding: 0px 0px;
+  background-color: #333333;
+  border-color: #333333;
+}
+
+#dropdownMenuButton img{
+  vertical-align:baseline;
+}
+
+details > summary.api_group_item_details_summary{
+  display:list-item;
+  cursor:s-resize;
+}
+
+.api-info-filter {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+}
+.api-info-filter input[type=text] {
+  padding: 10px;
+  font-size: 17px;
+  float: left;
+  width: 100%;
+}
+
+.api-info-filter::after {
+  content: "";
+  clear: both;
+  display: table;
 }
 #small-nav-collapse{
   border: 0;

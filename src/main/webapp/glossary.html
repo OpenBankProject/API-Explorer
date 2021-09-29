@@ -5,21 +5,32 @@
 
 
         <div class="api_list">
+            <div class="api-info-filter">
+                <input oninput="filterMessageDocs(this)" type="text" placeholder="Filter..">
+            </div>
             <div class="api-info-about">
+                <div class="info-box">
+                    <a hidden id="expand_all_items_link" onclick="expandAllItems()">⯈</a><!-- Unicode number: U+2BC8 -->
+                    <a id="collapse_all_items_link" onclick="collapseAllItems()">⯆</a><!-- Unicode number: U+2BC6 -->
+                </div>
                 <div class="info-box">
                     <h3 class="info-box__about_selected">Glossary Index</h3>
                 </div>
             </div>
+            <div class="api-info-filter">
+                <input oninput="filterGlossary(this)" type="text" placeholder="Filter..">
+            </div>
 
             <ul>
                 <li class="api_group_item" id ="api_group_item_div" tabindex="-1">
-                    <div class="api_group_name">OBP</div>
-                    <ul>
-                        <li class="api_list_item">
-                            <a class="api_list_item_link" href="./#anchor">Title</a>
-                        </li>
-                    </ul>
-
+                    <details open style="cursor:s-resize;" class="api_group_item_details">
+                        <summary class="api_group_item_details_summary"><a class="api_group_name">OBP</a></summary>
+                        <ul>
+                            <li class="api_list_item">
+                                <a onclick="setApiLisItemLinkToClicked(this)" class="api_list_item_link" href="./#anchor">Title</a>
+                            </li>
+                        </ul>
+                    </details>
                 </li>
             </ul>
         </div>
@@ -36,9 +47,6 @@
 
                         <li class="breadcrumbs__list">
                             <a id="message_doc_link" href="./message-docs" class="breadcrumbs__link">Message Docs</a>
-                        </li>
-                        <li class="breadcrumbs__list" id="More">
-                            <a id="more-link" href="./more" class="breadcrumbs__link">More</a>
                         </li>
                     </ul>
 

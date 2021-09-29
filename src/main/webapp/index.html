@@ -4,7 +4,6 @@
 
         <div id="left_side">
             <div class="api_list">
-
                 <div name="featured_box" class="api-info-about">
                     <div class="info-box">
                         <h3 class="info-box__about_selected">Featured APIs</h3>
@@ -27,22 +26,43 @@
 
                 </div>
 
-
+                <div class="api-info-filter">
+                    <input oninput="filterEndpoints(this)" type="text" placeholder="Filter..">
+                </div>
                 <div class="api-info-about">
+                    <div class="info-box">
+                        <a hidden id="expand_all_items_link" onclick="expandAllItems()">⯈</a><!-- Unicode number: U+2BC8 -->
+                        <a id="collapse_all_items_link" onclick="collapseAllItems()">⯆</a><!-- Unicode number: U+2BC6 -->
+                    </div>
                     <div class="info-box">
                         <h3 class="info-box__about_selected">API Explorer</h3>
                     </div>
                 </div>
+                
 
                 <ul>
-                    <li id ="api_group_item_div" name="api_group_item" class="api_group_item" tabindex="-1">
-                        <a name="api_group_name" class="api_group_name" href="./#groupanchor">API group</a>
-                        <ul>
-                            <li name="api_list_item" class="api_list_item">
-                                <a name="api_list_item_link" class="api_list_item_link" href="./#anchor">API call title</a>
-                            </li>
-                        </ul>
+                    <li name="favourites_group_item" class="api_group_item">
+                        <details open style="cursor:s-resize;" class="api_group_item_details">
+                            <summary class="api_group_item_details_summary"><a name="favourites_group_name" class="api_group_name" href="./#groupanchor">My Collections</a></summary>
+                            <ul>
+                                <li name="favourites_list_item" class="api_list_item">
+                                    <a onclick="setApiLisItemLinkToClicked(this)" name="favourites_list_item_link" class="api_list_item_link" href="">Favoriates</a>
+                                </li>
+                            </ul>
+                        </details>
+                    </li>
+                </ul>
 
+                <ul>
+                    <li name="api_group_item" class="api_group_item">
+                        <details open style="cursor:s-resize;" class="api_group_item_details">
+                            <summary class="api_group_item_details_summary"><a name="api_group_name" class="api_group_name" >API group</a></summary>
+                            <ul>
+                                <li name="api_list_item" class="api_list_item">
+                                    <a onclick="setApiLisItemLinkToClicked(this)" name="api_list_item_link" class="api_list_item_link" href="./#anchor">API call title</a>
+                                </li>
+                            </ul>
+                        </details>
                     </li>
                 </ul>
             </div>
@@ -78,36 +98,142 @@
                             <li class="breadcrumbs__list" id="API_Home">
                                 <a id="api_home_link" href="This href should be replaced" class="breadcrumbs__link">Home</a>
                             </li>
-                            <li class="breadcrumbs__list" id="OBP_PSD2" style="display:none;">
-                                <a class="version" href="./?tags=PSD2">OBP PSD2</a>
+                            <li class="breadcrumbs__list" id="api_creation_and_management_link_div" >
+                                <a id="api_creation_and_management_link" class="version" href="This href should be replaced">API Management</a>
                             </li>
-                            <li class="breadcrumbs__list" id="OBP_3.1.0" style="display:none;">
-                                <a class="version" href="?version=OBPv3.1.0" id="OBP 3.1.0">OBP 3.1.0</a>
+                            <li class="breadcrumbs__list" id="user_management_link_div">
+                                <a id="user_management_link" class="version" href="This href should be replaced">User Management</a>
                             </li>
-                            <li class="breadcrumbs__list" id="OBP_4.0.0" style="display:none;">
-                                <a class="version" href="?version=OBPv4.0.0">OBP 4.0.0</a>
+
+                            <li class="breadcrumbs__list" id ="all_obp_link_div">
+                                <a id ="all_obp_link" class="version" href="/?version=OBPv4.0.0">OBP</a>
                             </li>
-                            <li class="breadcrumbs__list" id="Berlin_Group" style="display:none;">
-                                <a class="version" href="?version=BGv1.3&tags=Berlin-Group-M">Berlin Group</a>
+
+                            <li class="breadcrumbs__list" id="berlin_group_link_div" >
+                                <a id ="berlin_group_link" class="version" href="/?version=BGv1.3">Berlin Group</a>
                             </li>
+
+                            <li class="breadcrumbs__list" id="uk_link_div">
+                                <a id ="uk_link" class="version" href="/?version=UKv3.1">UK</a>
+                            </li>
+
+
+                            <li class="breadcrumbs__list" id ="dynamic_link_div" >
+                                <a id ="dynamic_link" class="version" href="/?tags=Dynamic&content=dynamic">Dynamic</a>
+                            </li>
+                            <li class="breadcrumbs__list" id="api_manager_link_div" >
+                                <a id="api_manager_link" class="version" href="http://127.0.0.1:8000/">API Manager</a>
+                            </li>
+                            
                             <!--
-                            <li name="other_versions" class="versions breadcrumbs__list">
-                                <a name="other_version" class="version" href="./?version=1.2.1">version</a>
+                            <li class="breadcrumbs__list" >
+                                <a id ="obp_banking_model_link" class="version" href="This href should be replaced">OBP Model</a>
                             </li>
--->
-                            <li class="breadcrumbs__list" id="Glossary">
-                                <a id="glossary_link" href="./glossary" class="breadcrumbs__link">Glossary</a>
-                            </li>
-                            <li class="breadcrumbs__list" id="More">
-                                <a id="more-link" href="./more" class="breadcrumbs__link">More</a>
+                            -->
+
+<!--                            <li class="breadcrumbs__list" id="More">-->
+<!--                                <a onclick="openMore()" id="more_link" href="#" class="breadcrumbs__link version">More</a>-->
+<!--                            </li>-->
+                            <li class="breadcrumbs__list">
+                                <div class="dropdown">
+                                    <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">More <img src="./media/images/chevron_down_thick_write.svg" alt="Girl in a jacket" width="10" height="10"></button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <li name="dropdown_versions"><a class="dropdown-item version" href="#">Another action</a> <hr></li>
+
+                                        <li id="onboard_link_div">
+                                            <a id="onboard_link" class="version" href="This href should be replaced">Onboard</a>
+                                        </li>
+                                        <li id="consent_flow_link_div">
+                                            <a id="consent_flow_link" class="version" href="https://oauth2-flow.demo.openbankproject.com/">Consent Flow</a>
+                                        </li><hr>
+                                        <li id ="message_doc_link_div">
+                                            <a id="message_doc_link" href="./message-docs?connector=kafka_vSept2018"
+                                               class="breadcrumbs__link version">Message Docs</a>
+                                        </li><hr>
+                                        <li id="Glossary">
+                                            <a id="glossary_link" href="./glossary?" class="breadcrumbs__link version">Glossary</a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </li>
 
+                            <li class="breadcrumbs__list">
+                                <div class="dropdown">
+                                    <button aria-expanded="false" aria-haspopup="true" data-toggle="dropdown" id="dropdownMenuButton" type="button" class="btn btn-info dropdown-toggle">Spaces <img height="10" width="10" alt="Girl in a jacket" src="./media/images/chevron_down_thick_write.svg"></button>
+                                    <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu">
+                                        <li name="dropdown_space"><a class="dropdown-item version" href="#">Space1</a> <hr></li>
+
+                                    </ul>
+                                </div>
+                            </li>
                         </ul>
+                    </div>
+                </div>
+            </section>
 
+            <section class="breadcrumb-collections-section">
+                <div class="container">
+                    <div class="breadcrumbs">
+
+                        <ul class="breadcrumbs__row" id ="custom_api_collections_ul">
+                            <li class="breadcrumbs__list" name="custom_api_collections">
+                                <a class="version" href="This href should be replaced">This should be replaced</a>
+                            </li>
+                        </ul>
 
                     </div>
                 </div>
             </section>
+
+<!--            <section class="breadcrumb-more-section">-->
+<!--                <div class="container">-->
+<!--                    <div class="breadcrumbs">-->
+<!--                        <ul class="breadcrumbs__row">-->
+
+
+<!--&lt;!&ndash;-->
+
+<!--                            <li name="obp_versions" class="versions breadcrumbs__list">-->
+<!--                                <a name="obp_version" class="version" href="./?version=1.2.1">version</a>-->
+<!--                            </li>-->
+
+<!--                            <li class="breadcrumbs__list">-->
+<!--                                <a class="version" href="./?version=OBPv4.0.0&tags=PSD2">OBP PSD2</a>-->
+<!--                            </li>-->
+
+<!--                            <li name="other_versions" class="versions breadcrumbs__list">-->
+<!--                                <a name="other_version" class="version" href="./?version=1.2.1">version</a>-->
+<!--                            </li>-->
+
+
+<!--&ndash;&gt;-->
+
+<!--&lt;!&ndash;                            <li class="breadcrumbs__list">&ndash;&gt;-->
+<!--&lt;!&ndash;                                <a onclick="closeMore()" id="index_link" href="#" class="breadcrumbs__link version">API Explorer</a>&ndash;&gt;-->
+<!--&lt;!&ndash;                            </li>&ndash;&gt;-->
+
+
+
+
+
+
+<!--                            <li class="breadcrumbs__list">-->
+<!--                                <div class="dropdown">-->
+<!--                                    <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">All Standards <img src="./media/images/chevron_down_thick_write.svg" alt="Girl in a jacket" width="10" height="10"></button>-->
+<!--                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">-->
+<!--                                        <li name="dropdown_versions"><a class="dropdown-item version" href="#">Another action</a> <hr></li>-->
+
+<!--                                    </ul>-->
+<!--                                </div>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+
+
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </section>-->
+
+
 
 
             <section class="api-info-section">
@@ -203,7 +329,15 @@
                     <div class="container">
                         <div class="content-box bg--white" id = "123" tabindex="1">
                             <a class="end-point-anchor" href="./#anchor">
-                                <h2 id="anchor" class="content-box__headline">The root of the API</h2>
+                                <h2> 
+                                    <div id="anchor" class="content-box__headline"> The root of the API </div>
+                                    <form class="lift:form.ajax" name="favourites_ajax_form" class ="favourites_ajax_form">
+                                        <input type="hidden" class="favourites_operatino_id">
+                                        <input type="hidden" class="favourites_api_collection_id">
+                                        <button name="favourites_button" class="favourites_button"></button>
+                                    </form>
+                                </h2>
+                                <p class="favourites_error_message"></p>
                             </a>
 
                             <div name="special_instructions" class="content-box__text-box">
@@ -226,9 +360,11 @@
                                         <input type="hidden" name="request_verb_input"
                                                placeholder="GET, POST, PUT etc.">
                                         <!-- The url_to_call is populated at render (but it can be edited manually) -->
-                                        <input type="text" name="request_url_input" class="default-input"
-                                               placeholder="OBP URL to call">
-                                        <button name="call_button" class="rest-call-button">POST</button>
+                                        <div id="api_request_url" style="display: block;">
+                                            <input type="text" name="request_url_input" class="default-input"
+                                                   placeholder="OBP URL to call">
+                                            <button name="call_button" class="rest-call-button">POST</button>
+                                        </div>
 
                                         <div name="example_request_header" id="example_request_header" style="display: block;">
                                             <!-- It is populated at render (but it can be edited manually) -->
@@ -321,6 +457,14 @@
                                 </div>
 
 
+                                <div name="possible_validations_box" class="content-box__info-box">
+                                    Validations:
+                                    <ul>
+                                        <li>Required JSON Validation: <span class="required_json_validation">Yes</span></li>
+                                        <li>Allowed Authentication Types: <span class="allowed_authentication_types">["DirectLogin","OAuth1.0a","OAuth2_OIDC_FAPI"]</span></li>
+                                    </ul>
+                                </div>
+
                                 <div name="possible_error_responses_box" class="content-box__info-box">
                                     Possible Errors:
                                     <ul>
@@ -330,7 +474,7 @@
                                     </ul>
                                 </div>
 
-                                <div id="connector_methods_box" class="content-box__info-box" style="display: none">
+                                <div id="connector_methods_box" class="content-box__info-box">
                                     Connector Methods:
                                     <ul>
                                         <li class="connector_method_item">
@@ -355,7 +499,11 @@
 
                         </div>
                         <div class="clearfloat"></div>
-                        <div class="content-box__available-since"></div>
+                        <div class="content-box__available-since">
+                            <strong>Version:</strong> <a name = "content-box__available-since_version"></a>
+                            <span name = "content-box__available-since_span"></span>
+                            <strong>Tags:</strong> <a name="content-box__available-since_tags" href=""></a>
+                        </div>
                     </div>
                 </section>
 
@@ -434,6 +582,12 @@
                                 certain version by appending &native=true to the index URL.
                             </p>
                         </li>
+                        <li>
+                            <p>
+                                <a name="git_commit" href="">API_Explorer Commit</a>
+                            </p>
+                        </li>
+                        
 <!--                    <div class="comma_separated_api_call_list" style="display: none;"></div>-->
 <!--                    <p>This list can be used as a basis to limit the available-->
 <!--                        endpoints by editing the API Props:-->
