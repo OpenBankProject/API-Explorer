@@ -21,6 +21,7 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 import java.util.UUID.randomUUID
 import net.liftweb.common._
+import net.liftweb.json
 
 
 case class Header(key: String, value: String)
@@ -235,35 +236,44 @@ object ObpAPI extends Loggable {
     ObpDelete(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints/$operationId")
   }
 
-  //NOTE: there is no parameters for the method, the cache is not working well. need to fix later
-//  private val sharableApiCollectionsTTL: FiniteDuration = Helper.getPropsAsIntValue("sharable_api_collections.cache.ttl.seconds", 0) seconds
-  def sharableApiCollections: Box[List[(String, String)]] = {
-//    var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
-//    CacheKeyFromArguments.buildCacheKey {
-//      Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(sharableApiCollectionsTTL) {
-        val apiCollectionsResponse = ObpGet(s"$obpPrefix/v4.0.0/api-collections/featured").flatMap(_.extractOpt[ApiCollectionsJson400])
-        apiCollectionsResponse.map(_.api_collections.map(apiCollection => (apiCollection.api_collection_name, apiCollection.api_collection_id)))
-//      }
-//    }
-  } 
+  @deprecated("16-11-2021","this is the Legacy props, now we introduce `webui_index_dynamic_url_text_pairs` ")
+  def getApiCollectionsFromPropsLegacy: List[(String, String)] = {
+    val webuiIndexDynamic1LinkUrl = Helper.getPropsValue("webui_index_dynamic_1_link_url", "")
+    val webuiIndexDynamic1LinkText = Helper.getPropsValue("webui_index_dynamic_1_link_text", "")
 
-  val webuiIndexDynamic1LinkUrl = Helper.getPropsValue("webui_index_dynamic_1_link_url", "")
-  val webuiIndexDynamic1LinkText = Helper.getPropsValue("webui_index_dynamic_1_link_text", "")
-
-  val webuiIndexDynamic2LinkUrl = Helper.getPropsValue("webui_index_dynamic_2_link_url", "")
-  val webuiIndexDynamic2LinkText = Helper.getPropsValue("webui_index_dynamic_2_link_text", "")
+    val webuiIndexDynamic2LinkUrl = Helper.getPropsValue("webui_index_dynamic_2_link_url", "")
+    val webuiIndexDynamic2LinkText = Helper.getPropsValue("webui_index_dynamic_2_link_text", "")
+    
+    if (webuiIndexDynamic1LinkUrl.nonEmpty && webuiIndexDynamic1LinkText.nonEmpty && webuiIndexDynamic2LinkText.nonEmpty && webuiIndexDynamic2LinkUrl.nonEmpty){
+      List(
+        (webuiIndexDynamic1LinkText,webuiIndexDynamic1LinkUrl), (webuiIndexDynamic2LinkText,webuiIndexDynamic2LinkUrl)
+      )
+    } else if (webuiIndexDynamic1LinkText.nonEmpty && webuiIndexDynamic1LinkText.nonEmpty )
+      List(
+        (webuiIndexDynamic1LinkText,webuiIndexDynamic1LinkUrl)
+      )
+    else
+      Nil
+  }
+  
+  val dynamicUrlTextPairsJson: List[DynamicUrlTextPairsJson] = {
+    def extractor(str: String) = try {
+      val dynamicUrlTextPairs =  json.parse(str).extract[List[DynamicUrlTextPairsJson]]
+      //The props value can be parse to JNothing.
+      if(str.nonEmpty && dynamicUrlTextPairs == Nil)
+        throw new RuntimeException(s"props [webui_index_dynamic_url_text_pairs] parse -> extract to Nil! it should be the valid class($DynamicUrlTextPairsJson) json format, current value is $str .")
+      else
+        dynamicUrlTextPairs
+    } catch {
+      case e: Throwable => // error handling, found wrong props value as early as possible.
+        this.logger.error(s"props [webui_index_dynamic_url_text_pairs] value is invalid, it should be the class($DynamicUrlTextPairsJson) json format, current value is $str ." );
+        throw e;
+    }
+    Helper.getPropsValue("webui_index_dynamic_url_text_pairs").map(extractor).getOrElse(Nil)
+  }
   
   def getApiCollectionsFromProps: Box[List[(String, String)]] = {
-    if (webuiIndexDynamic1LinkUrl.nonEmpty && webuiIndexDynamic1LinkText.nonEmpty && webuiIndexDynamic2LinkText.nonEmpty && webuiIndexDynamic2LinkUrl.nonEmpty){
-      Full(List(
-        (webuiIndexDynamic1LinkText,webuiIndexDynamic1LinkUrl), (webuiIndexDynamic2LinkText,webuiIndexDynamic2LinkUrl)
-      ))
-    } else if (webuiIndexDynamic1LinkText.nonEmpty && webuiIndexDynamic1LinkText.nonEmpty )
-      Full(List(
-        (webuiIndexDynamic1LinkText,webuiIndexDynamic1LinkUrl)
-      ))
-    else
-      Full(Nil)
+    Full(getApiCollectionsFromPropsLegacy ++ dynamicUrlTextPairsJson.map(dynamicUrlTextPair => List((dynamicUrlTextPair.text, dynamicUrlTextPair.url))).flatten)
   }
   
   /**
@@ -1232,6 +1242,7 @@ object ObpJson {
                             )
 
   case class ResourceDocsJson (resource_docs : List[ResourceDocJson])
+  case class DynamicUrlTextPairsJson (url:String, text:String)
   ///////////////////////////////////////////
 
 
