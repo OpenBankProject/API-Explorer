@@ -1746,7 +1746,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           s"./?operation_id=${operationId.replace(".","_").replaceAll(" ","_")}#group-${tag}"
         }&
         ".glossary_item_apis *" #> {
-          if(operationId == "") "" else i.title +" APIs"
+          if(operationId == "") "" else "Go Back to "+i.title +" APIs"
         } &
         // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
         // This is the main description text. We use the html version of the description
