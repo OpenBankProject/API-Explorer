@@ -197,7 +197,7 @@ object ObpAPI extends Loggable {
   def getApiCollection(apiCollectionName: String) : Box[ApiCollectionJson400] = {
     val response = ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/name/$apiCollectionName").flatMap(_.extractOpt[ApiCollectionJson400])
     if (response.toString.contains("OBP-30079")) {
-      createMyApiCollection("Favourites",true)
+      createMyApiCollection("Favourites",true, "Favourites")
       ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/name/$apiCollectionName").flatMap(_.extractOpt[ApiCollectionJson400])
     } else{
       response
@@ -211,7 +211,7 @@ object ObpAPI extends Loggable {
   def getApiCollectionEndpointsById(apiCollectionId: String) : Box[ApiCollectionEndpointsJson400] = {
     val response = ObpGet(s"$obpPrefix/v4.0.0/api-collections/$apiCollectionId/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
     if (isLoggedIn && response.toString.contains("OBP-30079")) {
-      createMyApiCollection("Favourites",true)
+      createMyApiCollection("Favourites",true, "Favourites")
       ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/Favourites/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
     } else{
       response
@@ -222,9 +222,11 @@ object ObpAPI extends Loggable {
   def getMyApiCollections = ObpGet(s"$obpPrefix/v4.0.0/my/api-collections").flatMap(_.extractOpt[ApiCollectionsJson400])
   
   
-  def createMyApiCollection (apiCollectionName: String, is_sharable:Boolean) = {
-    val postSelectionEndpointJson =  PostApiCollectionJson400(apiCollectionName, is_sharable)
-    ObpPost(s"$obpPrefix/v4.0.0/my/api-collections", Extraction.decompose(postSelectionEndpointJson))
+  def createMyApiCollection (apiCollectionName: String, is_sharable:Boolean, description: String): Box[JValue] = {
+    val postSelectionEndpointJson =  PostApiCollectionJson400(apiCollectionName, is_sharable, description)
+    val result = ObpPost(s"$obpPrefix/v4.0.0/my/api-collections", Extraction.decompose(postSelectionEndpointJson))
+    logger.info(result)
+    result
   }
   
   def createMyApiCollectionEndpoint (apiCollectionName: String, operationId: String) = {
@@ -1444,7 +1446,8 @@ case class CreateEntitlementRequestJSON(bank_id: String, role_name: String)
 
 case class PostApiCollectionJson400(
   api_collection_name: String,
-  is_sharable: Boolean
+  is_sharable: Boolean,
+  description: String
 )
 
 case class PostSelectionEndpointJson400(
