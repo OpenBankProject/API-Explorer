@@ -156,4 +156,22 @@ Returns a string which can be used for the title of the account
     case JNothing => ""
     case v => pretty(render(v))
   }
+
+  //in OBP-API, before it returned v3_1_0, but now, only return v3.1.0
+  //But this field will be used in JavaScript/Webpage html id attribute, so need clean the field. 
+  //To use any of the meta-characters (such as !"#$%&'()*+,./:;<=>?@[\]^`{|}~) as a literal part of a name, 
+  //it must be escaped with with two backslashes: \\. For example, an element with id="foo.bar", 
+  //can use the selector $("#foo\\.bar").
+  //So in Leftweb:
+  // eg: SetHtml(s"OBPv4.0.0_getBank", Text("Wrong OperationId")) --> not working
+  // eg: SetHtml(s"OBPv4_0_0_getBank", Text("Wrong OperationId")) --> working, 
+  def covertObpOperationIdToWebpageId(operation_id: String) = {
+    operation_id.replace(".", "_").replaceAll(" ", "_")
+  }
+
+
+  def covertWebpageIdToObpOperationId(web_page_operation_id: String) = {
+    web_page_operation_id.replace("_", ".")
+  }
+
 }

@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 import java.util.{Date, UUID}
 import code.lib.ObpJson._
 import code.util.Helper
-import code.util.Helper.MdcLoggable
+import code.util.Helper.{MdcLoggable, covertWebpageIdToObpOperationId}
 import code.util.cache.Caching
 import net.liftweb.common.{Box, Failure, Full, _}
 import net.liftweb.http.{RequestVar, S, SessionVar}
@@ -227,13 +227,15 @@ object ObpAPI extends Loggable {
     ObpPost(s"$obpPrefix/v4.0.0/my/api-collections", Extraction.decompose(postSelectionEndpointJson))
   }
   
-  def createMyApiCollectionEndpoint (apiCollectionName: String, operationId: String) = {
-    val postSelectionEndpointJson =  PostSelectionEndpointJson400(operationId)
+  def createMyApiCollectionEndpoint (apiCollectionName: String, webPageOperationId: String) = {
+    val obpOperationId = covertWebpageIdToObpOperationId(webPageOperationId)
+    val postSelectionEndpointJson =  PostSelectionEndpointJson400(obpOperationId)
     ObpPost(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints", Extraction.decompose(postSelectionEndpointJson))
   }
 
-  def deleteMyApiCollectionEndpoint (apiCollectionName: String, operationId: String)  = {
-    ObpDelete(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints/$operationId")
+  def deleteMyApiCollectionEndpoint (apiCollectionName: String, webPageOperationId: String)  = {
+    val obpOperationId = covertWebpageIdToObpOperationId(webPageOperationId)
+    ObpDelete(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints/$obpOperationId")
   }
 
   @deprecated("16-11-2021","this is the Legacy props, now we introduce `webui_index_dynamic_url_text_pairs` ")
@@ -667,7 +669,7 @@ object ObpDeleteBoolean {
 object ObpDelete {
   def apply(apiPath: String): Box[JValue] = {
     OBPRequest(apiPath, None, "DELETE", Nil) match {
-      case Full((status, result, _)) => Full(APIUtils.apiResponseWorked(status, result))
+      case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
       case Failure(msg, exception, chain) => Failure(msg)
       case _ => Failure("Unknown Error!")
     }
@@ -676,7 +678,7 @@ object ObpDelete {
 object ObpDeleteWithHeader {
   def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
     OBPRequest(apiPath, None, "DELETE", headers) match {
-      case Full(value) => (APIUtils.deleteApiResponse(value._1, value._2), value._3)
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
     }
   }
 }
