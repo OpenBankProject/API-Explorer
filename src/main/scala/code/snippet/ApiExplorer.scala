@@ -1644,11 +1644,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
            "@success_response_body [id]" #> s"success_response_body_${i.id}" &
           // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
             "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
-            ".favourites_operatino_id" #> text(i.operationId.toString, s => favouritesOperationId = s,  "type" -> "hidden","class" -> "favourites_operatino_id") &
+            ".favourites_operatino_id" #> text(i.id.toString, s => favouritesOperationId = s,  "type" -> "hidden","class" -> "favourites_operatino_id") &
             ".favourites_api_collection_id" #> text(apiCollectionId, s => favouritesApiCollectionId = s,  "type" -> "hidden","class" -> "favourites_api_collection_id") &
-            ".favourites_button" #> Helper.ajaxSubmit("★", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.operationId.toString}",  
+            ".favourites_button" #> Helper.ajaxSubmit("★", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.id.toString}",  
               if(apiCollectionIdParam.isDefined && getOperationIdsByApiCollectionId.nonEmpty) {"style" -> "color:#53C4EF"} 
-              else if(getMyOperationIds.contains(i.operationId.toString)) {"style" -> "color:#53C4EF"} 
+              else if(getMyOperationIds.contains(i.id.toString)) {"style" -> "color:#53C4EF"} 
               else {"style" -> "color:#767676"}
             ) &
             ".favourites_error_message [id]" #> s"favourites_error_message_${i.id}" &
