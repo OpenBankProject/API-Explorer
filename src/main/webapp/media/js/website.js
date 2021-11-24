@@ -122,6 +122,11 @@ $(document).ready(function() {
         $("#right_side .resource:nth-child(5) .content-box__headline").css("padding","332px 0 0 0").css("margin","0 0 32px 0");
         $("#right_side .resource:nth-child(5) .content-box .end-point-anchor form").css("padding","332px 0 0 0").css("margin","0 0 32px 0");;
     }
+
+    $(".option-box").click(function(){
+        $(".select2-dropdown--below").css('width','187px');
+    });
+
 });
 
 
