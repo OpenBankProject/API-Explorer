@@ -4,7 +4,7 @@ import code.lib.ObpAPI.{getAuthenticationTypeValidations, getJsonSchemaValidatio
 import code.lib.ObpJson._
 import code.lib.{ObpAPI, ObpGet, _}
 import code.util.Helper
-import code.util.Helper.MdcLoggable
+import code.util.Helper.{MdcLoggable, covertObpOperationIdToWebpageId}
 import net.liftweb.json
 import net.liftweb.util.{CssSel, Html5}
 import java.net.URL
@@ -590,7 +590,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
   var errorResponseBodies = List("")
 
   var isFavourites = "false"
-  var favouritesOperationId = ""
+  //Note: OperationIdFromWebpage = OBPv4_0_0-getBanks
+  //But operationIdForOBP => OBPv4.0.0-getBanks (Javascript do not support '.' there.)
+  //We must do the converting properly for this two ids.
+  var favouritesOperationIdFromWebpage = ""
   var favouritesApiCollectionId = ""
 
 
@@ -665,9 +668,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val allResources = for {
       r <- allResourcesList
     } yield ResourceDocPlus(
-       //in OBP-API, before it returned v3_1_0, but now, only return v3.1.0
-      //But this field will be used in JavaScript, so need clean the field.
-      id = r.operation_id.replace(".","_").replaceAll(" ","_"),
+      id = covertObpOperationIdToWebpageId(r.operation_id),
       operationId = r.operation_id,
       verb = r.request_verb,
       url = modifiedRequestUrl(
@@ -773,8 +774,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     //this can be empty list, if there is no operationIds there.
-    val getOperationIdsByApiCollectionId = ObpAPI.getApiCollectionEndpointsById(apiCollectionId).map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
-    val getMyOperationIds = ObpAPI.getApiCollectionEndpoints("Favourites").map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
+    def webpageOperationIds = ObpAPI.getApiCollectionEndpointsById(apiCollectionId).map(_.api_collection_endpoints.map(_.operation_id)).openOr(List()).map(covertObpOperationIdToWebpageId)
+    def myWebpageOperationIds = ObpAPI.getApiCollectionEndpoints("Favourites").map(_.api_collection_endpoints.map(_.operation_id)).openOr(List()).map(covertObpOperationIdToWebpageId)
 
     // Group resources by the first tag
     val unsortedGroupedResources: Map[String, List[ResourceDocPlus]] = resources.groupBy(_.tags.headOr("ToTag"))
@@ -1001,32 +1002,41 @@ WIP to add comments on resource docs. This code copied from Sofit.
     def processFavourites(name: String): JsCmd = {
       // enable button
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
-      //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delelet the record there.
+      //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delete the record there.
       val apiFavouriteCollection = ObpAPI.getApiCollection("Favourites")
       val errorMessage = if(apiFavouriteCollection.isInstanceOf[Failure]) apiFavouriteCollection.asInstanceOf[Failure].messageChain else ""
 
       
       if(apiFavouriteCollection.isInstanceOf[Failure]){ // If the user is not logged in, we do not need call any apis calls. (performance enhancement)
-        SetHtml(s"favourites_error_message_${favouritesOperationId}", Text(errorMessage))&
+        SetHtml(s"favourites_error_message_${favouritesOperationIdFromWebpage}", Text(errorMessage))&
           Run (jsEnabledBtn)
       } else {
         if(errorMessage.equals("")){ //If there is no error, we changed the button
           if(favouritesApiCollectionId.nonEmpty && !apiFavouriteCollection.map(_.api_collection_id).contains(favouritesApiCollectionId)){
-            SetHtml(s"favourites_error_message_${favouritesOperationId}", Text("You only have read access for the Favourites. You can only edit your own Favourites."))&
+            SetHtml(s"favourites_error_message_${favouritesOperationIdFromWebpage}", Text("You only have read access for the Favourites. You can only edit your own Favourites."))&
               Run (jsEnabledBtn)
           }else{
-            //prepare the js for the button color changing.
-            val favouritesBtnColour = if (getMyOperationIds.contains(favouritesOperationId)) {
-              ObpAPI.deleteMyApiCollectionEndpoint("Favourites",favouritesOperationId)
-              s"jQuery('#favourites_button_${favouritesOperationId}').css('color','#767676')"
-            } else {
-              ObpAPI.createMyApiCollectionEndpoint("Favourites",favouritesOperationId)
-              s"jQuery('#favourites_button_${favouritesOperationId}').css('color','#53C4EF')"
+            if (myWebpageOperationIds.contains(favouritesOperationIdFromWebpage)) { //If we already have this operationId, we need to delete it
+              val deletedBox = ObpAPI.deleteMyApiCollectionEndpoint("Favourites",favouritesOperationIdFromWebpage)
+              val deleteErrorMessage = if(deletedBox.isInstanceOf[Failure]) deletedBox.asInstanceOf[Failure].messageChain else ""
+              if (deletedBox.isInstanceOf[Failure]){
+                SetHtml(s"favourites_error_message_${favouritesOperationIdFromWebpage}", Text(deleteErrorMessage)) &
+                  Run(jsEnabledBtn)
+              }else{
+                Run (jsEnabledBtn) & Run(s"jQuery('#favourites_button_${favouritesOperationIdFromWebpage}').css('color','#767676')")
+              }
+            } else {//If we do not have this operationId, we need to create it.
+              val createdBox = ObpAPI.createMyApiCollectionEndpoint("Favourites",favouritesOperationIdFromWebpage)
+              val createdErrorMessage = if(createdBox.isInstanceOf[Failure]) createdBox.asInstanceOf[Failure].messageChain else ""
+              if (createdBox.isInstanceOf[Failure]){
+                SetHtml(s"favourites_error_message_${favouritesOperationIdFromWebpage}", Text(createdErrorMessage)) &
+                  Run(jsEnabledBtn)
+              }else{
+                Run (jsEnabledBtn) & Run(s"jQuery('#favourites_button_${favouritesOperationIdFromWebpage}').css('color','#53C4EF')")
+              }
             }
-            Run (jsEnabledBtn) &
-              Run (favouritesBtnColour)}
-        } else { //if there is error, we show the OBP-API error there.
-          SetHtml(s"favourites_error_message_${favouritesOperationId}", Text(errorMessage)) &
+        }} else { //if there is error, we show the OBP-API error there.
+          SetHtml(s"favourites_error_message_${favouritesOperationIdFromWebpage}", Text(errorMessage)) &
             Run(jsEnabledBtn)
         }
       }
@@ -1644,11 +1654,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
            "@success_response_body [id]" #> s"success_response_body_${i.id}" &
           // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
             "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
-            ".favourites_operatino_id" #> text(i.id.toString, s => favouritesOperationId = s,  "type" -> "hidden","class" -> "favourites_operatino_id") &
+            ".favourites_operation_id" #> text(i.id.toString, s => favouritesOperationIdFromWebpage = s,  "type" -> "hidden","class" -> "favourites_operation_id") &
             ".favourites_api_collection_id" #> text(apiCollectionId, s => favouritesApiCollectionId = s,  "type" -> "hidden","class" -> "favourites_api_collection_id") &
             ".favourites_button" #> Helper.ajaxSubmit("★", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.id.toString}",  
-              if(apiCollectionIdParam.isDefined && getOperationIdsByApiCollectionId.nonEmpty) {"style" -> "color:#53C4EF"} 
-              else if(getMyOperationIds.contains(i.id.toString)) {"style" -> "color:#53C4EF"} 
+              if(apiCollectionIdParam.isDefined && webpageOperationIds.nonEmpty) {"style" -> "color:#53C4EF"} 
+              else if(myWebpageOperationIds.contains(i.id.toString)) {"style" -> "color:#53C4EF"} 
               else {"style" -> "color:#767676"}
             ) &
             ".favourites_error_message [id]" #> s"favourites_error_message_${i.id}" &
@@ -1675,7 +1685,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     logger.debug("before showResources:")
     def resourceDocsRequiresRole = ObpAPI.getRoot.flatMap(_.extractOpt[APIInfoJson400].map(_.resource_docs_requires_role)).openOr(false)
-
     // Get a list of resource docs from the API server
     // This will throw an exception if resource_docs key is not populated
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
