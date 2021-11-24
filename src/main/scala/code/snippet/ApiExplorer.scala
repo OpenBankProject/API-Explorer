@@ -1093,12 +1093,15 @@ WIP to add comments on resource docs. This code copied from Sofit.
                   featuredBankIds.contains(b.id.get) // Add a flag to say if this bank is featured.
       )
 
+    // Banks where a user has accounts + My Spaces + Featured Banks.
+    val userCanShowBankIds= (myBankIds++featuredBankIds.map(BankId(_))++ getMySpaces.map(_.bank_ids.map(BankId(_))).getOrElse(List.empty[BankId])).toSet
+    
     val banksForUser =
       if (listAllBanks) // Url param says show all.
         banks
       else
-        if(!myBankIds.isEmpty) // User has accounts so show those banks
-          banks.filter(b => myBankIds.contains(BankId(b.id)))
+        if(!userCanShowBankIds.isEmpty) // User has accounts so show those banks
+          banks.filter(b => userCanShowBankIds.contains(BankId(b.id)))
         else
           // If we have a featured list of banks show those, else all.
           banks.filter(b => b.isFeatured || featuredBankIds.length == 0)
