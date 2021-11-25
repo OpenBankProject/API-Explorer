@@ -40,6 +40,12 @@ object ObpAPI extends Loggable {
   val defaultProvider = Helper.getPropsValue("defaultAuthProvider").getOrElse("")
   
   val userNotFoundError = "user (\\S+) at provider (\\S+) not found".r
+
+  private val AccountUrlPath = "/accounts/"
+  private val ApiCollectionId = "api-collection-id"
+  private val CacheModifier = "cache-modifier"
+  private val ContentEqualStatic = "content=static"
+  private val ContentEqualDynamic = "content=dynamic"
   
   /**
    * The request vars ensure that for one page load, the same API call isn't
@@ -84,7 +90,7 @@ object ObpAPI extends Loggable {
       fromDate.map(f => Header("obp_from_date", dateFormat.format(f))).toList ::: toDate.map(t => Header("obp_to_date", dateFormat.format(t))).toList :::
       sortDirection.map(s => Header("obp_sort_direction", s.value)).toList ::: Nil
 
-    ObpGet(s"$obpPrefix/v3.0.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) +
+    ObpGet(s"$obpPrefix/v3.0.0/banks/" + urlEncode(bankId) + AccountUrlPath + urlEncode(accountId) + "/" + urlEncode(viewId) +
       "/transactions", headers).flatMap(x => x.extractOpt[TransactionsJsonV300])
   }
 
@@ -95,19 +101,19 @@ object ObpAPI extends Loggable {
 
 
   def publicAccounts(bankId : String) : Box[BarebonesAccountsJson] = {
-    ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/public").flatMap(_.extractOpt[BarebonesAccountsJson])
+    ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + AccountUrlPath + "public").flatMap(_.extractOpt[BarebonesAccountsJson])
   }
 
   def publicAccounts : Box[BarebonesAccountsJson] = {
-    ObpGet(s"$obpPrefix/v3.1.0/accounts/public").flatMap(_.extractOpt[BarebonesAccountsJson])
+    ObpGet(s"$obpPrefix/v3.1.0${AccountUrlPath}public").flatMap(_.extractOpt[BarebonesAccountsJson])
   }
 
   def privateAccounts(bankId : String) : Box[BarebonesAccountsJson] = {
-    ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/private").flatMap(_.extractOpt[BarebonesAccountsJson])
+    ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + AccountUrlPath + "private").flatMap(_.extractOpt[BarebonesAccountsJson])
   } 
 
   def privateAccounts : Box[BarebonesAccountsJson] = {
-    ObpGet(s"$obpPrefix/v1.2.1/accounts/private").flatMap(_.extractOpt[BarebonesAccountsJson])
+    ObpGet(s"$obpPrefix/v1.2.1${AccountUrlPath}private").flatMap(_.extractOpt[BarebonesAccountsJson])
   }
   
   @deprecated("This method will mix public and private, not clear for Apps.","2018-02-18")
@@ -117,20 +123,20 @@ object ObpAPI extends Loggable {
 
   // Similar to getViews below
   def getViewsForBankAccount(bankId: String, accountId: String) = {
-    ObpGet(s"$obpPrefix/v3.1.0/banks/" + bankId + "/accounts/" + accountId + "/views").flatMap(_.extractOpt[ViewsJson])
+    ObpGet(s"$obpPrefix/v3.1.0/banks/" + bankId + AccountUrlPath + accountId + "/views").flatMap(_.extractOpt[ViewsJson])
   }
 
   def getAccount(bankId: String, accountId: String, viewId: String) : Box[AccountJson] = {
-    ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/account").flatMap(x => x.extractOpt[AccountJson])
+    ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + AccountUrlPath + urlEncode(accountId) + "/" + urlEncode(viewId) + "/account").flatMap(x => x.extractOpt[AccountJson])
   } 
 
   def getCounterparties(bankId: String, accountId: String, viewId: String): Box[DirectOtherAccountsJson] =  {
-    val counterparties  = ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/other_accounts").flatMap(x => x.extractOpt[DirectOtherAccountsJson])
+    val counterparties  = ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + AccountUrlPath + urlEncode(accountId) + "/" + urlEncode(viewId) + "/other_accounts").flatMap(x => x.extractOpt[DirectOtherAccountsJson])
     counterparties
   } 
 
   def getExplictCounterparties(bankId: String, accountId: String, viewId: String): Box[ExplictCounterpartiesJson] = {
-     ObpGet(s"$obpPrefix/v2.2.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/counterparties").flatMap(x => x.extractOpt[ExplictCounterpartiesJson])
+     ObpGet(s"$obpPrefix/v2.2.0/banks/" + urlEncode(bankId) + AccountUrlPath + urlEncode(accountId) + "/" + urlEncode(viewId) + "/counterparties").flatMap(x => x.extractOpt[ExplictCounterpartiesJson])
   }
 
   def getEntitlementsV300 : Box[EntitlementsJson] = {
@@ -287,17 +293,18 @@ object ObpAPI extends Loggable {
   // Returns both system and dynamic resource docs:
   def getAllResourceDocsJson(apiVersion : String): Box[List[ResourceDocJson]] = {
 
-    val apiCollectionIdParam = List("api-collection-id")
+    val apiCollectionIdParam = List(ApiCollectionId)
       .map(paramName => (paramName, S.param(paramName)))
       .collect{
-        case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
+        case (paramName, Full(paramValue)) if(paramValue.trim.size > 0
+          ) => s"$paramName=$paramValue"
       }
       .mkString("?", "&", "")
     
     //Note: ?content=static&content=dynamic
     // if there are two content parameters there, only the first one is valid for the api call. 
     // so requestParams have the high priority 
-    val requestParams = List("tags", "language", "functions", "content", "cache-modifier")
+    val requestParams = List("tags", "language", "functions", "content", CacheModifier)
         .map(paramName => (paramName, S.param(paramName)))
         .collect{
           case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -314,11 +321,11 @@ object ObpAPI extends Loggable {
     lazy val dynamicResourcesDocs = getDynamicResourceDocs(apiVersion,requestParams, canReadResourceDocRole, OAuthClient.loggedIn)
 
     //If the api-collection-id in the URL, it will ignore all other parameters, so here we first check it:
-    if(apiCollectionIdParam.contains("api-collection-id=")) {
+    if(apiCollectionIdParam.contains(ApiCollectionId + "=")) {
       getResourceDocsByApiCollectionId(apiVersion, apiCollectionIdParam)
-    }else if(requestParams.contains("content=static")) {
+    }else if(requestParams.contains(ContentEqualStatic)) {
       staticResourcesDocs
-    } else if (requestParams.contains("content=dynamic")){
+    } else if (requestParams.contains(ContentEqualDynamic)){
       dynamicResourcesDocs
     } else{
     for{
@@ -333,7 +340,7 @@ object ObpAPI extends Loggable {
   // Returns all bank level dynamic resources
   def getStaticAndAllBankLevelDynamicResourceDocs(apiVersion : String) = {
 
-    val apiCollectionIdParam = List("api-collection-id")
+    val apiCollectionIdParam = List(ApiCollectionId)
       .map(paramName => (paramName, S.param(paramName)))
       .collect{
         case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -343,7 +350,7 @@ object ObpAPI extends Loggable {
     //Note: ?content=static&content=dynamic
     // if there are two content parameters there, only the first one is valid for the api call. 
     // so requestParams have the high priority 
-    val requestParams = List("tags", "language", "functions", "cache-modifier")
+    val requestParams = List("tags", "language", "functions", CacheModifier)
         .map(paramName => (paramName, S.param(paramName)))
         .collect{
           case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -363,11 +370,11 @@ object ObpAPI extends Loggable {
       bankId => getBankLevelDynamicResourceDocs(apiVersion,bankId,requestParams)).flatten.flatten)
     
     //If the api-collection-id in the URL, it will ignore all other parameters, so here we first check it:
-    if(apiCollectionIdParam.contains("api-collection-id=")) {
+    if(apiCollectionIdParam.contains(ApiCollectionId + "=")) {
       getResourceDocsByApiCollectionId(apiVersion, apiCollectionIdParam)
-    }else if(requestParams.contains("content=static")) {
+    }else if(requestParams.contains(ContentEqualStatic)) {
       staticResourcesDocs
-    } else if (requestParams.contains("content=dynamic")){
+    } else if (requestParams.contains(ContentEqualDynamic)){
       dynamicResourcesDocs
     } else{
       for{
@@ -381,7 +388,7 @@ object ObpAPI extends Loggable {
 
   // Returns only the bank level resource docs
   def getOneBankLevelResourceDocsJson(apiVersion : String, bankId:String) = {
-    val apiCollectionIdParam = List("api-collection-id")
+    val apiCollectionIdParam = List(ApiCollectionId)
       .map(paramName => (paramName, S.param(paramName)))
       .collect{
         case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -391,7 +398,7 @@ object ObpAPI extends Loggable {
     //Note: ?content=static&content=dynamic
     // if there are two content parameters there, only the first one is valid for the api call. 
     // so requestParams have the high priority 
-    val requestParams = List("tags", "language", "functions", "content", "cache-modifier")
+    val requestParams = List("tags", "language", "functions", "content", CacheModifier)
       .map(paramName => (paramName, S.param(paramName)))
       .collect{
         case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -408,7 +415,7 @@ object ObpAPI extends Loggable {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
-        val requestParamsRemovedContent = requestParams.replace("content=static","")
+        val requestParamsRemovedContent = requestParams.replace(ContentEqualStatic,"")
         getResourceDocs(apiVersion, requestParamsRemovedContent, "static")
       }
     }
@@ -421,7 +428,7 @@ object ObpAPI extends Loggable {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getDynamicResourceDocsJsonTTL) {
-        val requestParamsRemovedContent = requestParams.replace("content=dynamic","")
+        val requestParamsRemovedContent = requestParams.replace(ContentEqualDynamic,"")
         getResourceDocs(apiVersion, requestParamsRemovedContent, "dynamic")
       }
     }
@@ -451,7 +458,7 @@ object ObpAPI extends Loggable {
   
   def getBankLevelDynamicResourceDocsJValueResponse(apiVersion : String, bankId:String, requestParams: String) = {
     logger.debug("getBankLevelResourceDocsJValueResponse says Hello")
-    val result = ObpGet(s"$obpPrefix/v4.0.0/banks/$bankId/resource-docs/$apiVersion/obp$requestParams&cache-modifier=${UUID.randomUUID().toString}")
+    val result = ObpGet(s"$obpPrefix/v4.0.0/banks/$bankId/resource-docs/$apiVersion/obp$requestParams&$CacheModifier=${UUID.randomUUID().toString}")
     logger.debug("getBankLevelResourceDocsJValueResponse says result is: " + result)
     result  
   }
@@ -460,7 +467,7 @@ object ObpAPI extends Loggable {
     ObpGet(s"$obpPrefix/v4.0.0/resource-docs/$apiVersion/obp$requestParams").map(extractResourceDocsJson).map(_.resource_docs)
 
   def getApiCollectionByIdJValueResponse(apiVersion : String) = {
-    val apiCollectionIdParam = List("api-collection-id")
+    val apiCollectionIdParam = List(ApiCollectionId)
       .map(paramName => (paramName, S.param(paramName)))
       .collect{
         case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
