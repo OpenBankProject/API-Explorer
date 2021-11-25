@@ -34,7 +34,7 @@ function openNav() {
     $(".api-info-section").css("display","none");
     $("#right_side").css("display","none");
     $("#small-nav-collapse").attr("onclick","closeNav()");
-    logOnButton = $("#start-login").text().indexOf("Log on");
+    let logOnButton = $("#start-login").text().indexOf("Log on");
     if (logOnButton >= 0){
         $("#left_side_small_screen .settings-box").css("display","none")
     }
@@ -110,7 +110,7 @@ $(document).ready(function() {
     //and update the value for .version class
     var versions =$(".breadcrumbs .breadcrumbs__row .breadcrumbs__list .version")
     if(urlParameterFilteredVersionAndTagsAndContent !== ""){
-        for (i = 0; i < versions.length; i++) {
+        for (let i = 0; i < versions.length; i++) {
             $(".breadcrumbs .breadcrumbs__row .breadcrumbs__list .version")[i].href=versions[i].href+"&"+urlParameterFilteredVersionAndTagsAndContent
         }
     }
