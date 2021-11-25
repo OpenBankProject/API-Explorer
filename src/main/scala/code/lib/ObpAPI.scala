@@ -256,7 +256,7 @@ object ObpAPI extends Loggable {
       List(
         (webuiIndexDynamic1LinkText,webuiIndexDynamic1LinkUrl), (webuiIndexDynamic2LinkText,webuiIndexDynamic2LinkUrl)
       )
-    } else if (webuiIndexDynamic1LinkText.nonEmpty && webuiIndexDynamic1LinkText.nonEmpty )
+    } else if (webuiIndexDynamic1LinkUrl.nonEmpty && webuiIndexDynamic1LinkText.nonEmpty )
       List(
         (webuiIndexDynamic1LinkText,webuiIndexDynamic1LinkUrl)
       )
