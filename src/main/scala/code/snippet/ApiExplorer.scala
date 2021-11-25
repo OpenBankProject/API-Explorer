@@ -1428,7 +1428,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
             "@api_glossary_item_link * " #>{
               val description = glossaryItems.find(_.title == i._1.replaceAll("-"," ")).map(_.description.markdown).getOrElse("")
               if (description.length > 100)
-                description.substring(0,100).trim() +" ..."
+                "More..."
+              else
+                "" //If there is no description, we will show empty here.
+            } &
+            "@api_glossary_item_text * " #>{
+              val description = glossaryItems.find(_.title == i._1.replaceAll("-"," ")).map(_.description.markdown).getOrElse("")
+              if (description.length > 100)
+                description.substring(0,100).trim()
               else
                 "" //If there is no description, we will show empty here.
             } &
