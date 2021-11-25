@@ -1,5 +1,6 @@
 package code.lib
 
+import code.lib.ObpAPI.UnknownErrorMessage
 import java.io._
 import java.text.SimpleDateFormat
 import java.util.{Date, UUID}
@@ -41,11 +42,19 @@ object ObpAPI extends Loggable {
   
   val userNotFoundError = "user (\\S+) at provider (\\S+) not found".r
 
-  private val AccountUrlPath = "/accounts/"
-  private val ApiCollectionId = "api-collection-id"
-  private val CacheModifier = "cache-modifier"
-  private val ContentEqualStatic = "content=static"
-  private val ContentEqualDynamic = "content=dynamic"
+  final val AccountUrlPath = "/accounts/"
+  final val ApiCollectionId = "api-collection-id"
+  final val CacheModifier = "cache-modifier"
+  final val ContentEqualStatic = "content=static"
+  final val ContentEqualDynamic = "content=dynamic"
+  final val UnknownErrorMessage = "Unknown Error!"
+  final val OBPVersionV400 = "OBPv4.0.0"
+  final val UKVersionV31 = "UKv3.1"
+  final val UKVersionV20 = "UKv2.0"
+  final val BGVersionV13 = "BGv1.3"
+  final val PAPIVersionV2111 = "PAPIv2.1.1.1"
+  final val BGVersionV133 = "BGv1.3.3"
+  final val VersionV133 = "v1.3.3"
   
   /**
    * The request vars ensure that for one page load, the same API call isn't
@@ -624,7 +633,7 @@ object ObpPut {
     OBPRequest(apiPath, Some(json), "PUT", Nil) match {
       case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
       case Failure(msg, exception, chain) => Failure(msg)
-      case _ => Failure("Unknown Error!")
+      case _ =>Failure(UnknownErrorMessage)
     }
   }
 }
@@ -641,7 +650,7 @@ object ObpPost {
     OBPRequest(apiPath, Some(json), "POST", Nil) match {
       case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
       case Failure(msg, exception, chain) => Failure(msg)
-      case _ => Failure("Unknown Error!")
+      case _ => Failure(UnknownErrorMessage)
     }
   }
 }
@@ -678,7 +687,7 @@ object ObpDelete {
     OBPRequest(apiPath, None, "DELETE", Nil) match {
       case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
       case Failure(msg, exception, chain) => Failure(msg)
-      case _ => Failure("Unknown Error!")
+      case _ => Failure(UnknownErrorMessage)
     }
   }
 }
@@ -701,7 +710,7 @@ object ObpGet {
       OBPRequest(apiPath, None, "GET", headers) match {
         case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
         case Failure(msg, exception, chain) => Failure(msg)
-        case _ => Failure("Unknown Error!")
+        case _ => Failure(UnknownErrorMessage)
       }
     }
   }
@@ -715,7 +724,7 @@ object ObpHead {
       OBPRequest(apiPath, None, "HEAD", headers) match {
         case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
         case Failure(msg, exception, chain) => Failure(msg)
-        case _ => Failure("Unknown Error!")
+        case _ => Failure(UnknownErrorMessage)
       }
     }
   }

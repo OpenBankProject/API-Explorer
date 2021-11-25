@@ -101,7 +101,7 @@ $(document).ready(function() {
     var urlParameterFilteredVersionAndTagsAndContent = urlParameters.filter(function(item) {
         return !item.includes("version") 
             && (!item.includes("tags")) 
-            && (!item.includes("api-collection-id"))
+            && (!item.includes(ApiCollectionId))
             && (!item.includes("content"))
             && (!item.includes("functions"))
             && (!item.includes("space_bank_id"))
