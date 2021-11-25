@@ -1,7 +1,7 @@
 @import url(/media/css/fonts.css);
 
 @font-face {
-  font-family: Roboto-Light;
+  font-family: Roboto-Light, sans-serif;
   src: url(/media/font/Roboto-Light.ttf);
 }
 body {
@@ -69,7 +69,7 @@ a img {
 .header .site-title-box__text {
   display: inline-block;
   margin: 0;
-  font-family: Roboto-Light;
+  font-family: Roboto-Light, sans-serif;
   font-size:18px;
   color: #333333;
   letter-spacing: 0;
@@ -106,7 +106,7 @@ a img {
 }
 
 .sign-box__text {
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #FFFFFF;
   text-align: center;
@@ -192,7 +192,7 @@ a img {
   padding: 10px 0 10px 25px;
   margin: 0;
   float: left;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 14px;
   color: #FFFFFF;
   letter-spacing: 0;
@@ -206,7 +206,7 @@ a img {
   padding: 0;
   margin: 26px 25px 22px 0;
   letter-spacing: 0;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 14px;
   color: #FFFFFF;
   letter-spacing: 0;
@@ -242,7 +242,7 @@ a img {
   display: inline-block;
   margin: 0 0 0 0;
   text-decoration: none;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 14px;
   color: #FFFFFF;
   letter-spacing: 0;
@@ -282,7 +282,7 @@ a img {
   color: white;
   background: #767676;
   height: 52px;
-  font-family: Roboto-Medium;
+ font-family: Roboto-Medium, sans-serif;
   font-size: 18px;
   color: #FFFFFF;
   line-height: 28px;
@@ -305,7 +305,7 @@ a img {
 .info-box__headline {
   margin: 0 0 0 0;
   padding: 16px 0 16px 25px;
-  font-family: Roboto-Light;
+  font-family: Roboto-Light, sans-serif;
   font-size: 28px;
   color: #FFFFFF;
   letter-spacing: 0;
@@ -313,7 +313,7 @@ a img {
 }
 
 .info-box__about_selected {
-  font-family: Roboto-Light;
+  font-family: Roboto-Light, sans-serif;
   font-size: 18px;
   color: #FFFFFF;
   line-height: 28px;
@@ -361,14 +361,14 @@ a img {
 .option-section .option-box__headline {
   padding-top: 0;
   padding-bottom: 8px;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #333333;
   letter-spacing: 0;
   line-height: 24px;
 }
 .option-section select {
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   /*font-size: 16px;*/
   /*color: #333333;*/
   /*line-height: 24px;*/
@@ -482,7 +482,7 @@ a img {
   margin: -240px 0 32px 0;
   font-weight: 400;
   padding: 240px 0 0 0;
-  font-family: Roboto-Light;
+  font-family: Roboto-Light, sans-serif;
   font-size: 28px;
   color: #333333;
   letter-spacing: 0;
@@ -530,7 +530,7 @@ a img {
   margin: -222px 0 32px 0;
   font-weight: 400;
   padding: 222px 0 0 0;
-  font-family: Roboto-Light;
+  font-family: Roboto-Light, sans-serif;
   font-size: 28px;
   color: #333333;
   letter-spacing: 0;
@@ -553,7 +553,7 @@ a img {
   width: 100%;
   /*padding: 5px;*/
   max-width: 1000px;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;[
   color: #333333;]
   line-height: 24px;
@@ -620,7 +620,7 @@ a img {
   margin-right: 20px;
   margin-top: 0;
   margin-bottom: 13px;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -631,7 +631,7 @@ a img {
   margin-right: 20px;
   margin-top: 0;
   margin-bottom: 13px;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -643,7 +643,7 @@ a img {
   margin-right: 20px;
   margin-top: 0;
   margin-bottom: 13px;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -659,7 +659,7 @@ a img {
   font-size: 8px;
   margin-left: 25px;
   margin-top: 13px;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   color: #333333;
   line-height: 24px;
 }
@@ -703,7 +703,7 @@ a img {
 }
 .api_group_item a {
   text-decoration: none;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -730,7 +730,7 @@ a img {
 }
 .api_list_item a {
   text-decoration: none;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 12px;
   color: #333333;
   line-height: 4px;
@@ -740,7 +740,7 @@ a img {
 }
 .api_glossary_item a {
   text-decoration: underline;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 10px;
   color: #333333;
   line-height: 4px;
@@ -771,7 +771,7 @@ a img {
   -webkit-appearance: none;
   margin-top: 0px;
   width: 100%;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -787,7 +787,7 @@ a img {
   margin-left: 0 ;
   float: left;
   border: 1px solid #333333;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #333333;
   text-align: center;
@@ -840,7 +840,7 @@ a img {
   margin-top: 13px;
   padding: 14px 19px 44px 19px;
   overflow-x: auto;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #FFFFFF;
   line-height: 24px;
@@ -851,7 +851,7 @@ a img {
   float: left;
   margin-right: 20px;
   margin-top: 5px;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -1126,7 +1126,7 @@ code,
 kbd,
 pre,
 samp {
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #FFFFFF;
   line-height: 24px;
@@ -1136,7 +1136,7 @@ samp {
 .glossary kbd,
 .glossary pre,
 .glossary samp {
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #FFFFFF;
   line-height: 24px;
@@ -1387,7 +1387,7 @@ a.end-point-anchor {
     letter-spacing: 0;
     margin: 0 0 0 5px;
     clear: both;
-    font-family: Roboto-Regular;
+    font-family: Roboto-Regular,sans-serif;
     font-size: 12px;
     line-height: 24px;
 }
@@ -1418,7 +1418,7 @@ a.end-point-anchor {
 
 .username {
   color: #000;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -1489,7 +1489,7 @@ a.end-point-anchor {
 }
 .select2-results__option {
   padding: 6px;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -1500,7 +1500,7 @@ a.end-point-anchor {
 }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -1528,7 +1528,7 @@ a.end-point-anchor {
 
 #resouce-footer .container p{
   margin-left: 25px;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 16px;
   color: #333333;
   line-height: 24px;
@@ -1584,7 +1584,7 @@ footer .footer-links-box {
 }
 
 footer .footer-link-box__link {
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 14px;
   color: #FFFFFF;
   letter-spacing: 0;
@@ -1630,7 +1630,7 @@ footer .footer-box__paragraph {
 }
 footer .footer-box__paragraph2 {
   margin-bottom: 0px;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 14px;
   color: #FFFFFF;
   letter-spacing: 0;
@@ -1643,7 +1643,7 @@ footer .footer-box__paragraph2 a:hover  {
 }
 footer a,span,
 footer a:hover{
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
   font-size: 14px;
   color: #FFFFFF;
   letter-spacing: 0;
@@ -1663,7 +1663,7 @@ footer a:hover{
 }
 .api_group_item_small_screen a {
   text-decoration: none;
-  font-family: Roboto-Light;
+  font-family: Roboto-Light, sans-serif;
   font-size: 19px;
   color: #333333;
   line-height: 27px;
@@ -1765,7 +1765,7 @@ p{
 .content-box__available-since span{
   color: #000000;
   font-size: 8px;
-  font-family: Roboto-Regular;
+  font-family: Roboto-Regular,sans-serif;
 }
 
 #dropdownMenuButton{
