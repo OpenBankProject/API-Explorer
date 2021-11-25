@@ -739,7 +739,7 @@ a img {
   color: #333333;
 }
 .api_glossary_item a {
-  text-decoration: none;
+  text-decoration: underline;
   font-family: Roboto-Regular;
   font-size: 10px;
   color: #333333;
