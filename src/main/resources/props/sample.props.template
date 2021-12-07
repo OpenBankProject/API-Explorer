@@ -149,11 +149,17 @@ dev.port=8082
 # need to set it manually here.
 #api_manager_url=
 
-# API explorer menu structure (temporary layout - for first workshops)
-webui_index_dynamic_1_link_url=/?tags=Dynamic-Endpoint
-webui_index_dynamic_1_link_text=Third Party
-webui_index_dynamic_2_link_url=/?tags=Dynamic-Endpoint
-webui_index_dynamic_2_link_text=Third Party 2
+# API explorer menu structure, the value should be validate json format.
+#webui_index_dynamic_url_text_pairs=[\
+#                                       {\
+#                                           "url": "/?api-collection-id=feb47896-6a18-4a96-b8e9-ed6db05dbd401",\
+#                                           "text": "Third Party 1"\
+#                                       },\
+#                                       {\
+#                                           "url": "/?api-collection-id=feb47896-6a18-4a96-b8e9-ed6db05dbd401",\
+#                                           "text": "Third Party 2"\
+#                                       }\
+#                                   ]
 
 
 # Sngle Sign On 

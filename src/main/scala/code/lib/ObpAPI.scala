@@ -1,11 +1,12 @@
 package code.lib
 
+import code.lib.ObpAPI.UnknownErrorMessage
 import java.io._
 import java.text.SimpleDateFormat
 import java.util.{Date, UUID}
 import code.lib.ObpJson._
 import code.util.Helper
-import code.util.Helper.MdcLoggable
+import code.util.Helper.{MdcLoggable, covertWebpageIdToObpOperationId}
 import code.util.cache.Caching
 import net.liftweb.common.{Box, Failure, Full, _}
 import net.liftweb.http.{RequestVar, S, SessionVar}
@@ -21,6 +22,7 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 import java.util.UUID.randomUUID
 import net.liftweb.common._
+import net.liftweb.json
 
 
 case class Header(key: String, value: String)
@@ -39,6 +41,41 @@ object ObpAPI extends Loggable {
   val defaultProvider = Helper.getPropsValue("defaultAuthProvider").getOrElse("")
   
   val userNotFoundError = "user (\\S+) at provider (\\S+) not found".r
+
+  final val AccountUrlPath = "/accounts/"
+  final val ApiCollectionId = "api-collection-id"
+  final val CacheModifier = "cache-modifier"
+  final val ContentEqualStatic = "content=static"
+  final val ContentEqualDynamic = "content=dynamic"
+  final val UnknownErrorMessage = "Unknown Error!"
+  final val OBPVersionV400 = "OBPv4.0.0"
+  final val UKVersionV31 = "UKv3.1"
+  final val UKVersionV20 = "UKv2.0"
+  final val BGVersionV13 = "BGv1.3"
+  final val PAPIVersionV2111 = "PAPIv2.1.1.1"
+  final val BGVersionV133 = "BGv1.3.3"
+  final val VersionV133 = "v1.3.3"
+  final val DisplayEqualNone = "display: none"
+  final val ResourceStyleCss = ".resource [style]"
+  final val ResourceErrorStyleCss = ".resource-error [style]"
+  final val DisplayEqualBlock = "display: block"
+  final val ContentBoxHeadline = ".content-box__headline *"
+  final val RolesBoxId = "@roles_box [id]"
+  final val RolesBoxStyle = "@roles_box [style]"
+  final val RoleItemClassCss = ".role_item"
+  final val RolesRoleNameCss = "@roles__role_name"
+  final val RoleStatusNameCss = "@roles__status"
+  final val RolesBankIdInput = "@roles__bank_id_input"
+  final val RolesRoleInput = "@roles__role_input"
+  final val RolesEntitlementRequestId = "@roles__entitlement_request_response [id]"
+  final val RolesRequestEntitlementButton = "@roles__request_entitlement_button"
+  final val PleaseLoginToRequestThisRole = " - Please login to request this Role"
+  final val YouHaveThisRole = s" - You have this Role."
+  final val ContactOBPTeam = s" - You have requested this Role. Please contact Open Bank Project team to grant your this role."
+  final val YouCanRequestThisRole = s" - You can request this Role."
+  final val RolesEntitlementRequestButtonBox = "@roles__entitlement_request_button_box [style]"
+  final val EndPointAnchorHref = ".end-point-anchor [href]"
+  final val ContentBoxHeadlineId = ".content-box__headline [id]"
   
   /**
    * The request vars ensure that for one page load, the same API call isn't
@@ -83,7 +120,7 @@ object ObpAPI extends Loggable {
       fromDate.map(f => Header("obp_from_date", dateFormat.format(f))).toList ::: toDate.map(t => Header("obp_to_date", dateFormat.format(t))).toList :::
       sortDirection.map(s => Header("obp_sort_direction", s.value)).toList ::: Nil
 
-    ObpGet(s"$obpPrefix/v3.0.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) +
+    ObpGet(s"$obpPrefix/v3.0.0/banks/" + urlEncode(bankId) + AccountUrlPath + urlEncode(accountId) + "/" + urlEncode(viewId) +
       "/transactions", headers).flatMap(x => x.extractOpt[TransactionsJsonV300])
   }
 
@@ -94,19 +131,19 @@ object ObpAPI extends Loggable {
 
 
   def publicAccounts(bankId : String) : Box[BarebonesAccountsJson] = {
-    ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/public").flatMap(_.extractOpt[BarebonesAccountsJson])
+    ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + AccountUrlPath + "public").flatMap(_.extractOpt[BarebonesAccountsJson])
   }
 
   def publicAccounts : Box[BarebonesAccountsJson] = {
-    ObpGet(s"$obpPrefix/v3.1.0/accounts/public").flatMap(_.extractOpt[BarebonesAccountsJson])
+    ObpGet(s"$obpPrefix/v3.1.0${AccountUrlPath}public").flatMap(_.extractOpt[BarebonesAccountsJson])
   }
 
   def privateAccounts(bankId : String) : Box[BarebonesAccountsJson] = {
-    ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/private").flatMap(_.extractOpt[BarebonesAccountsJson])
+    ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + AccountUrlPath + "private").flatMap(_.extractOpt[BarebonesAccountsJson])
   } 
 
   def privateAccounts : Box[BarebonesAccountsJson] = {
-    ObpGet(s"$obpPrefix/v1.2.1/accounts/private").flatMap(_.extractOpt[BarebonesAccountsJson])
+    ObpGet(s"$obpPrefix/v1.2.1${AccountUrlPath}private").flatMap(_.extractOpt[BarebonesAccountsJson])
   }
   
   @deprecated("This method will mix public and private, not clear for Apps.","2018-02-18")
@@ -116,20 +153,20 @@ object ObpAPI extends Loggable {
 
   // Similar to getViews below
   def getViewsForBankAccount(bankId: String, accountId: String) = {
-    ObpGet(s"$obpPrefix/v3.1.0/banks/" + bankId + "/accounts/" + accountId + "/views").flatMap(_.extractOpt[ViewsJson])
+    ObpGet(s"$obpPrefix/v3.1.0/banks/" + bankId + AccountUrlPath + accountId + "/views").flatMap(_.extractOpt[ViewsJson])
   }
 
   def getAccount(bankId: String, accountId: String, viewId: String) : Box[AccountJson] = {
-    ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/account").flatMap(x => x.extractOpt[AccountJson])
+    ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + AccountUrlPath + urlEncode(accountId) + "/" + urlEncode(viewId) + "/account").flatMap(x => x.extractOpt[AccountJson])
   } 
 
   def getCounterparties(bankId: String, accountId: String, viewId: String): Box[DirectOtherAccountsJson] =  {
-    val counterparties  = ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/other_accounts").flatMap(x => x.extractOpt[DirectOtherAccountsJson])
+    val counterparties  = ObpGet(s"$obpPrefix/v3.1.0/banks/" + urlEncode(bankId) + AccountUrlPath + urlEncode(accountId) + "/" + urlEncode(viewId) + "/other_accounts").flatMap(x => x.extractOpt[DirectOtherAccountsJson])
     counterparties
   } 
 
   def getExplictCounterparties(bankId: String, accountId: String, viewId: String): Box[ExplictCounterpartiesJson] = {
-     ObpGet(s"$obpPrefix/v2.2.0/banks/" + urlEncode(bankId) + "/accounts/" + urlEncode(accountId) + "/" + urlEncode(viewId) + "/counterparties").flatMap(x => x.extractOpt[ExplictCounterpartiesJson])
+     ObpGet(s"$obpPrefix/v2.2.0/banks/" + urlEncode(bankId) + AccountUrlPath + urlEncode(accountId) + "/" + urlEncode(viewId) + "/counterparties").flatMap(x => x.extractOpt[ExplictCounterpartiesJson])
   }
 
   def getEntitlementsV300 : Box[EntitlementsJson] = {
@@ -226,44 +263,55 @@ object ObpAPI extends Loggable {
     ObpPost(s"$obpPrefix/v4.0.0/my/api-collections", Extraction.decompose(postSelectionEndpointJson))
   }
   
-  def createMyApiCollectionEndpoint (apiCollectionName: String, operationId: String) = {
-    val postSelectionEndpointJson =  PostSelectionEndpointJson400(operationId)
+  def createMyApiCollectionEndpoint (apiCollectionName: String, webPageOperationId: String) = {
+    val obpOperationId = covertWebpageIdToObpOperationId(webPageOperationId)
+    val postSelectionEndpointJson =  PostSelectionEndpointJson400(obpOperationId)
     ObpPost(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints", Extraction.decompose(postSelectionEndpointJson))
   }
 
-  def deleteMyApiCollectionEndpoint (apiCollectionName: String, operationId: String)  = {
-    ObpDelete(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints/$operationId")
+  def deleteMyApiCollectionEndpoint (apiCollectionName: String, webPageOperationId: String)  = {
+    val obpOperationId = covertWebpageIdToObpOperationId(webPageOperationId)
+    ObpDelete(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints/$obpOperationId")
   }
 
-  //NOTE: there is no parameters for the method, the cache is not working well. need to fix later
-//  private val sharableApiCollectionsTTL: FiniteDuration = Helper.getPropsAsIntValue("sharable_api_collections.cache.ttl.seconds", 0) seconds
-  def sharableApiCollections: Box[List[(String, String)]] = {
-//    var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
-//    CacheKeyFromArguments.buildCacheKey {
-//      Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(sharableApiCollectionsTTL) {
-        val apiCollectionsResponse = ObpGet(s"$obpPrefix/v4.0.0/api-collections/featured").flatMap(_.extractOpt[ApiCollectionsJson400])
-        apiCollectionsResponse.map(_.api_collections.map(apiCollection => (apiCollection.api_collection_name, apiCollection.api_collection_id)))
-//      }
-//    }
-  } 
+  @deprecated("16-11-2021","this is the Legacy props, now we introduce `webui_index_dynamic_url_text_pairs` ")
+  def getApiCollectionsFromPropsLegacy: List[(String, String)] = {
+    val webuiIndexDynamic1LinkUrl = Helper.getPropsValue("webui_index_dynamic_1_link_url", "")
+    val webuiIndexDynamic1LinkText = Helper.getPropsValue("webui_index_dynamic_1_link_text", "")
 
-  val webuiIndexDynamic1LinkUrl = Helper.getPropsValue("webui_index_dynamic_1_link_url", "")
-  val webuiIndexDynamic1LinkText = Helper.getPropsValue("webui_index_dynamic_1_link_text", "")
-
-  val webuiIndexDynamic2LinkUrl = Helper.getPropsValue("webui_index_dynamic_2_link_url", "")
-  val webuiIndexDynamic2LinkText = Helper.getPropsValue("webui_index_dynamic_2_link_text", "")
+    val webuiIndexDynamic2LinkUrl = Helper.getPropsValue("webui_index_dynamic_2_link_url", "")
+    val webuiIndexDynamic2LinkText = Helper.getPropsValue("webui_index_dynamic_2_link_text", "")
+    
+    if (webuiIndexDynamic1LinkUrl.nonEmpty && webuiIndexDynamic1LinkText.nonEmpty && webuiIndexDynamic2LinkText.nonEmpty && webuiIndexDynamic2LinkUrl.nonEmpty){
+      List(
+        (webuiIndexDynamic1LinkText,webuiIndexDynamic1LinkUrl), (webuiIndexDynamic2LinkText,webuiIndexDynamic2LinkUrl)
+      )
+    } else if (webuiIndexDynamic1LinkUrl.nonEmpty && webuiIndexDynamic1LinkText.nonEmpty )
+      List(
+        (webuiIndexDynamic1LinkText,webuiIndexDynamic1LinkUrl)
+      )
+    else
+      Nil
+  }
+  
+  val dynamicUrlTextPairsJson: List[DynamicUrlTextPairsJson] = {
+    def extractor(str: String) = try {
+      val dynamicUrlTextPairs =  json.parse(str).extract[List[DynamicUrlTextPairsJson]]
+      //The props value can be parse to JNothing.
+      if(str.nonEmpty && dynamicUrlTextPairs == Nil)
+        throw new RuntimeException(s"props [webui_index_dynamic_url_text_pairs] parse -> extract to Nil! it should be the valid class($DynamicUrlTextPairsJson) json format, current value is $str .")
+      else
+        dynamicUrlTextPairs
+    } catch {
+      case e: Throwable => // error handling, found wrong props value as early as possible.
+        this.logger.error(s"props [webui_index_dynamic_url_text_pairs] value is invalid, it should be the class($DynamicUrlTextPairsJson) json format, current value is $str ." );
+        throw e;
+    }
+    Helper.getPropsValue("webui_index_dynamic_url_text_pairs").map(extractor).getOrElse(Nil)
+  }
   
   def getApiCollectionsFromProps: Box[List[(String, String)]] = {
-    if (webuiIndexDynamic1LinkUrl.nonEmpty && webuiIndexDynamic1LinkText.nonEmpty && webuiIndexDynamic2LinkText.nonEmpty && webuiIndexDynamic2LinkUrl.nonEmpty){
-      Full(List(
-        (webuiIndexDynamic1LinkText,webuiIndexDynamic1LinkUrl), (webuiIndexDynamic2LinkText,webuiIndexDynamic2LinkUrl)
-      ))
-    } else if (webuiIndexDynamic1LinkText.nonEmpty && webuiIndexDynamic1LinkText.nonEmpty )
-      Full(List(
-        (webuiIndexDynamic1LinkText,webuiIndexDynamic1LinkUrl)
-      ))
-    else
-      Full(Nil)
+    Full(getApiCollectionsFromPropsLegacy ++ dynamicUrlTextPairsJson.map(dynamicUrlTextPair => List((dynamicUrlTextPair.text, dynamicUrlTextPair.url))).flatten)
   }
   
   /**
@@ -275,17 +323,18 @@ object ObpAPI extends Loggable {
   // Returns both system and dynamic resource docs:
   def getAllResourceDocsJson(apiVersion : String): Box[List[ResourceDocJson]] = {
 
-    val apiCollectionIdParam = List("api-collection-id")
+    val apiCollectionIdParam = List(ApiCollectionId)
       .map(paramName => (paramName, S.param(paramName)))
       .collect{
-        case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
+        case (paramName, Full(paramValue)) if(paramValue.trim.size > 0
+          ) => s"$paramName=$paramValue"
       }
       .mkString("?", "&", "")
     
     //Note: ?content=static&content=dynamic
     // if there are two content parameters there, only the first one is valid for the api call. 
     // so requestParams have the high priority 
-    val requestParams = List("tags", "language", "functions", "content", "cache-modifier")
+    val requestParams = List("tags", "language", "functions", "content", CacheModifier)
         .map(paramName => (paramName, S.param(paramName)))
         .collect{
           case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -302,11 +351,11 @@ object ObpAPI extends Loggable {
     lazy val dynamicResourcesDocs = getDynamicResourceDocs(apiVersion,requestParams, canReadResourceDocRole, OAuthClient.loggedIn)
 
     //If the api-collection-id in the URL, it will ignore all other parameters, so here we first check it:
-    if(apiCollectionIdParam.contains("api-collection-id=")) {
+    if(apiCollectionIdParam.contains(ApiCollectionId + "=")) {
       getResourceDocsByApiCollectionId(apiVersion, apiCollectionIdParam)
-    }else if(requestParams.contains("content=static")) {
+    }else if(requestParams.contains(ContentEqualStatic)) {
       staticResourcesDocs
-    } else if (requestParams.contains("content=dynamic")){
+    } else if (requestParams.contains(ContentEqualDynamic)){
       dynamicResourcesDocs
     } else{
     for{
@@ -321,7 +370,7 @@ object ObpAPI extends Loggable {
   // Returns all bank level dynamic resources
   def getStaticAndAllBankLevelDynamicResourceDocs(apiVersion : String) = {
 
-    val apiCollectionIdParam = List("api-collection-id")
+    val apiCollectionIdParam = List(ApiCollectionId)
       .map(paramName => (paramName, S.param(paramName)))
       .collect{
         case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -331,7 +380,7 @@ object ObpAPI extends Loggable {
     //Note: ?content=static&content=dynamic
     // if there are two content parameters there, only the first one is valid for the api call. 
     // so requestParams have the high priority 
-    val requestParams = List("tags", "language", "functions", "cache-modifier")
+    val requestParams = List("tags", "language", "functions", CacheModifier)
         .map(paramName => (paramName, S.param(paramName)))
         .collect{
           case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -351,11 +400,11 @@ object ObpAPI extends Loggable {
       bankId => getBankLevelDynamicResourceDocs(apiVersion,bankId,requestParams)).flatten.flatten)
     
     //If the api-collection-id in the URL, it will ignore all other parameters, so here we first check it:
-    if(apiCollectionIdParam.contains("api-collection-id=")) {
+    if(apiCollectionIdParam.contains(ApiCollectionId + "=")) {
       getResourceDocsByApiCollectionId(apiVersion, apiCollectionIdParam)
-    }else if(requestParams.contains("content=static")) {
+    }else if(requestParams.contains(ContentEqualStatic)) {
       staticResourcesDocs
-    } else if (requestParams.contains("content=dynamic")){
+    } else if (requestParams.contains(ContentEqualDynamic)){
       dynamicResourcesDocs
     } else{
       for{
@@ -369,7 +418,7 @@ object ObpAPI extends Loggable {
 
   // Returns only the bank level resource docs
   def getOneBankLevelResourceDocsJson(apiVersion : String, bankId:String) = {
-    val apiCollectionIdParam = List("api-collection-id")
+    val apiCollectionIdParam = List(ApiCollectionId)
       .map(paramName => (paramName, S.param(paramName)))
       .collect{
         case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -379,7 +428,7 @@ object ObpAPI extends Loggable {
     //Note: ?content=static&content=dynamic
     // if there are two content parameters there, only the first one is valid for the api call. 
     // so requestParams have the high priority 
-    val requestParams = List("tags", "language", "functions", "content", "cache-modifier")
+    val requestParams = List("tags", "language", "functions", "content", CacheModifier)
       .map(paramName => (paramName, S.param(paramName)))
       .collect{
         case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -396,7 +445,7 @@ object ObpAPI extends Loggable {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getStaticResourceDocsJsonTTL) {
-        val requestParamsRemovedContent = requestParams.replace("content=static","")
+        val requestParamsRemovedContent = requestParams.replace(ContentEqualStatic,"")
         getResourceDocs(apiVersion, requestParamsRemovedContent, "static")
       }
     }
@@ -409,7 +458,7 @@ object ObpAPI extends Loggable {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getDynamicResourceDocsJsonTTL) {
-        val requestParamsRemovedContent = requestParams.replace("content=dynamic","")
+        val requestParamsRemovedContent = requestParams.replace(ContentEqualDynamic,"")
         getResourceDocs(apiVersion, requestParamsRemovedContent, "dynamic")
       }
     }
@@ -439,7 +488,7 @@ object ObpAPI extends Loggable {
   
   def getBankLevelDynamicResourceDocsJValueResponse(apiVersion : String, bankId:String, requestParams: String) = {
     logger.debug("getBankLevelResourceDocsJValueResponse says Hello")
-    val result = ObpGet(s"$obpPrefix/v4.0.0/banks/$bankId/resource-docs/$apiVersion/obp$requestParams&cache-modifier=${UUID.randomUUID().toString}")
+    val result = ObpGet(s"$obpPrefix/v4.0.0/banks/$bankId/resource-docs/$apiVersion/obp$requestParams&$CacheModifier=${UUID.randomUUID().toString}")
     logger.debug("getBankLevelResourceDocsJValueResponse says result is: " + result)
     result  
   }
@@ -448,7 +497,7 @@ object ObpAPI extends Loggable {
     ObpGet(s"$obpPrefix/v4.0.0/resource-docs/$apiVersion/obp$requestParams").map(extractResourceDocsJson).map(_.resource_docs)
 
   def getApiCollectionByIdJValueResponse(apiVersion : String) = {
-    val apiCollectionIdParam = List("api-collection-id")
+    val apiCollectionIdParam = List(ApiCollectionId)
       .map(paramName => (paramName, S.param(paramName)))
       .collect{
         case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -605,7 +654,7 @@ object ObpPut {
     OBPRequest(apiPath, Some(json), "PUT", Nil) match {
       case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
       case Failure(msg, exception, chain) => Failure(msg)
-      case _ => Failure("Unknown Error!")
+      case _ =>Failure(UnknownErrorMessage)
     }
   }
 }
@@ -622,7 +671,7 @@ object ObpPost {
     OBPRequest(apiPath, Some(json), "POST", Nil) match {
       case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
       case Failure(msg, exception, chain) => Failure(msg)
-      case _ => Failure("Unknown Error!")
+      case _ => Failure(UnknownErrorMessage)
     }
   }
 }
@@ -657,16 +706,16 @@ object ObpDeleteBoolean {
 object ObpDelete {
   def apply(apiPath: String): Box[JValue] = {
     OBPRequest(apiPath, None, "DELETE", Nil) match {
-      case Full((status, result, _)) => Full(APIUtils.apiResponseWorked(status, result))
+      case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
       case Failure(msg, exception, chain) => Failure(msg)
-      case _ => Failure("Unknown Error!")
+      case _ => Failure(UnknownErrorMessage)
     }
   }
 }
 object ObpDeleteWithHeader {
   def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
     OBPRequest(apiPath, None, "DELETE", headers) match {
-      case Full(value) => (APIUtils.deleteApiResponse(value._1, value._2), value._3)
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
     }
   }
 }
@@ -682,7 +731,7 @@ object ObpGet {
       OBPRequest(apiPath, None, "GET", headers) match {
         case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
         case Failure(msg, exception, chain) => Failure(msg)
-        case _ => Failure("Unknown Error!")
+        case _ => Failure(UnknownErrorMessage)
       }
     }
   }
@@ -696,7 +745,7 @@ object ObpHead {
       OBPRequest(apiPath, None, "HEAD", headers) match {
         case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
         case Failure(msg, exception, chain) => Failure(msg)
-        case _ => Failure("Unknown Error!")
+        case _ => Failure(UnknownErrorMessage)
       }
     }
   }
@@ -1232,6 +1281,7 @@ object ObpJson {
                             )
 
   case class ResourceDocsJson (resource_docs : List[ResourceDocJson])
+  case class DynamicUrlTextPairsJson (url:String, text:String)
   ///////////////////////////////////////////
 
 

@@ -54,7 +54,7 @@ $(document).ready(function(){
 
     /* make Save / Cancel / Delete unclickable for not selected columns */
     var $actionButtons = $(".action");
-    for(i=0; i<$actionButtons.length; i++){
+    for(let i=0; i<$actionButtons.length; i++){
         var $action = $($actionButtons[i]);
         if($action.attr("data-id") !== viewId)
             $action.attr("disabled", "disabled");
@@ -97,7 +97,7 @@ $(document).ready(function(){
    function getOptions () {
       var aliasOptions = new Array("public", "private", "none (display real names only)")
       var option = ""
-      for(a in aliasOptions){
+      for(let a in aliasOptions){
        var alias = aliasOptions[a]
        option += "<option value='"+alias+"'>"+alias+"</option>"
       }
@@ -152,7 +152,7 @@ $(document).ready(function(){
 
         /* make Save / Cancel / Delete clickable for not selected columns */
         var $actionButtons = $(".action");
-        for(i=0; i<$actionButtons.length; i++){
+        for(let i=0; i<$actionButtons.length; i++){
             var $action = $($actionButtons[i]);
             $action.removeAttr("disabled");
         }
@@ -174,7 +174,7 @@ $(document).ready(function(){
 
         var $permissions = $("input.permission_value_cb");
         var allowedActions = new Array();
-        for(i=0; i < $permissions.length; i++){
+        for(let i=0; i < $permissions.length; i++){
             var $permission = $($permissions[i])
             if($permission.attr("data-viewid") == viewId && $permission.is(':checked')){
                allowedActions.push($permission.attr("name"));

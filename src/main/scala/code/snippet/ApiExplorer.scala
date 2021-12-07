@@ -1,10 +1,10 @@
 package code.snippet
 
-import code.lib.ObpAPI.{getAuthenticationTypeValidations, getJsonSchemaValidations, getMySpaces, obpPrefix}
+import code.lib.ObpAPI._
 import code.lib.ObpJson._
 import code.lib.{ObpAPI, ObpGet, _}
 import code.util.Helper
-import code.util.Helper.MdcLoggable
+import code.util.Helper.{MdcLoggable, covertObpOperationIdToWebpageId}
 import net.liftweb.json
 import net.liftweb.util.{CssSel, Html5}
 import java.net.URL
@@ -180,7 +180,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   logger.info(s"nativeParam is $nativeParam")
 
-  def apiCollectionIdParam = S.param("api-collection-id")
+  def apiCollectionIdParam = S.param(ApiCollectionId)
 
   logger.info(s"apiCollectionIdParam is $apiCollectionIdParam")
 
@@ -343,7 +343,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   val defaultVersion: String = Helper.getPropsValue("default.version") match {
     case Full(v)  => v
-    case _ => "OBPv4.0.0"
+    case _ => OBPVersionV400
   }
 
     // Get the requested version from the url parameter and default if none
@@ -352,9 +352,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     // Possible OBP Versions
-    val obpVersionsSupported = List("OBPv3.1.0", "OBPv4.0.0")
+  val obpVersionsSupported = List("OBPv3.1.0", OBPVersionV400)
 
-    val otherVersionsSupported = List("BGv1.3", "UKv3.1")
+
+  val otherVersionsSupported = List(BGVersionV13, UKVersionV31)
 
     // This is basically all versions supported
     val allSupportedVersionsInDropdownMenu = List(
@@ -366,11 +367,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
       "OBPv2.2.0",
       "OBPv3.0.0",
       "OBPv3.1.0",
-      "OBPv4.0.0",
-      "UKv3.1",
+      OBPVersionV400,
+      UKVersionV31,
       "BGv1.3",
       "STETv1.4",
-      "PAPIv2.1.1.1",
+      PAPIVersionV2111,
       "AUv1.0.0",
       "0.6v1",
       "MXOFv1.0.0",
@@ -590,7 +591,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
   var errorResponseBodies = List("")
 
   var isFavourites = "false"
-  var favouritesOperationId = ""
+  //Note: OperationIdFromWebpage = OBPv4_0_0-getBanks
+  //But operationIdForOBP => OBPv4.0.0-getBanks (Javascript do not support '.' there.)
+  //We must do the converting properly for this two ids.
+  var favouritesOperationIdFromWebpage = ""
   var favouritesApiCollectionId = ""
 
 
@@ -665,20 +669,18 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val allResources = for {
       r <- allResourcesList
     } yield ResourceDocPlus(
-       //in OBP-API, before it returned v3_1_0, but now, only return v3.1.0
-      //But this field will be used in JavaScript, so need clean the field.
-      id = r.operation_id.replace(".","_").replaceAll(" ","_"),
+      id = covertObpOperationIdToWebpageId(r.operation_id),
       operationId = r.operation_id,
       verb = r.request_verb,
       url = modifiedRequestUrl(
         r.specified_url, // We used to use the request_url - but we want to use the specified url i.e. the later version.
         apiVersion
-          .replaceAll("UKv2.0", "v2.0")
-          .replaceAll("UKv3.1", "v3.1")
-          .replaceAll("BGv1.3.3", "v1.3.3")
+          .replaceAll(UKVersionV20, "v2.0")
+          .replaceAll(UKVersionV31, "v3.1")
+          .replaceAll(BGVersionV133, VersionV133)
           .replaceAll("BGv1", "v1")
-          .replaceAll("BGv1.3", "v1.3")
-          .replaceAll("PAPIv2.1.1.1", "v2.1.1.1")
+          .replaceAll(BGVersionV13, "v1.3")
+          .replaceAll(PAPIVersionV2111, "v2.1.1.1")
           .replaceAll("OBPv", ""),
         presetBankId,
         presetAccountId
@@ -773,8 +775,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     //this can be empty list, if there is no operationIds there.
-    val getOperationIdsByApiCollectionId = ObpAPI.getApiCollectionEndpointsById(apiCollectionId).map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
-    val getMyOperationIds = ObpAPI.getApiCollectionEndpoints("Favourites").map(_.api_collection_endpoints.map(_.operation_id)).openOr(List())
+    def webpageOperationIds = ObpAPI.getApiCollectionEndpointsById(apiCollectionId).map(_.api_collection_endpoints.map(_.operation_id)).openOr(List()).map(covertObpOperationIdToWebpageId)
+    def myWebpageOperationIds = ObpAPI.getApiCollectionEndpoints("Favourites").map(_.api_collection_endpoints.map(_.operation_id)).openOr(List()).map(covertObpOperationIdToWebpageId)
 
     // Group resources by the first tag
     val unsortedGroupedResources: Map[String, List[ResourceDocPlus]] = resources.groupBy(_.tags.headOr("ToTag"))
@@ -963,20 +965,20 @@ WIP to add comments on resource docs. This code copied from Sofit.
           s"$requestUrl"
         }
       logger.info(s"urlWithVersion is: " + urlWithVersion
-        .replaceAll("UKv2.0", "v2.0")
-        .replaceAll("UKv3.1", "v3.1")
-        .replaceAll("BGv1.3.3", "v1.3.3")
+        .replaceAll(UKVersionV20, "v2.0")
+        .replaceAll(UKVersionV31, "v3.1")
+        .replaceAll(BGVersionV133, VersionV133)
         .replaceAll("BGv1", "v1")
-        .replaceAll("BGv1.3", "v1.3")
+        .replaceAll(BGVersionV13, "v1.3")
         .replaceAll("(?<![Vv]validations/)OBPv", "") //delete OBPv, but if the OBPv is part of operationId, not to do delete, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
       )
 
       //val urlWithVersion = s"/$apiVersion$requestUrl"
       val fullPath = new URL(apiUrl + urlWithVersion
-        .replaceAll("UKv2.0", "v2.0")
-        .replaceAll("UKv3.1", "v3.1")
-        .replaceAll("BGv1.3.3", "v1.3.3")
-        .replaceAll("BGv1.3", "v1.3")
+        .replaceAll(UKVersionV20, "v2.0")
+        .replaceAll(UKVersionV31, "v3.1")
+        .replaceAll(BGVersionV133, VersionV133)
+        .replaceAll(BGVersionV13, "v1.3")
         .replaceAll("BGv1", "v1")
         .replaceAll("(?<![Vv]validations/)OBPv", "")) //delete OBPv, but if the OBPv is part of operationId, not to do delete, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
       //////////////
@@ -1001,32 +1003,41 @@ WIP to add comments on resource docs. This code copied from Sofit.
     def processFavourites(name: String): JsCmd = {
       // enable button
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
-      //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delelet the record there.
+      //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delete the record there.
       val apiFavouriteCollection = ObpAPI.getApiCollection("Favourites")
       val errorMessage = if(apiFavouriteCollection.isInstanceOf[Failure]) apiFavouriteCollection.asInstanceOf[Failure].messageChain else ""
 
       
       if(apiFavouriteCollection.isInstanceOf[Failure]){ // If the user is not logged in, we do not need call any apis calls. (performance enhancement)
-        SetHtml(s"favourites_error_message_${favouritesOperationId}", Text(errorMessage))&
+        SetHtml(s"favourites_error_message_${favouritesOperationIdFromWebpage}", Text(errorMessage))&
           Run (jsEnabledBtn)
       } else {
         if(errorMessage.equals("")){ //If there is no error, we changed the button
           if(favouritesApiCollectionId.nonEmpty && !apiFavouriteCollection.map(_.api_collection_id).contains(favouritesApiCollectionId)){
-            SetHtml(s"favourites_error_message_${favouritesOperationId}", Text("You only have read access for the Favourites. You can only edit your own Favourites."))&
+            SetHtml(s"favourites_error_message_${favouritesOperationIdFromWebpage}", Text("You only have read access for the Favourites. You can only edit your own Favourites."))&
               Run (jsEnabledBtn)
           }else{
-            //prepare the js for the button color changing.
-            val favouritesBtnColour = if (getMyOperationIds.contains(favouritesOperationId)) {
-              ObpAPI.deleteMyApiCollectionEndpoint("Favourites",favouritesOperationId)
-              s"jQuery('#favourites_button_${favouritesOperationId}').css('color','#767676')"
-            } else {
-              ObpAPI.createMyApiCollectionEndpoint("Favourites",favouritesOperationId)
-              s"jQuery('#favourites_button_${favouritesOperationId}').css('color','#53C4EF')"
+            if (myWebpageOperationIds.contains(favouritesOperationIdFromWebpage)) { //If we already have this operationId, we need to delete it
+              val deletedBox = ObpAPI.deleteMyApiCollectionEndpoint("Favourites",favouritesOperationIdFromWebpage)
+              val deleteErrorMessage = if(deletedBox.isInstanceOf[Failure]) deletedBox.asInstanceOf[Failure].messageChain else ""
+              if (deletedBox.isInstanceOf[Failure]){
+                SetHtml(s"favourites_error_message_${favouritesOperationIdFromWebpage}", Text(deleteErrorMessage)) &
+                  Run(jsEnabledBtn)
+              }else{
+                Run (jsEnabledBtn) & Run(s"jQuery('#favourites_button_${favouritesOperationIdFromWebpage}').css('color','#767676')")
+              }
+            } else {//If we do not have this operationId, we need to create it.
+              val createdBox = ObpAPI.createMyApiCollectionEndpoint("Favourites",favouritesOperationIdFromWebpage)
+              val createdErrorMessage = if(createdBox.isInstanceOf[Failure]) createdBox.asInstanceOf[Failure].messageChain else ""
+              if (createdBox.isInstanceOf[Failure]){
+                SetHtml(s"favourites_error_message_${favouritesOperationIdFromWebpage}", Text(createdErrorMessage)) &
+                  Run(jsEnabledBtn)
+              }else{
+                Run (jsEnabledBtn) & Run(s"jQuery('#favourites_button_${favouritesOperationIdFromWebpage}').css('color','#53C4EF')")
+              }
             }
-            Run (jsEnabledBtn) &
-              Run (favouritesBtnColour)}
-        } else { //if there is error, we show the OBP-API error there.
-          SetHtml(s"favourites_error_message_${favouritesOperationId}", Text(errorMessage)) &
+        }} else { //if there is error, we show the OBP-API error there.
+          SetHtml(s"favourites_error_message_${favouritesOperationIdFromWebpage}", Text(errorMessage)) &
             Run(jsEnabledBtn)
         }
       }
@@ -1044,13 +1055,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Includes hack for Berlin Group
     val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i
       .replace("b1", "API Builder")
-      .replace("BGv1.3.3", "Berlin Group 1.3.3")
-      .replace("BGv1.3", "Berlin Group 1.3")
+      .replace(BGVersionV133, "Berlin Group 1.3.3")
+      .replace(BGVersionV13, "Berlin Group 1.3")
       .replace("BGv1", "Berlin Group")
-      .replace("UKv2.0", "UK 2.0")
-      .replace("UKv3.1", "UK 3.1")
+      .replace(UKVersionV20, "UK 2.0")
+      .replace(UKVersionV31, "UK 3.1")
       .replace("STETv1.4", "STET 1.4")
-      .replace("PAPIv2.1.1.1", "Polish API 2.1.1.1")
+      .replace(PAPIVersionV2111, "Polish API 2.1.1.1")
       .replace("AUv1.0.0", "AU CDR v1.0.0"),
       s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
 
@@ -1083,12 +1094,15 @@ WIP to add comments on resource docs. This code copied from Sofit.
                   featuredBankIds.contains(b.id.get) // Add a flag to say if this bank is featured.
       )
 
+    // Banks where a user has accounts + My Spaces + Featured Banks.
+    val userCanShowBankIds= (myBankIds++featuredBankIds.map(BankId(_))++ getMySpaces.map(_.bank_ids.map(BankId(_))).getOrElse(List.empty[BankId])).toSet
+    
     val banksForUser =
       if (listAllBanks) // Url param says show all.
         banks
       else
-        if(!myBankIds.isEmpty) // User has accounts so show those banks
-          banks.filter(b => myBankIds.contains(BankId(b.id)))
+        if(!userCanShowBankIds.isEmpty) // User has accounts so show those banks
+          banks.filter(b => userCanShowBankIds.contains(BankId(b.id)))
         else
           // If we have a featured list of banks show those, else all.
           banks.filter(b => b.isFeatured || featuredBankIds.length == 0)
@@ -1309,7 +1323,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
      * we need to skip the case: &api-collection-id=&
      */
     def isCollectionOfResourceDocs_? = {
-      S.param("api-collection-id").isDefined && S.param("api-collection-id").getOrElse("").nonEmpty
+      S.param(ApiCollectionId).isDefined && S.param(ApiCollectionId).getOrElse("").nonEmpty
     }
     val glossaryItems = getGlossaryItemsJson.map(_.glossary_items).getOrElse(List())
 
@@ -1415,7 +1429,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
             "@api_glossary_item_link * " #>{
               val description = glossaryItems.find(_.title == i._1.replaceAll("-"," ")).map(_.description.markdown).getOrElse("")
               if (description.length > 100)
-                description.substring(0,100).trim() +" ..."
+                "More..."
+              else
+                "" //If there is no description, we will show empty here.
+            } &
+            "@api_glossary_item_text * " #>{
+              val description = glossaryItems.find(_.title == i._1.replaceAll("-"," ")).map(_.description.markdown).getOrElse("")
+              if (description.length > 100)
+                description.substring(0,100).trim()
               else
                 "" //If there is no description, we will show empty here.
             } &
@@ -1483,51 +1504,51 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // This creates the list of resources in the DOM
     {
       if(allResourcesBox.isInstanceOf[Failure]) {
-      ".resource [style]" #> s"display: none" &
-        ".resource-error [style]" #> s"display: block" &
-        ".content-box__headline *" #> {
+      ResourceStyleCss #> s"${DisplayEqualNone}" &
+        ResourceErrorStyleCss #> s"${DisplayEqualBlock}" &
+        ContentBoxHeadline #> {
           allResourcesBox.asInstanceOf[Failure].msg
         }&
         {
           if(allResourcesBox.asInstanceOf[Failure].msg.contains("CanReadResourceDoc")){
             //required roles and related user information
-            "@roles_box [id]" #> s"roles_box_canReadResourceDocRoleInfo" &
-              "@roles_box [style]" #> {s"display: block"} &
+            RolesBoxId #> s"roles_box_canReadResourceDocRoleInfo" &
+              RolesBoxStyle #> {s"${DisplayEqualBlock}"} &
               // We generate mulutiple .role_items from roleInfos (including the form defined in index.html)
-              ".role_item" #> canReadResourceDocRoleInfo.map { r =>
-                "@roles__status" #> {if (! isLoggedIn)
-                  s" - Please login to request this Role"
+              RoleItemClassCss #> canReadResourceDocRoleInfo.map { r =>
+                RoleStatusNameCss #> {if (! isLoggedIn)
+                  PleaseLoginToRequestThisRole
                 else if  (r.userHasEntitlement)
-                  s" - You have this Role."
+                  YouHaveThisRole
                 else if (r.userHasEntitlementRequest)
-                  s" - You have requested this Role. Please contact Open Bank Project team to grant your this role."
+                  ContactOBPTeam
                 else
-                  s" - You can request this Role."} &
-                  "@roles__role_name" #> s"${r.role}" &
+                  YouCanRequestThisRole} &
+                  RolesRoleNameCss #> s"${r.role}" &
                   // ajaxSubmit will submit the form.
                   // The value of rolesBankId is given to bank_id_input field and the value of bank_id_input entered by user is given back to rolesBankId
-                  "@roles__bank_id_input" #> SHtml.text({if (r.requiresBankId) rolesBankId else ""}, rolesBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") &
-                  "@roles__role_input" #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
+                  RolesBankIdInput #> SHtml.text({if (r.requiresBankId) rolesBankId else ""}, rolesBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") &
+                  RolesRoleInput #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
                   "@roles__resource_id_input" #> text("canReadResourceDocRoleInfo", s => RolesResourceId = s, "type" -> "hidden", "id" -> s"roles__resource_id_input_${canReadResourceDocRoleInfo}") &
-                  "@roles__request_entitlement_button" #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
-                  "@roles__entitlement_request_response [id]" #> s"roles__entitlement_request_response_${canReadResourceDocRoleInfo}_${r.role}" &
-                  "@roles__entitlement_request_button_box [style]" #> { if (! isLoggedIn || r.userHasEntitlement || r.userHasEntitlementRequest)
-                    s"display: none"
+                  RolesRequestEntitlementButton #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
+                  RolesEntitlementRequestId #> s"roles__entitlement_request_response_${canReadResourceDocRoleInfo}_${r.role}" &
+                  RolesEntitlementRequestButtonBox #> { if (! isLoggedIn || r.userHasEntitlement || r.userHasEntitlementRequest)
+                    s"${DisplayEqualNone}"
                   else
-                    s"display: block"
+                    s"${DisplayEqualBlock}"
                   }
               }
           } else{
-            "@roles_box [style]" #> s"display: none"
+            RolesBoxStyle #> s"${DisplayEqualNone}"
             }
         }
       }else if(allResourcesBox.isEmpty || allResourcesBox.openOr(Nil).length ==0){
-        ".resource [style]" #> s"display: none" &
-          ".resource-error [style]" #> s"display: block" &
-          ".content-box__headline *" #> {
+        ResourceStyleCss #> s"${DisplayEqualNone}" &
+          ResourceErrorStyleCss #> s"${DisplayEqualBlock}" &
+          ContentBoxHeadline #> {
             "Sorry, we could not return any Resource Docs."
           }&
-          ".content-box__info-box [style]" #> s"display: none"
+          ".content-box__info-box [style]" #> s"${DisplayEqualNone}"
       }
       else {
         //The default tag is the first tag of the resource, if it is empty, we use the API Tag.
@@ -1542,9 +1563,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
           resourcesShowedInPage
         }).map { i =>
           // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-          ".end-point-anchor [href]" #> s"#${i.id}" &
-          ".content-box__headline *" #> i.summary &
-          ".content-box__headline [id]" #> i.id & // id for the anchor to find
+          EndPointAnchorHref #> s"#${i.id}" &
+          ContentBoxHeadline #> i.summary &
+          ContentBoxHeadlineId #> i.id & // id for the anchor to find
           // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
           "@description *" #> i.description &
           "@special_instructions *" #> i.specialInstructions &
@@ -1607,34 +1628,34 @@ WIP to add comments on resource docs. This code copied from Sofit.
               ".connector_method_item_link *" #> i
           } &
           //required roles and related user information
-          "@roles_box [id]" #> s"roles_box_${i.id}" &
-          "@roles_box [style]" #> { if (i.roleInfos.isEmpty)
-              s"display: none"
+          RolesBoxId #> s"roles_box_${i.id}" &
+          RolesBoxStyle #> { if (i.roleInfos.isEmpty)
+              s"${DisplayEqualNone}"
             else
-              s"display: block"
+              s"${DisplayEqualBlock}"
             } &
           // We generate multiple .role_items from roleInfos (including the form defined in index.html)
-          ".role_item" #> i.roleInfos.map { r =>
-            "@roles__status" #> {if (! isLoggedIn)
-                                  s" - Please login to request this Role"
+          RoleItemClassCss #> i.roleInfos.map { r =>
+            RoleStatusNameCss #> {if (! isLoggedIn)
+                                  PleaseLoginToRequestThisRole
                                 else if  (r.userHasEntitlement)
-                                  s" - You have this Role."
+                                  YouHaveThisRole
                                 else if (r.userHasEntitlementRequest)
-                                  s" - You have requested this Role. Please contact Open Bank Project team to grant your this role."
+                                  ContactOBPTeam
                                 else
-                                  s" - You can request this Role."} &
-            "@roles__role_name" #> s"${r.role}" &
+                                  YouCanRequestThisRole} &
+            RolesRoleNameCss #> s"${r.role}" &
             // ajaxSubmit will submit the form.
             // The value of rolesBankId is given to bank_id_input field and the value of bank_id_input entered by user is given back to rolesBankId
-            "@roles__bank_id_input" #> SHtml.text({if (r.requiresBankId) rolesBankId else ""}, rolesBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") &
-            "@roles__role_input" #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
+            RolesBankIdInput #> SHtml.text({if (r.requiresBankId) rolesBankId else ""}, rolesBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") &
+            RolesRoleInput #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
             "@roles__resource_id_input" #> text(i.id.toString, s => RolesResourceId = s, "type" -> "hidden", "id" -> s"roles__resource_id_input_${i.id}_${r.role}") &
-            "@roles__request_entitlement_button" #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
-            "@roles__entitlement_request_response [id]" #> s"roles__entitlement_request_response_${i.id}_${r.role}" &
-            "@roles__entitlement_request_button_box [style]" #> { if (! isLoggedIn || r.userHasEntitlement || r.userHasEntitlementRequest)
-                s"display: none"
+            RolesRequestEntitlementButton #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
+            RolesEntitlementRequestId #> s"roles__entitlement_request_response_${i.id}_${r.role}" &
+            RolesEntitlementRequestButtonBox #> { if (! isLoggedIn || r.userHasEntitlement || r.userHasEntitlementRequest)
+                s"${DisplayEqualNone}"
               else
-                s"display: block"
+                s"${DisplayEqualBlock}"
             }
           } &
           //
@@ -1644,11 +1665,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
            "@success_response_body [id]" #> s"success_response_body_${i.id}" &
           // The button. First argument is the text of the button (GET, POST etc). Second argument is function to call. Arguments to the func could be sent in third argument
             "@call_button" #> Helper.ajaxSubmit(i.verb, disabledBtn, process) &
-            ".favourites_operatino_id" #> text(i.id.toString, s => favouritesOperationId = s,  "type" -> "hidden","class" -> "favourites_operatino_id") &
+            ".favourites_operation_id" #> text(i.id.toString, s => favouritesOperationIdFromWebpage = s,  "type" -> "hidden","class" -> "favourites_operation_id") &
             ".favourites_api_collection_id" #> text(apiCollectionId, s => favouritesApiCollectionId = s,  "type" -> "hidden","class" -> "favourites_api_collection_id") &
             ".favourites_button" #> Helper.ajaxSubmit("★", disabledBtn, processFavourites, "id" -> s"favourites_button_${i.id.toString}",  
-              if(apiCollectionIdParam.isDefined && getOperationIdsByApiCollectionId.nonEmpty) {"style" -> "color:#53C4EF"} 
-              else if(getMyOperationIds.contains(i.id.toString)) {"style" -> "color:#53C4EF"} 
+              if(apiCollectionIdParam.isDefined && webpageOperationIds.nonEmpty) {"style" -> "color:#53C4EF"} 
+              else if(myWebpageOperationIds.contains(i.id.toString)) {"style" -> "color:#53C4EF"} 
               else {"style" -> "color:#767676"}
             ) &
             ".favourites_error_message [id]" #> s"favourites_error_message_${i.id}" &
@@ -1675,7 +1696,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     logger.debug("before showResources:")
     def resourceDocsRequiresRole = ObpAPI.getRoot.flatMap(_.extractOpt[APIInfoJson400].map(_.resource_docs_requires_role)).openOr(false)
-
     // Get a list of resource docs from the API server
     // This will throw an exception if resource_docs key is not populated
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
@@ -1691,9 +1711,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val glossaryItems = getGlossaryItemsJson.map(_.glossary_items).getOrElse(List())
 
     if(glossaryItems.length==0) {
-      ".resource [style]" #> s"display: none" &
-        ".resource-error [style]" #> s"display: block" &
-        ".content-box__headline *" #> {
+      ResourceStyleCss #> s"${DisplayEqualNone}" &
+        ResourceErrorStyleCss #> s"${DisplayEqualBlock}" &
+        ContentBoxHeadline #> {
           if(!isLoggedIn)//If no resources, first check the login, 
             "Sorry, we could not return any Glossary Items. Note: OBP-20001: User not logged in."
           else if(isLoggedIn && canReadGlossaryRole.isEmpty) //Then check the missing role
@@ -1703,33 +1723,33 @@ WIP to add comments on resource docs. This code copied from Sofit.
         }&{
         if(isLoggedIn && canReadGlossaryRole.isEmpty){
           //required roles and related user information
-          "@roles_box [id]" #> s"roles_box_CanReadGlossaryRoleInfo" &
-            "@roles_box [style]" #> {s"display: block"} &
+          RolesBoxId #> s"roles_box_CanReadGlossaryRoleInfo" &
+            RolesBoxStyle #> {s"${DisplayEqualBlock}"} &
             // We generate multiple .role_items from roleInfos (including the form defined in index.html)
-            ".role_item" #> canReadGlossaryRoleInfo.map { r =>
-              "@roles__status" #> {if (! isLoggedIn)
-                s" - Please login to request this Role"
+            RoleItemClassCss #> canReadGlossaryRoleInfo.map { r =>
+              RoleStatusNameCss #> {if (! isLoggedIn)
+                PleaseLoginToRequestThisRole
               else if  (r.userHasEntitlement)
-                s" - You have this Role."
+                YouHaveThisRole
               else if (r.userHasEntitlementRequest)
                 s" - You have requested this Role. Please contact the administrators to grant you this role."
               else
-                s" - You can request this Role."} &
-                "@roles__role_name" #> s"${r.role}" &
+                YouCanRequestThisRole} &
+                RolesRoleNameCss #> s"${r.role}" &
                 // ajaxSubmit will submit the form.
                 // The value of rolesBankId is given to bank_id_input field and the value of bank_id_input entered by user is given back to rolesBankId
-                "@roles__bank_id_input" #> SHtml.text({if (r.requiresBankId) rolesBankId else ""}, rolesBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") &
-                "@roles__role_input" #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
-                "@roles__request_entitlement_button" #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
-                "@roles__entitlement_request_response [id]" #> s"roles__entitlement_request_response_${canReadGlossaryRoleInfo}_${r.role}" &
-                "@roles__entitlement_request_button_box [style]" #> { if (! isLoggedIn || r.userHasEntitlement || r.userHasEntitlementRequest)
-                  s"display: none"
+                RolesBankIdInput #> SHtml.text({if (r.requiresBankId) rolesBankId else ""}, rolesBankId = _, if (r.requiresBankId) "type" -> "text" else "type" -> "hidden") &
+                RolesRoleInput #> SHtml.text(s"${r.role}", entitlementRequestRoleName = _, "type" -> "hidden" ) &
+                RolesRequestEntitlementButton #> Helper.ajaxSubmit("Request", disabledBtn, processEntitlementRequest) &
+                RolesEntitlementRequestId #> s"roles__entitlement_request_response_${canReadGlossaryRoleInfo}_${r.role}" &
+                RolesEntitlementRequestButtonBox #> { if (! isLoggedIn || r.userHasEntitlement || r.userHasEntitlementRequest)
+                  s"${DisplayEqualNone}"
                 else
-                  s"display: block"
+                  s"${DisplayEqualBlock}"
                 }
             }
         }else{
-          "@roles_box [style]" #> s"display: none"
+          RolesBoxStyle #> s"${DisplayEqualNone}"
         }
       }
     }else{
@@ -1738,9 +1758,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
         val tag = i.title.replaceAll(" ", "-")
         val operationId = allResourcesList.find(_.tags.head == tag).map(_.operation_id).getOrElse("")
       // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-      ".end-point-anchor [href]" #> s"#${urlEncode(i.title.replaceAll(" ", "-"))}" &
-        ".content-box__headline *" #> i.title &
-        ".content-box__headline [id]" #> i.title.replaceAll(" ", "-") & // id for the anchor to find
+      EndPointAnchorHref #> s"#${urlEncode(i.title.replaceAll(" ", "-"))}" &
+        ContentBoxHeadline #> i.title &
+        ContentBoxHeadlineId #> i.title.replaceAll(" ", "-") & // id for the anchor to find
         //i.title must be a proper tag, and will prepare the URL for it ...
         ".glossary_item_apis [href]" #> {
           s"./?operation_id=${operationId.replace(".","_").replaceAll(" ","_")}#group-${tag}"
@@ -1783,9 +1803,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
         }
     } &
     ".message-doc" #> messageDocs.map  { i =>
-      ".end-point-anchor [href]" #> s"#${urlEncode(i.process.replaceAll(" ", "-"))}" &
-        ".content-box__headline *" #> i.process &
-        ".content-box__headline [id]" #> i.process.replaceAll(" ", "-") & // id for the anchor to find
+      EndPointAnchorHref #> s"#${urlEncode(i.process.replaceAll(" ", "-"))}" &
+        ContentBoxHeadline #> i.process &
+        ContentBoxHeadlineId #> i.process.replaceAll(" ", "-") & // id for the anchor to find
         ".outbound-topic *" #> stringToNodeSeq(i.outbound_topic.getOrElse("")) &
         ".inbound-topic *" #> stringToNodeSeq(i.inbound_topic.getOrElse("")) &
         ".outbound-message *" #> stringToNodeSeq(Helper.renderJson(i.example_outbound_message)) &
