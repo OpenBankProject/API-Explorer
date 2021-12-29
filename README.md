@@ -72,7 +72,7 @@ Note: You may need to add the pluginGroup to the $HOME/.m2/settings.xml
 
 * Navigate to test/scala/RunWebApp. You may see a Setup Scala SDK link. Click this and check Scala 2.11.8 or so.
 
-* In src/main/resources/props create a \<yourloginname\>.props (or default.props) for development. For localhost set api_hostname=http://127.0.0.1:8080, defaultAuthProvider=http://127.0.0.1:8080, base_url=http://localhost:8082, dev.port=8082 and oauth keys obtained from the api (at /consumer-registration) i.e. obp_consumer_key and obp_consumer_secret
+* In src/main/resources/props create a \<yourloginname\>.props (or default.props) for development. For localhost set api_hostname=http://127.0.0.1:8080, defaultAuthProvider=http://127.0.0.1:8080, base_url=http://localhost:8082, dev.port=8082 and oauth keys (i.e. obp_consumer_key and obp_consumer_secret) obtained from the api (at /consumer-registration) to run [OBP-API](https://github.com/OpenBankProject/OBP-API) in your local environment.
 
 * Now **Rebuild** the project so everything is compiled. At this point you may need to select the SDK, see above.
 
@@ -95,8 +95,7 @@ The current workaround is to move the project directory onto a different partiti
 
 # PROPS FILE
 
-There is a props file template provided at src/main/resources/props/sample.props.template. It needs to be renamed and modified in order for
-the application to work.
+There is a props file template provided at src/main/resources/props/sample.props.template. It needs to be renamed and modified or just copy and paste a new in order for the application to work.
 
 1. Renaming:
 
@@ -113,7 +112,7 @@ An example value for local development could be: http://127.0.0.1:8082 (8082 is 
 
 *api_hostname*
 
-The api_hostname should be the base url of the Open Bank Project API. For example, https://api.openbankproject.com/api
+The api_hostname should be the base url of the Open Bank Project API. For example, https://api.openbankproject.com/api amd for local development api_hostname should be http://127.0.0.1:8080 in props file. 
 
 *obp_consumer_key*
 *obp_secret_key*
@@ -123,7 +122,13 @@ The keys are obtained by registering as a developer on the Open Bank Project API
 
 All in all, a props file could look something like:
 
-api_hostname=https://api.openbankproject.com/api
-obp_consumer_key=uodsifnodsfifdsliufdsliufdsfdsfsdfsx
-obp_secret_key=iuesbfiyvglxzgifg7eisgei7fglesfi
+api_hostname=https://api.openbankproject.com/api \
+defaultAuthProvider=https://api.openbankproject.com/api 
+### OR 
+The base url of the api to use for local: \
+api_hostname=http://127.0.0.1:8080 \
+defaultAuthProvider=http://127.0.0.1:8080 
+
+obp_consumer_key=uodsifnodsfifdsliufdsliufdsfdsfsdfsx \
+obp_secret_key=iuesbfiyvglxzgifg7eisgei7fglesfi \
 base_url=http://localhost:8082
