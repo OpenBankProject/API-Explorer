@@ -638,7 +638,6 @@ span#accountsMsg
 .tagID{
   padding: 5px 10px;
   background: #F3F9F8;
-  display: inline-block;
   margin-right: 10px;
   display: inline-block;
   border: 2px solid #CBCBCB;
@@ -688,7 +687,6 @@ span#accountsMsg
 .image-holder {
   padding: 5px 10px;
   background: #F3F9F8;
-  display: inline-block;
   margin-right: 10px;
   display: inline-block;
   border: 2px solid #CBCBCB;
