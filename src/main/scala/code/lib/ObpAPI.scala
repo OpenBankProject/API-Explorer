@@ -54,7 +54,7 @@ object ObpAPI extends Loggable {
   final val BGVersionV13 = "BGv1.3"
   final val BGVersionV1 = "BGv1"
   final val BGVersionV133 = "BGv1.3.3"
-  final val BHVersionV100 = "BHOBFv1.0.0"
+  final val BahrainOBFVersionV100 = "BAHRAIN-OBFv1.0.0"
   final val PAPIVersionV2111 = "PAPIv2.1.1.1"
   final val AUv100 = "AUv1.0.0"
   final val STETv14 = "STETv1.4"

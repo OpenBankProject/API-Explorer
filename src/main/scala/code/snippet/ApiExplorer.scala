@@ -373,7 +373,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       STETv14,
       PAPIVersionV2111,
       AUv100,
-      BHVersionV100,
+      BahrainOBFVersionV100,
       "0.6v1",
       MXOFv100,
       "b1")
@@ -681,7 +681,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           .replaceAll(BGVersionV133, VersionV133)
           .replaceAll(BGVersionV1, "v1")
           .replaceAll(BGVersionV13, "v1.3")
-          .replaceAll(BHVersionV100, "v1.0.0")
+          .replaceAll(BahrainOBFVersionV100, "v1.0.0")
           .replaceAll(PAPIVersionV2111, "v2.1.1.1")
           .replaceAll("OBPv", ""),
         presetBankId,
@@ -972,7 +972,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         .replaceAll(BGVersionV133, VersionV133)
         .replaceAll(BGVersionV1, "v1")
         .replaceAll(BGVersionV13, "v1.3")
-        .replaceAll(BHVersionV100, "v1.0.0")
+        .replaceAll(BahrainOBFVersionV100, "v1.0.0")
         .replaceAll("(?<![Vv]validations/)OBPv", "") //delete OBPv, but if the OBPv is part of operationId, not to do delete, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
       )
 
@@ -982,7 +982,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         .replaceAll(UKVersionV31, "v3.1")
         .replaceAll(BGVersionV133, VersionV133)
         .replaceAll(BGVersionV13, "v1.3")
-        .replaceAll(BHVersionV100, "v1.0.0")
+        .replaceAll(BahrainOBFVersionV100, "v1.0.0")
         .replaceAll(BGVersionV1, "v1")
         .replaceAll("(?<![Vv]validations/)OBPv", "")) //delete OBPv, but if the OBPv is part of operationId, not to do delete, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
       //////////////
@@ -1054,35 +1054,26 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i.replace("OBPv", "v"), s"?version=${i}&list-all-banks=${listAllBanks}"))
 
 
-
+    def usingHumanReadableTitle(versions:List[String]) = {
+      versions.map(i => (i
+        .replace("b1", "API Builder")
+        .replace(BGVersionV133, "Berlin Group 1.3.3")
+        .replace(BGVersionV13, "Berlin Group 1.3")
+        .replace(BahrainOBFVersionV100, "BAHRAIN OBF 1.0.0")
+        .replace(BGVersionV1, "Berlin Group")
+        .replace(UKVersionV20, "UK 2.0")
+        .replace(UKVersionV31, "UK 3.1")
+        .replace(STETv14, "STET 1.4")
+        .replace(PAPIVersionV2111, "Polish API 2.1.1.1")
+        .replace(AUv100, "AU CDR v1.0.0"),
+        s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
+    }
+    
     // Create a list of (version, url) used to populate the versions whilst preserving the other parameters
     // Includes hack for Berlin Group
-    val otherVersionUrls: List[(String, String)] = otherVersionsSupported.map(i => (i
-      .replace("b1", "API Builder")
-      .replace(BGVersionV133, "Berlin Group 1.3.3")
-      .replace(BGVersionV13, "Berlin Group 1.3")
-      .replace(BHVersionV100, "Bahrain OBF 1.0.0")
-      .replace(BGVersionV1, "Berlin Group")
-      .replace(UKVersionV20, "UK 2.0")
-      .replace(UKVersionV31, "UK 3.1")
-      .replace(STETv14, "STET 1.4")
-      .replace(PAPIVersionV2111, "Polish API 2.1.1.1")
-      .replace(AUv100, "AU CDR v1.0.0"),
-      s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
+    val otherVersionUrls: List[(String, String)] = usingHumanReadableTitle(otherVersionsSupported)
 
-    //TODO this need to be a method,
-    val otherVersionsSupportedInDropdownMenuUrls: List[(String, String)] = allSupportedVersionsInDropdownMenu.map(i => (i
-      .replace("b1", "API Builder")
-      .replace(BGVersionV133, "Berlin Group 1.3.3")
-      .replace(BGVersionV13, "Berlin Group 1.3")
-      .replace(BHVersionV100, "Bahrain OBF 1.0.0")
-      .replace(BGVersionV1, "Berlin Group")
-      .replace(UKVersionV20, "UK 2.0")
-      .replace(UKVersionV31, "UK 3.1")
-      .replace(STETv14, "STET 1.4")
-      .replace(PAPIVersionV2111, "Polish API 2.1.1.1")
-      .replace(AUv100, "AU CDR v1.0.0"),
-      s"${CurrentReq.value.uri}?version=${i}&list-all-banks=${listAllBanks}"))
+    val otherVersionsSupportedInDropdownMenuUrls: List[(String, String)] = usingHumanReadableTitle(allSupportedVersionsInDropdownMenu)
 
 
     // So we can highlight (or maybe later exclusively show) the "active" banks in a sandbox.
