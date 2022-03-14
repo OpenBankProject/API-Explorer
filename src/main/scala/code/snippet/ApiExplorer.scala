@@ -456,7 +456,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val commaSeparatedListOfResources = allResources.map(_.operation_id).mkString("[", ", ", "]")
 
     "#all-partial-functions" #> commaSeparatedListOfResources
-    OAuthClient.redirectToOauthLogin()
   }
 
   def getResponse (url : String, resourceVerb: String, json : JValue, customRequestHeader: String = "") : (String, String) = {
