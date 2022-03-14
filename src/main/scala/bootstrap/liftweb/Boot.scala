@@ -158,6 +158,9 @@ class Boot extends MdcLoggable{
       Menu.i("More") / "more",
       Menu.i("OAuth Callback") / "oauthcallback" >> EarlyResponse(() => {
         OAuthClient.handleCallback()
+      }),
+      Menu.i("OBP Logout") / "obp-api-logout" >> EarlyResponse(() => {
+        OAuthClient.logoutApiExplorerAndObpApi()
       })
     )
 

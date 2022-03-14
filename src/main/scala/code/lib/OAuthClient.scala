@@ -202,10 +202,22 @@ object OAuthClient extends MdcLoggable {
   def loggedIn : Boolean = credentials.map(_.readyToSign).getOrElse(false)
 
   def logoutAll() = {
-    val apiExplorerHost = {Helper.getPropsValue("base_url", S.hostName)}
+    val (apiExplorerHost: String, obpApiHost: String) = logoutApiExplorer
+    S.redirectTo(s"$obpApiHost/user_mgt/logout?redirect=$apiExplorerHost")
+  }
+  
+  def logoutApiExplorerAndObpApi() = {
+    val (_: String, obpApiHost: String) = logoutApiExplorer
+    S.redirectTo(s"$obpApiHost/user_mgt/logout")
+  }
+
+  private def logoutApiExplorer = {
+    val apiExplorerHost = {
+      Helper.getPropsValue("base_url", S.hostName)
+    }
     val obpApiHost = Helper.getPropsValue("api_portal_hostname")
       .getOrElse(Helper.getPropsValue("api_hostname", "Unknown"))
     credentials.set(None)
-    S.redirectTo(s"$obpApiHost/user_mgt/logout?redirect=$apiExplorerHost")
+    (apiExplorerHost, obpApiHost)
   }
 }
