@@ -199,7 +199,8 @@ object ObpAPI extends Loggable {
           case v =>
             val errorMsg = s"The endpoint $url return wrong structure data, it have no 'json_schema_validations', response body: ${render(v)}"
             logger.error(errorMsg)
-            throw new IllegalStateException(errorMsg)
+//            throw new IllegalStateException(errorMsg)
+            Empty
         }
       }
     }
@@ -222,7 +223,9 @@ object ObpAPI extends Loggable {
           case v =>
             val errorMsg = s"The endpoint $url return wrong structure data, it have no 'authentication_types_validations', response body: ${render(v)}"
             logger.error(errorMsg)
-            throw new IllegalStateException(errorMsg)
+//            throw new IllegalStateException(errorMsg)
+            Full(Map(""->List("")))
+            
         }
       }
     }
