@@ -370,16 +370,8 @@
     <reporting>
         <plugins>
             <plugin>
-                <groupId>org.scala-tools</groupId>
-                <artifactId>maven-scala-plugin</artifactId>
-                <version>3.2.2</version>
-                <configuration>
-                    <charset>${project.build.sourceEncoding}</charset>
-                    <jvmArgs>
-                        <jvmArg>-Xmx1024m</jvmArg>
-                        <jvmArg>-DpackageLinkDefs=file://${project.build.directory}/packageLinkDefs.properties</jvmArg>
-                    </jvmArgs>
-                </configuration>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </reporting>
