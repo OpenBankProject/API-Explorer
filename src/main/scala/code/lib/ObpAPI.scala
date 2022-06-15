@@ -686,7 +686,7 @@ object OBPRequest extends MdcLoggable {
       request.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
       request.setRequestProperty("Accept", "application/json")
       request.setRequestProperty("Accept-Charset", "UTF-8")
-      if(apiPath.contains("/obp/v4.0.0/my/consents/request")) {
+      if(apiPath.contains("/obp/v4.0.0/my/consents/request") || apiPath.contains("/obp/v5.0.0/my/consents/request")) {
         request.setRequestProperty("Authorization", s"Bearer $obtainAccessToken")
       }
 
