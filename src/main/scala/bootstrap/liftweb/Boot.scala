@@ -46,6 +46,10 @@ import java.io.File
 import code.lib.OAuthClient
 import code.util.{Helper, MyExceptionLogger}
 import code.util.Helper.MdcLoggable
+import net.liftweb.http.provider.HTTPCookie
+
+import java.util.{Locale, TimeZone}
+import code.util.I18NUtil
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -53,6 +57,44 @@ import code.util.Helper.MdcLoggable
  */
 class Boot extends MdcLoggable{
   def boot {
+
+    // Use HTML5 for rendering
+    LiftRules.htmlProperties.default.set((r: Req) =>
+      new Html5Properties(r.userAgent))
+
+    LiftRules.explicitlyParsedSuffixes = Helpers.knownSuffixes &~ (Set("com"))
+
+    val locale = I18NUtil.getLocale()
+    Locale.setDefault(locale)
+    logger.info("Default Project Locale is :" + locale)
+
+    // Cookie name
+    val localeCookieName = "SELECTED_LOCALE"
+    LiftRules.localeCalculator = {
+      case fullReq @ Full(req) => {
+        // Check against a set cookie, or the locale sent in the request
+        def currentLocale : Locale = {
+          S.findCookie(localeCookieName).flatMap {
+            cookie => cookie.value.map(I18NUtil.computeLocale)
+          } openOr locale
+        }
+
+        // Check to see if the user explicitly requests a new locale
+        // In case it's true we use that value to set up a new cookie value
+        S.param("locale") match {
+          case Full(requestedLocale) if requestedLocale != null => {
+            val computedLocale = I18NUtil.computeLocale(requestedLocale)
+            S.addCookie(HTTPCookie(localeCookieName, requestedLocale))
+            computedLocale
+          }
+          case _ => currentLocale
+        }
+      }
+      case _ => locale
+    }
+
+
+
 
     MDC.put( ("host", Helper.getHostname()) )
 

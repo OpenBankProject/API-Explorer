@@ -343,7 +343,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   val defaultVersion: String = Helper.getPropsValue("default.version") match {
     case Full(v)  => v
-    case _ => OBPVersionV400
+    case _ => OBPVersionV500
   }
 
     // Get the requested version from the url parameter and default if none
@@ -352,7 +352,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     // Possible OBP Versions
-  val obpVersionsSupported = List("OBPv3.1.0", OBPVersionV400)
+  val obpVersionsSupported = List(OBPVersionV400, OBPVersionV500)
 
 
   val otherVersionsSupported = List(BGVersionV13, UKVersionV31)
@@ -368,6 +368,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       "OBPv3.0.0",
       "OBPv3.1.0",
       OBPVersionV400,
+      OBPVersionV500,
       UKVersionV31,
       BGVersionV13,
       STETv14,
