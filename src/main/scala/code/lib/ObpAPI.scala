@@ -654,14 +654,14 @@ object OBPRequest extends MdcLoggable {
   def apply(apiPath : String, jsonBody : Option[JValue], method : String, headers : List[Header]) : Box[(Int, String, List[String])] = {
     logger.debug(s"before $apiPath call:")
 
-    def addAppAccess = {
-      if (!headers.exists(_.key == "Authorization")) {
+    def addAppAccessIfNecessary: List[Header] = {
+      if (!headers.exists(_.key == "Authorization") && !apiPath.contains("resource-docs/OBPv5.0.0/obp")) {
         Header("Authorization", s"Bearer $obtainAccessToken") :: headers
       } else {
         headers
       }
     }
-
+    
     lazy val statusAndBody = tryo {
       val credentials = OAuthClient.getAuthorizedCredential
       val apiUrl = OAuthClient.currentApiBaseUrl
@@ -686,14 +686,11 @@ object OBPRequest extends MdcLoggable {
       request.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
       request.setRequestProperty("Accept", "application/json")
       request.setRequestProperty("Accept-Charset", "UTF-8")
-      if(apiPath.contains("/obp/v4.0.0/my/consents/request")) {
-        request.setRequestProperty("Authorization", s"Bearer $obtainAccessToken")
-      }
 
       //sign the request if we have some credentials to sign it with
       credentials.foreach(c => c.consumer.sign(request))
 
-      headers.foreach(header => request.setRequestProperty(header.key, header.value))
+      addAppAccessIfNecessary.foreach(header => request.setRequestProperty(header.key, header.value))
 
       //Set the request body
       if(jsonBody.isDefined) {
