@@ -103,7 +103,7 @@ object ObpAPI extends Loggable {
     }
   }
 
-  def currentUser : Box[CurrentUserJson]= ObpGet(s"$obpPrefix/v2.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
+  def currentUser : Box[CurrentUserJson]= ObpGet(s"$obpPrefix/v3.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
 
   def getRoot : Box[JValue]= ObpGet(s"$obpPrefix/v4.0.0/root")
   
