@@ -575,6 +575,7 @@ object IdentityProviderRequest extends MdcLoggable {
   val clientId = Helper.getPropsValue("obp_consumer_key", "")
   val clientSecret = Helper.getPropsValue("obp_secret_key", "")
   val tokenEndpoint = Helper.getPropsValue("identity_provider_token_endpoint", "http://127.0.0.1:4444/oauth2/token")
+  val integrateWithIdentityProvider = Helper.getPropsAsBoolValue("integrate_with_identity_provider", false)
   val jwsAlg = Helper.getPropsValue("oauth2.jws_alg", "ES256")
   val jwkPrivateKey = Helper.getPropsValue("oauth2.jwk_private_key")
 
@@ -655,8 +656,12 @@ object OBPRequest extends MdcLoggable {
     logger.debug(s"before $apiPath call:")
 
     def addAppAccessIfNecessary: List[Header] = {
-      if (!headers.exists(_.key == "Authorization") && !apiPath.contains("resource-docs/OBPv5.0.0/obp")) {
-        Header("Authorization", s"Bearer $obtainAccessToken") :: headers
+      if(IdentityProviderRequest.integrateWithIdentityProvider) {
+        if (!headers.exists(_.key == "Authorization") && !apiPath.contains("resource-docs/OBPv5.0.0/obp")) {
+          Header("Authorization", s"Bearer $obtainAccessToken") :: headers
+        } else {
+          headers
+        }
       } else {
         headers
       }

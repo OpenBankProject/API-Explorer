@@ -164,3 +164,9 @@ dev.port=8082
 
 # Sngle Sign On 
 # sso.enabled=false
+
+# ------------------------------ Identity Provider OAuth2 Props ------------------------------
+## if integrate_with_hydra set to true, all other props must not be empty
+# integrate_with_identity_provider=false
+# identity_provider_token_endpoint=http://127.0.0.1:4444/oauth2/token
+# ------------------------------ Identity Provider OAuth2 Props end --------------------------
