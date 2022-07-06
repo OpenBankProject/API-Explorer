@@ -659,7 +659,8 @@ object OBPRequest extends MdcLoggable {
     def addAppAccessIfNecessary: List[Header] = {
       if(IdentityProviderRequest.integrateWithIdentityProvider) {
         if (!headers.exists(_.key == "Authorization") && !apiPath.contains("resource-docs/OBPv5.0.0/obp")) {
-          Header("Authorization", s"Bearer $obtainAccessToken") :: headers
+          val temp = Header("Authorization", s"Bearer $obtainAccessToken") :: headers
+          temp
         } else {
           headers
         }
@@ -695,7 +696,7 @@ object OBPRequest extends MdcLoggable {
 
       //sign the request if we have some credentials to sign it with
       credentials.foreach(c => c.consumer.sign(request))
-
+      
       addAppAccessIfNecessary.foreach(header => request.setRequestProperty(header.key, header.value))
 
       //Set the request body
@@ -706,9 +707,14 @@ object OBPRequest extends MdcLoggable {
         writer.flush()
         writer.close()
       }
-      
-      val requestHeaders = request.getRequestProperties().asScala.mapValues(_.asScala.toSet).toList
-      val adjustedRequestHeaders = requestHeaders.map(x => x._1 + ": " + x._2.mkString(", ")).sortWith(_ < _).filter(_.startsWith("null") == false)
+
+      val requestHeaders = {
+        addAppAccessIfNecessary.map(header => (header.key, Set(header.value))) :::
+        request.getRequestProperties().asScala.mapValues(_.asScala.toSet).toList
+      }
+      val adjustedRequestHeaders = requestHeaders.to[Set].toList
+        .map(x => x._1 + ": " + x._2.mkString(", "))
+        .sortWith(_ < _).filter(_.startsWith("null") == false)
 
 
       request.connect()
