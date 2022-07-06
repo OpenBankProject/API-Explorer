@@ -25,6 +25,7 @@ import net.liftweb.json._
 import net.liftweb.util.Helpers.{intToTimeSpanBuilder => _, _}
 import okhttp3.MediaType
 
+import scala.collection.JavaConverters._
 import scala.collection.immutable.{List, Nil}
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -652,7 +653,7 @@ case class ObpError(error :String)
 object OBPRequest extends MdcLoggable {
   implicit val formats = DefaultFormats
   //returns a tuple of the status code,  response body and list of headers
-  def apply(apiPath : String, jsonBody : Option[JValue], method : String, headers : List[Header]) : Box[(Int, String, List[String])] = {
+  def apply(apiPath : String, jsonBody : Option[JValue], method : String, headers : List[Header]) : Box[(Int, String, List[String], List[String])] = {
     logger.debug(s"before $apiPath call:")
 
     def addAppAccessIfNecessary: List[Header] = {
@@ -705,13 +706,16 @@ object OBPRequest extends MdcLoggable {
         writer.flush()
         writer.close()
       }
+      
+      val requestHeaders = request.getRequestProperties().asScala.mapValues(_.asScala.toSet).toList
+      val adjustedRequestHeaders = requestHeaders.map(x => x._1 + ": " + x._2.mkString(", ")).sortWith(_ < _).filter(_.startsWith("null") == false)
+
 
       request.connect()
       val status = request.getResponseCode()
-      import scala.collection.JavaConverters._
       val responseHeaders: List[(String, Set[String])] = request.getHeaderFields().asScala.mapValues(_.asScala.toSet).toList
       val adjustedResponseHeaders = responseHeaders.map(x => x._1 + ": " + x._2.mkString(", ")).sortWith(_ < _).filter(_.startsWith("null") == false)
-
+      
       //get reponse body
       val inputStream = if(status >= 400) request.getErrorStream() else request.getInputStream()
       val reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"))
@@ -726,7 +730,7 @@ object OBPRequest extends MdcLoggable {
       }
       readLines()
       reader.close();
-      (status, builder.toString(), adjustedResponseHeaders)
+      (status, builder.toString(), adjustedResponseHeaders, adjustedRequestHeaders)
     }
 
     val urlParametersUrl = apiPath.split("\\?")
@@ -766,16 +770,16 @@ object OBPRequest extends MdcLoggable {
 object ObpPut {
   def apply(apiPath: String, json : JValue): Box[JValue] = {
     OBPRequest(apiPath, Some(json), "PUT", Nil) match {
-      case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+      case Full((status, result, _, _)) => APIUtils.getAPIResponseBody(status, result)
       case Failure(msg, exception, chain) => Failure(msg)
       case _ =>Failure(UnknownErrorMessage)
     }
   }
 }
 object ObpPutWithHeader {
-  def apply(apiPath: String, json : JValue, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+  def apply(apiPath: String, json : JValue, headers : List[Header] = Nil): (Box[JValue], List[String], List[String]) = {
     OBPRequest(apiPath, Some(json), "PUT", headers) match {
-      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3, value._4)
     }
   }
 }
@@ -783,20 +787,20 @@ object ObpPutWithHeader {
 object ObpPost {
   def apply(apiPath: String, json : JValue): Box[JValue] = {
     OBPRequest(apiPath, Some(json), "POST", Nil) match {
-      case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+      case Full((status, result, _, _)) => APIUtils.getAPIResponseBody(status, result)
       case Failure(msg, exception, chain) => Failure(msg)
       case _ => Failure(UnknownErrorMessage)
     }
   }
 }
 object ObpPostWithHeader {
-  def apply(apiPath: String, json : JValue, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+  def apply(apiPath: String, json : JValue, headers : List[Header] = Nil): (Box[JValue], List[String], List[String]) = {
     val requestBody = json match {
       case JNothing | JNull => None
       case v => Option(v)
     }
     OBPRequest(apiPath, requestBody, "POST", headers) match {
-      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3, value._4)
     }
   }
 }
@@ -807,7 +811,7 @@ object ObpDeleteBoolean {
    */
   def apply(apiPath: String): Boolean = {
     val worked = OBPRequest(apiPath, None, "DELETE", Nil).map {
-      case(status, result, _) => APIUtils.apiResponseWorked(status, result)
+      case(status, result, _, _) => APIUtils.apiResponseWorked(status, result)
     }
     worked.getOrElse(false)
   }
@@ -820,16 +824,16 @@ object ObpDeleteBoolean {
 object ObpDelete {
   def apply(apiPath: String): Box[JValue] = {
     OBPRequest(apiPath, None, "DELETE", Nil) match {
-      case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+      case Full((status, result, _, _)) => APIUtils.getAPIResponseBody(status, result)
       case Failure(msg, exception, chain) => Failure(msg)
       case _ => Failure(UnknownErrorMessage)
     }
   }
 }
 object ObpDeleteWithHeader {
-  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String], List[String]) = {
     OBPRequest(apiPath, None, "DELETE", headers) match {
-      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3, value._4)
     }
   }
 }
@@ -843,7 +847,7 @@ object ObpGet {
       Empty
     } else {
       OBPRequest(apiPath, None, "GET", headers) match {
-        case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+        case Full((status, result, _, _)) => APIUtils.getAPIResponseBody(status, result)
         case Failure(msg, exception, chain) => Failure(msg)
         case _ => Failure(UnknownErrorMessage)
       }
@@ -857,7 +861,7 @@ object ObpHead {
       Empty
     } else {
       OBPRequest(apiPath, None, "HEAD", headers) match {
-        case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+        case Full((status, result, _, _)) => APIUtils.getAPIResponseBody(status, result)
         case Failure(msg, exception, chain) => Failure(msg)
         case _ => Failure(UnknownErrorMessage)
       }
@@ -866,17 +870,17 @@ object ObpHead {
 }
 
 object ObpGetWithHeader {
-  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String], List[String]) = {
     OBPRequest(apiPath, None, "GET", headers) match {
-      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3, value._4)
     }
   }
 }
 
 object ObpHeadWithHeader {
-  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String], List[String]) = {
     OBPRequest(apiPath, None, "HEAD", headers) match {
-      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3, value._4)
     }
   }
 }
