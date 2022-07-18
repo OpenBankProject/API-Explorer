@@ -34,7 +34,9 @@ In OS X, sbt can be installed with $ sudo port install sbt
 
 Alternatively, maven can also be used:
 
-mvn jetty:run
+`mvn jetty:run`
+
+In case you want to specify and port as well use next command `mvn -Djetty.port=8082 jetty:run`
 
 
 Note: You may need to add the pluginGroup to the $HOME/.m2/settings.xml
