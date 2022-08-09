@@ -127,7 +127,7 @@
 
 
                             <li class="breadcrumbs__list" id ="dynamic_link_div" >
-                                <a id ="dynamic_link" class="dynamic_button" href="/?tags=Dynamic&content=dynamic">Dynamic</a>
+                                <a id ="dynamic_link" class="dynamic_button" href="/?tags=Dynamic&content=dynamic"><lift:loc locid="dynamic">Dynamic</lift:loc></a>
                             </li>
                             <li class="breadcrumbs__list" id="api_manager_link_div" >
                                 <a id="api_manager_link" class="api_manager_button" href="http://127.0.0.1:8000/">API Manager</a>
@@ -146,20 +146,20 @@
                                 <div class="dropdown">
                                     <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <lift:loc locid="more">More</lift:loc> <img src="./media/images/chevron_down_thick_write.svg" alt="Girl in a jacket" width="10" height="10"></button>
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <li name="dropdown_versions"><a class="dropdown-item version" href="#">Another action</a> <hr></li>
+                                        <li name="dropdown_versions"><a class="dropdown-item version" href="#"><lift:loc locid="another.action">Another action</lift:loc></a> <hr></li>
 
                                         <li id="onboard_link_div">
-                                            <a id="onboard_link" class="version" href="This href should be replaced">Onboard</a>
+                                            <a id="onboard_link" class="version" href="This href should be replaced"><lift:loc locid="onboard">Onboard</lift:loc></a>
                                         </li>
                                         <li id="consent_flow_link_div">
-                                            <a id="consent_flow_link" class="version" href="https://oauth2-flow.demo.openbankproject.com/">Consent Flow</a>
+                                            <a id="consent_flow_link" class="version" href="https://oauth2-flow.demo.openbankproject.com/"><lift:loc locid="consent.flow">Consent Flow</lift:loc></a>
                                         </li><hr>
                                         <li id ="message_doc_link_div">
                                             <a id="message_doc_link" href="./message-docs?connector=kafka_vSept2018"
-                                               class="breadcrumbs__link version">Message Docs</a>
+                                               class="breadcrumbs__link version"><lift:loc locid="message.docs">Message Docs</lift:loc></a>
                                         </li><hr>
                                         <li id="Glossary">
-                                            <a id="glossary_link" href="./glossary?" class="breadcrumbs__link version">Glossary</a>
+                                            <a id="glossary_link" href="./glossary?" class="breadcrumbs__link version"><lift:loc locid="glossary">Glossary</lift:loc></a>
                                         </li>
                                     </ul>
                                 </div>
