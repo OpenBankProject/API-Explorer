@@ -350,7 +350,7 @@ object ObpAPI extends Loggable {
     //Note: ?content=static&content=dynamic
     // if there are two content parameters there, only the first one is valid for the api call. 
     // so requestParams have the high priority 
-    val requestParams = List("tags", "language", "functions", "content", CacheModifier)
+    val requestParams = List("tags", "locale", "language", "functions", "content", CacheModifier)
         .map(paramName => (paramName, S.param(paramName)))
         .collect{
           case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -490,6 +490,7 @@ object ObpAPI extends Loggable {
   def getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String) = {
     logger.debug("getResourceDocsJValueResponse says Hello")
     val result = ObpGet(s"$obpPrefix/v4.0.0/resource-docs/$apiVersion/obp$requestParams&content=$contentTag")
+    logger.debug("requestParams says result is: " + requestParams)
     logger.debug("getResourceDocsJValueResponse says result is: " + result)
     result
   }
