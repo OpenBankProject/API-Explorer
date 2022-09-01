@@ -127,7 +127,7 @@
 
 
                             <li class="breadcrumbs__list" id ="dynamic_link_div" >
-                                <a id ="dynamic_link" class="dynamic_button" href="/?tags=Dynamic&content=dynamic">Dynamic</a>
+                                <a id ="dynamic_link" class="dynamic_button" href="/?tags=Dynamic&content=dynamic"><lift:loc locid="dynamic">Dynamic</lift:loc></a>
                             </li>
                             <li class="breadcrumbs__list" id="api_manager_link_div" >
                                 <a id="api_manager_link" class="api_manager_button" href="http://127.0.0.1:8000/">API Manager</a>
@@ -146,20 +146,20 @@
                                 <div class="dropdown">
                                     <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <lift:loc locid="more">More</lift:loc> <img src="./media/images/chevron_down_thick_write.svg" alt="Girl in a jacket" width="10" height="10"></button>
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <li name="dropdown_versions"><a class="dropdown-item version" href="#">Another action</a> <hr></li>
+                                        <li name="dropdown_versions"><a class="dropdown-item version" href="#"><lift:loc locid="another.action">Another action</lift:loc></a> <hr></li>
 
                                         <li id="onboard_link_div">
-                                            <a id="onboard_link" class="version" href="This href should be replaced">Onboard</a>
+                                            <a id="onboard_link" class="version" href="This href should be replaced"><lift:loc locid="onboard">Onboard</lift:loc></a>
                                         </li>
                                         <li id="consent_flow_link_div">
-                                            <a id="consent_flow_link" class="version" href="https://oauth2-flow.demo.openbankproject.com/">Consent Flow</a>
+                                            <a id="consent_flow_link" class="version" href="https://oauth2-flow.demo.openbankproject.com/"><lift:loc locid="consent.flow">Consent Flow</lift:loc></a>
                                         </li><hr>
                                         <li id ="message_doc_link_div">
                                             <a id="message_doc_link" href="./message-docs?connector=kafka_vSept2018"
-                                               class="breadcrumbs__link version">Message Docs</a>
+                                               class="breadcrumbs__link version"><lift:loc locid="message.docs">Message Docs</lift:loc></a>
                                         </li><hr>
                                         <li id="Glossary">
-                                            <a id="glossary_link" href="./glossary?" class="breadcrumbs__link version">Glossary</a>
+                                            <a id="glossary_link" href="./glossary?" class="breadcrumbs__link version"><lift:loc locid="glossary">Glossary</lift:loc></a>
                                         </li>
                                     </ul>
                                 </div>
@@ -169,7 +169,7 @@
                                 <div class="dropdown">
                                     <button aria-expanded="false" aria-haspopup="true" data-toggle="dropdown" id="dropdownMenuButton" type="button" class="btn btn-info dropdown-toggle"><lift:loc locid="spaces">Spaces</lift:loc> <img height="10" width="10" alt="Girl in a jacket" src="./media/images/chevron_down_thick_write.svg"></button>
                                     <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu">
-                                        <li name="dropdown_space"><a class="dropdown-item version" href="#">Space</a> <hr></li>
+                                        <li name="dropdown_space"><a class="dropdown-item version" href="#"><lift:loc locid="space">Space</lift:loc></a> <hr></li>
 
                                     </ul>
                                 </div>
@@ -260,20 +260,20 @@
             <section class="option-section">
                 <div class="container">
                     <div class="option-box">
-                        <div class="option-box__headline" id="Banks-Dropdown">Bank</div>
+                        <div class="option-box__headline" id="Banks-Dropdown"><lift:loc locid="bank">Banco</lift:loc></div>
                         <!--
                         <div class="count-box">
                             <span class="count-box__number">0</span>
                         </div>
                         -->
                         <select id="bank_selector" name="Bank" class="option-box__select js-example-basic-single">
-                            <option value="Choose from..." class="option-box__option">Choose from...</option>
+                            <option value="Choose from..." class="option-box__option"><lift:loc locid="choose_from">Choose from...</lift:loc></option>
                             <option value="Choose from..." class="option-box__option">Placeholder</option>
                             <option value="Choose from..." class="option-box__option">Placeholder</option>
                         </select>
                     </div>
                     <div class="option-box">
-                        <div class="option-box__headline" id="Accounts-Dropdown">Accounts</div>
+                        <div class="option-box__headline" id="Accounts-Dropdown"><lift:loc locid="accounts">Accounts</lift:loc></div>
                         <!--
                         <div class="count-box">
                             <span class="count-box__number">0</span>
@@ -287,20 +287,20 @@
                         </select>
                     </div>
                     <div class="option-box" name="views_box">
-                        <div class="option-box__headline" id="Views-Dropdown">Views</div>
+                        <div class="option-box__headline" id="Views-Dropdown"><lift:loc locid="views">Views</lift:loc></div>
                         <!--
                         <div class="count-box">
                             <span class="count-box__number">0</span>
                         </div>
                         -->
                         <select id="view_selector" name="Views" class="option-box__select js-example-basic-single">
-                            <option value="Choose from..." class="option-box__option">Choose from...</option>
+                            <option value="Choose from..." class="option-box__option"><lift:loc locid="choose_from">Choose from...</lift:loc></option>
                             <option value="Choose from..." class="option-box__option">Placeholder</option>
                             <option value="Choose from..." class="option-box__option">Placeholder</option>
                         </select>
                     </div>
                     <div class="option-box" id="counterparty_selector-option-box">
-                        <div class="option-box__headline" id="Counterparties-Dropdown">Counterparties</div>
+                        <div class="option-box__headline" id="Counterparties-Dropdown"><lift:loc locid="counterparties">Counterparties</lift:loc></div>
                         <!--
                         <div class="count-box">
                             <span class="count-box__number">0</span>
@@ -308,13 +308,13 @@
                         -->
                         <select id="counterparty_selector" name="Counterparties"
                                 class="option-box__select js-example-basic-single">
-                            <option value="Choose from..." class="option-box__option">Choose from...</option>
+                            <option value="Choose from..." class="option-box__option"><lift:loc locid="choose_from">Choose from...</lift:loc></option>
                             <option value="Choose from..." class="option-box__option">placeholder</option>
                             <option value="Choose from..." class="option-box__option">placeholder</option>
                         </select>
                     </div>
                     <div class="option-box" id="transaction_selector-option-box">
-                        <div class="option-box__headline" id="Transactions-Dropdown">Transactions</div>
+                        <div class="option-box__headline" id="Transactions-Dropdown"><lift:loc locid="transactions">Transactions</lift:loc></div>
                         <!--
                         <div class="count-box">
                             <span class="count-box__number">0</span>
@@ -322,7 +322,7 @@
                         -->
                         <select id="transaction_selector" name="Transactions"
                                 class="option-box__select js-example-basic-single">
-                            <option value="Choose from..." class="option-box__option">Choose from...</option>
+                            <option value="Choose from..." class="option-box__option"><lift:loc locid="choose_from">Choose from...</lift:loc></option>
                             <option value="Choose from..." class="option-box__option">Placeholder</option>
                             <option value="Choose from..." class="option-box__option">Placeholder</option>
                         </select>
