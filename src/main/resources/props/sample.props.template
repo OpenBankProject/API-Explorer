@@ -76,6 +76,7 @@ dev.port=8082
 # webui_show_index_obp_all_link=true
 # webui_show_index_dynamic_link=true
 # webui_show_index_more_link=true
+# webui_show_index_space_link=true
 # webui_show_index_berlin_group_link=false
 # webui_show_index_uk_link=false
 ################################
