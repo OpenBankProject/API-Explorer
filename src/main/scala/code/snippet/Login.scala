@@ -53,8 +53,10 @@ class Login {
           }
       }
     }
+    val displayNameOfUser = getDisplayNameOfUser()
     ".logged-out *" #> "" &
-    ".username *" #> getDisplayNameOfUser() &
+    ".username *" #> displayNameOfUser &
+    ".display-login-name-error *" #> displayNameOfUser.toString & // Hidden field
     "#logout [onclick+]" #> SHtml.onEvent(s => {
       OAuthClient.logoutAll()
       Noop

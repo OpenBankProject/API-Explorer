@@ -376,7 +376,7 @@
 
                                         <div name="example_request_header" id="example_request_header" style="display: block;">
                                             <!-- It is populated at render (but it can be edited manually) -->
-                                            <input type="text" name="request_header_input" class="default-input" placeholder="Request Header">
+                                            <input type="text" name="request_header_input" class="default-input" placeholder="Request Header (Header1:Value1::Header2:Value2)">
                                         </div>
                                         <div name="example_request_body" id="example_request_body" style="display: block;">
                                             <input name="example_request_body_input" class="default-input" placeholder="JSON body to POST or PUT">
@@ -411,14 +411,20 @@
 							</pre>
                                 </div>
 
+                                <!-- Request Headers -->
+                                <div id="full_request_headers_box" class="content-box__info-box" style="display: none;">
+                                    <!-- Text in a <pre> element is displayed in a fixed-width font, and the text preserves both spaces and line breaks.
+                                         The text will be displayed exactly as written in the HTML source code.  -->
+                                    <pre><code><details style="cursor:s-resize;"><summary style="display:list-item">Request Headers:</summary>
+                                        <div name="full_request_headers"></div></details></code></pre>
+                                </div>
+
+                                <!-- Response Headers -->
                                 <div id="full_headers_box" class="content-box__info-box" style="display: none;">
-                                    <div>Headers:</div>
-                                    <br/>
-                                    <pre>
-								<code>
-									<div name="full_headers"></div>
-								</code>
-							</pre>
+                                    <!-- Text in a <pre> element is displayed in a fixed-width font, and the text preserves both spaces and line breaks.
+                                         The text will be displayed exactly as written in the HTML source code.  -->
+                                    <pre><code><details open style="cursor:s-resize;"><summary style="display:list-item">Response Headers:</summary>
+                                        <div name="full_headers"></div></details></code></pre>
                                 </div>
 
 
