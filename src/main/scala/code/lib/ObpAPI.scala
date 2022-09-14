@@ -571,7 +571,8 @@ object ObpAPI extends Loggable {
 
 }
 
-
+// The code below is introduced in order to support Application Access via API Explorer.
+// For instance using Hydra ORA as Identity Provider
 object IdentityProviderRequest extends MdcLoggable {
 
   val clientId = Helper.getPropsValue("obp_consumer_key", "")
