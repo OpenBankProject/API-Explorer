@@ -149,9 +149,24 @@
             <version>2.1.1</version>
         </dependency>
         <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.9.1</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.OpenBankProject</groupId>
             <artifactId>scala-macros</artifactId>
             <version>v1.0.0-alpha.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>1.62</version>
         </dependency>
         <dependency>
             <groupId>com.github.cb372</groupId>
