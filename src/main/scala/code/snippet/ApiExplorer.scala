@@ -376,7 +376,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       AUv100,
       BahrainOBFVersionV100,
       "0.6v1",
-      MXOFv100,
+      CNBV9v100,
       "b1")
 
     // Set the version to use.
