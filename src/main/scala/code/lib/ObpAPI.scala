@@ -66,7 +66,7 @@ object ObpAPI extends Loggable {
   final val PAPIVersionV2111 = "PAPIv2.1.1.1"
   final val AUv100 = "AUv1.0.0"
   final val STETv14 = "STETv1.4"
-  final val MXOFv100 = "MXOFv1.0.0"
+  final val CNBV9v100 = "CNBV9v1.0.0"
   final val VersionV133 = "v1.3.3"
   final val DisplayEqualNone = "display: none"
   final val ResourceStyleCss = ".resource [style]"
