@@ -1,28 +1,35 @@
 package code.lib
 
-import code.lib.ObpAPI.UnknownErrorMessage
 import java.io._
+import java.security.Security
 import java.text.SimpleDateFormat
+import java.util.UUID.randomUUID
 import java.util.{Date, UUID}
+
+import code.lib.ObpAPI.UnknownErrorMessage
 import code.lib.ObpJson._
 import code.util.Helper
 import code.util.Helper.{MdcLoggable, covertWebpageIdToObpOperationId}
 import code.util.cache.Caching
+import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton
+import com.nimbusds.jose.crypto.{ECDSASigner, RSASSASigner}
+import com.nimbusds.jose.jwk.{ECKey, JWK, RSAKey}
+import com.nimbusds.jose.{JOSEException, JWSAlgorithm, JWSHeader, JWSSigner}
+import com.nimbusds.jwt.{JWTClaimsSet, SignedJWT}
+import com.tesobe.CacheKeyFromArguments
 import net.liftweb.common.{Box, Failure, Full, _}
 import net.liftweb.http.{RequestVar, S, SessionVar}
+import net.liftweb.json
 import net.liftweb.json.JsonAST.{JBool, JValue}
-import net.liftweb.json.JsonDSL._
 import net.liftweb.json._
 import net.liftweb.util.Helpers.{intToTimeSpanBuilder => _, _}
+import okhttp3.MediaType
 
-import scala.xml.NodeSeq
-import com.tesobe.CacheKeyFromArguments
+import scala.collection.JavaConverters._
 import scala.collection.immutable.{List, Nil}
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import java.util.UUID.randomUUID
-import net.liftweb.common._
-import net.liftweb.json
+import scala.xml.NodeSeq
 
 
 case class Header(key: String, value: String)
@@ -99,7 +106,7 @@ object ObpAPI extends Loggable {
     }
   }
 
-  def currentUser : Box[CurrentUserJson]= ObpGet(s"$obpPrefix/v2.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
+  def currentUser : Box[CurrentUserJson]= ObpGet(s"$obpPrefix/v3.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
 
   def getRoot : Box[JValue]= ObpGet(s"$obpPrefix/v4.0.0/root")
   
@@ -345,7 +352,7 @@ object ObpAPI extends Loggable {
     //Note: ?content=static&content=dynamic
     // if there are two content parameters there, only the first one is valid for the api call. 
     // so requestParams have the high priority 
-    val requestParams = List("tags", "language", "functions", "content", CacheModifier)
+    val requestParams = List("tags", "locale", "language", "functions", "content", CacheModifier)
         .map(paramName => (paramName, S.param(paramName)))
         .collect{
           case (paramName, Full(paramValue)) if(paramValue.trim.size > 0) => s"$paramName=$paramValue"
@@ -489,6 +496,7 @@ object ObpAPI extends Loggable {
   def getResourceDocsJValueResponse(apiVersion : String, requestParams: String, contentTag: String) = {
     logger.debug("getResourceDocsJValueResponse says Hello")
     val result = ObpGet(s"$obpPrefix/v4.0.0/resource-docs/$apiVersion/obp$requestParams&content=$contentTag")
+    logger.debug("requestParams says result is: " + requestParams)
     logger.debug("getResourceDocsJValueResponse says result is: " + result)
     result
   }
@@ -569,13 +577,106 @@ object ObpAPI extends Loggable {
 
 }
 
+// The code below is introduced in order to support Application Access via API Explorer.
+// For instance using Hydra ORA as Identity Provider
+object IdentityProviderRequest extends MdcLoggable {
+
+  val clientId = Helper.getPropsValue("obp_consumer_key", "")
+  val clientSecret = Helper.getPropsValue("obp_secret_key", "")
+  val tokenEndpoint = Helper.getPropsValue("identity_provider_token_endpoint", "http://127.0.0.1:4444/oauth2/token")
+  val integrateWithIdentityProvider = Helper.getPropsAsBoolValue("integrate_with_identity_provider", false)
+  val jwsAlg = Helper.getPropsValue("oauth2.jws_alg", "ES256")
+  val jwkPrivateKey = Helper.getPropsValue("oauth2.jwk_private_key")
+
+  val jwk: Option[JWK] = jwkPrivateKey.map(JWK.parse(_))
+  lazy val jwsSigner: Option[JWSSigner] = {
+    if (jwkPrivateKey.isDefined) {
+      if (jwsAlg.startsWith("ES")) Some(new ECDSASigner(jwk.get.asInstanceOf[ECKey]))
+      else {
+        if (jwsAlg.startsWith("PS")) Security.addProvider(BouncyCastleProviderSingleton.getInstance)
+        val privateKey = jwk.get.asInstanceOf[RSAKey]
+        Some(new RSASSASigner(privateKey))
+      }
+    } else {
+      None
+    }
+  }
+  
+
+  private def signClaims(claimsSet: JWTClaimsSet) = {
+    val jwt = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.parse(jwsAlg)).keyID(jwk.get.getKeyID).build, claimsSet)
+    // Sign with private EC key
+    try jwt.sign(jwsSigner.get)
+    catch {
+      case e: JOSEException =>
+        println(e)
+    }
+    jwt.serialize
+  }
+
+  def buildClientAssertion: String = { // JWT claims
+    //iss: REQUIRED. Issuer. This MUST contain the client_id of the OAuth Client.
+    //sub: REQUIRED. Subject. This MUST contain the client_id of the OAuth Client.
+    //aud: REQUIRED. Audience. The aud (audience) Claim. Value that identifies the Authorization Server (ORY Hydra) as an intended audience. The Authorization Server MUST verify that it is an intended audience for the token. The Audience SHOULD be the URL of the Authorization Server's Token Endpoint.
+    //jti: REQUIRED. JWT ID. A unique identifier for the token, which can be used to prevent reuse of the token. These tokens MUST only be used once, unless conditions for reuse were negotiated between the parties; any such negotiation is beyond the scope of this specification.
+    //exp: REQUIRED. Expiration time on or after which the ID Token MUST NOT be accepted for processing.
+    //iat: OPTIONAL. Time at which the JWT was issued.
+    val claimsSet = new JWTClaimsSet.Builder()
+      .issuer(clientId).subject(clientId).audience(tokenEndpoint)
+      .jwtID(UUID.randomUUID.toString)
+      .expirationTime(new Date(new Date().getTime + 60 * 1000))
+      .issueTime(new Date).build
+    signClaims(claimsSet)
+  }
+  
+  def isPublicClient() = jwkPrivateKey.isDefined
+  
+  def obtainAccessToken() = {
+    import okhttp3.{OkHttpClient, Request, RequestBody}
+    val client = new OkHttpClient().newBuilder.build
+    val mediaType = MediaType.parse("application/x-www-form-urlencoded;charset=UTF-8")
+    val grantType = "client_credentials"
+
+
+    val body = isPublicClient match {
+      case true =>
+        RequestBody.create(mediaType, s"grant_type=$grantType&client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer&client_assertion=$buildClientAssertion")
+      case false =>
+        RequestBody.create(mediaType, s"grant_type=$grantType&client_id=$clientId&client_secret=$clientSecret")
+    }
+    
+    val request = new Request.Builder()
+      .url(tokenEndpoint).method("POST", body)
+      .addHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8").build
+    val response = client.newCall(request).execute
+    val responseBody = response.body.string
+    response.close()
+    responseBody
+  }
+  
+}
+
 case class ObpError(error :String)
 
 object OBPRequest extends MdcLoggable {
   implicit val formats = DefaultFormats
   //returns a tuple of the status code,  response body and list of headers
-  def apply(apiPath : String, jsonBody : Option[JValue], method : String, headers : List[Header]) : Box[(Int, String, List[String])] = {
+  def apply(apiPath : String, jsonBody : Option[JValue], method : String, headers : List[Header]) : Box[(Int, String, List[String], List[String])] = {
     logger.debug(s"before $apiPath call:")
+
+    def addAppAccessIfNecessary: List[Header] = {
+      if(IdentityProviderRequest.integrateWithIdentityProvider) {
+        if (!headers.exists(_.key == "Authorization") && !apiPath.contains("resource-docs/OBPv5.0.0/obp")) {
+          val temp = Header("Authorization", s"Bearer $obtainAccessToken") :: headers
+          temp
+        } else {
+          headers
+        }
+      } else {
+        headers
+      }
+    }
+    
     lazy val statusAndBody = tryo {
       val credentials = OAuthClient.getAuthorizedCredential
       val apiUrl = OAuthClient.currentApiBaseUrl
@@ -603,8 +704,13 @@ object OBPRequest extends MdcLoggable {
 
       //sign the request if we have some credentials to sign it with
       credentials.foreach(c => c.consumer.sign(request))
+      
+      addAppAccessIfNecessary.foreach(header => request.setRequestProperty(header.key, header.value))
 
-      headers.foreach(header => request.setRequestProperty(header.key, header.value))
+      val requestHeaders = tryo {
+          addAppAccessIfNecessary.map(header => (header.key, Set(header.value))) :::
+            request.getRequestProperties().asScala.mapValues(_.asScala.toSet).toList
+      }.getOrElse(Nil)
 
       //Set the request body
       if(jsonBody.isDefined) {
@@ -614,13 +720,17 @@ object OBPRequest extends MdcLoggable {
         writer.flush()
         writer.close()
       }
+      
+      val adjustedRequestHeaders = requestHeaders.to[Set].toList
+        .map(x => x._1 + ": " + x._2.mkString(", "))
+        .sortWith(_ < _).filter(_.startsWith("null") == false)
+
 
       request.connect()
       val status = request.getResponseCode()
-      import scala.collection.JavaConverters._
       val responseHeaders: List[(String, Set[String])] = request.getHeaderFields().asScala.mapValues(_.asScala.toSet).toList
       val adjustedResponseHeaders = responseHeaders.map(x => x._1 + ": " + x._2.mkString(", ")).sortWith(_ < _).filter(_.startsWith("null") == false)
-
+      
       //get reponse body
       val inputStream = if(status >= 400) request.getErrorStream() else request.getInputStream()
       val reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"))
@@ -635,7 +745,7 @@ object OBPRequest extends MdcLoggable {
       }
       readLines()
       reader.close();
-      (status, builder.toString(), adjustedResponseHeaders)
+      (status, builder.toString(), adjustedResponseHeaders, adjustedRequestHeaders)
     }
 
     val urlParametersUrl = apiPath.split("\\?")
@@ -662,21 +772,29 @@ object OBPRequest extends MdcLoggable {
     logger.debug(s"after $apiPath call:")
     result
   }
+
+  private def obtainAccessToken: String = {
+    val jsonResponse = IdentityProviderRequest.obtainAccessToken()
+    import net.liftweb.json._
+    val jsonAst = parse(jsonResponse) \ "access_token"
+    val accessToken = compact(render(jsonAst)).stripPrefix("\"").stripSuffix("\"")
+    accessToken
+  }
 }
 
 object ObpPut {
   def apply(apiPath: String, json : JValue): Box[JValue] = {
     OBPRequest(apiPath, Some(json), "PUT", Nil) match {
-      case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+      case Full((status, result, _, _)) => APIUtils.getAPIResponseBody(status, result)
       case Failure(msg, exception, chain) => Failure(msg)
       case _ =>Failure(UnknownErrorMessage)
     }
   }
 }
 object ObpPutWithHeader {
-  def apply(apiPath: String, json : JValue, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+  def apply(apiPath: String, json : JValue, headers : List[Header] = Nil): (Box[JValue], List[String], List[String]) = {
     OBPRequest(apiPath, Some(json), "PUT", headers) match {
-      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3, value._4)
     }
   }
 }
@@ -684,20 +802,20 @@ object ObpPutWithHeader {
 object ObpPost {
   def apply(apiPath: String, json : JValue): Box[JValue] = {
     OBPRequest(apiPath, Some(json), "POST", Nil) match {
-      case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+      case Full((status, result, _, _)) => APIUtils.getAPIResponseBody(status, result)
       case Failure(msg, exception, chain) => Failure(msg)
       case _ => Failure(UnknownErrorMessage)
     }
   }
 }
 object ObpPostWithHeader {
-  def apply(apiPath: String, json : JValue, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+  def apply(apiPath: String, json : JValue, headers : List[Header] = Nil): (Box[JValue], List[String], List[String]) = {
     val requestBody = json match {
       case JNothing | JNull => None
       case v => Option(v)
     }
     OBPRequest(apiPath, requestBody, "POST", headers) match {
-      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3, value._4)
     }
   }
 }
@@ -708,7 +826,7 @@ object ObpDeleteBoolean {
    */
   def apply(apiPath: String): Boolean = {
     val worked = OBPRequest(apiPath, None, "DELETE", Nil).map {
-      case(status, result, _) => APIUtils.apiResponseWorked(status, result)
+      case(status, result, _, _) => APIUtils.apiResponseWorked(status, result)
     }
     worked.getOrElse(false)
   }
@@ -721,16 +839,16 @@ object ObpDeleteBoolean {
 object ObpDelete {
   def apply(apiPath: String): Box[JValue] = {
     OBPRequest(apiPath, None, "DELETE", Nil) match {
-      case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+      case Full((status, result, _, _)) => APIUtils.getAPIResponseBody(status, result)
       case Failure(msg, exception, chain) => Failure(msg)
       case _ => Failure(UnknownErrorMessage)
     }
   }
 }
 object ObpDeleteWithHeader {
-  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String], List[String]) = {
     OBPRequest(apiPath, None, "DELETE", headers) match {
-      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3, value._4)
     }
   }
 }
@@ -744,7 +862,7 @@ object ObpGet {
       Empty
     } else {
       OBPRequest(apiPath, None, "GET", headers) match {
-        case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+        case Full((status, result, _, _)) => APIUtils.getAPIResponseBody(status, result)
         case Failure(msg, exception, chain) => Failure(msg)
         case _ => Failure(UnknownErrorMessage)
       }
@@ -758,7 +876,7 @@ object ObpHead {
       Empty
     } else {
       OBPRequest(apiPath, None, "HEAD", headers) match {
-        case Full((status, result, _)) => APIUtils.getAPIResponseBody(status, result)
+        case Full((status, result, _, _)) => APIUtils.getAPIResponseBody(status, result)
         case Failure(msg, exception, chain) => Failure(msg)
         case _ => Failure(UnknownErrorMessage)
       }
@@ -767,17 +885,17 @@ object ObpHead {
 }
 
 object ObpGetWithHeader {
-  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String], List[String]) = {
     OBPRequest(apiPath, None, "GET", headers) match {
-      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3, value._4)
     }
   }
 }
 
 object ObpHeadWithHeader {
-  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String]) = {
+  def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String], List[String]) = {
     OBPRequest(apiPath, None, "HEAD", headers) match {
-      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3)
+      case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3, value._4)
     }
   }
 }

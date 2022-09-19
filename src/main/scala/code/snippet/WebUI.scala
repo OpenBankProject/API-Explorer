@@ -27,11 +27,11 @@ Berlin 13359, Germany
 
 package code.snippet
 
+import code.util.Helper
 import code.util.Helper.MdcLoggable
 import net.liftweb.http.{S, SessionVar}
 import net.liftweb.util.Helpers._
 import net.liftweb.util.{CssSel, Props, _}
-
 import code.util.Helper._
 
 
@@ -42,9 +42,9 @@ class WebUI extends MdcLoggable {
 
   // language tag
   def homePage = {
-    val host = Props.get("base_url").getOrElse("unknown")
-    "#Es a [href]" #> scala.xml.Unparsed(s"$host/?locale=es_ES") &
-      "#En a [href]" #> scala.xml.Unparsed(s"$host/?locale=en_EN")
+    val host = Helper.getPropsValue("base_url", "unknown host")
+    "#es a [href]" #> scala.xml.Unparsed(s"/?locale=es_ES") &
+      "#en a [href]" #> scala.xml.Unparsed(s"/?locale=en_EN")
   }
 
 

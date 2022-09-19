@@ -459,7 +459,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "#all-partial-functions" #> commaSeparatedListOfResources
   }
 
-  def getResponse (url : String, resourceVerb: String, json : JValue, customRequestHeader: String = "") : (String, String) = {
+  def getResponse (url : String, resourceVerb: String, json : JValue, customRequestHeader: String = "") : (String, String, String) = {
 
     // version is now included in the url
     val urlWithVersion = s"$url"
@@ -475,28 +475,34 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
     var headersOfCurrentCall: List[String] = Nil
+    var requestHeadersOfCurrentCall: List[String] = Nil
 
     val responseBodyBox = {
       resourceVerb match {
         case "GET" =>
           val x = ObpGetWithHeader(urlWithVersion, requestHeader)
           headersOfCurrentCall = x._2
+          requestHeadersOfCurrentCall = x._3
           x._1
         case "HEAD" =>
           val x = ObpHeadWithHeader(urlWithVersion, requestHeader)
           headersOfCurrentCall = x._2
+          requestHeadersOfCurrentCall = x._3
           x._1
         case "DELETE" =>
           val x = ObpDeleteWithHeader(urlWithVersion, requestHeader)
           headersOfCurrentCall = x._2
+          requestHeadersOfCurrentCall = x._3
           x._1
         case "POST" =>
           val x = ObpPostWithHeader(urlWithVersion, json, requestHeader)
           headersOfCurrentCall = x._2
+          requestHeadersOfCurrentCall = x._3
           x._1
         case "PUT" =>
           val x = ObpPutWithHeader(urlWithVersion, json, requestHeader)
           headersOfCurrentCall = x._2
+          requestHeadersOfCurrentCall = x._3
           x._1
         case _ => {
           val failMsg = s"API Explorer says: Unsupported resourceVerb: $resourceVerb. Url requested was: $url"
@@ -519,7 +525,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       }
 
     logger.debug(s"responseBody is $responseBody")
-    (responseBody, headersOfCurrentCall.mkString("\n"))
+    (responseBody, headersOfCurrentCall.mkString("\n"), requestHeadersOfCurrentCall.mkString("\n"))
   }
 
 
@@ -940,10 +946,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val fullPathTarget = "full_path_" + resourceId
       val fullHeadersBox= "full_headers_box_"+resourceId
       val fullHeadersTarget = "full_headers_" + resourceId
+      val fullRequestHeadersBox= "full_request_headers_box_"+ resourceId
+      val fullRequestHeadersTarget = "full_request_headers_" + resourceId
       // The javascript to show it
       val jsCommandShowFullPath : String =  s"DOLLAR_SIGN('#$fullPathTarget').fadeIn();".replace("DOLLAR_SIGN","$")
       val jsCommandShowFullHeaders : String =
         s"DOLLAR_SIGN('#$fullHeadersBox').show();".replace("DOLLAR_SIGN","$") ++s"DOLLAR_SIGN('#$fullHeadersTarget').fadeIn();".replace("DOLLAR_SIGN","$")
+      val jsCommandShowFullRequestHeaders : String =
+        s"DOLLAR_SIGN('#$fullRequestHeadersBox').show();".replace("DOLLAR_SIGN","$") ++s"DOLLAR_SIGN('#$fullRequestHeadersTarget').fadeIn();".replace("DOLLAR_SIGN","$")
 
       // alert('$fullPathTarget');
       //logger.info(s"jsCommand is $jsCommand")
@@ -989,7 +999,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         .replaceAll("(?<![Vv]validations/)OBPv", "")) //delete OBPv, but if the OBPv is part of operationId, not to do delete, e.g: /validations/OBPv4.0.0-dynamicEndpoint_POST__account_access_consents
       //////////////
 
-      val (body, headers) = getResponse(requestUrl, requestVerb, jsonObject, customRequestHeader = requestCustomHeader)
+      val (body, headers, requestHeaders) = getResponse(requestUrl, requestVerb, jsonObject, customRequestHeader = requestCustomHeader)
       // Return the commands to call the url with optional body and put the response into the appropriate result div
       SetHtml(resultTarget, Text(body)) &
      // SetHtml(rolesTarget, Text(responseRoleString)) &
@@ -1001,9 +1011,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
       Run (jsCommandHideTypicalSuccessResponseBox) &
       Run (jsCommandShowFullPath) &
       Run (jsCommandShowFullHeaders) &
+      Run (jsCommandShowFullRequestHeaders) &
       Run (jsEnabledSubmitBtn) &
       SetHtml(fullPathTarget, Text(fullPath.toString)) &
-      SetHtml(fullHeadersTarget, Text(headers))
+      SetHtml(fullHeadersTarget, Text(headers)) &
+      SetHtml(fullRequestHeadersTarget, Text(requestHeaders))
     }
 
     def processFavourites(name: String): JsCmd = {
@@ -1585,6 +1597,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
           "@request_url_input" #> text(i.url, s => requestUrl = s, "aria-label"->s"${i.summary}","maxlength" -> "512", "size" -> "100", "id" -> s"request_url_input_${i.id}") &
           "@request_header_input" #> text("", s => requestCustomHeader = s, "maxlength" -> "2048", "size" -> "100", "id" -> s"request_header_input${i.id}") &
           "@full_path [id]" #> s"full_path_${i.id}" &
+          "#full_request_headers_box [id]" #> s"full_request_headers_box_${i.id}" &
+          "@full_request_headers [id]" #> s"full_request_headers_${i.id}" &
           "#full_headers_box [id]" #> s"full_headers_box_${i.id}" &
           "@full_headers [id]" #> s"full_headers_${i.id}" &
           // Extraction.decompose creates json representation of JObject.
