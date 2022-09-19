@@ -701,6 +701,11 @@ object OBPRequest extends MdcLoggable {
       
       addAppAccessIfNecessary.foreach(header => request.setRequestProperty(header.key, header.value))
 
+      val requestHeaders = tryo {
+          addAppAccessIfNecessary.map(header => (header.key, Set(header.value))) :::
+            request.getRequestProperties().asScala.mapValues(_.asScala.toSet).toList
+      }.getOrElse(Nil)
+
       //Set the request body
       if(jsonBody.isDefined) {
         val output = request.getOutputStream()
@@ -709,11 +714,7 @@ object OBPRequest extends MdcLoggable {
         writer.flush()
         writer.close()
       }
-
-      val requestHeaders = {
-        addAppAccessIfNecessary.map(header => (header.key, Set(header.value))) :::
-        request.getRequestProperties().asScala.mapValues(_.asScala.toSet).toList
-      }
+      
       val adjustedRequestHeaders = requestHeaders.to[Set].toList
         .map(x => x._1 + ": " + x._2.mkString(", "))
         .sortWith(_ < _).filter(_.startsWith("null") == false)
