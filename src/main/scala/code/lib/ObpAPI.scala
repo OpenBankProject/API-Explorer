@@ -90,7 +90,7 @@ object ObpAPI extends Loggable {
   final val EndPointAnchorHref = ".end-point-anchor [href]"
   final val ContentBoxHeadlineId = ".content-box__headline [id]"
 
-  final val showDynamicResourceDoc = Helper.getPropsValue("show_dynamic_resource_doc","true").toBoolean
+  final val showDynamicResourceDocs = Helper.getPropsValue("show_dynamic_resource_docs","true").toBoolean
   
   /**
    * The request vars ensure that for one page load, the same API call isn't
@@ -376,7 +376,7 @@ object ObpAPI extends Loggable {
     } else if (requestParams.contains(ContentEqualDynamic)){
       dynamicResourcesDocs
     } else{
-      if(showDynamicResourceDoc){
+      if(showDynamicResourceDocs){
         for{
             staticResourcesDocsList <-staticResourcesDocs
             dynamicResourcesDocsList <-dynamicResourcesDocs
