@@ -844,6 +844,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val showIndexAllObpLink = Helper.getPropsValue("webui_show_index_obp_all_link", "true").toBoolean
     val showIndexDynamicLink = Helper.getPropsValue("webui_show_index_dynamic_link", "true").toBoolean
     val showIndexMoreLink = Helper.getPropsValue("webui_show_index_more_link", "true").toBoolean
+    val showIndexSpaceLink = Helper.getPropsValue("webui_show_index_space_link", "true").toBoolean
     val showIndexBerlinGroupLink = Helper.getPropsValue("webui_show_index_berlin_group_link", "false").toBoolean
     val showIndexUkLink = Helper.getPropsValue("webui_show_index_uk_link", "false").toBoolean
     val consentFlowLink = Helper.getPropsValue("consent_flow_link", "")
@@ -853,6 +854,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val displayIndexAllObpLink = if (showIndexAllObpLink ) {""} else {"none"}
     val displayIndexDynamicLink = if (showIndexDynamicLink ) {""} else {"none"}
     val displayIndexMoreLink = if (showIndexMoreLink ) {""} else {"none"}
+    val displayIndexSpaceLink = if (showIndexSpaceLink ) {""} else {"none"}
     val displayIndexBerlinGroupLink = if (showIndexBerlinGroupLink ) {""} else {"none"}
     val displayIndexUkLink = if (showIndexUkLink ) {""} else {"none"}
     val displayConsentFlowLink = if (consentFlowLink.nonEmpty ) {""} else {"none"}
@@ -1400,7 +1402,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "#all_obp_link_div [style]"  #> s"display: $displayIndexAllObpLink;" &
     "#berlin_group_link_div [style]"  #> s"display: $displayIndexBerlinGroupLink;" &
     "#uk_link_div [style]"  #> s"display: $displayIndexUkLink;" &
-    "#More [style]"  #> s"display: $displayIndexMoreLink;" &
+    "#index_more_link [style]"  #> s"display: $displayIndexMoreLink;" &
+    "#index_space_link [style]"  #> s"display: $displayIndexSpaceLink;" &
     "#onboard_link [href]" #> s"$apiPortalHostname/user_mgt/sign_up?after-signup=link-to-customer" &
     "#consent_flow_link_div [style]" #> s"display: $displayConsentFlowLink;" &
     "#consent_flow_link [href]" #> s"$consentFlowLink" & 
