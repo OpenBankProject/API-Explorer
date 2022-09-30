@@ -707,6 +707,9 @@ object OBPRequest extends MdcLoggable {
       
       addAppAccessIfNecessary.foreach(header => request.setRequestProperty(header.key, header.value))
 
+      // Please note that this MUST be called before we set the body of our request
+      // Otherwise it can fail due to IllegalStateException("Already connected")
+      // In the end we cannot see info at Request Header's Box at API Explorer 
       val requestHeaders = tryo {
           addAppAccessIfNecessary.map(header => (header.key, Set(header.value))) :::
             request.getRequestProperties().asScala.mapValues(_.asScala.toSet).toList

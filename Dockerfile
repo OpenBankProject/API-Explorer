@@ -6,8 +6,8 @@ COPY src src
 # Copy default props file
 COPY src/main/resources/props/sample.props.template src/main/resources/props/default.props
 COPY src/main/resources/container.logback.xml.example src/main/resources/default.logback.xml
-RUN mvn -e -B dependency:resolve
-RUN mvn -e -B package
+RUN --mount=type=cache,target=/root/.m2 mvn -e -B dependency:resolve
+RUN --mount=type=cache,target=/root/.m2 mvn -e -B package
 
 FROM jetty
 
