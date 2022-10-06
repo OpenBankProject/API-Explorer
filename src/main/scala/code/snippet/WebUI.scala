@@ -61,12 +61,12 @@ class WebUI extends MdcLoggable {
 //  These copied from API but not all implemented.
 
   def headerLogoLeft = {
-    "a [href]" #> baseUrl &
+    "a [href]" #> s"$baseUrl?locale=${S.locale.toString}" &
     "img [src]" #> getPropsValue("webui_header_logo_left_url", "https://static.openbankproject.com/images/OBP_full_web_25pc.png") 
   }
 
   def headerLogoRight: CssSel = {
-    "a [href] "  #> baseUrl &
+    "a [href] "  #> s"$baseUrl?locale=${S.locale.toString}"  &
     "img [src]" #> getPropsValue("webui_header_logo_right_url", "https://static.openbankproject.com/images/obp_logo_stacked.png") 
   }
 
@@ -105,7 +105,7 @@ class WebUI extends MdcLoggable {
   }
 
   def hostedByLink: CssSel = {
-    ".hosted-by-link a [href]" #> scala.xml.Unparsed(getPropsValue("webui_hosted_by_url", "https://www.tesobe.com"))
+    ".hosted-by-link a [href]" #> scala.xml.Unparsed(getPropsValue("webui_hosted_by_url", "https://www.tesobe.com")+s"?locale=${S.locale.toString}")
   }
 
 
