@@ -41,15 +41,6 @@ class WebUI extends MdcLoggable {
 
   @transient protected val log = logger //Logger(this.getClass)
 
-  // language tag
-  def homePage = {
-    val host = Helper.getPropsValue("base_url", "unknown host")
-    "#es a [href]" #> scala.xml.Unparsed(s"/?locale=es_ES") &
-      "#en a [href]" #> scala.xml.Unparsed(s"/?locale=en_EN")
-  }
-
-
-  // Change the main style sheet
   def mainStyleSheet: CssSel = {
     "#main_style_sheet [href]" #> scala.xml.Unparsed(getPropsValue("webui_main_style_sheet", "./media/css/style.css"))
   }

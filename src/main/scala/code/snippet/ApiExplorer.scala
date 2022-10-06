@@ -1341,6 +1341,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val glossaryItems = getGlossaryItemsJson.map(_.glossary_items).getOrElse(List())
 
     val cssResult = "#login_status_message" #> loggedInStatusMessage &
+    "#es [href]" #> s"""/?locale=es_ES&${S.queryString.getOrElse("") }""" &
+    "#en [href]" #> s"""/?locale=en_GB&${S.queryString.getOrElse("") }""" &
     "#bank_selector" #> doBankSelect _ &
     "#account_selector" #> doAccountSelect _ &
     "#view_selector" #> doViewSelect _ &
