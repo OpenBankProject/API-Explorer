@@ -459,10 +459,21 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "#all-partial-functions" #> commaSeparatedListOfResources
   }
 
+  def wrapLocaleParameter (url: String) = {
+    val localeString = S.locale.toString
+    // Note the Props value might contain a query parameter e.g. ?psd2=true
+    // hack (we should use url operators instead) so we can add further query parameters if one is already included in the the baseUrl
+    url.contains("?") match {
+      case true => url +  s"&locale=$localeString" // ? found so add & instead
+      case false => url + s"?locale=$localeString" // ? not found so add it.
+    }
+  }
+  
   def getResponse (url : String, resourceVerb: String, json : JValue, customRequestHeader: String = "") : (String, String, String) = {
 
     // version is now included in the url
     val urlWithVersion = s"$url"
+    val urlWithVersionAndLocale = wrapLocaleParameter(urlWithVersion)
     val requestHeader = customRequestHeader.trim.isEmpty match {
       case true => Nil
       case false =>
@@ -480,27 +491,27 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val responseBodyBox = {
       resourceVerb match {
         case "GET" =>
-          val x = ObpGetWithHeader(urlWithVersion, requestHeader)
+          val x = ObpGetWithHeader(urlWithVersionAndLocale, requestHeader)
           headersOfCurrentCall = x._2
           requestHeadersOfCurrentCall = x._3
           x._1
         case "HEAD" =>
-          val x = ObpHeadWithHeader(urlWithVersion, requestHeader)
+          val x = ObpHeadWithHeader(urlWithVersionAndLocale, requestHeader)
           headersOfCurrentCall = x._2
           requestHeadersOfCurrentCall = x._3
           x._1
         case "DELETE" =>
-          val x = ObpDeleteWithHeader(urlWithVersion, requestHeader)
+          val x = ObpDeleteWithHeader(urlWithVersionAndLocale, requestHeader)
           headersOfCurrentCall = x._2
           requestHeadersOfCurrentCall = x._3
           x._1
         case "POST" =>
-          val x = ObpPostWithHeader(urlWithVersion, json, requestHeader)
+          val x = ObpPostWithHeader(urlWithVersionAndLocale, json, requestHeader)
           headersOfCurrentCall = x._2
           requestHeadersOfCurrentCall = x._3
           x._1
         case "PUT" =>
-          val x = ObpPutWithHeader(urlWithVersion, json, requestHeader)
+          val x = ObpPutWithHeader(urlWithVersionAndLocale, json, requestHeader)
           headersOfCurrentCall = x._2
           requestHeadersOfCurrentCall = x._3
           x._1
