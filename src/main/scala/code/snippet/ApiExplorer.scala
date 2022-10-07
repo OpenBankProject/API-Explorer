@@ -459,10 +459,21 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "#all-partial-functions" #> commaSeparatedListOfResources
   }
 
+  def wrapLocaleParameter (url: String) = {
+    val localeString = S.locale.toString
+    // Note the Props value might contain a query parameter e.g. ?psd2=true
+    // hack (we should use url operators instead) so we can add further query parameters if one is already included in the the baseUrl
+    url.contains("?") match {
+      case true => url +  s"&locale=$localeString" // ? found so add & instead
+      case false => url + s"?locale=$localeString" // ? not found so add it.
+    }
+  }
+  
   def getResponse (url : String, resourceVerb: String, json : JValue, customRequestHeader: String = "") : (String, String, String) = {
 
     // version is now included in the url
     val urlWithVersion = s"$url"
+    val urlWithVersionAndLocale = wrapLocaleParameter(urlWithVersion)
     val requestHeader = customRequestHeader.trim.isEmpty match {
       case true => Nil
       case false =>
@@ -480,27 +491,27 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val responseBodyBox = {
       resourceVerb match {
         case "GET" =>
-          val x = ObpGetWithHeader(urlWithVersion, requestHeader)
+          val x = ObpGetWithHeader(urlWithVersionAndLocale, requestHeader)
           headersOfCurrentCall = x._2
           requestHeadersOfCurrentCall = x._3
           x._1
         case "HEAD" =>
-          val x = ObpHeadWithHeader(urlWithVersion, requestHeader)
+          val x = ObpHeadWithHeader(urlWithVersionAndLocale, requestHeader)
           headersOfCurrentCall = x._2
           requestHeadersOfCurrentCall = x._3
           x._1
         case "DELETE" =>
-          val x = ObpDeleteWithHeader(urlWithVersion, requestHeader)
+          val x = ObpDeleteWithHeader(urlWithVersionAndLocale, requestHeader)
           headersOfCurrentCall = x._2
           requestHeadersOfCurrentCall = x._3
           x._1
         case "POST" =>
-          val x = ObpPostWithHeader(urlWithVersion, json, requestHeader)
+          val x = ObpPostWithHeader(urlWithVersionAndLocale, json, requestHeader)
           headersOfCurrentCall = x._2
           requestHeadersOfCurrentCall = x._3
           x._1
         case "PUT" =>
-          val x = ObpPutWithHeader(urlWithVersion, json, requestHeader)
+          val x = ObpPutWithHeader(urlWithVersionAndLocale, json, requestHeader)
           headersOfCurrentCall = x._2
           requestHeadersOfCurrentCall = x._3
           x._1
@@ -1341,6 +1352,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val glossaryItems = getGlossaryItemsJson.map(_.glossary_items).getOrElse(List())
 
     val cssResult = "#login_status_message" #> loggedInStatusMessage &
+    "#es [href]" #> s"""/?locale=es_ES&${S.queryString.getOrElse("") }""" &
+    "#en [href]" #> s"""/?locale=en_GB&${S.queryString.getOrElse("") }""" &
     "#bank_selector" #> doBankSelect _ &
     "#account_selector" #> doAccountSelect _ &
     "#view_selector" #> doViewSelect _ &
@@ -1367,48 +1380,49 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "#version *+" #> apiVersion &
     "@obp_versions" #> obpVersionUrls.map { i =>
       "@obp_version *" #> s"OBP ${i._1} " &
-      "@obp_version [href]" #> s"${i._2}"
+      "@obp_version [href]" #> s"${i._2}&locale=${S.locale.toString}"
     } &
       "@other_versions" #> otherVersionUrls.map { i =>
         "@other_version *" #> s" ${i._1} " &
-          "@other_version [href]" #> s"${i._2}"
+          "@other_version [href]" #> s"${i._2}&locale=${S.locale.toString}"
       } &
       "@custom_api_collections" #> ObpAPI.getApiCollectionsFromProps.openOr(Nil).map { i =>
         ".collection *" #> s"${i._1}" &
-          ".collection [href]" #> s"${i._2}"
+          ".collection [href]" #> s"${i._2}&locale=${S.locale.toString}"
       } &
       "@dropdown_versions" #> otherVersionsSupportedInDropdownMenuUrls.map { i =>
         ".dropdown-item *" #> s" ${i._1} " &
-          ".dropdown-item [href]" #> s"${i._2}"
+          ".dropdown-item [href]" #> s"${i._2}&locale=${S.locale.toString}"
       } &
       "@dropdown_space" #> getMySpaces.map(_.bank_ids).getOrElse(Nil).map { i =>
         ".dropdown-item *" #> s" $i " &
-          ".dropdown-item [href]" #> s"?space_bank_id=${i}"
+          ".dropdown-item [href]" #> s"?space_bank_id=${i}&locale=${S.locale.toString}"
       } &
     ".info-box__headline *" #> s"$headline"  &
     "@version_path *" #> s"$baseVersionUrl" &
-    "@version_path [href]" #> s"$baseVersionUrl" &
-    "@resource_docs_path [href]" #> s"$resourceDocsPath" &
-    "@swagger_path [href]" #> s"$swaggerPath" &
+    "@version_path [href]" #> s"$baseVersionUrl&locale=${S.locale.toString}" &
+    "@resource_docs_path [href]" #> s"$resourceDocsPath&locale=${S.locale.toString}" &
+    "@swagger_path [href]" #> s"$swaggerPath&locale=${S.locale.toString}" &
     "@git_commit [href]" #> s"https://github.com/OpenBankProject/API-Explorer/commit/$currentGitCommit" &
     "@chinese_version_path [href]" #> s"$chineseVersionPath" &
-    "@all_partial_functions [href]" #> s"$allPartialFunctions" &
-    "#api_creation_and_management_link [href]" #> s"./?tags=$apiCreationAndManagementTags" &
+    "@all_partial_functions [href]" #> s"$allPartialFunctions&locale=${S.locale.toString}" &
+    "#api_creation_and_management_link [href]" #> s"./?tags=$apiCreationAndManagementTags&locale=${S.locale.toString}" &
     "#api_creation_and_management_link_div [style]"  #> s"display: $displayIndexObpApiManagementLink;" &
     "#dynamic_link_div [style]"  #> s"display: $displayIndexDynamicLink;" &
-    "#user_management_link [href]" #> s"./?tags=$userManagementTags" &
+    "#dynamic_link [href]"  #> s"/?tags=Dynamic&content=dynamic&locale=${S.locale.toString}" &
+    "#user_management_link [href]" #> s"./?tags=$userManagementTags&locale=${S.locale.toString}" &
     "#user_management_link_div [style]"  #> s"display: $displayIndexObpUserManagementLink;" &
-    "#obp_banking_model_link [href]" #> s"./?tags=$obpBankingModelTags" &
+    "#obp_banking_model_link [href]" #> s"./?tags=$obpBankingModelTags&locale=${S.locale.toString}" &
     "#all_obp_link_div [style]"  #> s"display: $displayIndexAllObpLink;" &
     "#berlin_group_link_div [style]"  #> s"display: $displayIndexBerlinGroupLink;" &
     "#uk_link_div [style]"  #> s"display: $displayIndexUkLink;" &
     "#index_more_link [style]"  #> s"display: $displayIndexMoreLink;" &
     "#index_space_link [style]"  #> s"display: $displayIndexSpaceLink;" &
-    "#onboard_link [href]" #> s"$apiPortalHostname/user_mgt/sign_up?after-signup=link-to-customer" &
+    "#onboard_link [href]" #> s"$apiPortalHostname/user_mgt/sign_up?after-signup=link-to-customer&locale=${S.locale.toString}" &
     "#consent_flow_link_div [style]" #> s"display: $displayConsentFlowLink;" &
-    "#consent_flow_link [href]" #> s"$consentFlowLink" & 
-    "#api_home_link [href]" #> s"$apiPortalHostname" &
-    "#api_manager_link [href]" #> s"$apiManagerUrl" &
+    "#consent_flow_link [href]" #> s"$consentFlowLink?locale=${S.locale.toString}" & 
+    "#api_home_link [href]" #> s"$apiPortalHostname?locale=${S.locale.toString}" &
+    "#api_manager_link [href]" #> s"$apiManagerUrl?locale=${S.locale.toString}" &
     "@views_box [style]" #> s"display: $displayViews;" &
     "@favourites_group_item [style]" #> s"display: $displayCollectionsDiv;" &
     // Show / hide featured
@@ -1420,14 +1434,14 @@ WIP to add comments on resource docs. This code copied from Sofit.
           // Within each group (first tag), list the resources
           "@featured_api_list_item" #> i._2.sortBy(_.summary.toString()).map { i =>
             // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-            "@featured_api_list_item_link [href]" #> s"#${i.id}" &
+            "@featured_api_list_item_link [href]" #> s"#${i.id}?locale=${S.locale.toString}" &
               "@featured_api_list_item_link *" #> i.summary &
               "@featured_api_list_item_link [id]" #> s"index_of_${i.id}"
           }
       } &
       // List the resources grouped by the first tag
       "@favourites_list_item" #> myApicollections.map { i =>
-        "@favourites_list_item_link [href]" #> s"?api-collection-id=${i.api_collection_id}" &
+        "@favourites_list_item_link [href]" #> s"?api-collection-id=${i.api_collection_id}&locale=${S.locale.toString}" &
          "@favourites_list_item_link *" #> i.api_collection_name &
          "@favourites_list_item_link [id]" #> s"index_of_${i.api_collection_name}"
       } &
@@ -1438,7 +1452,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
             "@api_group_name [href]" #> s"#group-${i._1}" &
             "@api_group_name [id]" #> s"group-${i._1}" &
             // Set an anchor (href and id) for a group
-            "@api_glossary_item_link [href]" #> s"/glossary?#${i._1}" &
+            "@api_glossary_item_link [href]" #> s"/glossary?#${i._1}&locale=${S.locale.toString}" &
             "@api_glossary_item_link [id]" #> s"glossary-${i._1}" &
             "@api_glossary_item_link * " #>{
               val description = glossaryItems.find(_.title == i._1.replaceAll("-"," ")).map(_.description.markdown).getOrElse("")
@@ -1459,11 +1473,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
               // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
                 "@api_list_item_link [href]" #>
                   (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty) //If the tags are in the URL, we just need to show the anchor, no need the parameters.
-                    s"#${i.id}"
+                    s"?locale=${S.locale.toString}#${i.id}"
                   else if (isCollectionOfResourceDocs_?) 
-                    s"#${i.id}"
+                    s"?locale=${S.locale.toString}#${i.id}"
                   else if (resources.find(_.id == currentOperationId).map(_.tags.headOption.getOrElse("API"))==resources.find(_.id == i.id).map(_.tags.headOption.getOrElse("API"))) //If the Tag is the current Tag.We do not need parameters.
-                    s"#${i.id}"
+                    s"?locale=${S.locale.toString}#${i.id}"
                   else {
                     def urlParams = {
                       val verionRequestedParam = if (apiVersionRequested == "" ) "?" else s"?version=$apiVersionRequested"
@@ -1476,7 +1490,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
                       val transactionIdParam = if (presetTransactionId == "" ) "" else s"&transaction_id=${presetTransactionId}"
                       s"$verionRequestedParam$operationIdParam$currentTagParam$apiCollectionIdParamString$bankIdParam$accountIdParam$viewIdParam$counterpartyIdParam$transactionIdParam"
                     }
-                    s"$urlParams#${i.id}"
+                    s"$urlParams&locale=${S.locale.toString}#${i.id}"
                   }) &
                   "@api_list_item_link [style]" #>
                   (if (i.id == currentOperationId && queryString.isDefined)
@@ -1501,13 +1515,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
             // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
             "@api_list_item_link_small_screen [href]" #>
               (if (rawTagsParam.isDefined && !rawTagsParam.getOrElse("").isEmpty) //If the tags are in the URL, we just need to show the anchor, no need the parameters.
-                s"#${i.id}"
+                s"?locale=${S.locale.toString}#${i.id}"
               else if (isCollectionOfResourceDocs_?) 
-                s"#${i.id}"
+                s"?locale=${S.locale.toString}#${i.id}"
               else if (resources.find(_.id == currentOperationId).map(_.tags.headOption.getOrElse("API"))==resources.find(_.id == i.id).map(_.tags.headOption.getOrElse("API"))) //If the Tag is the current Tag.We do not need parameters.
-                s"#${i.id}"
+                s"?locale=${S.locale.toString}#${i.id}"
               else
-                s"?operation_id=${i.id}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}") &
+                s"?operation_id=${i.id}&bank_id=${presetBankId}&account_id=${presetAccountId}&view_id=${presetViewId}&counterparty_id=${presetCounterpartyId}&transaction_id=${presetTransactionId}#${i.id}&locale=${S.locale.toString}") &
               "@api_list_item_link_small_screen span" #> i.summary &
               "@api_list_item_link_small_screen [id]" #> s"index_of__small_screen${i.id}"
           }
@@ -1577,7 +1591,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           resourcesShowedInPage
         }).map { i =>
           // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-          EndPointAnchorHref #> s"#${i.id}" &
+          EndPointAnchorHref #> s"?locale=${S.locale.toString}#${i.id}" &
           ContentBoxHeadline #> i.summary &
           ContentBoxHeadlineId #> i.id & // id for the anchor to find
           // Replace attribute named overview_text with the value (whole div/span element is replaced leaving just the text)
@@ -1640,7 +1654,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           // This class gets a list of connector methods
           ".connector_method_item" #> i.connectorMethods.map { i=>
             // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-            ".connector_method_item_link [href]" #> s"message-docs?connector=stored_procedure_vDec2019#${urlEncode(i.replaceAll(" ", "-"))}" &
+            ".connector_method_item_link [href]" #> s"message-docs?connector=stored_procedure_vDec2019&locale=${S.locale.toString}#${urlEncode(i.replaceAll(" ", "-"))}" &
               ".connector_method_item_link *" #> i
           } &
           //required roles and related user information
@@ -1689,11 +1703,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
               else {"style" -> "color:#767676"}
             ) &
             ".favourites_error_message [id]" #> s"favourites_error_message_${i.id}" &
-            "@content-box__available-since_version [href]" #> s"/?version=${i.implementedBy.version}" &
+            "@content-box__available-since_version [href]" #> s"/?version=${i.implementedBy.version}&locale=${S.locale.toString}" &
             "@content-box__available-since_version *" #> s"${i.implementedBy.version},  " &
             "@content-box__available-since_span *" #> s"function_name: by ${i.implementedBy.function},  operation_id: ${i.operationId}  "&
             "@content-box__available-since_tags" #> i.tags.map { tag =>
-                "@content-box__available-since_tags [href]" #> s"/?tags=$tag" & 
+                "@content-box__available-since_tags [href]" #> s"/?tags=$tag&locale=${S.locale.toString}" & 
                   "@content-box__available-since_tags *" #> s"$tag, " 
           }
         }
@@ -1774,12 +1788,12 @@ WIP to add comments on resource docs. This code copied from Sofit.
         val tag = i.title.replaceAll(" ", "-")
         val operationId = allResourcesList.find(_.tags.head == tag).map(_.operation_id).getOrElse("")
       // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-      EndPointAnchorHref #> s"#${urlEncode(i.title.replaceAll(" ", "-"))}" &
+      EndPointAnchorHref #> s"?locale=${S.locale.toString}#${urlEncode(i.title.replaceAll(" ", "-"))}" &
         ContentBoxHeadline #> i.title &
         ContentBoxHeadlineId #> i.title.replaceAll(" ", "-") & // id for the anchor to find
         //i.title must be a proper tag, and will prepare the URL for it ...
         ".glossary_item_apis [href]" #> {
-          s"./?operation_id=${operationId.replace(".","_").replaceAll(" ","_")}#group-${tag}"
+          s"./?operation_id=${operationId.replace(".","_").replaceAll(" ","_")}&locale=${S.locale.toString}#group-${tag}"
         }&
         ".glossary_item_apis *" #> {
           if(operationId == "") "" else "Go Back to "+i.title +" APIs"
@@ -1791,7 +1805,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       // This is the left hand (title) list of glossary items
       ".api_list_item" #> glossaryItems.map { i =>
         // append the anchor to the current url. Maybe need to set the catalogue to all etc else another user might not find if the link is sent to them.
-        ".api_list_item_link [href]" #> s"#${urlEncode(i.title.replaceAll(" ", "-"))}" &
+        ".api_list_item_link [href]" #> s"?locale=${S.locale.toString}#${urlEncode(i.title.replaceAll(" ", "-"))}" &
           ".api_list_item_link *" #> i.title &
           ".api_list_item_link [id]" #> s"index_of_${urlEncode(i.title.replaceAll(" ", "-"))}"
       }
@@ -1813,13 +1827,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
       "@api_group_name *" #> s"${i._1.replace("-"," ")}" &
         // Within each group, and sort by suggested_order. List the message docs
         "@api_list_item" #> i._2.sortBy(_.adapter_implementation.suggested_order).map { i =>
-          "@api_list_item_link [href]" #> s"#${i.process}" &
+          "@api_list_item_link [href]" #> s"?locale=${S.locale.toString}#${i.process}" &
             "@api_list_item_link *" #> s"${i.process}" & //  ${i.adapter_implementation.suggested_order}" &
             "@api_list_item_link [id]" #> s"index_of_${i.process}"
         }
     } &
     ".message-doc" #> messageDocs.map  { i =>
-      EndPointAnchorHref #> s"#${urlEncode(i.process.replaceAll(" ", "-"))}" &
+      EndPointAnchorHref #> s"?locale=${S.locale.toString}#${urlEncode(i.process.replaceAll(" ", "-"))}" &
         ContentBoxHeadline #> i.process &
         ContentBoxHeadlineId #> i.process.replaceAll(" ", "-") & // id for the anchor to find
         ".outbound-topic *" #> stringToNodeSeq(i.outbound_topic.getOrElse("")) &
@@ -1830,7 +1844,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".inbound-required-fields *" #> stringToNodeSeq(Helper.renderJson(i.requiredFieldInfo.getOrElse(JNothing))) &
           ".dependent-endpoints *" #>
               <ul>{i.dependent_endpoints.map { endpointInfo =>
-                    val link = s"/?version=${endpointInfo.version}&list-all-banks=false#${endpointInfo.version.replace('.', '_')}-${endpointInfo.name}"
+                    val link = s"/?version=${endpointInfo.version}&list-all-banks=false&locale=${S.locale.toString}#${endpointInfo.version.replace('.', '_')}-${endpointInfo.name}"
                     <li>{endpointInfo.version}: <a style="color: white;" href={link}>{endpointInfo.name}</a></li>
                   }
                 }</ul>

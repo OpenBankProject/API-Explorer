@@ -27,6 +27,7 @@ Berlin 13359, Germany
 
 package code.snippet
 
+import code.lib.OBPProvider.baseUrl
 import code.util.Helper
 import code.util.Helper.MdcLoggable
 import net.liftweb.http.{S, SessionVar}
@@ -40,15 +41,6 @@ class WebUI extends MdcLoggable {
 
   @transient protected val log = logger //Logger(this.getClass)
 
-  // language tag
-  def homePage = {
-    val host = Helper.getPropsValue("base_url", "unknown host")
-    "#es a [href]" #> scala.xml.Unparsed(s"/?locale=es_ES") &
-      "#en a [href]" #> scala.xml.Unparsed(s"/?locale=en_EN")
-  }
-
-
-  // Change the main style sheet
   def mainStyleSheet: CssSel = {
     "#main_style_sheet [href]" #> scala.xml.Unparsed(getPropsValue("webui_main_style_sheet", "./media/css/style.css"))
   }
@@ -69,11 +61,13 @@ class WebUI extends MdcLoggable {
 //  These copied from API but not all implemented.
 
   def headerLogoLeft = {
-    "img [src]" #> getPropsValue("webui_header_logo_left_url", "https://static.openbankproject.com/images/OBP_full_web_25pc.png")
+    "a [href]" #> s"$baseUrl?locale=${S.locale.toString}" &
+    "img [src]" #> getPropsValue("webui_header_logo_left_url", "https://static.openbankproject.com/images/OBP_full_web_25pc.png") 
   }
 
   def headerLogoRight: CssSel = {
-    "img [src]" #> getPropsValue("webui_header_logo_right_url", "https://static.openbankproject.com/images/obp_logo_stacked.png")
+    "a [href] "  #> s"$baseUrl?locale=${S.locale.toString}"  &
+    "img [src]" #> getPropsValue("webui_header_logo_right_url", "https://static.openbankproject.com/images/obp_logo_stacked.png") 
   }
 
   def currentYearText: CssSel = {
@@ -111,7 +105,7 @@ class WebUI extends MdcLoggable {
   }
 
   def hostedByLink: CssSel = {
-    ".hosted-by-link a [href]" #> scala.xml.Unparsed(getPropsValue("webui_hosted_by_url", "https://www.tesobe.com"))
+    ".hosted-by-link a [href]" #> scala.xml.Unparsed(getPropsValue("webui_hosted_by_url", "https://www.tesobe.com")+s"?locale=${S.locale.toString}")
   }
 
 
