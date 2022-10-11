@@ -8,6 +8,10 @@ import code.util.Helper.{MdcLoggable, covertObpOperationIdToWebpageId}
 import net.liftweb.json
 import net.liftweb.util.{CssSel, Html5}
 import java.net.URL
+
+import net.liftweb.http.js.JE.JsRaw
+import net.liftweb.http.js.JsExp
+
 import scala.collection.immutable.{List, Nil}
 import net.liftweb.http.{S, SHtml}
 import net.liftweb.json.JsonAST.JValue
@@ -556,6 +560,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
                     |}, 28*1000)
                     |""".stripMargin.replaceAll("""[\r\n\s]+""", " ")
     Run (jsCode)
+  }  
+  def copyResultTextToClipboard(body: String): JsCmd =  {
+    val encodedJsString = body.encJs
+    val stringWithoutQuotes = encodedJsString.substring(1, encodedJsString.length - 1)
+    Run(JsRaw(s"navigator.clipboard.writeText('${stringWithoutQuotes}')").toJsCmd)
   }
 
 
@@ -1024,6 +1033,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       Run (jsCommandShowFullHeaders) &
       Run (jsCommandShowFullRequestHeaders) &
       Run (jsEnabledSubmitBtn) &
+      copyResultTextToClipboard(body) & // Copy the result text to a clipboard automatically
       SetHtml(fullPathTarget, Text(fullPath.toString)) &
       SetHtml(fullHeadersTarget, Text(headers)) &
       SetHtml(fullRequestHeadersTarget, Text(requestHeaders))
