@@ -1150,7 +1150,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val bankOptions = banksForUser.map(b => (b.id, b.shortName + " ("  + b.id + ")" + highlightFeatured(b.isFeatured) )).sortBy(a => (a._2, a._1))
 
 
-    val selectBank = ("", "Select Bank")
+    val selectBank = ("", S.?("dropdownbox.select.bank"))
     val selectBankOptions = selectBank :: bankOptions
 
 
@@ -1202,7 +1202,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     def getAccountOptions : List[(String,String)] = {
 
-      val selectAccount = ("", "Select Account")
+      val selectAccount = ("", S.?("dropdownbox.select.account"))
       val noneFound = ("", "") // No Accounts Found
 
       val options: List[(String, String)] = presetBankId match {
@@ -1226,8 +1226,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     def getViewOptions : List[(String,String)] = {
 
       val selectOne = OAuthClient.loggedIn match {
-        case true => ("", "Select View")
-        case false => ("", "Login for Views")
+        case true => ("", S.?("dropdownbox.select.view"))
+        case false => ("", S.?("dropdownbox.login.for.view"))
       }
 
       val noneFound = ("", "") // No Views Found
@@ -1251,8 +1251,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     def getCounterpartyOptions : List[(String,String)] = {
 
       val selectOne = OAuthClient.loggedIn match {
-        case true => ("", "Select Counterparty")
-        case false => ("", "Login for CPs")
+        case true => ("", S.?("dropdownbox.select.couterparty"))
+        case false => ("", S.?("dropdownbox.login.for.couterparty"))
       }
       val noneFound = ("", "") // No Counterparties Found
 
@@ -1282,8 +1282,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     def getTransactionOptions : List[(String,String)] = {
 
       val selectOne = OAuthClient.loggedIn match {
-        case true => ("", "Select Transaction")
-        case false => ("", "Login for Trans")
+        case true => ("", S.?("dropdownbox.select.transaction"))
+        case false => ("", S.?("dropdownbox.login.for.transaction"))
       }
       val noneFound = ("", "") // No Transactions Found
 
