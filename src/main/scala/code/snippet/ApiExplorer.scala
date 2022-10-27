@@ -1033,7 +1033,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       Run (jsCommandShowFullHeaders) &
       Run (jsCommandShowFullRequestHeaders) &
       Run (jsEnabledSubmitBtn) &
-      copyResultTextToClipboard(body) & // Copy the result text to a clipboard automatically
+      // TODO Make a button to trigger this
+      // copyResultTextToClipboard(body) & // Copy the result text to a clipboard automatically
       SetHtml(fullPathTarget, Text(fullPath.toString)) &
       SetHtml(fullHeadersTarget, Text(headers)) &
       SetHtml(fullRequestHeadersTarget, Text(requestHeaders))
