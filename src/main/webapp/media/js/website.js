@@ -270,8 +270,8 @@ function filterMessageDocs(element) {
     };
 }
 
-function myFunction(element) {
-  var id = String(element.id).replace('typical_success_response_box_copy_icon_','typical_success_response_box_response_text_');
+function copyJsonResultToClipboard(element) {
+  var id = String(element.id).replace('result_copy_icon_','result_');
   var r = document.createRange();
   r.selectNode(document.getElementById(id));
   window.getSelection().removeAllRanges();
