@@ -1632,6 +1632,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
           //
           // Typical Success Response
           "@typical_success_response_box [id]" #> s"typical_success_response_box_${i.id}" &
+          "@typical_success_response_box_copy_icon [id]" #> s"typical_success_response_box_copy_icon_${i.id}" &
+          "@typical_success_response [id]" #> s"typical_success_response_box_response_text_${i.id}" &
           //"@typical_success_response [id]" #> s"typical_success_response_${i.id}" &
           "@typical_success_response *" #> Helper.renderJson(i.successResponseBody) & {
             // Possible Validations

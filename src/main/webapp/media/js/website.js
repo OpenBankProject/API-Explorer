@@ -269,3 +269,13 @@ function filterMessageDocs(element) {
       if (emptyList) { coll[i].setAttribute("hidden", true); };
     };
 }
+
+function myFunction(element) {
+  var id = String(element.id).replace('typical_success_response_box_copy_icon_','typical_success_response_box_response_text_');
+  var r = document.createRange();
+  r.selectNode(document.getElementById(id));
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(r);
+  document.execCommand('copy');
+  window.getSelection().removeAllRanges();
+}
