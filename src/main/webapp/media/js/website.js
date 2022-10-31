@@ -278,5 +278,4 @@ function copyJsonResultToClipboard(element) {
   window.getSelection().addRange(r);
   document.execCommand('copy');
   window.getSelection().removeAllRanges();
-  document.getElementById(element.id).title = "Copied";
 }
