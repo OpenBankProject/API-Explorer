@@ -278,4 +278,26 @@ function copyJsonResultToClipboard(element) {
   window.getSelection().addRange(r);
   document.execCommand('copy');
   window.getSelection().removeAllRanges();
+  
+  // Below code is GUI related i.e. to notify a user that text is copied to clipboard
+  var titleText = document.getElementById(element.id).title;
+  document.getElementById(element.id).title = "";
+  var iconClass = document.getElementById(element.id).className;
+  document.getElementById(element.id).className = "fa-regular fa-copy";
+  
+  // It delays the call by ms milliseconds
+  function defer(f, ms) {
+    return function() {
+      setTimeout(() => f.apply(this, arguments), ms);
+    };
+  }
+  
+  function revertTextAndClass(titleText) {
+    document.getElementById(element.id).title = titleText;
+    document.getElementById(element.id).className = iconClass
+  }
+  
+  var revertTextAndClassDeferred = defer(revertTextAndClass, 2000);
+  revertTextAndClassDeferred(titleText); // Revert text after 2 seconds
+
 }
