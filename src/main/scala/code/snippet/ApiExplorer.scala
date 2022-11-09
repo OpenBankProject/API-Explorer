@@ -1362,9 +1362,26 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
     val glossaryItems = getGlossaryItemsJson.map(_.glossary_items).getOrElse(List())
 
+    def replaceLocale(replacement: String) = {
+      S.queryString.isDefined match {
+        case true =>
+          S.queryString.exists(_.contains("locale=")) match {
+            case true =>
+              val queryString = S.queryString
+              queryString.map(
+                _.replaceAll("locale=en_GB", replacement)
+                  .replaceAll("locale=es_ES", replacement)
+              )
+            case false =>
+              S.queryString.map(i => i + s"&$replacement")
+          }
+        case false =>
+          Full(s"$replacement")
+      }
+    }.getOrElse("")
     val cssResult = "#login_status_message" #> loggedInStatusMessage &
-    "#es [href]" #> s"""/?locale=es_ES&${S.queryString.getOrElse("") }""" &
-    "#en [href]" #> s"""/?locale=en_GB&${S.queryString.getOrElse("") }""" &
+    "#es [href]" #> s"""/?${replaceLocale("locale=es_ES")}""" &
+    "#en [href]" #> s"""/?${replaceLocale("locale=en_GB")}""" &
     "#bank_selector" #> doBankSelect _ &
     "#account_selector" #> doAccountSelect _ &
     "#view_selector" #> doViewSelect _ &
