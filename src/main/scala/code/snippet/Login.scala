@@ -41,19 +41,21 @@ import net.liftweb.common.Box
 import net.liftweb.http.js.JsCmds.Noop
 
 class Login {
-  private def loggedIn = {
-    def getDisplayNameOfUser(): Box[String] = {
-      ObpAPI.currentUser.map {
-        u =>
-          u.provider.toLowerCase() match {
-            case provider if provider.contains("google") && !u.email.isEmpty => u.email
-            case provider if provider.contains("yahoo") && !u.email.isEmpty => u.email
-            case provider if provider.contains("microsoft") && !u.email.isEmpty => u.email
-            case _                                       => u.username
-          }
-      }
+  private def getDisplayNameOfUser(): Box[String] = {
+    ObpAPI.currentUser.map {
+      u =>
+        u.provider.toLowerCase() match {
+          case provider if provider.contains("google") && !u.email.isEmpty => u.email
+          case provider if provider.contains("yahoo") && !u.email.isEmpty => u.email
+          case provider if provider.contains("microsoft") && !u.email.isEmpty => u.email
+          case _                                       => u.username
+        }
     }
-    val displayNameOfUser = getDisplayNameOfUser()
+  }
+  val displayNameOfUser = getDisplayNameOfUser()
+  
+  private def loggedIn = {
+   
     ".logged-out *" #> "" &
     ".username *" #> displayNameOfUser &
     ".display-login-name-error *" #> displayNameOfUser.toString & // Hidden field
