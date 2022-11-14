@@ -319,6 +319,7 @@
                         <scanIntervalSeconds>5</scanIntervalSeconds>
                     </configuration>
                 </plugin>
+                <!-- TODO introduce the plug-in https://blutorange.github.io/closure-compiler-maven-plugin/
                 <plugin>
                     <groupId>net.alchim31.maven</groupId>
                     <artifactId>yuicompressor-maven-plugin</artifactId>
@@ -335,6 +336,7 @@
                         <encoding>UTF-8</encoding>
                     </configuration>
                 </plugin>
+                -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-idea-plugin</artifactId>
