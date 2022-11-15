@@ -106,7 +106,11 @@ object ObpAPI extends Loggable {
     }
   }
 
-  def currentUser : Box[CurrentUserJson]= ObpGet(s"$obpPrefix/v3.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson])
+  def currentUser : Box[CurrentUserJson]= 
+    if(isLoggedIn) 
+      ObpGet(s"$obpPrefix/v3.0.0/users/current").flatMap(_.extractOpt[CurrentUserJson]) 
+    else 
+      Failure("Please Login in first.")
 
   def getRoot : Box[JValue]= ObpGet(s"$obpPrefix/v4.0.0/root")
   
@@ -185,11 +189,17 @@ object ObpAPI extends Loggable {
   }
 
   def getEntitlementsV300 : Box[EntitlementsJson] = {
-    ObpGet(s"$obpPrefix/v3.0.0/my/entitlements").flatMap(_.extractOpt[EntitlementsJson]) 
+    if (isLoggedIn)
+      ObpGet(s"$obpPrefix/v3.0.0/my/entitlements").flatMap(_.extractOpt[EntitlementsJson])
+    else
+      Failure("Please Login in first.")
   } 
 
   //Can not use the `isLoggedIn` guard here. It use for the home page, sometimes no need the authentication. 
-  def getMySpaces : Box[MySpaces] = ObpGet(s"$obpPrefix/v4.0.0/my/spaces").flatMap(_.extractOpt[MySpaces])
+  def getMySpaces : Box[MySpaces] = if (isLoggedIn)
+    ObpGet(s"$obpPrefix/v4.0.0/my/spaces").flatMap(_.extractOpt[MySpaces])
+  else
+    Failure("Please Login in first.")
   
 
   private val jsonSchemaValidationTTL: FiniteDuration = Helper.getPropsAsIntValue("json_schema_validation.cache.ttl.seconds", 3800) seconds
@@ -243,7 +253,11 @@ object ObpAPI extends Loggable {
 
 
   def getEntitlementRequestsV300 : Box[EntitlementRequestsJson] = {
-    val result = ObpGet(s"$obpPrefix/v3.0.0/my/entitlement-requests").flatMap(_.extractOpt[EntitlementRequestsJson])
+    val result = if (isLoggedIn)
+      ObpGet(s"$obpPrefix/v3.0.0/my/entitlement-requests").flatMap(_.extractOpt[EntitlementRequestsJson])
+    else
+      Failure("Please Login in first.")
+      
     logger.debug(s"We got this result for EntitlementRequestsJson: ${result}")
     result
   } 
@@ -259,11 +273,18 @@ object ObpAPI extends Loggable {
   } 
 
   def getApiCollectionEndpoints(apiCollectionName: String) : Box[ApiCollectionEndpointsJson400] = {
-    ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+    if (isLoggedIn)
+      ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/$apiCollectionName/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+    else
+      Failure("Please Login in first.")
   } 
 
   def getApiCollectionEndpointsById(apiCollectionId: String) : Box[ApiCollectionEndpointsJson400] = {
-    val response = ObpGet(s"$obpPrefix/v4.0.0/api-collections/$apiCollectionId/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+    val response = if (isLoggedIn)
+      ObpGet(s"$obpPrefix/v4.0.0/api-collections/$apiCollectionId/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
+    else
+      Failure("Please Login in first.")
+      
     if (isLoggedIn && response.toString.contains("OBP-30079")) {
       createMyApiCollection("Favourites",true)
       ObpGet(s"$obpPrefix/v4.0.0/my/api-collections/Favourites/api-collection-endpoints").flatMap(_.extractOpt[ApiCollectionEndpointsJson400])
@@ -273,7 +294,10 @@ object ObpAPI extends Loggable {
   }
 
 
-  def getMyApiCollections = ObpGet(s"$obpPrefix/v4.0.0/my/api-collections").flatMap(_.extractOpt[ApiCollectionsJson400])
+  def getMyApiCollections = if (isLoggedIn)
+    ObpGet(s"$obpPrefix/v4.0.0/my/api-collections").flatMap(_.extractOpt[ApiCollectionsJson400])
+  else
+    Failure("Please Login in first.")
   
   
   def createMyApiCollection (apiCollectionName: String, is_sharable:Boolean) = {
