@@ -8,6 +8,10 @@ import code.util.Helper.{MdcLoggable, covertObpOperationIdToWebpageId}
 import net.liftweb.json
 import net.liftweb.util.{CssSel, Html5}
 import java.net.URL
+
+import net.liftweb.http.js.JE.JsRaw
+import net.liftweb.http.js.JsExp
+
 import scala.collection.immutable.{List, Nil}
 import net.liftweb.http.{S, SHtml}
 import net.liftweb.json.JsonAST.JValue
@@ -556,6 +560,11 @@ WIP to add comments on resource docs. This code copied from Sofit.
                     |}, 28*1000)
                     |""".stripMargin.replaceAll("""[\r\n\s]+""", " ")
     Run (jsCode)
+  }  
+  def copyResultTextToClipboard(body: String): JsCmd =  {
+    val encodedJsString = body.encJs
+    val stringWithoutQuotes = encodedJsString.substring(1, encodedJsString.length - 1)
+    Run(JsRaw(s"navigator.clipboard.writeText('${stringWithoutQuotes}')").toJsCmd)
   }
 
 
@@ -1027,6 +1036,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
       Run (jsCommandShowFullHeaders) &
       Run (jsCommandShowFullRequestHeaders) &
       Run (jsEnabledSubmitBtn) &
+      // TODO Make a button to trigger this
+      // copyResultTextToClipboard(body) & // Copy the result text to a clipboard automatically
       SetHtml(fullPathTarget, Text(fullPath.toString)) &
       SetHtml(fullHeadersTarget, Text(headers)) &
       SetHtml(fullRequestHeadersTarget, Text(requestHeaders))
@@ -1142,7 +1153,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val bankOptions = banksForUser.map(b => (b.id, b.shortName + " ("  + b.id + ")" + highlightFeatured(b.isFeatured) )).sortBy(a => (a._2, a._1))
 
 
-    val selectBank = ("", "Select Bank")
+    val selectBank = ("", S.?("dropdownbox.select.bank"))
     val selectBankOptions = selectBank :: bankOptions
 
 
@@ -1194,7 +1205,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
     def getAccountOptions : List[(String,String)] = {
 
-      val selectAccount = ("", "Select Account")
+      val selectAccount = ("", S.?("dropdownbox.select.account"))
       val noneFound = ("", "") // No Accounts Found
 
       val options: List[(String, String)] = presetBankId match {
@@ -1218,8 +1229,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     def getViewOptions : List[(String,String)] = {
 
       val selectOne = OAuthClient.loggedIn match {
-        case true => ("", "Select View")
-        case false => ("", "Login for Views")
+        case true => ("", S.?("dropdownbox.select.view"))
+        case false => ("", S.?("dropdownbox.login.for.view"))
       }
 
       val noneFound = ("", "") // No Views Found
@@ -1243,8 +1254,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     def getCounterpartyOptions : List[(String,String)] = {
 
       val selectOne = OAuthClient.loggedIn match {
-        case true => ("", "Select Counterparty")
-        case false => ("", "Login for CPs")
+        case true => ("", S.?("dropdownbox.select.couterparty"))
+        case false => ("", S.?("dropdownbox.login.for.couterparty"))
       }
       val noneFound = ("", "") // No Counterparties Found
 
@@ -1274,8 +1285,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
     def getTransactionOptions : List[(String,String)] = {
 
       val selectOne = OAuthClient.loggedIn match {
-        case true => ("", "Select Transaction")
-        case false => ("", "Login for Trans")
+        case true => ("", S.?("dropdownbox.select.transaction"))
+        case false => ("", S.?("dropdownbox.login.for.transaction"))
       }
       val noneFound = ("", "") // No Transactions Found
 
@@ -1354,9 +1365,26 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
     val glossaryItems = getGlossaryItemsJson.map(_.glossary_items).getOrElse(List())
 
+    def replaceLocale(replacement: String) = {
+      S.queryString.isDefined match {
+        case true =>
+          S.queryString.exists(_.contains("locale=")) match {
+            case true =>
+              val queryString = S.queryString
+              queryString.map(
+                _.replaceAll("locale=en_GB", replacement)
+                  .replaceAll("locale=es_ES", replacement)
+              )
+            case false =>
+              S.queryString.map(i => i + s"&$replacement")
+          }
+        case false =>
+          Full(s"$replacement")
+      }
+    }.getOrElse("")
     val cssResult = "#login_status_message" #> loggedInStatusMessage &
-    "#es [href]" #> s"""/?locale=es_ES&${S.queryString.getOrElse("") }""" &
-    "#en [href]" #> s"""/?locale=en_GB&${S.queryString.getOrElse("") }""" &
+    "#es [href]" #> s"""/?${replaceLocale("locale=es_ES")}""" &
+    "#en [href]" #> s"""/?${replaceLocale("locale=en_GB")}""" &
     "#bank_selector" #> doBankSelect _ &
     "#account_selector" #> doAccountSelect _ &
     "#view_selector" #> doViewSelect _ &
@@ -1624,6 +1652,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
           //
           // Typical Success Response
           "@typical_success_response_box [id]" #> s"typical_success_response_box_${i.id}" &
+          "@result_copy_icon [id]" #> s"result_copy_icon_${i.id}" &
+          "@result_copy_icon [title]" #> S.?("clipboard.copy.text") &
           //"@typical_success_response [id]" #> s"typical_success_response_${i.id}" &
           "@typical_success_response *" #> Helper.renderJson(i.successResponseBody) & {
             // Possible Validations

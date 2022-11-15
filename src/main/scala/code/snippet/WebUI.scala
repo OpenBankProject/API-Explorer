@@ -28,7 +28,7 @@ Berlin 13359, Germany
 package code.snippet
 
 import code.lib.OBPProvider.baseUrl
-import code.util.Helper
+import code.util.{Helper, I18NUtil}
 import code.util.Helper.MdcLoggable
 import net.liftweb.http.{S, SessionVar}
 import net.liftweb.util.Helpers._
@@ -66,14 +66,18 @@ class WebUI extends MdcLoggable {
   }
 
   def headerLogoRight: CssSel = {
-    "a [href] "  #> s"$baseUrl?locale=${S.locale.toString}"  &
+    "#a [href] "  #> s"$baseUrl?locale=${S.locale.toString}"  &
     "img [src]" #> getPropsValue("webui_header_logo_right_url", "https://static.openbankproject.com/images/obp_logo_stacked.png") 
   }
 
   def currentYearText: CssSel = {
     import java.util.Calendar
     val year = Calendar.getInstance.get(Calendar.YEAR).toString
-    "#copyright-year *" #> scala.xml.Unparsed(year)
+    "a *" #> scala.xml.Unparsed(year)
+  }
+  def selectedLocale: CssSel = {
+    val language = I18NUtil.currentLocale().getLanguage()
+    s"#${language.toLowerCase()} *" #> scala.xml.Unparsed(s"<b>${language.toUpperCase()}</b>")
   }
 
   /*

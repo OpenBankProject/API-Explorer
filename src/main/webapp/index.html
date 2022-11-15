@@ -176,7 +176,7 @@
                             </li>
 
                             <li class="breadcrumbs__list" id = "index_language_tag_link">
-                                <div class="language-tag">
+                                <div class="language-tag" data-lift="WebUI.selectedLocale">
                                     <span>Language</span>
                                     <span><a id="es" href="">ES</a></span>
                                     <span>|</span>
@@ -400,6 +400,7 @@
                                 </div>
 
                                 <div name="result_box" class="content-box__info-box" style="display: none;">
+                                    <div name="result_copy_icon" style="cursor:pointer;" onclick="copyJsonResultToClipboard(this)" class="fa-solid fa-copy"></div>
 							<pre>
 								<code>
 									<div name="result"></div>
@@ -411,7 +412,7 @@
                                 </div>
 
                                 <div name="typical_success_response_box" class="content-box__info-box">
-                                    <div>Typical Successful Response:</div>
+                                    <div>Typical Successful Response</div>
                                     <br/>
                                     <pre>
 								<code>
