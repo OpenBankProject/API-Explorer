@@ -665,11 +665,14 @@ object OBPRequest extends MdcLoggable {
   def apply(apiPath : String, jsonBody : Option[JValue], method : String, headers : List[Header]) : Box[(Int, String, List[String], List[String])] = {
     logger.debug(s"before $apiPath call:")
     logger.debug(s"headers $headers of a call:")
+    
+    lazy val consentHeader = headers.map(_.key).exists(_ == "Consent-JWT") || // OBP-API endpoints
+      headers.map(_.key).exists(_ == "Consent-ID") // Berlin Group endpoints
 
     lazy val addAppAccessIfNecessary: List[Header] = {
       if(IdentityProviderRequest.integrateWithIdentityProvider) {
         tryo(obtainAccessToken) match {
-          case Full(token) if !apiPath.contains("resource-docs/OBPv5.0.0/obp") => 
+          case Full(token) if !apiPath.contains("resource-docs/OBPv5.0.0/obp") && !consentHeader => 
             Header("Authorization", s"Bearer $token") :: Nil
           case _ =>
             Nil
