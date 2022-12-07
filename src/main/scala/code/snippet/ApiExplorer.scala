@@ -676,7 +676,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   def showResources: CssSel = {
     logger.debug("before showResources:")
-    def resourceDocsRequiresRole = ObpAPI.getRoot.flatMap(_.extractOpt[APIInfoJson400].map(_.resource_docs_requires_role)).openOr(false)
+    val getRootResponse = ObpAPI.getRoot
+    val mySpaces = getMySpaces
+    
+    def resourceDocsRequiresRole = getRootResponse.flatMap(_.extractOpt[APIInfoJson400].map(_.resource_docs_requires_role)).openOr(false)
     val spaceBankId = S.param("space_bank_id").getOrElse("")
 
     // Get a list of resource docs from the API server
@@ -803,8 +806,8 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     //this can be empty list, if there is no operationIds there.
-    def webpageOperationIds = ObpAPI.getApiCollectionEndpointsById(apiCollectionId).map(_.api_collection_endpoints.map(_.operation_id)).openOr(List()).map(covertObpOperationIdToWebpageId)
-    def myWebpageOperationIds = ObpAPI.getApiCollectionEndpoints("Favourites").map(_.api_collection_endpoints.map(_.operation_id)).openOr(List()).map(covertObpOperationIdToWebpageId)
+    val webpageOperationIds = ObpAPI.getApiCollectionEndpointsById(apiCollectionId).map(_.api_collection_endpoints.map(_.operation_id)).openOr(List()).map(covertObpOperationIdToWebpageId)
+    val myWebpageOperationIds = ObpAPI.getApiCollectionEndpoints("Favourites").map(_.api_collection_endpoints.map(_.operation_id)).openOr(List()).map(covertObpOperationIdToWebpageId)
 
     // Group resources by the first tag
     val unsortedGroupedResources: Map[String, List[ResourceDocPlus]] = resources.groupBy(_.tags.headOr("ToTag"))
@@ -1130,7 +1133,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       )
 
     // Banks where a user has accounts + My Spaces + Featured Banks.
-    val userCanShowBankIds= (myBankIds++featuredBankIds.map(BankId(_))++ getMySpaces.map(_.bank_ids.map(BankId(_))).getOrElse(List.empty[BankId])).toSet
+    val userCanShowBankIds= (myBankIds++featuredBankIds.map(BankId(_))++ mySpaces.map(_.bank_ids.map(BankId(_))).getOrElse(List.empty[BankId])).toSet
     
     val banksForUser =
       if (listAllBanks) // Url param says show all.
@@ -1422,7 +1425,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         ".dropdown-item *" #> s" ${i._1} " &
           ".dropdown-item [href]" #> s"${i._2}&locale=${S.locale.toString}"
       } &
-      "@dropdown_space" #> getMySpaces.map(_.bank_ids).getOrElse(Nil).map { i =>
+      "@dropdown_space" #> mySpaces.map(_.bank_ids).getOrElse(Nil).map { i =>
         ".dropdown-item *" #> s" $i " &
           ".dropdown-item [href]" #> s"?space_bank_id=${i}&locale=${S.locale.toString}"
       } &
@@ -1755,7 +1758,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
   def showGlossary = {
 
     logger.debug("before showResources:")
-    def resourceDocsRequiresRole = ObpAPI.getRoot.flatMap(_.extractOpt[APIInfoJson400].map(_.resource_docs_requires_role)).openOr(false)
     // Get a list of resource docs from the API server
     // This will throw an exception if resource_docs key is not populated
     // Convert the json representation to ResourceDoc (pretty much a one to one mapping)
