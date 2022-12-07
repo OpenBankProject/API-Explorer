@@ -294,9 +294,7 @@ function copyJsonResultToClipboard(element) {
   // It delays the call by ms milliseconds
   function defer(f, ms) {
     return function() {
-      setTimeout(function() {
-          f.apply(this, arguments);
-      }, ms);
+      setTimeout(() => f.apply(this, arguments), ms);
     };
   }
   
