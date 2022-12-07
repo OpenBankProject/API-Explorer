@@ -1,6 +1,7 @@
 package code.lib
 
 import java.io._
+import java.net.HttpURLConnection
 import java.security.Security
 import java.text.SimpleDateFormat
 import java.util.UUID.randomUUID
@@ -687,17 +688,21 @@ object OBPRequest extends MdcLoggable {
   //returns a tuple of the status code,  response body and list of headers
   def apply(apiPath : String, jsonBody : Option[JValue], method : String, headers : List[Header]) : Box[(Int, String, List[String], List[String])] = {
     logger.debug(s"before $apiPath call:")
+    logger.debug(s"headers $headers of a call:")
+    
+    lazy val consentHeader = headers.map(_.key).exists(_ == "Consent-JWT") || // OBP-API endpoints
+      headers.map(_.key).exists(_ == "Consent-ID") // Berlin Group endpoints
 
-    def addAppAccessIfNecessary: List[Header] = {
+    lazy val addAppAccessIfNecessary: List[Header] = {
       if(IdentityProviderRequest.integrateWithIdentityProvider) {
-        if (!headers.exists(_.key == "Authorization") && !apiPath.contains("resource-docs/OBPv5.0.0/obp")) {
-          val temp = Header("Authorization", s"Bearer $obtainAccessToken") :: headers
-          temp
-        } else {
-          headers
+        tryo(obtainAccessToken) match {
+          case Full(token) if !apiPath.contains("resource-docs/OBPv5.0.0/obp") && !consentHeader => 
+            Header("Authorization", s"Bearer $token") :: Nil
+          case _ =>
+            Nil
         }
       } else {
-        headers
+        Nil
       }
     }
     
@@ -726,18 +731,21 @@ object OBPRequest extends MdcLoggable {
       request.setRequestProperty("Accept", "application/json")
       request.setRequestProperty("Accept-Charset", "UTF-8")
 
-      //sign the request if we have some credentials to sign it with
-      credentials.foreach(c => c.consumer.sign(request))
-      
-      addAppAccessIfNecessary.foreach(header => request.setRequestProperty(header.key, header.value))
 
       // Please note that this MUST be called before we set the body of our request
       // Otherwise it can fail due to IllegalStateException("Already connected")
       // In the end we cannot see info at Request Header's Box at API Explorer 
-      val requestHeaders = tryo {
-          addAppAccessIfNecessary.map(header => (header.key, Set(header.value))) :::
+      val requestHeaders = credentials match {
+        case None => // Application access(Client Credentials)
+          addAppAccessIfNecessary.foreach(header => request.setRequestProperty(header.key, header.value))
+          (addAppAccessIfNecessary ::: headers).map(header => (header.key, Set(header.value))) :::
             request.getRequestProperties().asScala.mapValues(_.asScala.toSet).toList
-      }.getOrElse(Nil)
+        case Some(credential) => // User access; sign the request if we have some credentials to sign it with
+          credential.consumer.sign(request)
+          headers.map(header => (header.key, Set(header.value))) :::
+            request.getRequestProperties().asScala.mapValues(_.asScala.toSet).toList
+      }
+      headers.foreach(header => request.setRequestProperty(header.key, header.value))
 
       //Set the request body
       if(jsonBody.isDefined) {
