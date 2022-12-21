@@ -58,6 +58,7 @@ object ObpAPI extends Loggable {
   final val UnknownErrorMessage = "Unknown Error!"
   final val OBPVersionV400 = "OBPv4.0.0"
   final val OBPVersionV500 = "OBPv5.0.0"
+  final val OBPVersionV510 = "OBPv5.1.0"
   final val UKVersionV31 = "UKv3.1"
   final val UKVersionV20 = "UKv2.0"
   final val BGVersionV13 = "BGv1.3"
