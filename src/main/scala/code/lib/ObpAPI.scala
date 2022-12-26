@@ -692,6 +692,7 @@ object OBPRequest extends MdcLoggable {
     logger.debug(s"headers $headers of a call:")
     
     lazy val consentHeader = headers.map(_.key).exists(_ == "Consent-JWT") || // OBP-API endpoints
+      headers.map(_.key).exists(_ == "Consent-Id") || // OBP-API endpoints
       headers.map(_.key).exists(_ == "Consent-ID") // Berlin Group endpoints
 
     lazy val addAppAccessIfNecessary: List[Header] = {
