@@ -347,7 +347,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   val defaultVersion: String = Helper.getPropsValue("default.version") match {
     case Full(v)  => v
-    case _ => OBPVersionV500
+    case _ => OBPVersionV510
   }
 
     // Get the requested version from the url parameter and default if none
@@ -373,6 +373,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       "OBPv3.1.0",
       OBPVersionV400,
       OBPVersionV500,
+      OBPVersionV510,
       UKVersionV31,
       BGVersionV13,
       STETv14,
