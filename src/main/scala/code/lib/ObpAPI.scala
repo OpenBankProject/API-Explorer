@@ -941,28 +941,36 @@ object APIUtils extends MdcLoggable {
   implicit val formats = DefaultFormats
 
   def getAPIResponseBody(responseCode : Int, body : String) : Box[JValue] = {
+    logger.debug("Before getAPIResponseBody(String ->JValue): ")
+    processApiResponse(responseCode, body)
+  }
+  def deleteApiResponse(responseCode : Int, body : String) : Box[JValue] = {
+    processApiResponse(responseCode, body)
+  }
+
+  private def processApiResponse(responseCode: Int, body: String) = {
+    val jvalueBox = tryo {
+      parse(body)
+    }
     responseCode match {
-      case 200 | 201 | 202 |204 => 
-        logger.debug("Before getAPIResponseBody(String ->JValue): ")
-        val jvalue = tryo{parse(body)}
+      case 200 | 201 | 202 | 204 =>
         logger.debug("After getAPIResponseBody(String -> JValue): ")
-        jvalue
-      case _ => {
+        jvalueBox
+      case _ =>
         val failMsg = "Bad response code (" + responseCode + ") from OBP API server: " + body
         logger.warn(failMsg)
-        Failure(Helper.renderJson(parse(body)))
-      }
+        if (jvalueBox.isDefined) {
+          Failure(Helper.renderJson(jvalueBox.head))
+        } else {
+          Failure(Helper.renderJson(parse(
+            s"""{
+              "http_code": $responseCode
+              "details": "Resource Not Found .Sorry, we couldn't find the page you were looking for. Maybe this is because you don't have the right permissions."
+            }""")))
+        }
     }
   }
-  def deleteApiResponse(responseCode : Int, result : String) : Box[JValue] = {
-    responseCode match {
-      case 200 | 201 | 202 |204 =>
-        Full(JBool(true))
-      case _ => val failMsg = "Bad response code (" + responseCode + ") from OBP API server: " + result
-        logger.warn(failMsg)
-        Failure(Helper.renderJson(parse(result)))
-    }
-  }
+
   def apiResponseWorked(responseCode : Int, result : String) : Boolean = {
     responseCode match {
       case 200 | 201 | 202 |204 => true
