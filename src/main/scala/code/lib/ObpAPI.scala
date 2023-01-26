@@ -750,7 +750,7 @@ object OBPRequest extends MdcLoggable {
       headers.foreach(header => request.setRequestProperty(header.key, header.value))
 
       //Set the request body
-      if(jsonBody.isDefined) {
+      if(jsonBody.isDefined && jsonBody.head != JNothing) {
         val output = request.getOutputStream()
         val writer = new BufferedWriter(new OutputStreamWriter(output, "UTF-8"))
         writer.write(compact(render(jsonBody.get)).toString)
@@ -832,6 +832,8 @@ object ObpPutWithHeader {
   def apply(apiPath: String, json : JValue, headers : List[Header] = Nil): (Box[JValue], List[String], List[String]) = {
     OBPRequest(apiPath, Some(json), "PUT", headers) match {
       case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3, value._4)
+      case Failure(msg, exception, chain) => (Failure(msg), Nil,Nil)
+      case _ => (Failure(UnknownErrorMessage),Nil,Nil)
     }
   }
 }
@@ -853,6 +855,8 @@ object ObpPostWithHeader {
     }
     OBPRequest(apiPath, requestBody, "POST", headers) match {
       case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3, value._4)
+      case Failure(msg, exception, chain) => (Failure(msg), Nil, Nil)
+      case _ => (Failure(UnknownErrorMessage), Nil, Nil)
     }
   }
 }
@@ -886,6 +890,8 @@ object ObpDeleteWithHeader {
   def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String], List[String]) = {
     OBPRequest(apiPath, None, "DELETE", headers) match {
       case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3, value._4)
+      case Failure(msg, exception, chain) => (Failure(msg), Nil, Nil)
+      case _ => (Failure(UnknownErrorMessage), Nil, Nil)
     }
   }
 }
@@ -925,6 +931,8 @@ object ObpGetWithHeader {
   def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String], List[String]) = {
     OBPRequest(apiPath, None, "GET", headers) match {
       case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3, value._4)
+      case Failure(msg, exception, chain) => (Failure(msg), Nil, Nil)
+      case _ => (Failure(UnknownErrorMessage), Nil, Nil)
     }
   }
 }
@@ -933,6 +941,8 @@ object ObpHeadWithHeader {
   def apply(apiPath: String, headers : List[Header] = Nil): (Box[JValue], List[String], List[String]) = {
     OBPRequest(apiPath, None, "HEAD", headers) match {
       case Full(value) => (APIUtils.getAPIResponseBody(value._1, value._2), value._3, value._4)
+      case Failure(msg, exception, chain) => (Failure(msg), Nil, Nil)
+      case _ => (Failure(UnknownErrorMessage), Nil, Nil)
     }
   }
 }
