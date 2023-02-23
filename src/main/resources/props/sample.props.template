@@ -179,3 +179,7 @@ dev.port=8082
 # oauth2.jwk_private_key=
 # Example of the above value: {"kty":"EC","d":"mQ6yDqYB84z027rZoKnr9JIloX7QqyM0QDScHmWIb-s","use":"sig","crv":"P-256","kid":"c14e9b43-d69b-431e-a90b-eac0dd2e59f8","x":"mNBOFk1w7EYZ194LPCKlNn-NbflCkdxPHGh3VmCj13U","y":"4oXertw5ECdy_ApfG_LG5n92Q9-QlPr9Bt3eM_Z9DeI","alg":"ES256"}
 # ------------------------------ Identity Provider OAuth2 Props end --------------------------
+
+
+# Please note that depricated name ot this props is: language_tag
+default_locale = en_GB
