@@ -17,7 +17,7 @@ object I18NUtil {
   }
 
   def getLocale(): Locale = Locale.getAvailableLocales().toList.filter { l =>
-    l.toLanguageTag == Props.get("language_tag", "en-GB")
+    l.toLanguageTag == Props.get("default_locale", "en-GB")
   }.headOption.getOrElse(Locale.ENGLISH)
 
   def currentLocale() : Locale = {
