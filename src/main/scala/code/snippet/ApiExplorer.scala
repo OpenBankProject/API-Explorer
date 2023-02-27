@@ -864,6 +864,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     val showIndexObpApiManagementLink = Helper.getPropsValue("webui_show_index_obp_api_management_link", "true").toBoolean
+    val showIndexApiManagerLink= Helper.getPropsValue("webui_show_index_api_manager_link", "true").toBoolean
     val showIndexObpUserManagementLink = Helper.getPropsValue("webui_show_index_obp_user_management_link", "true").toBoolean
     val showIndexAllObpLink = Helper.getPropsValue("webui_show_index_obp_all_link", "true").toBoolean
     val showIndexDynamicLink = Helper.getPropsValue("webui_show_index_dynamic_link", "true").toBoolean
@@ -874,6 +875,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val consentFlowLink = Helper.getPropsValue("consent_flow_link", "")
     
     val displayIndexObpApiManagementLink = if (showIndexObpApiManagementLink ) {""} else {"none"}
+    val displayIndexApiManagerLink = if (showIndexApiManagerLink ) {""} else {"none"}
     val displayIndexObpUserManagementLink = if (showIndexObpUserManagementLink ) {""} else {"none"}
     val displayIndexAllObpLink = if (showIndexAllObpLink ) {""} else {"none"}
     val displayIndexDynamicLink = if (showIndexDynamicLink ) {""} else {"none"}
@@ -1455,6 +1457,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "#consent_flow_link [href]" #> s"$consentFlowLink?locale=${S.locale.toString}" & 
     "#api_home_link [href]" #> s"$apiPortalHostname?locale=${S.locale.toString}" &
     "#api_manager_link [href]" #> s"$apiManagerUrl?locale=${S.locale.toString}" &
+    "#api_manager_link [style]"  #> s"display: $displayIndexApiManagerLink;" &
     "@views_box [style]" #> s"display: $displayViews;" &
     "@favourites_group_item [style]" #> s"display: $displayCollectionsDiv;" &
     // Show / hide featured
