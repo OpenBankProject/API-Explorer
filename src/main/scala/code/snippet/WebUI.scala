@@ -76,8 +76,8 @@ class WebUI extends MdcLoggable {
     "a *" #> scala.xml.Unparsed(year)
   }
   def selectedLocale: CssSel = {
-    val language = I18NUtil.currentLocale().getLanguage()
-    s"#${language.toLowerCase()} *" #> scala.xml.Unparsed(s"<b>${language.toUpperCase()}</b>")
+    val localeLanguage = I18NUtil.currentLocale().getLanguage()
+    s"#${localeLanguage.toLowerCase()} *" #> scala.xml.Unparsed(s"<b>${localeLanguage.toUpperCase()}</b>")
   }
 
   /*
