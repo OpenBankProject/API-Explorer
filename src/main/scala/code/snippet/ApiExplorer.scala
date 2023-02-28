@@ -192,9 +192,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   logger.info(s"rawTagsParam is $rawTagsParam")
 
-  val rawLanguageParam = S.param("language")
+  val localeParam = S.param("locale")
 
-  logger.info(s"rawLanguageParam is $rawLanguageParam")
+  logger.info(s"localeParam is $localeParam")
 
   def apiCollectionIdParamString = if (apiCollectionIdParam.isEmpty) "" else "&api-collection-id=" + apiCollectionIdParam.mkString(",")
 
@@ -204,9 +204,9 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
   logger.info(s"tagsParamString is $rawTagsParam")
 
-  val languagesParamString = if (rawLanguageParam.isEmpty) "" else "&language=" + rawLanguageParam.mkString(",")
+  val localeParamString = if (localeParam.isEmpty) "" else "&locale=" + localeParam.mkString(",")
 
-  logger.info(s"languagesParamString is $languagesParamString")
+  logger.info(s"localeParamString is $localeParamString")
 
   val rawContentParam = S.param("content")
 
@@ -244,7 +244,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     case _ => ""
   }
 
-  val languageHeadline : String = rawLanguageParam match {
+  val localeHeadline : String = localeParam match {
     case Full(x) => x
     case _ => ""
   }
@@ -441,13 +441,13 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val baseVersionUrl = s"${OAuthClient.currentApiBaseUrl}"
 
     // Link to the API endpoint for the resource docs json TODO change apiVersion so it doesn't have a "v" prefix
-    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?${tagsParamString}${languagesParamString}${contentParamString}"
+    val resourceDocsPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/obp?${tagsParamString}${localeParamString}${contentParamString}"
 
   // Link to the API endpoint for the swagger json
-  val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?${tagsParamString}${languagesParamString}${contentParamString}"
+  val swaggerPath = s"${OAuthClient.currentApiBaseUrl}/obp/v1.4.0/resource-docs/${apiVersion.stripPrefix("v")}/swagger?${tagsParamString}${localeParamString}${contentParamString}"
 
-  val chineseVersionPath = "?language=zh"
-  val allPartialFunctions = s"/partial-functions.html?${apiVersionParamString}${tagsParamString}${languagesParamString}${contentParamString}"
+  val chineseVersionPath = "?locale=zh_CN"
+  val allPartialFunctions = s"/partial-functions.html?${apiVersionParamString}${tagsParamString}${localeParamString}${contentParamString}"
 
   //Note > this method is only for partial-functions.html .
   def showPartialFunctions =  {
@@ -834,7 +834,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Title / Headline we display including count of APIs
     val headline : String = s"""
       ${apiVersionRequested.stripPrefix("OBP").stripPrefix("BG").stripPrefix("STET").stripPrefix("UK")}
-      $tagsHeadline $languageHeadline $contentHeadline $implementedHereHeadline (${resources.length} APIs)
+      $tagsHeadline $localeHeadline $contentHeadline $implementedHereHeadline (${resources.length} APIs)
       """.trim()
 
 
@@ -864,6 +864,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
 
 
     val showIndexObpApiManagementLink = Helper.getPropsValue("webui_show_index_obp_api_management_link", "true").toBoolean
+    val showIndexApiManagerLink= Helper.getPropsValue("webui_show_index_api_manager_link", "true").toBoolean
     val showIndexObpUserManagementLink = Helper.getPropsValue("webui_show_index_obp_user_management_link", "true").toBoolean
     val showIndexAllObpLink = Helper.getPropsValue("webui_show_index_obp_all_link", "true").toBoolean
     val showIndexDynamicLink = Helper.getPropsValue("webui_show_index_dynamic_link", "true").toBoolean
@@ -874,6 +875,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val consentFlowLink = Helper.getPropsValue("consent_flow_link", "")
     
     val displayIndexObpApiManagementLink = if (showIndexObpApiManagementLink ) {""} else {"none"}
+    val displayIndexApiManagerLink = if (showIndexApiManagerLink ) {""} else {"none"}
     val displayIndexObpUserManagementLink = if (showIndexObpUserManagementLink ) {""} else {"none"}
     val displayIndexAllObpLink = if (showIndexAllObpLink ) {""} else {"none"}
     val displayIndexDynamicLink = if (showIndexDynamicLink ) {""} else {"none"}
@@ -1088,7 +1090,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
 
-    val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${tagsParamString}${languagesParamString}${contentParamString}${apiCollectionIdParamString}"
+    val thisApplicationUrl = s"${CurrentReq.value.uri}?version=${apiVersionRequested}&list-all-banks=${listAllBanks}${tagsParamString}${localeParamString}${contentParamString}${apiCollectionIdParamString}"
 
 
     val obpVersionUrls: List[(String, String)] = obpVersionsSupported.map(i => (i.replace("OBPv", "v"), s"?version=${i}&list-all-banks=${listAllBanks}"))
@@ -1455,6 +1457,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     "#consent_flow_link [href]" #> s"$consentFlowLink?locale=${S.locale.toString}" & 
     "#api_home_link [href]" #> s"$apiPortalHostname?locale=${S.locale.toString}" &
     "#api_manager_link [href]" #> s"$apiManagerUrl?locale=${S.locale.toString}" &
+    "#api_manager_link [style]"  #> s"display: $displayIndexApiManagerLink;" &
     "@views_box [style]" #> s"display: $displayViews;" &
     "@favourites_group_item [style]" #> s"display: $displayCollectionsDiv;" &
     // Show / hide featured
