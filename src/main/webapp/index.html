@@ -412,7 +412,9 @@
                                 </div>
 
                                 <div name="typical_success_response_box" class="content-box__info-box">
-                                    <div>Typical Successful Response</div>
+                                    <div>
+                                        <lift:loc locid="typical_successful_response">Typical Successful Response:</lift:loc>
+                                    </div>
                                     <br/>
                                     <pre>
 								<code>
@@ -439,8 +441,7 @@
 
 
                                 <div name="roles_box" class="content-box__info-box">
-                                    <div>Required Roles:</div>
-
+                                    <div><lift:loc locid="required_roles">Required Roles:</lift:loc></div>
                                     <ul name="roles_list">
                                         <li class="role_item"> <!-- we generate multiple of these -->
 
@@ -482,7 +483,7 @@
 
 
                                 <div name="possible_validations_box" class="content-box__info-box">
-                                    Validations:
+                                    <lift:loc locid="validations_box_validations">Validations:</lift:loc>
                                     <ul>
                                         <li>Required JSON Validation: <span class="required_json_validation">Yes</span></li>
                                         <li>Allowed Authentication Types: <span class="allowed_authentication_types">["DirectLogin","OAuth1.0a","OAuth2_OIDC_FAPI"]</span></li>
@@ -490,7 +491,7 @@
                                 </div>
 
                                 <div name="possible_error_responses_box" class="content-box__info-box">
-                                    Possible Errors:
+                                    <lift:loc locid="responses_box_possible_errors">Possible Errors:</lift:loc>
                                     <ul>
                                         <li class="possible_error_item">
                                             Possible Error Item
@@ -499,7 +500,7 @@
                                 </div>
 
                                 <div id="connector_methods_box" class="content-box__info-box">
-                                    Connector Methods:
+                                    <lift:loc locid="methods_box_connector_methods">Connector Methods:</lift:loc>
                                     <ul>
                                         <li class="connector_method_item">
                                             <a name="connector_method_item_link" class="connector_method_item_link"
