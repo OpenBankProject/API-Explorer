@@ -244,11 +244,6 @@ WIP to add comments on resource docs. This code copied from Sofit.
     case _ => ""
   }
 
-  val localeHeadline : String = localeParam match {
-    case Full(x) => x
-    case _ => ""
-  }
-
   val contentHeadline : String = rawContentParam match {
     case Full(x) => x
     case _ => ""
@@ -834,7 +829,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     // Title / Headline we display including count of APIs
     val headline : String = s"""
       ${apiVersionRequested.stripPrefix("OBP").stripPrefix("BG").stripPrefix("STET").stripPrefix("UK")}
-      $tagsHeadline $localeHeadline $contentHeadline $implementedHereHeadline (${resources.length} APIs)
+      $tagsHeadline $contentHeadline $implementedHereHeadline (${resources.length} APIs)
       """.trim()
 
 
