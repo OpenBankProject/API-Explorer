@@ -1429,7 +1429,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       } &
     ".info-box__headline *" #> s"$headline"  &
     "@version_path *" #> s"$baseVersionUrl" &
-    "@version_path [href]" #> s"$baseVersionUrl&locale=${S.locale.toString}" &
+    "@version_path [href]" #> s"$baseVersionUrl?locale=${S.locale.toString}" &
     "@resource_docs_path [href]" #> s"$resourceDocsPath&locale=${S.locale.toString}" &
     "@swagger_path [href]" #> s"$swaggerPath&locale=${S.locale.toString}" &
     "@git_commit [href]" #> s"https://github.com/OpenBankProject/API-Explorer/commit/$currentGitCommit" &
