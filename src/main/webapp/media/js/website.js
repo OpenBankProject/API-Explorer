@@ -279,7 +279,7 @@ function copyJsonResultToClipboard(element) {
   r.selectNode(document.getElementById(id));
   window.getSelection().removeAllRanges();
   window.getSelection().addRange(r);
-  document.execCommand('copy');
+  navigator.clipboard.writeText(window.getSelection().toString());
   window.getSelection().removeAllRanges();
   // Store original values
   var titleText = document.getElementById(element.id).title;
