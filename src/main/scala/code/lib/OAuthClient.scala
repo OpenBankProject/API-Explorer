@@ -189,10 +189,20 @@ object OAuthClient extends MdcLoggable {
     logger.debug("redirect says: credential.provider: " + credential.provider)
     logger.debug("redirect says: oauthcallbackUrl: " + oauthcallbackUrl)
     credential.consumer.setMessageSigner(new HmacSha256MessageSigner())
-    val authUrl = provider.oAuthProvider.retrieveRequestToken(credential.consumer, oauthcallbackUrl)
-    logger.debug("redirect says: authUrl: " + authUrl)
+    val authUrlBox = tryo {provider.oAuthProvider.retrieveRequestToken(credential.consumer, oauthcallbackUrl)}
+
+    if(authUrlBox.isInstanceOf[Failure]) {
+      val errorMessage = "Critical exception happened on the backend: " + authUrlBox.asInstanceOf[Failure].messageChain
+      logger.error(errorMessage)
+      throw new Exception(errorMessage)
+    } else if(authUrlBox.isEmpty){
+      logger.error("Critical exception happened on backend: oauth callback Url is empty! Please check the consumer key and secret first.")
+      throw new Exception("Critical exception happened on backend: oauth callback Url is empty! Please check the consumer key and secret first.")
+    } else{
+      logger.debug("redirect says: authUrlBox: " + authUrlBox.head)
+      S.redirectTo(authUrlBox.head)
+    }
     
-    S.redirectTo(authUrl)
   }
 
   def redirectToConnectBankAccount() = {

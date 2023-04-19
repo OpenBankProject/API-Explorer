@@ -35,10 +35,10 @@ package code.snippet
 import net.liftweb.http.js.JsCmd
 import net.liftweb.util.Helpers
 import Helpers._
-import net.liftweb.http.SHtml
+import net.liftweb.http.{ResponseShortcutException, SHtml}
 import code.lib.{OAuthClient, ObpAPI}
 import net.liftweb.common.Box
-import net.liftweb.http.js.JsCmds.Noop
+import net.liftweb.http.js.JsCmds.{Alert, Noop}
 
 class Login {
   private def getDisplayNameOfUser(): Box[String] = {
@@ -69,8 +69,17 @@ class Login {
     ".logged-in *" #> "" &
     "#start-login [onclick]" #> {
       def actionJS: JsCmd = {
-        OAuthClient.redirectToOauthLogin()
-        Noop
+        try {
+          OAuthClient.redirectToOauthLogin()
+        }
+        catch {
+              //this is the Liftweb redirect mechanism, it will throw the ResponseShortcutException.
+          case e: ResponseShortcutException =>
+            OAuthClient.redirectToOauthLogin()
+            Noop
+          case e: Throwable =>
+            Alert(e.getMessage)
+        }
       }
       SHtml.onEvent((s: String) => actionJS)
     }
