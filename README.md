@@ -133,3 +133,27 @@ api_hostname=http://127.0.0.1:8080
 obp_consumer_key=uodsifnodsfifdsliufdsliufdsfdsfsdfsx \
 obp_secret_key=iuesbfiyvglxzgifg7eisgei7fglesfi \
 base_url=http://localhost:8082
+
+## The list of Endpoints that API Explorer needs to function
+
+### Before Login:
+Get API Info (root): /obp/v4.0.0/root \
+Get Banks: /obp/v3.1.0/banks \
+Get Resource Docs: /obp/v4.0.0/resource-docs/OBPv5.1.0/obp \
+Get Glossary of the API: /obp/v3.0.0/api/glossary \
+Get all Authentication Type Validations - public: /obp/v4.0.0/endpoints/authentication-type-validations \
+Get all JSON Schema Validations: /obp/v4.0.0/endpoints/json-schema-validations \
+Get Message Docs: /obp/v2.2.0/message-docs/CONNECTOR
+
+### After Login
+Oauth1.0: /oauth/initiate \
+Oauth1.0: /oauth/token
+
+Get private accounts at all banks (Authenticated access): /obp/v1.2.1/accounts/private \
+Get Entitlements for the current User: /obp/v3.0.0/my/entitlements \
+Get Entitlement Requests for the current User: /obp/v3.0.0/my/entitlement-requests \
+Get My Spaces: /obp/v4.0.0/my/spaces \
+Get Api Collection Endpoints: /obp/v4.0.0/api-collections//api-collection-endpoints \
+Get My Api Collection Endpoints: /obp/v4.0.0/my/api-collections/Favourites/api-collection-endpoints \
+Get My Api Collections: /obp/v4.0.0/my/api-collections \
+Get User (Current): /obp/v3.0.0/users/current
