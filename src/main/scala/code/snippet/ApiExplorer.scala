@@ -1046,7 +1046,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       val jsEnabledBtn = s"jQuery('input[name=$name]').removeAttr('disabled')"
       //We call the getApiCollectionsForCurrentUser endpoint again, to make sure we already created or delete the record there.
       val apiFavouriteCollection = ObpAPI.getApiCollection("Favourites")
-      val errorMessage = if(apiFavouriteCollection.isInstanceOf[Failure]) apiFavouriteCollection.asInstanceOf[Failure].messageChain else ""
+      val errorMessage = if(apiFavouriteCollection.isInstanceOf[Failure]) "Error happened on backend: "+apiFavouriteCollection.asInstanceOf[Failure].messageChain else ""
 
       
       if(apiFavouriteCollection.isInstanceOf[Failure]){ // If the user is not logged in, we do not need call any apis calls. (performance enhancement)
@@ -1060,7 +1060,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
           }else{
             if (myWebpageOperationIds.contains(favouritesOperationIdFromWebpage)) { //If we already have this operationId, we need to delete it
               val deletedBox = ObpAPI.deleteMyApiCollectionEndpoint("Favourites",favouritesOperationIdFromWebpage)
-              val deleteErrorMessage = if(deletedBox.isInstanceOf[Failure]) deletedBox.asInstanceOf[Failure].messageChain else ""
+              val deleteErrorMessage = if(deletedBox.isInstanceOf[Failure]) "Error happened on backend: "+ deletedBox.asInstanceOf[Failure].messageChain else ""
               if (deletedBox.isInstanceOf[Failure]){
                 SetHtml(s"favourites_error_message_${favouritesOperationIdFromWebpage}", Text(deleteErrorMessage)) &
                   Run(jsEnabledBtn)
@@ -1069,7 +1069,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
               }
             } else {//If we do not have this operationId, we need to create it.
               val createdBox = ObpAPI.createMyApiCollectionEndpoint("Favourites",favouritesOperationIdFromWebpage)
-              val createdErrorMessage = if(createdBox.isInstanceOf[Failure]) createdBox.asInstanceOf[Failure].messageChain else ""
+              val createdErrorMessage = if(createdBox.isInstanceOf[Failure]) "Error happened on backend: "+ createdBox.asInstanceOf[Failure].messageChain else ""
               if (createdBox.isInstanceOf[Failure]){
                 SetHtml(s"favourites_error_message_${favouritesOperationIdFromWebpage}", Text(createdErrorMessage)) &
                   Run(jsEnabledBtn)
@@ -1565,7 +1565,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
       ResourceStyleCss #> s"${DisplayEqualNone}" &
         ResourceErrorStyleCss #> s"${DisplayEqualBlock}" &
         ContentBoxHeadline #> {
-          allResourcesBox.asInstanceOf[Failure].msg
+          "Error happened on backend: "+allResourcesBox.asInstanceOf[Failure].msg
         }&
         {
           if(allResourcesBox.asInstanceOf[Failure].msg.contains("CanReadResourceDoc")){
