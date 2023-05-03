@@ -8,9 +8,6 @@
 # The base url of the api to use (e.g. https://apisandbox.openbankproject.com)
 api_hostname=FILL_ME_IN
 
-# For now, this value should be identical to the value of api_hostname
-defaultAuthProvider=FILL_ME_IN
-
 # These are the oauth keys obtained from the api (at /consumer-registration)
 obp_consumer_key=FILL_ME_IN
 obp_secret_key=FILL_ME_IN

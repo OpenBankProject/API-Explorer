@@ -166,10 +166,6 @@ class Boot extends MdcLoggable{
       firstChoicePropsDir.toList.flatten ::: secondChoicePropsDir.toList.flatten
     }
 
-    if(Helper.getPropsValue("defaultAuthProvider").isEmpty) {
-      throw new Exception("defaultAuthProvider must be specified in the props file!")
-    }
-
     def check(bool: Boolean) : Box[LiftResponse] = {
       if(bool){
         Empty
