@@ -477,10 +477,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val requestHeader = customRequestHeader.trim.isEmpty match {
       case true => Nil
       case false =>
-        customRequestHeader.split("::").map(_.trim).map {
+        customRequestHeader.split(":::").map(_.trim).map {
           i =>
-            val key = i.split(":").toList.head
-            val value = i.split(":").toList.reverse.head
+            val key = i.split("::").toList.head
+            val value = i.split("::").toList.reverse.head
             Header(key, value)
         }.toList
     }
