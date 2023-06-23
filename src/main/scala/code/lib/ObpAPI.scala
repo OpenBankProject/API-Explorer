@@ -46,8 +46,6 @@ object ObpAPI extends Loggable {
   implicit val formats = DefaultFormats
   val dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
   
-  val defaultProvider = Helper.getPropsValue("defaultAuthProvider").getOrElse("")
-  
   val userNotFoundError = "user (\\S+) at provider (\\S+) not found".r
 
   final val AccountUrlPath = "/accounts/"
