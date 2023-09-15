@@ -477,10 +477,10 @@ WIP to add comments on resource docs. This code copied from Sofit.
     val requestHeader = customRequestHeader.trim.isEmpty match {
       case true => Nil
       case false =>
-        customRequestHeader.split("::").map(_.trim).map {
+        customRequestHeader.split(":::").map(_.trim).map {
           i =>
-            val key = i.split(":").toList.head
-            val value = i.split(":").toList.reverse.head
+            val key = i.split("::").toList.head
+            val value = i.split("::").toList.reverse.head
             Header(key, value)
         }.toList
     }
@@ -1908,13 +1908,18 @@ WIP to add comments on resource docs. This code copied from Sofit.
   /*
     Return the git commit. If we can't for some reason (not a git root etc) then log and return ""
    */
-  def gitCommit : String = {
+  lazy val gitCommit : String = {
     val commit = try {
       val properties = new java.util.Properties()
       logger.debug("Before getResourceAsStream git.properties")
-      properties.load(getClass().getClassLoader().getResourceAsStream("git.properties"))
-      logger.debug("Before get Property git.commit.id")
-      properties.getProperty("git.commit.id", "")
+      val stream = getClass().getClassLoader().getResourceAsStream("git.properties")
+      try {
+        properties.load(stream)
+        logger.debug("Before get Property git.commit.id")
+        properties.getProperty("git.commit.id", "")
+      } finally {
+        stream.close()
+      }
     } catch {
       case e : Throwable => {
         logger.warn("gitCommit says: Could not return git commit. Does resources/git.properties exist?")
