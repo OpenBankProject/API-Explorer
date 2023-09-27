@@ -237,5 +237,8 @@ class Boot extends MdcLoggable{
     LiftRules.uriNotFound.prepend(NamedPF("404handler"){ case (req,failure) =>
       NotFoundAsTemplate(ParsePath(List("404"),"html",true,false)) })
 
+    // Used in order to allow to override the Host header where using java's HttpUrlConnection class
+    System.setProperty("sun.net.http.allowRestrictedHeaders", "true")
+
   }
 }

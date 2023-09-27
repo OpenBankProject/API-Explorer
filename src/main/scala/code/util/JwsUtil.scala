@@ -151,7 +151,7 @@ object JwsUtil extends MdcLoggable {
     val digest = "SHA-256=" + computeDigest(body.getOrElse(""))
     // The payload which will not be encoded and must be passed to
     // the JWS consumer in a detached manner
-    val host = Helper.getPropsValue("api_hostname", S.hostName)
+    val host = Helper.getPropsValue("base_url", S.hostName)
     val detachedPayload: Payload = new Payload(
       s"""($requestResponse): ${verb.toLowerCase} ${url}
          |host: ${host}
@@ -202,7 +202,7 @@ object JwsUtil extends MdcLoggable {
 
     List(HTTPParam("x-jws-signature", List(jws)), HTTPParam("digest", List(digest))) :::
     List(
-      HTTPParam("host", List(host)),
+      HTTPParam("Host", List(host)),
       HTTPParam("content-type", List(contentType)),
       HTTPParam("psu-ip-address", List(psuIpAddress.getOrElse("None"))),
       HTTPParam("psu-geo-location", List(psuGeoLocation.getOrElse("None")))
