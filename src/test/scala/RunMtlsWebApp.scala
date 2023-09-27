@@ -46,10 +46,10 @@ object RunMtlsWebApp extends App {
     https.addCustomizer(new SecureRequestCustomizer)
 
     val sslContextFactory = new SslContextFactory()
-    sslContextFactory.setKeyStorePath(this.getClass.getResource("/cert/server.jks").toExternalForm)
+    sslContextFactory.setKeyStorePath(this.getClass.getResource("/cert/qc_keystore.jks").toExternalForm)
     sslContextFactory.setKeyStorePassword("123456")
 
-    sslContextFactory.setTrustStorePath(this.getClass.getResource("/cert/server.trust.jks").toExternalForm)
+    sslContextFactory.setTrustStorePath(this.getClass.getResource("/cert/new_server.trust.jks").toExternalForm)
     sslContextFactory.setTrustStorePassword("123456")
     sslContextFactory.setNeedClientAuth(true)
 

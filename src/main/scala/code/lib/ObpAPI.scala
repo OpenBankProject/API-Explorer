@@ -9,7 +9,7 @@ import java.util.{Date, UUID}
 
 import code.lib.ObpAPI.UnknownErrorMessage
 import code.lib.ObpJson._
-import code.util.Helper
+import code.util.{Helper, JwsUtil}
 import code.util.Helper.{MdcLoggable, covertWebpageIdToObpOperationId}
 import code.util.cache.Caching
 import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton
@@ -706,6 +706,16 @@ object OBPRequest extends MdcLoggable {
       }
     }
     
+    lazy val addJwsIfNecessary: List[Header] = {
+      if(JwsUtil.forceVerifyRequestSignResponse(apiPath)) {
+        val body = jsonBody.map(i => compact(render(i)))
+        val headers = JwsUtil.signRequest(body, method, apiPath, "application/json;charset=UTF-8")
+        headers.map(i => Header(key = i.name, value = i.values.mkString(",")))
+      } else {
+        Nil
+      }
+    }
+    
     lazy val statusAndBody = tryo {
       val credentials = OAuthClient.getAuthorizedCredential
       val apiUrl = OAuthClient.currentApiBaseUrl
@@ -727,7 +737,7 @@ object OBPRequest extends MdcLoggable {
       val request = SSLHelper.getConnection(url) //blagh!
       request.setDoOutput(true)
       request.setRequestMethod(method)
-      request.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
+      request.setRequestProperty("content-type", "application/json;charset=utf-8")
       request.setRequestProperty("Accept", "application/json")
       request.setRequestProperty("Accept-Charset", "UTF-8")
 
@@ -738,11 +748,13 @@ object OBPRequest extends MdcLoggable {
       val requestHeaders = credentials match {
         case None => // Application access(Client Credentials)
           addAppAccessIfNecessary.foreach(header => request.setRequestProperty(header.key, header.value))
-          (addAppAccessIfNecessary ::: headers).map(header => (header.key, Set(header.value))) :::
+          addJwsIfNecessary.foreach(header => request.setRequestProperty(header.key, header.value))
+          (addAppAccessIfNecessary  ::: addJwsIfNecessary ::: headers).map(header => (header.key, Set(header.value))) :::
             request.getRequestProperties().asScala.mapValues(_.asScala.toSet).toList
         case Some(credential) => // User access; sign the request if we have some credentials to sign it with
           credential.consumer.sign(request)
-          headers.map(header => (header.key, Set(header.value))) :::
+          addJwsIfNecessary.foreach(header => request.setRequestProperty(header.key, header.value))
+          (addJwsIfNecessary ::: headers).map(header => (header.key, Set(header.value))) :::
             request.getRequestProperties().asScala.mapValues(_.asScala.toSet).toList
       }
       headers.foreach(header => request.setRequestProperty(header.key, header.value))
