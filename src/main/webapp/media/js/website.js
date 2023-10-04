@@ -85,7 +85,7 @@ $(document).ready(function() {
     // scroll to leftside tag if url contains hash.
     if(window.top.location.hash){
         const hashValue = window.top.location.hash;
-        $("a[href$='"+hashValue+"']").parents('.api_group_item')[0].scrollIntoView();
+        $("a[href$='"+hashValue+"']")?.parents('.api_group_item')[0]?.scrollIntoView();
     };
 
     //this will show which endpoint is selected, when you click the endpoints in the left_side_small_screen div
