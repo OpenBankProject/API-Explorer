@@ -521,7 +521,7 @@ object ObpAPI extends Loggable {
     logger.debug("getResourceDocsJValueResponse says Hello")
     val result = ObpGet(s"$obpPrefix/v4.0.0/resource-docs/$apiVersion/obp$requestParams&content=$contentTag")
     logger.debug("requestParams says result is: " + requestParams)
-    logger.debug("getResourceDocsJValueResponse says result is: " + result)
+    logger.trace("getResourceDocsJValueResponse says result is: " + result)
     result
   }
 
@@ -536,7 +536,7 @@ object ObpAPI extends Loggable {
   def getBankLevelDynamicResourceDocsJValueResponse(apiVersion : String, bankId:String, requestParams: String) = {
     logger.debug("getBankLevelResourceDocsJValueResponse says Hello")
     val result = ObpGet(s"$obpPrefix/v4.0.0/banks/$bankId/resource-docs/$apiVersion/obp$requestParams&$CacheModifier=${UUID.randomUUID().toString}")
-    logger.debug("getBankLevelResourceDocsJValueResponse says result is: " + result)
+    logger.trace("getBankLevelResourceDocsJValueResponse says result is: " + result)
     result  
   }
   

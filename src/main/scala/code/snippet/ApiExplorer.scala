@@ -524,7 +524,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
     }
 
 
-    logger.debug(s"responseBodyBox is ${responseBodyBox}")
+    logger.trace(s"responseBodyBox is ${responseBodyBox}")
 
     // Handle the contents of the Box
     val responseBody =
@@ -535,7 +535,7 @@ WIP to add comments on resource docs. This code copied from Sofit.
         case Failure(message, _, _) => message
       }
 
-    logger.debug(s"responseBody is $responseBody")
+    logger.trace(s"responseBody is $responseBody")
     (responseBody, headersOfCurrentCall.mkString("\n"), requestHeadersOfCurrentCall.mkString("\n"))
   }
 
