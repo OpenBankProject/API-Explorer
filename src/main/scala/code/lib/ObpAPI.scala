@@ -581,7 +581,7 @@ object ObpAPI extends Loggable {
     var cacheKey = (randomUUID().toString, randomUUID().toString, randomUUID().toString)
     CacheKeyFromArguments.buildCacheKey {
       Caching.memoizeSyncWithProvider(Some(cacheKey.toString()))(getGlossaryItemsJsonTTL) {
-        ObpGet(s"$obpPrefix/v3.0.0/api/glossary").flatMap(_.extractOpt[GlossaryItemsJsonV300])
+        ObpGet(s"$obpPrefix/v5.1.0/api/glossary").flatMap(_.extractOpt[GlossaryItemsJsonV300])
       }
     }
   }
