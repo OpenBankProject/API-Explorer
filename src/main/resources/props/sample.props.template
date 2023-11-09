@@ -179,5 +179,10 @@ dev.port=8082
 # ------------------------------ Identity Provider OAuth2 Props end --------------------------
 
 
+# If you want to make the Lift inactivity timeout shorter than
+# the container inactivity timeout, set the inactivity timeout here
+session_inactivity_timeout_in_minutes = 30
+
+
 # Please note that depricated name ot this props is: language_tag
 default_locale = en_GB

@@ -240,5 +240,12 @@ class Boot extends MdcLoggable{
     // Used in order to allow to override the Host header where using java's HttpUrlConnection class
     System.setProperty("sun.net.http.allowRestrictedHeaders", "true")
 
+    Props.get("session_inactivity_timeout_in_minutes") match {
+      case Full(x) if tryo(x.toLong).isDefined =>
+        LiftRules.sessionInactivityTimeout.default.set(Full((x.toLong.minutes): Long))
+      case _ =>
+      // Do not change default value
+    }
+
   }
 }
