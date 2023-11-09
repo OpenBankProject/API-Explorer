@@ -91,7 +91,8 @@ object ObpAPI extends Loggable {
   final val ContentBoxHeadlineId = ".content-box__headline [id]"
 
   final val showDynamicResourceDocs = Helper.getPropsValue("show_dynamic_resource_docs","true").toBoolean
-  
+  final val v510 = "v5.1.0"
+
   /**
    * The request vars ensure that for one page load, the same API call isn't
    * made multiple times
