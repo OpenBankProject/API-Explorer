@@ -186,3 +186,5 @@ session_inactivity_timeout_in_minutes = 30
 
 # Please note that depricated name ot this props is: language_tag
 default_locale = en_GB
+
+set_response_header_Set-Cookie = "Path=/; HttpOnly; Secure"
