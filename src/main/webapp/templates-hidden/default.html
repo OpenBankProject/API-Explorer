@@ -53,6 +53,9 @@ along with this program.  If not, see www.gnu.org/licenses/
     <script src="/media/js/scripts.js"></script>
     <script src="/media/js/select2.min.js"></script>
     <script src="/media/js/website.js"></script>
+
+    <!-- The script loads “in the background”, and then runs when the DOM is fully built. -->
+    <script type="module" defer src="/media/js/inactivity.js"></script>
 </head>
 
 
@@ -93,7 +96,7 @@ along with this program.  If not, see www.gnu.org/licenses/
                     <div class="logged-in">
                         <span class="username"></span>
                         <a class="settings-imgs__link" id="logout" href="#">
-                            <span class="logout-link"><lift:loc locid="logoff">Log off</lift:loc></span>
+                            <span class="logout-link"><lift:loc locid="logoff">Log off <span id="countdown-timer-span" class="badge text-bg-primary"></span></lift:loc></span>
                         </a>
                     </div>
                 </div>
