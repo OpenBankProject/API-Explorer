@@ -60,7 +60,7 @@ function logout() {
 async function makeObpApiCall() {
   let timeoutInSeconds;
   try {
-    let obpApiHost = document.getElementById("api_home_link");
+    let obpApiHost = document.getElementById("version-path");
     if(obpApiHost) {
       obpApiHost = obpApiHost.href.split("?")[0];
     }
@@ -76,6 +76,9 @@ async function makeObpApiCall() {
     }
   } catch (e) {
     console.error(e);
+    timeoutInSeconds = 5 * 60 + 1; // Set default value to 301 seconds
+    console.log(`Default value ${timeoutInSeconds} is used`);
+    return timeoutInSeconds;
   }
   return timeoutInSeconds;
 }
