@@ -21,8 +21,8 @@
   <!--set  the status of HttpOnly and Secure cookie flags-->
   <session-config>
     <cookie-config>
-      <secure>true</secure>
-      <http-only>true</http-only>
+      <secure>false</secure>
+      <http-only>false</http-only>
     </cookie-config>
   </session-config>
   
